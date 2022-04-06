@@ -14,8 +14,8 @@ date: 2020-05-04 14:03:00
 -------------------------------------------------------
 <img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/CPU.webp" />
 
-- [TLS 详解（一）](https://kiosk007.top/blog/2020/05/02/tls-详解一/)
-- [TLS 详解（三）](https://kiosk007.top/blog/2021/01/16/tls详解三/)
+- [TLS 详解（一）](https://kiosk007.top/post/tls详解-一/)
+- [TLS 详解（三）](https://kiosk007.top/post/tls详解-三/)
 
 
 # TLS 过程分析

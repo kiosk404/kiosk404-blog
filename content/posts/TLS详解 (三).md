@@ -11,8 +11,8 @@ TLS 1.3现已于2018年8月发布。相比与TLS1.2，TLS1.3 在速度和安全�
 
 
 <!--more-->
-- [TLS 详解（一）](https://kiosk007.top/blog/2020/05/02/tls-详解一/)
-- [TLS 详解（二）](https://kiosk007.top/blog/2020/05/04/tls-详解二/)
+- [TLS 详解（一）](https://kiosk007.top/post/tls详解-一/)
+- [TLS 详解（二）](https://kiosk007.top/post/tls详解-二/)
 
 # TLS1.3 Feature
 

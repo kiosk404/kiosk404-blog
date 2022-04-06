@@ -16,8 +16,8 @@ TLS的设计目标是构建一个安全传输层（Transport Layer Security ）�
 
 <img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/encript-for-security.jpg" style="height:450px" >
 
-- [TLS 详解（二）](https://kiosk007.top/blog/2020/05/04/tls-详解二/)
-- [TLS 详解（三）](https://kiosk007.top/blog/2021/01/16/tls详解三/)
+- [TLS 详解（二）](https://kiosk007.top/post/tls详解-二/)
+- [TLS 详解（三）](https://kiosk007.top/post/tls详解-三/)
 
 # TLS 简介
 

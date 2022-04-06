@@ -40,11 +40,14 @@ There are all kinds of mysterious portals here
 - Golang Format
     - [Golang json Tools](https://mholt.github.io/json-to-go/)
     - [Golang yaml Tools](https://zhwt.github.io/yaml-to-go/)
+- OS 
+    - [zorin OS - Make your computer better.](https://zorin.com/os/)
+    - [cutefish OS - 你的另一个选择](https://cn.cutefishos.com/)
 
 ## K8S
 - Minikube
     - [https://minikube.sigs.k8s.io/](https://minikube.sigs.k8s.io/)
-
+    
 
 ---- 
 
@@ -81,8 +84,6 @@ There are all kinds of mysterious portals here
  - Ginkgo是一个BDD风格的Go测试框架，旨在帮助你有效地编写富有表现力的全方位测试。它最好与Gomega匹配器库配对使用，但它的设计是与匹配器无关的。
  - [Ginkgo](https://www.ginkgo.wiki/chapter1.html)
 
-
-
-
+----
  ## Funny
 1. [red alert](https://game.chronodivide.com/)
