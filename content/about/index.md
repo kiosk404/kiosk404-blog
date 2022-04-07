@@ -10,16 +10,34 @@ date: 2020-04-07 00:23:06
 
 --------------------------------------------
 
+{{< typeit code=java >}}
+public class HelloWorld {
+    public static void main(String []args) {
+        System.out.println("Hello World");
+    }
+}
+{{< /typeit >}}
+
+
+--------------------------------------------
 
 # Profile
 
-Automation software undergraduate in China, Computer enthusiast, since many years ago (Maybe since 19 year), I did a lot of embedded things in college, but I did more Python and Linux。Now, I'am a gopher。
+I'am a automation software undergraduate in China, Computer enthusiast, since many years ago (Maybe since 19 year), I did a lot of embedded things in college, but I did more Python and Linux。
+
+Now, I'am a gopher。
+
 Keep learning, not too good, not too bad。
 
+--------------------------------------------
 
 - I was mainly engaged in website operation and maintenance, engaged in traffic access and distribution, wrote about automatic operation and maintenance platform, did network analysis, client network optimization and so on.
 - Learning golang、devops、python、network、Linux
 - Keep Learning
+
+{{< style "text-align:right; strong{color:#00b1ff;}" >}}
+Yes, it's me, **kiosk** .
+{{< /style >}}
 
 # Mail
 
