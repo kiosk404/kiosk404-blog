@@ -206,7 +206,7 @@ ALGOLIA_ADMIN_KEY=你的Admin API Key
 `loveit` 自带了很多评论系统足够满足满足大多数人的需求，我选了主题默认的评论系统 [Valine](https://github.com/xCss/Valine)。
 这个评论系统也是需要注册的。具体过程参考 [这篇博客](https://huangzhongde.cn/post/2020-02-20-hugo-comments-plugin-valine/) 吧。也写得算挺详细的了。
 
-
+不过注意将默认的 serverURLs 替换一下。使用默认的域名会报 403 跨域错误。
 
 
 # 部署
