@@ -10,11 +10,11 @@ date: 2020-04-07 00:23:06
 
 --------------------------------------------
 
-{{< typeit code=java >}}
-public class HelloWorld {
-    public static void main(String []args) {
-        System.out.println("Hello World");
-    }
+{{< typeit code=go >}}
+import "fmt"
+
+func main() {
+    fmt.Println("Hello World")
 }
 {{< /typeit >}}
 
