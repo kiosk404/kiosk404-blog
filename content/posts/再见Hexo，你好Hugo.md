@@ -1,13 +1,13 @@
 ---
 title: 再见Hexo，你好Hugo
 author: kiosk
-tags: ["hugo"]
+tags: 
+  - hugo
 categories:
   - blog
 date: 2022-04-05 11:23:00
 ---
 最近两年一直在用 hexo 来写博客，第一个认识的 hexo 静态托管类网站记得还是小米运维部的网站 noops.me ，但是时光荏苒，小米的技术博客16年就停更了。hexo 的生态也比较完整，也有很多不错的博客主题，但是这次想着和 hexo 说再见了。
-
 
 <!--more-->
 
@@ -354,6 +354,13 @@ action 的 3 个 step 工作内容分别如下：
 2. `actions-hugo@v2` 安装准备好 Hugo 的环境，with 表示 Hugo 版本为 latest。
 3. `hugo --gc --verbose --minify` 构建 Hugo 静态站点，默认输出到 public 目录中。
 4. `rsync-deployments@5.1` 将 public 目录中所有的内容全部拷贝到服务器指定路径，这里 `${{ secrets.XXX }}` 引用我们之前创建好的 `Secrets` 变量。
+
+
+
+# 编辑
+在 hexo 的时代，还可以使用 hexo admin，因为我的图片全部是上传到七牛云图床上的，使用hexo的qiniu插件可以无缝衔接上传过程，但是 hugo 这块的功能就比较弱了。hexo admin 也得转战到 `Typora` 上。好在 Typora 足够强大，可以自动上传图片，具体可以参考 [这篇文章](https://zhuanlan.zhihu.com/p/340105623)
+
+
 
 
 参考：

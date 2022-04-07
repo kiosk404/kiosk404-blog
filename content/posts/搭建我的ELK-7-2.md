@@ -3,6 +3,7 @@ title: 搭建我的ELK 7.12
 author: kiosk
 date: 2021-03-27 13:52:18
 tags:
+  - elasticsearch
 ---
 Elasticsearch 是一个实时的分布式搜索分析引擎，它能让你以前所未有的速度和规模，去探索你的数据。
 
@@ -141,6 +142,7 @@ vm.max_map_count = 262144
   - `jvm.options`: ES JVM 参数 [more](https://www.elastic.co/guide/en/elasticsearch/reference/current/jvm-options.html#jvm-options)
   - `log4j2.properties`: ES log 配置 [more](https://www.elastic.co/guide/en/elasticsearch/reference/current/logging.html#logging)
   
+
 默认情况，ES 告诉 JVM 使用一个最小和最大都为 4GB 的堆。但是到了生产环境，这个配置就比较重要了，确保 ES 有足够堆空间可用。
 > 但是我的XPS 16G内存。不改堆内存大小的只能起一个实例，再起其他实例，旧的实例总显示 Killed。
 修复方式，更改 `./config/jvm.options`
@@ -195,6 +197,7 @@ vm.max_map_count = 262144
   - [Discovery and cluster formation settings](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-discovery-settings.html)
 
 > 在新版 7.x 的 ES 中，对 ES 的集群发现系统做了调整，不再有 discovery.zen.minimum_master_nodes 这个控制集群脑裂的配置，转而由集群自主控制，并且新版在启动一个新的集群的时候需要有cluster.initial_master_nodes 初始化集群主节点列表。如果一个集群一旦形成，你不该再设置该配置项，应该移除它。该配置项仅仅是集群第一次创建时设置的！集群形成之后，这个配置也会被忽略的！
+>
 > - `discovery.seed_hosts`: 提供群集中符合master节点资格的地址列表
 
 
