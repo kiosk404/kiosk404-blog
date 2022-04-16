@@ -47,4 +47,4 @@ Yes, it's me, **kiosk** .
 
 # Other
 
-- https://github.com/weijiaxiang007
+- https://github.com/kiosk404
