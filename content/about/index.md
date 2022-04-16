@@ -3,6 +3,8 @@ title: About
 type: about
 disallow: true
 comments: false
+twemoji: true
+lightgallery: true
 date: 2020-04-07 00:23:06
 ---
 
@@ -23,7 +25,7 @@ func main() {
 
 # Profile
 
-I'am a automation software undergraduate in China, Computer enthusiast, since many years ago (Maybe since 19 year), I did a lot of embedded things in college, but I did more Python and Linux。
+I'am a automation software undergraduate in China :panda_face:, Computer enthusiast, since many years ago (Maybe since 19 year), I did a lot of embedded things in college, but I did more Python and Linux。
 
 Now, I'am a gopher。
 
