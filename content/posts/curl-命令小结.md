@@ -9,9 +9,9 @@ date: 2021-05-29 15:22:00
 ---
 curl 命令是我日常工作中最常用的命令之一，所以很有必要总结一下curl命令的一些用法。如统计耗时、以指定的ip访问某个域名。添加携带某些Header等。curl命令绝对是日常debug之神。
 
+{{< image src="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" caption="CURL" src_s="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" src_l="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" >}}
 
 
-<img src="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" style="height:200px"/>
 
 <!--more-->
 

@@ -25,17 +25,15 @@ G-M-P分别代表：
 GMP调度流程大致如下：
 
 1. 线程M想运行任务就需得获取 P，即与P关联。
-
 2. 然从 P 的本地队列(LRQ)获取 G
-
 3. 若LRQ中没有可运行的G，M 会尝试从全局队列(GRQ)拿一批G放到P的本地队列，
-
 4. 若全局队列也未找到可运行的G时候，M会随机从其他 P 的本地队列偷一半放到自己 P 的本地队列。
-
 5. 拿到可运行的G之后，M 运行 G，G 执行之后，M 会从 P 获取下一个 G，不断重复下去。
 
 
-![](https://img1.kiosk007.top/static/images/go/gc/golang_gmp.png)
+
+{{< image src="https://img1.kiosk007.top/static/images/go/gc/golang_gmp.png" caption="GMP" src_s="https://img1.kiosk007.top/static/images/go/gc/golang_gmp.png" src_l="https://img1.kiosk007.top/static/images/go/gc/golang_gmp.png" >}}
+
 
 
 
