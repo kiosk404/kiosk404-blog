@@ -56,7 +56,7 @@ eBPF 不像一般的程序启动后即运行。他需要事件触发才会执行
 
 - 第一步：使用 C 语言开发一个 eBPF 程序；
 - 第二步：借助 LLVM 把 eBPF 程序编译成 BPF 字节码；
-- 第三步：通过bpf系统调用，把BPF字节码提交给内核；
+- 第三步：通过[bpf系统调用](https://man7.org/linux/man-pages/man2/bpf.2.html)，把BPF字节码提交给内核；
 - 第四步：内核验证并运行 BPF 字节码，把相应状态保存在BPF映射中；
 - 第五步：用户程序通过 BPF 映射查询 BPF 字节码的运行状态；
 
@@ -311,7 +311,7 @@ eBPF 在内核中运行时主要由 5 个模块组成：
 
 - 模块一： **eBPF 辅助函数**。它提供了一系列用于 eBPF 程序与内核其他模块进行交互的函数。这些函数并不是任意一个 eBPF 程序都会调用，由 BPF 程序类型决定
 - 模块二： **eBPF 验证器**。它用于保证 eBPF 程序安全，确保没有不可达指令和无效指令
-- 模块三： **11个64位寄存器、一个程序计数器和512字节的栈组成的存储模块。**这个模块用于控制 eBPF 程序的执行，其中，R0 寄存器用于存储函数调用和 eBPF 程序的返回值，这意味着函数调用只能有一个返回值，R1-R5 寄存器用于存储函数调用的参素，因此函数调用的参数最多不能超过5个；而 R10 是一个只读寄存器，用于从栈中读取数据。
+- 模块三： **11个64位寄存器、一个程序计数器和512字节的栈组成的存储模块**。这个模块用于控制 eBPF 程序的执行，其中，R0 寄存器用于存储函数调用和 eBPF 程序的返回值，这意味着函数调用只能有一个返回值，R1-R5 寄存器用于存储函数调用的参素，因此函数调用的参数最多不能超过5个；而 R10 是一个只读寄存器，用于从栈中读取数据。
 - 模块四： **即时编译器**。它将 eBPF 字节码编译成本地机器指令、以便更高效地在内核中执行
 - 模块五：**BPF 映射(map)**。他用于提供大块的存储，这些存储可被用户空间程序用来访问。
 
@@ -394,15 +394,39 @@ BPF 映射用于提供大块的键值存储，可用于被用户空间的程序�
 
 映射类型在内核头文件 [include/uapi/linux/bpf.h](https://elixir.bootlin.com/linux/v5.13/source/include/uapi/linux/bpf.h#L867) 中的 bpf_map_type 定义，可以使用 `bpftool feature probe | grep map_type` 查看。
 
+``` bash
+$ bpftool feature probe | grep map_type
+eBPF map_type hash is available
+eBPF map_type array is available
+eBPF map_type prog_array is available
+eBPF map_type perf_event_array is available
+eBPF map_type percpu_hash is available
+eBPF map_type percpu_array is available
+...
+```
+
 <br>
 
 其实我们简单理解，eBPF 的数据结构需要放到一个 类似 Redis 的外部存储里。而事实上，BPF 映射也正是一个类似的数据结构。
 
+| 映射类型                                                | 功能描述                                                     |
+| ------------------------------------------------------- | ------------------------------------------------------------ |
+| BPF_MAP_TYPE_HASH                                       | 哈希表映射，用于保存 key/value 对                            |
+| BPF_MAP_TYPE_LRU_HASH                                   | 哈希表，但拥有LRU功能                                        |
+| BPF_MAP_TYPE_ARRAY                                      | 数组映射，用于保存固定大小的数组                             |
+| BPF_MAP_TYPE_PROG_ARRAY                                 | 程序数组映射，用于保存BPF程序的引用，适合尾调用（即调用其他 eBPF 程序） |
+| BPF_MAP_TYPE_PERF_EVENT_ARRAY                           | 性能时间数组映射，用于保存性能事件跟踪记录                   |
+| BPF_MAP_TYPE_PERCPU_HASH<br>BPF_MAP_TYPE_PERCPU_ARRAY   | 每个 CPU 单独维护的哈希表和数组映射                          |
+| BPF_MAP_TYPE_STACK_TRACE                                | 调用栈跟踪映射，用于存储调用栈信息                           |
+| BPF_MAP_TYPE_ARRAY_OF_MAPS<br>BPF_MAP_TYPE_HASH_OF_MAPS | 映射数组和映射哈希，用于保存其他映射的引用                   |
+| BPF_MAP_TYPE_CGROUP_ARRAY                               | CGROUP 数组映射，用于存储 cgroups引用                        |
+| BPF_MAP_TYPE_SOCKMAP                                    | 套接字映射，用于存储套接字引用，特别是用于套接字的重定向     |
+
 <br>
 
-如果 eBPF 程序使用了 BCC, 那么预定义的宏可以极大简化 BPF 映射相关的操作。比如 [python map apis](https://github.com/iovisor/bcc/blob/master/docs/reference_guide.md#map-apis) 。除了创建之外，**BPF 映射没有删除相关的命令，这是因为 BPF 映射 会在用户态程序关闭时自动删除**，如果想要在用户态程序退出时保留映射，需要 BPF_OBJ_PIN 命令，将映射挂载到 /sys/fs/bpf 中。
+如果 eBPF 程序使用了 BCC, 那么预定义的宏可以极大简化 BPF 映射相关的操作。比如 [c map apis](https://github.com/iovisor/bcc/blob/master/docs/reference_guide.md#maps) 。除了创建之外，**BPF 映射没有删除相关的命令，这是因为 BPF 映射 会在用户态程序关闭时自动删除**，如果想要在用户态程序退出时保留映射，需要 BPF_OBJ_PIN 命令，将映射挂载到 /sys/fs/bpf 中。
 
-
+<br>
 
 ## BPF 类型格式 （BTF）
 
@@ -410,7 +434,7 @@ BPF 映射用于提供大块的键值存储，可用于被用户空间的程序�
 
 <br>
 
-这就引入了 BTF (BPF Type Fromat) ，从 v5.2 开始，只要内核开启了 CONFIG_DEBUG_INFO_BTF ，在编译内核时，内核的数据结构会自动嵌入内核的二进制文件 vmlinux 中，可以通过 bpftool 工具导出 头文件。
+这就引入了 BTF (BPF Type Fromat) ，从 v5.2 开始，只要内核开启了 CONFIG_DEBUG_INFO_BTF ，在编译内核时，内核的数据结构会自动嵌入内核的二进制文件 vmlinux 中，可以通过 bpftool 工具导出头文件。
 
 
 
@@ -421,6 +445,10 @@ bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
 
 
 所以在开发  eBPF 程序时只需要引入一个 vmlinux.h 即可。除此之外， BTF 可以让 eBPF 程序在内核升级之后，不需要编译就可以直接运行。
+
+<br>
+
+解决了内核数据结果的定义问题，接下来的问题就是，**如何让 eBPF 程序在内核升级之后，不需要重新编译就可以直接运行**，eBPF的一次编译到处执行(Compile Once Run Everywhere，简称 CO-RE) 项目借助了BTF提供的调试信息，通过在 libbpf 中预定义不同内核版本中的数据结构的修改，解决了不同内核中数据结构的不兼容问题。
 
 
 
@@ -454,13 +482,13 @@ eBPF program_type perf_event is available
 
 跟踪类 eBPF 程序主要是用于从系统中提取跟踪信息，进而为监控、排错、性能优化等提供数据支撑。比如前面的第一个程序案例，它是跟踪某个内核函数是否被某个进程调用了。
 
-| 程序类型                                                     | 功能描述                                                     | 功能限制                                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 程序类型                                                     | 功能描述                                                     |                           功能限制                           |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | :----------------------------------------------------------: |
 | BPF_PROG_TYPE_KPROBE                                         | 用于对特定函数进行动态插桩，根据函数位置的不同，又可以分为内核态 kprobe 和 用户态 uprobe | 内核函数和用户函数的定义属于不稳定API,在不同内核版本中使用时，可能需要调整eBPF代码的实现 |
 | BPF_PROG_TYPE_TRACEPOINT                                     | 用于内核静态跟踪点（可以使用 perf list 命令，查询所有的跟踪点） | 虽然跟踪点可以保持稳定性，但不如 KPROBE类型灵活， 不能按需增加新的跟踪点 |
 | BPF_PROG_TYPE_PERF_EVENT                                     | 用于性能时间 (perf_events) 跟踪，包括内核调用，定时器，硬件等各类性能数据 | 需要配合 BPF_MAP_TYPE_PERF_EVENT_ARRAY 或者 BPF_MAP_TYPE_RINGBUF 类型的映射使用 |
-| BPF_PROG_TYPE_RAW_TRACEPOINT<br>BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE | 用于原始跟踪点                                               | 不处理参数                                                   |
-| BPF_PROG_TYPE_TRACING                                        | 用于开启 BTF 的跟踪点                                        | 需要开启 BTF                                                 |
+| BPF_PROG_TYPE_RAW_TRACEPOINT<br>BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE | 用于原始跟踪点                                               |                          不处理参数                          |
+| BPF_PROG_TYPE_TRACING                                        | 用于开启 BTF 的跟踪点                                        |                         需要开启 BTF                         |
 
 
 
