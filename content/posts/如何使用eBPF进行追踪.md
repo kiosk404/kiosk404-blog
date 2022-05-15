@@ -142,9 +142,9 @@ tracepoint:syscalls:sys_exit_execve
 
 因为内核插桩 kprobe 属于不稳定接口，而跟踪点属于稳定接口，**所以在内核插桩和跟踪点都可用的情况下，应该选择更稳定的跟踪点，以保证 eBPF 程序的可移植性**。所以这里我们选择 syscalls:sys_enter_execve 和 syscalls:sys_exit_execve 。这两个是系统调用的入口执行和出口。
 
+<br>
 
-
-使用 ebpftrace 命令：
+1. **使用 ebpftrace 命令**：
 
 ```bash
 sudo bpftrace -e 'tracepoint:syscalls:sys_enter_execve { printf("%-6d %-8s", pid, comm); join(args->argv);}'
@@ -174,6 +174,50 @@ Attaching 1 probe...
 ```
 
 
+
+2. **还可以条件选择，比如我只追踪 curl 命令的网络丢包情况**。
+
+``` bash
+sudo bpftrace -e 'kprobe:kfree_skb /comm=="curl"/ {printf("kstack: %s\n", kstack);}'
+```
+
+这里两个 “**/**” 中间是条件过滤。
+
+
+
+3. **还可以将简单的追踪写成脚本，用 bpftrace 调用**。这个脚本
+
+```c
+#!/usr/bin/env bpftrace
+/* Watch tcp drop from curl process by probing kfree_skb */ 
+
+// Add required kernel headers
+#include <linux/skbuff.h>
+#include <linux/ip.h>
+#include <linux/netdevice.h>
+
+
+kprobe:kfree_skb /comm=="curl"/
+{
+  // First arg is sk_buff.
+  $skb = (struct sk_buff *)arg0;
+
+  // Get network header, src IP and dst IP.
+  $iph = (struct iphdr *)($skb->head + $skb->network_header);
+  $sip = ntop(AF_INET, $iph->saddr);
+  $dip = ntop(AF_INET, $iph->daddr);
+
+  // Print kernel stack only when it is TCP.
+  if ($iph->protocol == IPPROTO_TCP)
+  {
+    printf("SKB dropped: %s->%s, kstack: %s\n", $sip, $dip, kstack);
+  }
+}
+```
+
+
+
+<br>
 
 ## 使用 BCC 方法进行跟踪
 
