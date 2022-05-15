@@ -1,7 +1,7 @@
 ---
 title: 如何使用eBPF进行追踪
 author: kiosk
-draft: true
+draft: false
 tags:
   - eBPF
 categories:
@@ -528,3 +528,7 @@ sudo bpftrace -l '*:/usr/bin/python3:*'
 
 
 我不是 Java 用户，但是原理差不太多，可以参考[这边文章](https://wenfeng-gao.github.io/post/profile-java-program-with-bcc-tool/#setup-perf-agent-container)。
+
+
+
+最后一个小提示，Android 等基于 Linux 的操作系统也可以做跟踪，参考 [eBPF/BCC - A better low-level instrumentation tool on Android](https://blog.senyuuri.info/2021/06/30/ebpf-bcc-android-instrumentation/)
