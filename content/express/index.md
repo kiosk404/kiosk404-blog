@@ -45,6 +45,9 @@ There are all kinds of mysterious portals here...
 - OS 
     - [zorin OS - Make your computer better.](https://zorin.com/os/)
     - [cutefish OS - 你的另一个选择](https://cn.cutefishos.com/)
+- eBPF/BCC
+    - [eBPF tracing in Go](https://blog.px.dev/ebpf-function-tracing/)
+    - [BCC tools](https://github.com/iovisor/bcc#tools)
 
 ## K8S
 - Minikube

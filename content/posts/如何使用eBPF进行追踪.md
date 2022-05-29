@@ -175,6 +175,20 @@ Attaching 1 probe...
 
 
 
+还可以追踪某进程打开的文件：
+
+```bash
+bpftrace -e 'tracepoint:syscalls:sys_enter_openat /comm=="feishu"/ { printf("%-6d %-8s %-10s \n",pid, comm, str(args->filename)); }'
+```
+
+
+
+更多例子详见 https://www.tsingfun.com/it/os_kernel/bpftrace_tutorial.html
+
+官方 bpftrace 脚本 https://github.com/iovisor/bpftrace/tree/master/tools
+
+
+
 2. **还可以条件选择，比如我只追踪 curl 命令的网络丢包情况**。
 
 ``` bash
@@ -367,6 +381,76 @@ vmlinux:
 
 有了这个 Makefile 之后，你执行  make vmlinux  命令就可以生成  vmlinux.h  文件，再执行  make  就可以编译  APPS  里面配置的所有 eBPF 程序（多个程序之间以空格分隔）。
 
+<br>
+
+Golang 的 [cilium](https://github.com/cilium/ebpf/) 框架便是经典的使用 libbpf 的例子。
+
+libbpf 的 eBPF 程序开发包括定义哈希映射、性能事件映射以及跟踪点的处理函数等，都使用 SEC() 宏定义完成，在编译时，**通过 SEC() 宏定义的数据结构和函数会放到特定的 ELF 段中，这样后续加载 BPF 字节码时，就可以从这些段中获取所需的元数据**。
+
+
+
+比如
+
+``` c
+
+// 包含头文件
+#include "vmlinux.h"
+#include <bpf/bpf_helpers.h>
+
+// 定义进程基本信息数据结构
+struct event {
+    char comm[TASK_COMM_LEN];
+    pid_t pid;
+    int retval;
+    int args_count;
+    unsigned int args_size;
+    char args[FULL_MAX_ARGS_ARR];
+};
+
+// 定义哈希映射
+struct {
+    __uint(type, BPF_MAP_TYPE_HASH);
+    __uint(max_entries, 10240);
+    __type(key, pid_t);
+    __type(value, struct event);
+} execs SEC(".maps");
+
+// 定义性能事件映射
+struct {
+    __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
+    __uint(key_size, sizeof(u32));
+    __uint(value_size, sizeof(u32));
+} events SEC(".maps");
+
+// sys_enter_execve跟踪点
+SEC("tracepoint/syscalls/sys_enter_execve")
+int tracepoint__syscalls__sys_enter_execve(struct trace_event_raw_sys_enter *ctx)
+{
+  // 待实现处理逻辑
+}
+
+// sys_exit_execve跟踪点
+SEC("tracepoint/syscalls/sys_exit_execve")
+int tracepoint__syscalls__sys_exit_execve(struct trace_event_raw_sys_exit *ctx)
+{
+  // 待实现处理逻辑
+}
+
+// 定义许可证（前述的BCC默认使用GPL）
+char LICENSE[] SEC("license") = "Dual BSD/GPL";
+```
+
+
+
+至于处理逻辑上 BCC 程序基本上是相同的，不过，详细对比一下，他们还有两个最大的不同点。
+
+- 第一：函数名的定义格式不同，BCC 程序使用的是 TRACEPOINT_PROBE 宏，而 libbpf 程序用的是 SEC 宏。
+- 第二：映射方法的访问方法不同，BCC 封装了很多更易用的映射访问函数（如 tasks.lookup()），而 libbpf 程序则需要 BPF 辅助函数（比如查询要使用 bpf_map_lookup_elem()）。
+
+<br>
+
+写完 eBPF 程序后，需要用 clang 和 bpftool 将其编译成 BPF 字节码，然后再生成其脚手架头文件。像 cilium 项目中提供了 bpf2go 的小程序可以帮助我们完成这个步骤。
+
 
 
 不过似乎没有特别多的使用 libbpf 的例子，这里就看[这个](https://github.com/iovisor/gobpf/blob/master/examples/bcc/execsnoop/execsnoop.go)吧
@@ -531,4 +615,8 @@ sudo bpftrace -l '*:/usr/bin/python3:*'
 
 
 
-最后一个小提示，Android 等基于 Linux 的操作系统也可以做跟踪，参考 [eBPF/BCC - A better low-level instrumentation tool on Android](https://blog.senyuuri.info/2021/06/30/ebpf-bcc-android-instrumentation/)
+最后一个小提示，Android 等基于 Linux 的操作系统也可以做跟踪，参考
+
+- [eBPF/BCC - A better low-level instrumentation tool on Android](https://blog.senyuuri.info/2021/06/30/ebpf-bcc-android-instrumentation/)
+
+- [Android 使用eBPF扩展内核](https://source.android.google.cn/devices/architecture/kernel/bpf?hl=zh-cn)
