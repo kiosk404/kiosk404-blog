@@ -2,7 +2,7 @@
 title: About
 type: about
 disallow: true
-comments: false
+comment: false
 twemoji: true
 lightgallery: true
 date: 2020-04-07 00:23:06

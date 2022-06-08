@@ -2,7 +2,7 @@
 title: Express
 type: express
 disallow: true
-comments: false
+comment: false
 date: 2021-03-05 23:41:26
 ---
 
@@ -46,12 +46,10 @@ There are all kinds of mysterious portals here...
     - [zorin OS - Make your computer better.](https://zorin.com/os/)
     - [cutefish OS - 你的另一个选择](https://cn.cutefishos.com/)
 - eBPF/BCC
-    - [eBPF tracing in Go](https://blog.px.dev/ebpf-function-tracing/)
     - [BCC tools](https://github.com/iovisor/bcc#tools)
 
-## K8S
-- Minikube
-    - [https://minikube.sigs.k8s.io/](https://minikube.sigs.k8s.io/)
+## eBPF
+- [eBPF Topic](https://kiosk.io/topic/ebpf/)
     
 
 ---- 

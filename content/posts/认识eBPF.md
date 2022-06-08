@@ -76,7 +76,7 @@ eBPF 不像一般的程序启动后即运行。他需要事件触发才会执行
 
 
 
-``` bash
+``` powershell
 $ sudo apt install make clang llvm libelf-dev bpfcc-tools \
 libbpfcc-dev linux-tools-$(uname -r) linux-headers-$(uname -r)
 ```
@@ -283,7 +283,7 @@ while 1:
 
 这次的执行结果如下。已经比较清楚了。(ps:  systemd-oomd 这个进程一直在读和内存相关的系统文件。)
 
-``` bash
+``` powershell
 IME(s)            COMM             PID    FILE            
 0.046618023        systemd-oomd     599    133    /proc/meminfo   
 0.296788616        systemd-oomd     599    133    /proc/meminfo   

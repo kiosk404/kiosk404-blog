@@ -37,7 +37,7 @@ BPF 可用于对内核函数、用户态函数进行插桩进而实现观测的�
 
 其实上面的图已经说明了我们要追踪的函数是 `SSL_write` 和 `SSL_read` ，但是这里也聊一下这两个函数是如何查找的吧。一般来说，我们可以使用 `readelf` 命令。输出的结果，排除一些明显和加密过程相关的函数之外，映入眼帘的便是 `SSL_read` 
 
-```bash
+```powershell
 $ readelf -Ws /usr/lib/x86_64-linux-gnu/libssl.so |grep -i 'ssl_read'
    658: 0000000000032ce0   126 FUNC    GLOBAL DEFAULT   15 SSL_read@@OPENSSL_3.0.0
    762: 0000000000038cf0   414 FUNC    GLOBAL DEFAULT   15 SSL_read_early_data@@OPENSSL_3.0.0
@@ -47,7 +47,7 @@ $ readelf -Ws /usr/lib/x86_64-linux-gnu/libssl.so |grep -i 'ssl_read'
 
 也可以使用 bpftrace 或者 nm 命令进行相关追踪。
 
-```
+```powershell
 $ sudo bpftrace -l 'uprobe:/usr/lib/x86_64-linux-gnu/libssl.so:*'
 $ nm --dynamic /usr/lib/x86_64-linux-gnu/libssl.so|grep read
 ```
