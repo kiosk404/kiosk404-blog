@@ -48,9 +48,10 @@ There are all kinds of mysterious portals here...
 - eBPF/BCC
     - [BCC tools](https://github.com/iovisor/bcc#tools)
 
-## eBPF
-- [eBPF Topic](https://kiosk007.top/topic/ebpf/)
-    
+## Topic
+> - [eBPF Topic](/topic/ebpf/)
+> - [Golang Topic](/topic/golang)
+
 
 ---- 
 
