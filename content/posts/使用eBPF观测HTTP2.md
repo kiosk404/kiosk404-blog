@@ -189,6 +189,29 @@ func main() {
 
 
 
+具体来说，eBPF uprobes 通过直接跟踪应用程序中的明文数据来解决 HPACK 问题。通过将 uprobes 可以在HPACK压缩前拿到标头的内容。
+
+
+
+通过研究 Golang 的 HTTP/2 源码，可以看到 [loopWriter.writeHeader()](https://github.com/grpc/grpc-go/blob/584d9cd11a1da55e3558041c9f88f22ca2255f4e/internal/transport/controlbuf.go#L678)是一个理想的跟踪点。此函数接受明文标题字段并将它们发送到内部缓冲区。
+
+
+
+> 这里演示通过 GRPC 演示，而 GRPC 底层基于 HTTP2 ，所以看的是 grpc 的golang 官方库。
+
+
+
+接下来的事情就是弄清楚数据结构的内存布局，并编写 BPF 代码以在正确的内存地址读取数据了。
+
+先看看函数签名。
+
+```go
+func (l *loopyWriter) writeHeader(streamID uint32, endStream bool, hf []hpack.HeaderField, onWrite func())
+
+```
+
+第三个参数 hf 就是 hpack 中的内容，
+
 
 
 
