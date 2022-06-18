@@ -441,7 +441,7 @@ Nginx 可以部署在一个有外网ip（集群外部可访问ip）上。具体�
 当然，我们当前是Minikube单机模式，如果是正式的K8S环境，可以执行以下命令加标签
 
 ``` bash
-kubectllabel node node3 node-type=edge
+kubectl label node node3 node-type=edge
 ```
 
 

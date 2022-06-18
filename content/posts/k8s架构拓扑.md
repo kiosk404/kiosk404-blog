@@ -111,9 +111,9 @@ showmount -e 172.16.101.1
 
 ## PV & PVC
 
-**PV (PersistentVolume) 描述的是持久化存储数据卷。**这个 API 对象主要定义的是一个持久化存储在宿主机上的目录，比如一个 NFS 的挂载目录。
+**PV (PersistentVolume) 描述的是持久化存储数据卷**。这个 API 对象主要定义的是一个持久化存储在宿主机上的目录，比如一个 NFS 的挂载目录。
 
-**PVC（PersistentVolumeClaim） 描述的是 Pod 所希望使用的持久化存储的属性。**比如，Volume 存储的大小、可读写权限等等。
+**PVC（PersistentVolumeClaim） 描述的是 Pod 所希望使用的持久化存储的属性**。比如，Volume 存储的大小、可读写权限等等。
 
 
 一般PV由运维人员创建并提供，PVC是由开发人员所创建，以 PVC 模板的方式成为 StatefulSet 的一部分，然后由 StatefulSet 控制器负责创建带编号的 PVC。**PV 和 PVC 的 storageClassName 字段必须一样，才能使用**
