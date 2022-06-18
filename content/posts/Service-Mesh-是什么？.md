@@ -2,7 +2,10 @@
 title: Service Mesh 是什么？
 author: kiosk
 date: 2021-09-19 11:40:25
+categories:
+  - k8s
 tags:
+  - service mesh
 ---
 下面是摘自维基百科的一段话。
 
@@ -202,7 +205,7 @@ istio-ingressgateway   LoadBalancer   10.80.53.173   <pending>     15021:32628/T
 
 ```
 设置 <span style="color:red">EXTERNAL-IP</span> 的值之后， 你的环境就有了一个外部的负载均衡，可以用它做入站网关。 但如果 <span style="color:red">EXTERNAL-IP</span> 的值为 <none> (或者一直是 <pending> 状态)， 则你的环境则没有提供可作为入站流量网关的外部负载均衡。 在这个情况下，你还可以用服务（Service）的 [节点端口](https://kubernetes.io/zh/docs/concepts/services-networking/service/#nodeport) 访问网关 (但是k8s的NodePort设置要求的范围是 30000-32767)。
-  
+
 由于我本地的测试环境没有 Loadblance ，所以就用NodePort方式访问吧。
 
 ``` bash
@@ -675,11 +678,11 @@ $ kubectl logs -f productpage-v1-6b746f74dc-xt7qh istio-proxy
 envoy 日志配置项
 
 
-| 配置项        | 说明   | 
-| --------   | -----:  | 
-| global.proxy.accessLogFile |  日志输出文件，空为关闭输出 |  
-| global.proxy.accessLogEncoding |  日志编码格式：JSON、TEXT |  
-| global.proxy.accessLogFormat | 配置显示在日志中的字段，空为默认格式 |  
+| 配置项        | 说明   |
+| --------   | -----:  |
+| global.proxy.accessLogFile |  日志输出文件，空为关闭输出 |
+| global.proxy.accessLogEncoding |  日志编码格式：JSON、TEXT |
+| global.proxy.accessLogFormat | 配置显示在日志中的字段，空为默认格式 |
 | global.proxy.logLevel  | 日志级别，空为 warning |
 
 

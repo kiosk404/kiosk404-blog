@@ -32,7 +32,15 @@ GoLang Language：
 3. [Go语言中结构体打Tag是什么意思？](https://segmentfault.com/a/1190000040999517)
 4. [Golang 详解内存对齐](https://segmentfault.com/a/1190000040528007)
 
+
 开源项目:
 
 1. [推荐几个可以写到简历上的Go方向优质开源项目（需花点心思研究）](https://segmentfault.com/a/1190000041080720)
 2. https://landscape.cncf.io/  
+
+
+<br/>
+
+锁:
+- [Mutex：如何解决资源并发访问问题?](https://time.geekbang.org/column/article/294905)
+

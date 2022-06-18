@@ -5,7 +5,7 @@ tags:
   - nginx
   - devops
 categories:
-  - devops
+  - Nginx
 date: 2020-04-18 20:51:00
 ---
 这段时间搭建自己的 [Nginx](http://nginx.org/) 服务器，顺便总结回顾了一些运维相关的知识点，详细介绍了如何搭建一个企业级的高性能 Nginx 服务器。

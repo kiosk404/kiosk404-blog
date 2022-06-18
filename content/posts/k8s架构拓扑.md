@@ -2,7 +2,8 @@
 title: k8s 架构拓扑
 author: kiosk
 tags: []
-categories: []
+categories:
+  - k8s
 date: 2021-08-05 00:05:00
 ---
 这篇文章将从K8S的架构、存储、网络及服务暴露等几个方面介绍,记录K8S的学习过程。
@@ -283,9 +284,9 @@ $ kubectl apply -f test-pods.yaml
 
 flannel 网络通信方式
 
-| 通信方式      | 概念    |  方式    |  
-| --------    | :-----:  | :----:  | 
-| 主机内通信    | 1台机器内部的| veth pair | 
+| 通信方式      | 概念    |  方式    |
+| --------    | :-----:  | :----:  |
+| 主机内通信    | 1台机器内部的| veth pair |
 | L2 主机间通信 | 2台主机连在同一台交换机的场景| hostgw |
 | L3 主机间通信 | 2台主机没有连在同一台交换机的场景。| 内核态：vxlan  用户态：udp (性能差) |
 
@@ -720,6 +721,6 @@ root@web-1:/# dig nginx.default.svc.cluster.local +short
 ```
 
 > 需要注意的是，在 Kubernetes 里，/etc/hosts 文件是单独挂载的，这也是为什么 kubelet 能够对 hostname 进行修改并且 Pod 重建后依然有效的原因。这跟 Docker 的 Init 层是一个原理。
- 
+
 
 

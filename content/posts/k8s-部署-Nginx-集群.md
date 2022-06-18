@@ -2,7 +2,12 @@
 title: 'k8s 部署 HTTP3  Nginx '
 author: kiosk
 date: 2021-08-04 22:56:00
+categories:
+  - k8s
+  - Nginx
 tags:
+  - k8s
+  - Nginx
 ---
 在之前的文章中介绍了如何编译[支持HTTP3的Nginx](https://kiosk007.top/2021/07/31/%E5%B0%9D%E8%AF%95-Nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8HTTP3/) 为了一键将H3 Nginx上云，一劳永逸，本文会记录一下容器化Nginx的过程。
 

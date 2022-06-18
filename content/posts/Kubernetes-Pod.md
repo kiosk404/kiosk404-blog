@@ -22,6 +22,9 @@ Pod是Kubernetes创建或部署的最小/最简单的基本单位，一个Pod代
 在Docker中就有诸如 `$ docker run --net=B --volumes-from=B -name =A ...` 这样的命令可以让多个容器共享一个Namespace。
 
 没错既然需要共享，那么就需要有容器的启动顺序，先启动一个基础容器，再将后启动的容器共享该基础容器的Namespace。
+
+
+
 <img src='https://img1.kiosk007.top/static/images/k8s/k8s_infra1.png' style='height:400px'/>
 
 正如上图所示，在其他容器启动之前会先启动一个infra容器，infra容器一定只占用很少的资源，这个容器叫做‘k8s.gcr.io/pause’。这个镜像使用汇编编写，永远处于“暂停”状态，而infra容器提供基础的Namespace环境供该Pod里的其他容器共享。
