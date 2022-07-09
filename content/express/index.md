@@ -36,6 +36,7 @@ There are all kinds of mysterious portals here...
 ## Tools
 - Linux
     - [使用 tc netem 模拟网络异常](https://cizixs.com/2017/10/23/tc-netem-for-terrible-network/)
+    - [tc: 模拟网络异常的工具](https://colobu.com/2017/04/21/tc-introduction/)
     - [Create-TLS-Certificates-Using-CFSSL](https://support.pingcap.com/hc/en-us/articles/360050038113-Create-TLS-Certificates-Using-CFSSL)
 - Network
     - [BGP Tool](https://bgp.he.net/)
