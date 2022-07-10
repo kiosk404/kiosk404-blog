@@ -107,7 +107,7 @@ git push -u origin master   //参数u表示关联远程分支
 
 - <font color='#EEB422'> 添加和推送 </font>
 
-``` bash
+``` tex
 1. 通过git fetch把远程改动拉取到本地
 2. 将远程修改与本地融合merge/rebase
 - 基于merge: 合并远程和本地改动
@@ -235,134 +235,109 @@ $ git stash clear
 
 
 
-# git flow
-参考：[git-flow 的工作流程](https://www.git-tower.com/learn/git/ebook/cn/command-line/advanced-topics/git-flow/)
+# commit 规范
 
-git-flow 模式会预设两个主分支在仓库中：
+项目开发中，一个好的 Commit Message 至关重要。
 
-**master** 只能用来包括产品代码。你不能直接工作在这个 master 分支上，而是在其他指定的，独立的特性分支中（这方面我们会马上谈到）。不直接提交改动到 master 分支上也是很多工作流程的一个共同的规则。
+- 可以使自己或者其他开发人员**清楚知道 commit 变更内容**
+- 快速基于 Commit Message **进行过滤查找**，比如只查找某个版本新增的功能：git log --oneline --grep "^feat|^fix|^perf" 
+- 依据某些类型的 Commit Message **触发构建或者发布流程**，比如当 type 类型为 feat 或者 fix 时才触发 CI
 
-**develop** 是你进行任何新的开发的基础分支。当你开始一个新的功能分支时，它将是_开发_的基础。另外，该分支也汇集所有已经完成的功能，并等待被整合到 master 分支中。
+<br/>
 
+一个标准的 Commit Message 如下图所示：
+![git_commit](https://img1.kiosk007.top/static/images/blog/git_commit.webp)
 
-## 开始新功能
+分别包含三个部分，分别是 **Header**、**Body**、**Footer**，格式如下：
 
-创建一个新的feature 分支
-``` bash
-$ git flow feature start rss-feed
-Switched to a new branch 'feature/rss-feed'
-
-Summary of actions:
-- A new branch 'feature/rss-feed' was created, based on 'develop'
-- You are now on branch 'feature/rss-feed'
+```
+<type>[optional scope]: <description>
+// 空行
+[optional body]
+// 空行
+[optional footer(s)]
 ```
 
-## 完成一个功能
+下面是常见的 type 类型以及它们所属的类别：
 
-我们的新功能终于完成。使用 “feature finish” 命令会把我们的工作整合到主 “develop” 分支中去。在这里它需要等待：
+<img src="https://img1.kiosk007.top/static/images/blog/git_commit_type.webp" alt="git_commit_type" style="zoom:80%;clear:both;display:block;margin:auto;" />
 
-一个在更广泛的 “开发” 背景下的全面测试。
-稍后和所有积攒在 “develop” 分支中的其它功能一起进行发布。
-之后，git-flow 也会进行清理操作。它会删除这个当下已经完成的功能分支，并且换到 “develop” 分支。
 
-``` bash
-$ git flow feature finish rss-feed
-Switched to branch 'develop'
-Updating 6bcf266..41748ad
-Fast-forward
-    feed.xml | 0
-    1 file changed, 0 insertions(+), 0 deletions(-)
-    create mode 100644 feed.xml
-Deleted branch feature/rss-feed (was 41748ad).
-```
-## 常见的git flow 开发流程
 
-1. 创建develop分支
-``` bash
-git branch develop
-git push -u origin develop
-```
+## Commit 合并
 
-2. 开始新Feature开发
+合并提交，就是将多个 commit 合并为一个 commit 提交，一般建议将新的commit 合并到主干时，只保留 2～3 个 commit 记录。
 
-``` bash
-git checkout -b some-feature develop
-# Optionally, push branch to origin:
-git push -u origin some-feature    
+<br/>
 
-# 做一些改动    
-git status
-git add some-file
-git commit
+**git rebase 命令**
+
+git rebase 最大的作用是可以重写历史。
+
+通过  `git rebase -i <commit ID>` 使用 git rebase 命令，-i 表示交互（interactive），该命令会进入到一个交互界面中。
+
+<img src="https://img1.kiosk007.top/static/images/blog/git_rebase.webp" alt="git_rebase" style="zoom:50%;clear:both;display:block;margin:auto;" />
+
+这个交互界面会列出 <commit ID> 之前（不包括，越下面越新）的所有 commit 。每个commit 前面有一个操作命令，默认是 pick，我们可以选择不同的 commit，并修改 commit 前面的命令，来对该 commit 执行不同的变更操作。
+
+
+
+git rebase 支持的变更操作如下：
+
+<img src="https://img1.kiosk007.top/static/images/blog/git_rebase_1.webp" alt="git_rebase_1" style="zoom:50%;clear:both;display:block;margin:auto;" />
+
+
+
+在上面的 7 个命令中，squash 和 fixup 可以用来合并 commit，比如我们只需要将合并的 commit 前面的动词改成 **squash** （或者一个单词 s 简写）即可。
+
 ```
 
-3. 完成Feature
-``` bash
-git pull origin develop
-git checkout develop
-git merge --no-ff some-feature
-git push origin develop
-
-git branch -d some-feature
-
-# If you pushed branch to origin:
-git push origin --delete some-feature    
+pick 07c5abd Introduce OpenPGP and teach basic usage
+s de9b1eb Fix PostChecker::Post#urls
+s 3e7ee36 Hey kids, stop all the highlighting
+pick fa20af3 git interactive rebase, squash, amend
 ```
 
-4. 开始Relase
-
-``` bash
-git checkout -b release-0.1.0 develop
-
-# Optional: Bump version number, commit
-# Prepare release, commit
-e. 完成Release
-
-git checkout master
-git merge --no-ff release-0.1.0
-git push
-
-git checkout develop
-git merge --no-ff release-0.1.0
-git push
-
-git branch -d release-0.1.0
-
-# If you pushed branch to origin:
-git push origin --delete release-0.1.0   
 
 
-git tag -a v0.1.0 master
-git push --tags
-```
+## Commit 信息修改
 
-5. 开始Hotfix
+我们有时候需要能够修改之前某次 commit 的 Commit Message。
 
-``` bash
-git checkout -b hotfix-0.1.1 master    
-g. 完成Hotfix
+具体来说，我们有两种修改的方法，分别对应两种不同的情况：
 
-git checkout master
-git merge --no-ff hotfix-0.1.1
-git push
-
-
-git checkout develop
-git merge --no-ff hotfix-0.1.1
-git push
-
-git branch -d hotfix-0.1.1
-
-git tag -a v0.1.1 master
-git push --tags
-```
+1. git commit --amend：修改最近一次 commit 的 message;
+2. git rebase -i：修改某次 commit 的 message。
 
 
 
 
 # git常见使用
 
-## <font color='#FF4500'>**分离头指针**</font>
+## 紧急修复 Bug
+
+```bash
+$ git stash # 1. 开发工作只完成了一半，还不想提交，可以临时保存修改至堆栈区
+$ git checkout -b hotfix/print-error master # 2. 从 master 建立 hotfix 分支
+$ vi main.go # 3. 修复 bug，callmainfunction -> call main function
+$ git commit -a -m 'fix print message error bug' # 4. 提交修复
+$ git checkout develop # 5. 切换到 develop 分支
+$ git merge --no-ff hotfix/print-error # 6. 把 hotfix 分支合并到 develop 分支
+$ git checkout master # 7. 切换到 master 分支
+$ git merge --no-ff hotfix/print-error # 8. 把 hotfix 分支合并到 master
+$ git tag -a v0.9.1 -m "fix log bug" # 9. master 分支打 tag
+$ go build -v . # 10. 编译代码，并将编译好的二进制更新到生产环境
+$ git branch -d hotfix/print-error # 11. 修复好后，删除 hotfix/xxx 分支
+$ git checkout feature/print-hello-world # 12. 切换到开发分支下
+$ git merge --no-ff develop # 13. 因为 develop 有更新，这里最好同步更新下
+$ git stash pop # 14. 恢复到修复前的工作状态
+```
+
+
+
+<br/>
+
+## 分离头指针
 
 通常，我们工作在某一个分支上，比如 master 分支。这个时候 master 指针和 HEAD 指针是一起前进的，每做一次提交，这两个指针就会一起向前挪一步。但是在某种情况下（例如 checkout 了某个具体的 commit），master 指针 和 HEAD 指针这种「绑定」的状态就被打破了，变成了分离头指针状态。
 
@@ -389,6 +364,8 @@ HEAD 目前位于 fb7d808 Learn CSS demo
 ```
 
 git 在对于这种没有 branch 的变更会被清除掉。所以如果想要变更最好跟着分支进行变更。
+
+<br/>
 
 ## git stash 命令实用指南
 
@@ -425,9 +402,9 @@ $ git stash pop
 
 ```
 
+<br/>
 
-
-## <font color='#FF4500'> cherry pick </font>
+## cherry pick
 
 假设你在一个分支上已经做了很多次提交，但你意识到这个分支是错误的，该怎么办。
 要么切换到正确的分支重复所有的变更。然后重新提交。要么呢就要用到 `cherry pick` 这个工具。
@@ -457,12 +434,11 @@ $ git cherry-pick 25560
 参考: https://mp.weixin.qq.com/s/J7sVxIoIVClEirClBQoUtA
 参考：https://zhuanlan.zhihu.com/p/156726632
 
+<br/>
 
-## <font color='#FF4500'>**指定文件不需要git管理**</font>
 
-在项目根目录下创建 **`.gitignore`** ,写入不需管理的文件名即可
 
-## <font color='#FF4500'>**`Git创建本地分支并关联远程分支`**</font>
+## Git创建本地分支并关联远程分支
 
 当我想从远程仓库里拉取一条本地不存在的分支时：
 
@@ -491,55 +467,3 @@ $ git push --set-upstream origin 远程分支名
 ```
 
 
-# git 备份
-
-<img src="https://img1.kiosk007.top/static/images/git/git_transport.webp" style="height:400px" >
-
-前两个协议是本地协议，后两个是远端托管平台。
-哑协议传输进度不可见，智能协议传输可见。
-
-``` bash
-# 将一个文件仓库 clone
-# 哑协议
-$ git clone --bare /home/kiosk/Project/Git/kiosk_demo/.git
-
-# 智能协议
-$ git clone --bare file:///home/kiosk/Project/Git/kiosk_demo/.git
-```
-
-
-- <font color='#FF8C00'>**创建远程**</font>
-
-可以使用 git remote add 命令将远程 URL 与名称匹配，例如 
-**`git remote add origin  <REMOTE_URL> `** 
-这会将名称 origin 与 REMOTE_URL 关联。
-
-``` bash
-$ git remote add origin https://github.com/user/repo.git
-# Set a new remote
-
-$ git remote -v
-# Verify new remote
-> origin  https://github.com/user/repo.git (fetch)
-> origin  https://github.com/user/repo.git (push)
-```
-远程 name 已存在,此错误消息表示您尝试添加的远程与本地仓库中的远程名称相同。可以尝试修改远程名。
-
-``` bash
-$ git remote -v
-# 查看现有远程
-> origin  https://github.com/OWNER/REPOSITORY.git (fetch)
-> origin  https://github.com/OWNER/REPOSITORY.git (push)
-
-$ git remote rename origin destination
-# 将远程名称从 'origin' 更改为 'destination'
-
-$ git remote -v
-# 验证远程的新名称
-> destination  https://github.com/OWNER/REPOSITORY.git (fetch)
-> destination  https://github.com/OWNER/REPOSITORY.git (push)
-```
-
-若远程的url发生了变化，可以通过 
-**`git remote set-url origin https://github.com/USERNAME/REPOSITORY.git `** 
-修改
