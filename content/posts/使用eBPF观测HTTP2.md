@@ -11,17 +11,11 @@ categories:
 date: 2022-06-04 16:30:00
 ---
 
-
-
-
-
-
-
 在当今充满微服务的世界中，对服务之间的消息传输的可观察性和理解变得越来越重要。
 
 其中一些微服务的传输协议比较复杂，如HTTP/2 协议为了降低头部内容的重复传输，使用表头压缩算法 HPACK，虽然HPACK有助于提升 HTTP/2 的传输效率，但也使得跟踪变得复杂。不过，通过使用 eBPF uprobes,可以在 Header 被压缩之前对其进行跟踪。
 
-
+![ebpf_logo](https://img1.kiosk007.top/static/images/blog/ebpf_logo.png)
 
 <!--more-->
 
@@ -43,9 +37,9 @@ date: 2022-06-04 16:30:00
 
 具体来说，eBPF uprobes 通过直接跟踪引用程序内存中的明文数据来解决HPACK问题。通过将 uprobes 附加到 HTTP/2 的API库，uprobes 就能在 Hpack 压缩之前从应用程序的内存中读取到Header 头部。由于我们 [之前的文章](https://kiosk007.top/post/http-2-%E7%89%B9%E6%80%A7%E6%A6%82%E8%A7%88/) 已经探索了 Go 官方库对HTTP2 的实现，那么这次肯定还是追踪 Golang 编写的 HTTP2 程序。
 
+<br/>
 
-
-## Golang 如何进行eBPF追踪
+# Golang 如何进行eBPF追踪
 
 在开始 HTTP2 的追踪之前，我们先看一下 Golang 程序是如何进行eBPF追踪的。这个demo是一个简单的HTTP服务器，computeE 函数使用迭代近似计算欧拉数（$ e $）, 接受单个查询参数（iters），参数 iters 越大表示迭代次数越多，迭代次数越多，近似值约准确。
 
@@ -181,21 +175,19 @@ func main() {
 
 当我们启动了 ebpf 程序，并完成一次 curl 127.0.0.1:9090/e 访问时，可以看到 computeE 函数的参数是 Value=100
 
+<br/>
 
-
-## 基于Uprobe 的HTTP/2 跟踪
+# 基于Uprobe 的HTTP/2 跟踪
 
 我们可以基于 eBPF 技术使我们可以探究 HTTP/2 实现以获取我们需要的信息和需要的状态。
 
-
+<br/>
 
 具体来说，eBPF uprobes 通过直接跟踪应用程序中的明文数据来解决 HPACK 问题。通过将 uprobes 可以在HPACK压缩前拿到标头的内容。
 
-
-
 通过研究 Golang 的 HTTP/2 源码，可以看到 [loopWriter.writeHeader()](https://github.com/grpc/grpc-go/blob/584d9cd11a1da55e3558041c9f88f22ca2255f4e/internal/transport/controlbuf.go#L678)是一个理想的跟踪点。此函数接受明文标题字段并将它们发送到内部缓冲区。
 
-
+<br/>
 
 > 这里演示通过 GRPC 演示，而 GRPC 底层基于 HTTP2 ，所以看的是 grpc 的golang 官方库。
 
@@ -206,11 +198,12 @@ func main() {
 先看看函数签名。
 
 ```go
-func (l *loopyWriter) writeHeader(streamID uint32, endStream bool, hf []hpack.HeaderField, onWrite func())
+func (l *loopyWriter) writeHeader(streamID uint32, endStream bool, \
+                                  hf []hpack.HeaderField, onWrite func())
 
 ```
 
-第三个参数 hf 就是 hpack 中的内容，
+第三个参数 hf 是`HeaderField` ，就是 hpack 中的内容，
 
 
 
