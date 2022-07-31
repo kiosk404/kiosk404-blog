@@ -8,9 +8,6 @@ categories:
   - Linux
 date: 2022-07-31 16:30:00
 ---
-
-
-
 # eBPF 是什么？
 
 > [eBPF：过去 50 年操作系统最大的变革！！！](https://www.zdnet.com/article/netflix-bpf-is-a-new-type-of-software-we-use-to-run-linux-apps-securely-in-the-kernel/)
