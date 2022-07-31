@@ -2,7 +2,6 @@
 title: eBPF超乎你想象
 author: kiosk
 subtitle: eBPF是一种起源于Linux内核的革命性技术
-math: true
 tags:
   - eBPF
 categories:
