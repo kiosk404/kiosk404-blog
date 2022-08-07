@@ -17,7 +17,7 @@ categories:
 
 
 
-- ](https://kiosk007.top/post/ubuntu20-04-%E9%83%A8%E7%BD%B2-kubernetes-k8s/)
+- [部署k8s]](https://kiosk007.top/post/ubuntu20-04-%E9%83%A8%E7%BD%B2-kubernetes-k8s/)
 
 
 
