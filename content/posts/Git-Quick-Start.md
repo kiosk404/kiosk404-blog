@@ -219,10 +219,12 @@ $ git rebase -i ac224ct   # 交互式操作，ac224ct 是要修改的commit的�
 $ git stash
 Saved working directory and index state WIP on workbranch: 56cd5d4 Revert "update old files"
 HEAD is now at 56cd5d4 Revert "update old files"
+
 # 列出所有暂时保存的工作
 $ git stash list
 stash@{0}: WIP on workbranch: 56cd5d4 Revert "update old files"
 stash@{1}: WIP on project1: 1dd87ea commit "fix typos and grammar"
+
 # 恢复某个暂时保存的工作
 $ git stash apply stash@{1}
 # 恢复最近一次stash的文件
@@ -321,10 +323,12 @@ $ git stash # 1. 开发工作只完成了一半，还不想提交，可以临时
 $ git checkout -b hotfix/print-error master # 2. 从 master 建立 hotfix 分支
 $ vi main.go # 3. 修复 bug，callmainfunction -> call main function
 $ git commit -a -m 'fix print message error bug' # 4. 提交修复
+
 $ git checkout develop # 5. 切换到 develop 分支
 $ git merge --no-ff hotfix/print-error # 6. 把 hotfix 分支合并到 develop 分支
 $ git checkout master # 7. 切换到 master 分支
 $ git merge --no-ff hotfix/print-error # 8. 把 hotfix 分支合并到 master
+
 $ git tag -a v0.9.1 -m "fix log bug" # 9. master 分支打 tag
 $ go build -v . # 10. 编译代码，并将编译好的二进制更新到生产环境
 $ git branch -d hotfix/print-error # 11. 修复好后，删除 hotfix/xxx 分支
@@ -363,7 +367,13 @@ HEAD 目前位于 fb7d808 Learn CSS demo
 
 ```
 
-git 在对于这种没有 branch 的变更会被清除掉。所以如果想要变更最好跟着分支进行变更。
+git 在对于这种没有基于 **某个分支branch** 的变更会被清除掉。所以如果想要变更最好跟着分支进行变更。
+
+**所以不要在分离头指针里写代码和并提交**
+
+如果想要提交自己修改的内容，那么就需要按照上方 git 的提示，`git switch -c <新分支名>` 的方式创建一个新分支来提交代码了。
+
+
 
 <br/>
 
@@ -429,7 +439,7 @@ $ git cherry-pick 25560
 
 - 如果遇到了 “nothing to commit,working tree clean The previous cherry-pick is now empty,possibly due to conflict resolution” 不要惊慌，按照建议运行 `git commit --allow-empty` 即可。这个将打开你的编辑器，编辑提交信息即可。
 
-- 如果遇到了合并重提，解决冲突后，输入 `git cherry-pick --continue` 恢复。
+- 如果遇到了合并冲突，解决冲突后，输入 `git cherry-pick --continue` 恢复。
 
 参考: https://mp.weixin.qq.com/s/J7sVxIoIVClEirClBQoUtA
 参考：https://zhuanlan.zhihu.com/p/156726632
@@ -466,4 +476,4 @@ $ git checkout -b 本地分支名 origin/远程分支名
 $ git push --set-upstream origin 远程分支名
 ```
 
-kio
+

@@ -21,7 +21,7 @@ To Be a Gopher !!!
 <br/>
 <br/>
 
-- 官网：{{< link "https://golang.google.cn/" golang >}}
+> 官网：{{< link "https://golang.google.cn/" golang >}}
 
 相关文章链接：
 
