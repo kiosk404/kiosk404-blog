@@ -8,243 +8,165 @@ featuredImage: https://img1.kiosk007.top/static/images/go/golang.png
 date: 2022-06-08 23:41:26
 ---
 
-> Based on [MarkdownPreview test.md](https://github.com/facelessuser/MarkdownPreview/blob/master/examples/test.md).
+> Based on google
 
-# Markdown
 
-```
-# H1
-## H2
-### H3
-#### H4
-##### H5
-###### H6
-### Duplicate Header
-### Duplicate Header
-```
 
-# H1
-## H2
-### H3
-#### H4
-##### H5
-###### H6
-### Duplicate Header
-### Duplicate Header
+- [sample](/topic/interview/golang/#sample)
+  - [new 和 make 的区别？](topic/interview/golang/#new-和-make-的区别)
+  - [Golang 的参数值传递还是引用传递?](topic/interview/golang/#golang-的参数值传递还是引用传递)
+- [medium](/topic/interview/golang/#medium)
+  - [Golang 的内存管理](/topic/interview/golang/#golang-的内存管理)
+  - [GMP](topic/interview/golang/#gmp)
+    - [协程阻塞，调度器会怎么做？](topic/interview/golang/#协程阻塞调度器会怎么做)
+    - [M的流转状态](/topic/interview/golang/#m的流转状态)
+    - [一个goroute会占用多少内存，假设多个goroute一直占用资源会怎样](/topic/interview/golang/#一个goroute会占用多少内存假设多个goroute一直占用资源会怎样)
+    - [一个 goroute 发生OOM 会怎样？](/topic/interview/golang/#一个-goroute-发生oom-会怎样)
+    - [若干个 goroute，其中一个 panic，会发生什么，defer可以捕获子goroute的panic吗？](/topic/interview/golang/#若干个-goroute-其中一个-panic-会发生什么defer-可以捕获子-goroute-的panic-吗)
+  - [反射](/topic/interview/golang/#反射)
+    - [反射如何获取字段tag](/topic/interview/golang/#反射如何获取字段-tag)
+    - [如何通过反射修改值](/topic/interview/golang/#如何通过反射修改值)
+  - [锁](/topic/interview/golang/#锁)
+    - [golang 的锁机制](/topic/interview/golang/#golang-的锁机制)
+    - [Mutex的锁有哪几种模式](/topic/interview/golang/#mutex的锁有哪几种模式)
+    - [Mutex锁底层如何实现](/topic/interview/golang/#mutex-锁底层如何实现)
+  - [channel](/topic/interview/golang/#channel)
+    - [读一个已关闭的channel会怎样、没初始化的channel写会怎样](/topic/interview/golang/#读一个已关闭的channel会怎样没初始化的channel写会怎样)
+    - [已关闭的channel写数据会怎样，如何判断一个channel已关闭](/topic/interview/golang/#已关闭的channel写数据会怎样如何判断一个channel已关闭)
+    - [select case 中有2个case 读channel，其中一个关闭，读数据会怎样](/topic/interview/golang/#select-case-中有2个case-读channel其中一个关闭读数据会怎样)
 
-## Paragraphs
+## sample
 
-```
-This is a paragraph.
-I am still part of the paragraph.
+### new 和 make 的区别？
 
-New paragraph.
-```
+Go语言中 new 和 make 是两个内置函数，主要用来创建并分配类型的内存。
 
-This is a paragraph.
-I am still part of the paragraph.
+new 只分配内存，而 make 只能用于 slice、map 和 channel 的初始化。
 
-New paragraph.
+new返回的是他们的指针，而make 返回的是是他们类型的本身，因为chan、make、slice 本身就是引用类型。
 
-## Anchor
+<br/>
 
-*Define anchor by `{#section-id}`*
+### Golang 的参数值传递还是引用传递
 
-[Something](#section-7)
+golang 默认使用的是值传递，即拷贝传递，也就是深拷贝。只有一些特定的类型，如 slice、map、channel、function、pointer 这种天生就是指针的类型是通过引用传递的。
 
-## Footnote
+> 但是传指针会发生逃逸，会导致本来应该分配到栈上的内存逃逸到堆上。
 
-This is a footnote[^1]
+<br/>
 
-A footnote on "label"[^label]
+## medium
 
-The footnote for definition[^!DEF]
+### Golang 的内存管理
 
-A footnote with link[^pa]
+三色标记
 
-[^1]: This is a footnote
-[^label]: A footnote on "label"
-[^pa]: [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
-[^!DEF]: The footnote for definition
+<br/>
 
+### GMP
 
-## Inline
+G 是 gorouting、M 是系统级线程、P是调度器。
 
-```
-`inline block`
+程序刚启动时，P会绑定M0，G被放入P的本地队列中执行，当P的本地队列满了，G可能会被放到一个全局队列中。
 
-<kbd>ctrl</kbd>+<kbd>alt</kbd>+<kbd>del</kbd>
+1. 线程M想要运行G，就必须先和一个P进行关联
+2. P 获取本地队列的G，如果获取不到就从全局队列或者其他的 MP 中偷取。
+3. G 运行结束后，M会从P中获取下一个 G，如此往复。
 
-**bold 1** and __bold 2__
+大致流程如上，还有一些细节，比如 M 与 P 是如何绑定的？G 阻塞了怎么办？M与P的关系是什么？可以具体再说。
 
-*italic 1*  and _italic 2_
 
-~~strike~~
 
+详见：[https://kiosk007.top/post/golang-gmp/](https://kiosk007.top/post/golang-gmp/)
 
-***bold 1 and italic 1***
+<br/>
 
-___bold 2 and italic 2___
+### 协程阻塞，调度器会怎么做？
 
-__*bold 2 and italic 1*__
+当一个协程发生阻塞时，当前协程上的 M 会和 P 立即解绑，如果P上还有其他的协程G，P会唤醒一个M和他绑定，否则P会加入到空闲P列表，等待M来获取可用的P。
 
-**_bold 1 and italic 2_**
+如果不是阻塞的系统的调用，M 和 P 还是会解绑，只不过 M 会记住 P。当 G 和 M 退出系统调用时，会获取之前的P，获取不到的话，当前的 G 加入全局队列，M加入可休眠列表。
 
+<br/>
 
-~~*strike italic 1*~~ and *~~strike italic 2~~*
+### M的流转状态
 
-~~_strike italic 2_~~ and  _~~strike italic 2~~_
+M 线程会有两种状态，自旋 和 非自旋。
 
+<br/>
 
-~~**strike bold 1**~~ and **~~strike bold 1~~**
+### 一个goroute会占用多少内存，假设多个goroute一直占用资源会怎样？
 
-~~__strike bold 2__~~ and __~~strike bold 2~~__
+一个 gorouting 占用8K，老版本中一个 gorouting 一直占用资源会导致 P （因为P最大为 GOMAXPROC 个）耗尽，最终导致程序卡死。因为之前是非抢占式，Go 1.14 之后变成了抢占式，基于系统信号的抢占。
 
+<br/>
 
-~~***strike italic 1 bold 1***~~ and ***~~strike italic 1 bold 1~~***
+### 一个 goroute 发生OOM 会怎样？
 
-~~___strike italic 2 bold 2___~~ and ___~~strike italic 2 bold 2~~___
+没有recover的话，父线程会 panic。
 
-**~~*strike italic 1 bold 1*~~** and *~~**strike italic 1 bold 1**~~*
+<br/>
 
-__~~_strike italic 2 bold 2_~~__ and _~~__strike italic 2 bold 2__~~_
+### 若干个 goroute ，其中一个 panic ，会发生什么，defer 可以捕获子 goroute 的panic 吗？
 
-**~~_strike italic 2 bold 1_~~** and _~~**strike italic 2 bold 1**~~_
+全部崩溃，不能！
 
-__~~*strike italic 1 bold 2*~~__ and *~~__strike italic 1 bold 2__~~*
+<br/>
 
-```
+### 反射
 
-`inline block`
+反射在go里调用 reflect 包，可实现通过调用获取借口值到反射对象。
 
-<kbd>ctrl</kbd>+<kbd>alt</kbd>+<kbd>del</kbd>
+<br/>
 
-**bold 1** and __bold 2__
+### 反射如何获取字段 tag？
 
-*italic 1*  and _italic 2_
+通过 ` t.Field(i).Tag.Get("json")` 调用
 
-~~strike~~
+<br/>
 
+### 如何通过反射修改值
 
-***bold 1 and italic 1***
+需要对变量的指针进行值反射（reflect.ValueOf），再获取其元素值（Elem），最后进行 SetString\SetFloat 等操作
 
-___bold 2 and italic 2___
+<br/>
 
-__*bold 2 and italic 1*__
+## 锁
 
-**_bold 1 and italic 2_**
+### golang 的锁机制
 
 
-~~*strike italic 1*~~ and *~~strike italic 2~~*
 
-~~_strike italic 2_~~ and  _~~strike italic 2~~_
+### Mutex的锁有哪几种模式
 
 
-~~**strike bold 1**~~ and **~~strike bold 1~~**
 
-~~__strike bold 2__~~ and __~~strike bold 2~~__
+### Mutex 锁底层如何实现
 
 
-~~***strike italic 1 bold 1***~~ and ***~~strike italic 1 bold 1~~***
 
-~~___strike italic 2 bold 2___~~ and ___~~strike italic 2 bold 2~~___
+### Mutex 是悲观锁还是乐观锁
 
-**~~*strike italic 1 bold 1*~~** and *~~**strike italic 1 bold 1**~~*
 
-__~~_strike italic 2 bold 2_~~__ and _~~__strike italic 2 bold 2__~~_
 
-**~~_strike italic 2 bold 1_~~** and _~~**strike italic 2 bold 1**~~_
+### 自旋锁是什么
 
-__~~*strike italic 1 bold 2*~~__ and *~~__strike italic 1 bold 2__~~*
 
 
-## Links
+### RWMutex（读写互斥锁）适用于什么场景？
 
-```
-Web image
-![Web Picture](https://count.getloli.com/get/@even-preview?theme=konachan "Web Picture")
 
-Local image
-![Local Picture](logo-revolunet-carre.jpg "Local Picture")
 
-contact@revolunet.com
+## channel 
 
-@revolunet
+### 读一个已关闭的channel会怎样、没初始化的channel写会怎样？
 
-Issue #1
+读到空值，崩溃
 
-https://github.com/revolunet/sublimetext-markdown-preview/
+### 已关闭的channel写数据会怎样？如何判断一个channel已关闭？
 
-This is a link https://github.com/revolunet/sublimetext-markdown-preview/.
+崩溃，if _, ok := <- ch  的形式
 
-This is a link "https://github.com/revolunet/sublimetext-markdown-preview/".
+### select case 中有2个case 读channel，其中一个关闭，读数据会怎样。
 
-With this link (https://github.com/revolunet/sublimetext-markdown-preview/), it still works.
-```
-
-Web image
-![Web Picture](https://count.getloli.com/get/@even-preview?theme=konachan "Web Picture")
-
-Local image
-![Local Picture](/apple-touch-icon.png "Local Picture")
-
-www.google.com
-
-contact@revolunet.com
-
-@revolunet
-
-Issue #1
-
-https://github.com/revolunet/sublimetext-markdown-preview/
-
-This is a link https://github.com/revolunet/sublimetext-markdown-preview/.
-
-This is a link "https://github.com/revolunet/sublimetext-markdown-preview/".
-
-With this link (https://github.com/revolunet/sublimetext-markdown-preview/), it still works.
-
-## Abbreviation
-
-Abbreviations source are found in a separate markdown file specified in frontmatter.
-```
-The HTML specification 
-is maintained by the W3C.
-
-*[HTML]: Hyper Text Markup Language
-*[W3C]:  World Wide Web Consortium
-```
-
-The HTML specification 
-is maintained by the W3C.
-
-## Unordered List
-
-```
-Unordered List
-
-- item 1
-    * item A
-    * item B
-        more text
-        + item a
-        + item b
-        + item c
-    * item C
-- item 2
-- item 3
-```
-
-Unordered List
-
-- item 1
-    * item A
-    * item B
-        more text
-        + item a
-        + item b
-        + item c
-    * item C
-- item 2
-- item 3
-
+每次 select 都是随机读的，即便有已经关闭的channel，依旧还是会读到。

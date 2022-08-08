@@ -168,16 +168,19 @@ v 不可寻址，因为 v 只是 x 的拷贝，即便把 x 换成 &x,还是不�
 
 
 
-
 ## 结构 Struct
 
-| 方法  | 说明 |
-| --   |  --  |
-| Field(i int) StructField |	根据索引，返回索引对应的结构体字段的信息。当值不是结构体或索引超界时发生panic |
-| NumField() int |	返回结构体成员字段数量。当类型不是结构体或索引超界时发生panic |
-| FieldByName(name string) (StructField, bool) | 根据给定字符串返回字符串对应的结构体字段的信息。没有找到时 bool 返回 false，当类型不是结构体或索引超界时发生 panic |
-| FieldByIndex(index []int) StructField | 多层成员访问时，根据 []int 提供的每个结构体的字段索引，返回字段的信息。没有找到时返回零值。当类型不是结构体或索引超界时发生 panic |
-| FieldByNameFunc( match func(string) bool) (StructField,bool)	| 根据匹配函数匹配需要的字段。当值不是结构体或索引超界时发生panic |
+| 方法                                                         | 说明                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Field(i int) StructField                                     | 根据索引，返回索引对应的结构体字段的信息。当值不是结构体或索引超界时发生panic |
+| NumField() int                                               | 返回结构体成员字段数量。当类型不是结构体或索引超界时发生panic |
+| FieldByName(name string) (StructField, bool)                 | 根据给定字符串返回字符串对应的结构体字段的信息。没有找到时 bool 返回 false，当类型不是结构体或索引超界时发生 panic |
+| FieldByIndex(index []int) StructField                        | 多层成员访问时，根据 []int 提供的每个结构体的字段索引，返回字段的信息。没有找到时返回零值。当类型不是结构体或索引超界时发生 panic |
+| FieldByNameFunc( match func(string) bool) (StructField,bool) | 根据匹配函数匹配需要的字段。当值不是结构体或索引超界时发生panic |
+
+
+
+
 
 ### 普通结构体
 1. 先获取interface的reflect.Type，然后通过NumField进行遍历
@@ -307,7 +310,7 @@ IsNil()和IsValid() -- 判断反射值的空和有效性
 |方 法	| 说 明|
 | -- | -- |
 | IsNil() bool |	返回值是否为 nil。如果值类型不是通道（channel）、函数、接口、map、指针或 切片时发生 panic，类似于语言层的v== nil操作 |
- | IsValid() bool |	判断值是否有效。 当值本身非法时，返回 false，例如 reflect Value不包含任何值，值为 nil 等。|
+| IsValid() bool |	判断值是否有效。 当值本身非法时，返回 false，例如 reflect Value不包含任何值，值为 nil 等。|
 
 
 ``` go
