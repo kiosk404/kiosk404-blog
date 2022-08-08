@@ -30,6 +30,8 @@ date: 2022-06-08 23:41:26
     - [golang 的锁机制](/topic/interview/golang/#golang-的锁机制)
     - [Mutex的锁有哪几种模式](/topic/interview/golang/#mutex的锁有哪几种模式)
     - [Mutex锁底层如何实现](/topic/interview/golang/#mutex-锁底层如何实现)
+    - [Mutex是悲观锁还是乐观锁](/topic/interview/golang/#mutex-是悲观锁还是乐观锁)
+    - [RWMutex(读写锁)适用于什么场景](/topic/interview/golang/#rwmutex读写锁适用于什么场景)
   - [channel](/topic/interview/golang/#channel)
     - [读一个已关闭的channel会怎样、没初始化的channel写会怎样](/topic/interview/golang/#读一个已关闭的channel会怎样没初始化的channel写会怎样)
     - [已关闭的channel写数据会怎样，如何判断一个channel已关闭](/topic/interview/golang/#已关闭的channel写数据会怎样如何判断一个channel已关闭)
@@ -79,8 +81,6 @@ G 是 gorouting、M 是系统级线程、P是调度器。
 
 详见：[https://kiosk007.top/post/golang-gmp/](https://kiosk007.top/post/golang-gmp/)
 
-<br/>
-
 ### 协程阻塞，调度器会怎么做？
 
 当一个协程发生阻塞时，当前协程上的 M 会和 P 立即解绑，如果P上还有其他的协程G，P会唤醒一个M和他绑定，否则P会加入到空闲P列表，等待M来获取可用的P。
@@ -117,8 +117,6 @@ M 线程会有两种状态，自旋 和 非自旋。
 
 反射在go里调用 reflect 包，可实现通过调用获取借口值到反射对象。
 
-<br/>
-
 ### 反射如何获取字段 tag？
 
 通过 ` t.Field(i).Tag.Get("json")` 调用
@@ -135,25 +133,31 @@ M 线程会有两种状态，自旋 和 非自旋。
 
 ### golang 的锁机制
 
+在Go中，主要实现了两种锁：sync.Mutex(互斥锁) 以及 sync.RWMutex(读写锁)
 
+<br/>
 
 ### Mutex的锁有哪几种模式
 
 
 
+<br/>
+
 ### Mutex 锁底层如何实现
 
-
+<br/>
 
 ### Mutex 是悲观锁还是乐观锁
 
-
+<br/>
 
 ### 自旋锁是什么
 
+<br/>
 
+### RWMutex（读写锁）适用于什么场景？
 
-### RWMutex（读写互斥锁）适用于什么场景？
+<br/>
 
 
 
@@ -163,10 +167,16 @@ M 线程会有两种状态，自旋 和 非自旋。
 
 读到空值，崩溃
 
+<br/>
+
 ### 已关闭的channel写数据会怎样？如何判断一个channel已关闭？
 
 崩溃，if _, ok := <- ch  的形式
 
+<br/>
+
 ### select case 中有2个case 读channel，其中一个关闭，读数据会怎样。
 
 每次 select 都是随机读的，即便有已经关闭的channel，依旧还是会读到。
+
+<br/>
