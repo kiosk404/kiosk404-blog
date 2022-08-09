@@ -18,8 +18,8 @@ date: 2022-08-06 23:57:00
 
 首先先总结一下这个问题下面各个知乎网友们的答案;
 
-- **silsuer**：这层的回答是肯定了协程池的作用，极限的性能压榨，复用goroutine减少重新创建也是可以接受的。所以是赞同协程池的。当让如果是个小项目就没必要搞什么协程池了。大型并发服务就需要慎重考虑了。（这个比较中肯）
-- **Angry Bugs**：这层的回答是显然不需要协程池，因为他认为池化主要是为了解决频繁创建的开销，而goroutine已经够轻量级别。
+- silsuer：这层的回答是肯定了协程池的作用，极限的性能压榨，复用goroutine减少重新创建也是可以接受的。所以是赞同协程池的。当让如果是个小项目就没必要搞什么协程池了。大型并发服务就需要慎重考虑了。（这个比较中肯）
+- Angry Bugs：这层的回答是显然不需要协程池，因为他认为池化主要是为了解决频繁创建的开销，而goroutine已经够轻量级别。
 - **千言千语**：这层的回答也是认为大部分场景下是不需要goroutine的，Go 语言自出生就身带“高并发”的标签，其本身就拥有及其优秀的并发量和吞吐量。
 
 其他的答友基本上也都是反对协程池的概念。有提到小部分场景需要，但是又没有说的特别明白。因为Goroutine本身具备体积轻量、优质的GMP调度模型的特点，所以不需要协程池。
@@ -32,7 +32,7 @@ date: 2022-08-06 23:57:00
 
 # 什么是线程池？
 
-贴一个维基百科的解释。https://zh.wikipedia.org/wiki/%E7%BA%BF%E7%A8%8B%E6%B1%A0?wprov=sfti1
+贴一个维基百科的解释。[https://zh.wikipedia.org/wiki/%E7%BA%BF%E7%A8%8B%E6%B1%A0?wprov=sfti1](https://zh.wikipedia.org/wiki/%E7%BA%BF%E7%A8%8B%E6%B1%A0?wprov=sfti1)
 
 **线程池** (英语：thread pool) ：一种线程的使用模式，线程过多会带来调度开销，进而影响缓存局部性和整体性能。而线程池维护着多个线程，等待着监督管理者分配可并发执行的任务。这避免了在处理短时间任务时创建和销毁线程的代价。
 
@@ -172,31 +172,14 @@ func main() {
 
 打印结果：
 
-```
-package main
-
-import (
-    "fmt"
-    "runtime"
-)
-
-func work(ch chan bool, i int) {
-
-    fmt.Println("go func ", i, " goroutine count = ", runtime.NumGoroutine())
-    <-ch
-}
-
-func main() {
-    //模拟用户需求业务的数量
-    //task_cnt := math.MaxInt64
-    task_cnt := 10
-    ch := make(chan bool, 3)
-
-    for i := 0; i < task_cnt; i++ {
-        ch <- true
-        go work(ch, i)
-    }
-}
+```bash
+go func  2  goroutine count =  4
+go func  3  goroutine count =  4
+go func  4  goroutine count =  4
+go func  5  goroutine count =  4
+go func  0  goroutine count =  4
+go func  6  goroutine count =  4
+go func  7  goroutine count =  4
 ```
 
 这是因为 main 将全部的 goroutine 开辟完成之后就直接退出了，如果希望所有的main都执行需要阻塞掉main。

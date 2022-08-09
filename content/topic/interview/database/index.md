@@ -18,9 +18,11 @@ date: 2022-08-08 23:41:26
     - [Redis 底层有哪些数据结构](/topic/interview/database/#redis-底层有哪些数据结构)
     - [rehash 的过程](/topic/interview/database/#rehash-的过程)
     - [Redis 为什么是一个单线程模型](/topic/interview/database/#redis-为什么是一个单线程的模型)
-  - [Redis使用]()
+    - [zset的底层实现](/topic/interview/database/#zset-的底层实现)
+    - [Redis的Key过期机制和淘汰原理](/topic/interview/database/#redis-的-key-过期机制和淘汰原理)
+  - [Redis使用](/topic/interview/database/#redis-使用)
     - [Redis 有什么操作会导致其变慢](/topic/interview/database/#redis-有什么操作会导致其变慢)
-    - 
+    - [Redis 在时间序场景的应用](/topic/interview/database/#redis-在时间序场景的应用)
 
 - [Elasticsearch](/topic/interview/database/#elasticsearch)
 
@@ -70,15 +72,45 @@ zset 是有序字典，自动去重的集合数据类型，其底层的实现为
 
 <br/>
 
-#### Redis 的 key 淘汰原理
+#### Redis 的 key 过期机制和淘汰原理
 
+Key 过期策略：
 
+1. 惰性删除：在取出键时才对键进行过期检查，如果发现过期了就会被删除
+2. 定期删除：定期每隔一段时间执行一次删除过期键的操作。
+
+内存淘汰机制：
+
+1. volatile-lru：从已设置过期时间的数据集中挑选最少使用的数据淘汰
+2. volatile-ttl：从已设置过期时间的数据集中挑选将要过期的进行数据淘汰
+3. volatile-random：从已设置过期时间的数据集中任意选择数据淘汰
+4. valatile-lfu：从已设置过期时间的数据集挑选使用频率最低的数据淘汰
+5. allkeys-lru：从数据（server.db[i].dict）中挑选最近最少使用的数据淘汰
+6. allkeys-lfu：从数据（server.db[i].dict）中挑选使用频率最低的数据淘汰
+7. allkeys-random：从数据（server.db[i].dict）中随意淘汰
+8. no-enviction（驱逐）：禁止驱逐数据，这也是默认策略。意思是当内存不足以容纳新入数据时，新写入操作就会报错，请求可以继续进行，线上任务也不能持续进行，采用no-enviction策略可以保证数据不被丢失。
+
+详见：[https://www.cnblogs.com/pinxiong/p/13288087.html](https://www.cnblogs.com/pinxiong/p/13288087.html)
 
 <br/>
 
 #### Redis的持久化机制
 
+AOF ：通过靠保存 Redis 服务器所执行命令日志的方式
 
+RDB：通过内存快照的机制把内存中的数据集写入磁盘，也就是 Snapshot 快照（数据库中所有键值对数据）
+
+详见：[https://kiosk007.top/post/redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/](https://kiosk007.top/post/redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/)
+
+<br/>
+
+#### Redis 如何实现高可用
+
+Redis 实现高可用有三种部署模式：**主从模式，哨兵模式，集群模式**。
+
+- **主从模式**：Redis部署了多台机器，有主节点，负责读写操作，有从节点，只负责读操作。从节点的数据来自主节点，实现原理就是**主从复制机制**
+- **哨兵模式**：主从模式中，一旦主节点由于故障不能提供服务，需要人工将从节点晋升为主节点，同时还要通知应用方更新主节点地址。而哨兵模式就是为了解决该问题。
+- **集群模式**：哨兵模式基于主从模式，实现读写分离，它还可以自动切换，系统可用性更高。但是它每个节点存储的数据是一样的，浪费内存，并且不好在线扩容。因此，Cluster集群应运而生，它在Redis3.0加入的，实现了Redis的**分布式存储**。对数据进行分片，也就是说**每台Redis节点上存储不同的内容**，来解决在线扩容的问题。并且，它也提供复制和故障转移的功能。
 
 <br/>
 
@@ -105,11 +137,42 @@ Redis 处理变慢主要原因有两个。
 
 针对问题1，除了需要开发人员从代码角度尽量避免大key，另一方面 Redis 在 4.0 推出 lazy-free 机制，将 大key 的释放内存的耗时操作都放到了异步线程中执行，避免对主线程的影响。
 
+针对问题2，由于单个实例可能会造成在持久化时压力过大，可以考虑多实例。
+
 <br/>
 
+#### Redis 在时间序场景的应用
+
+场景：已有大量的pcap格式的网络数据包，当计算出网络数据流的重传数据包，则表示当前网络中出现了重传，并且可能出现了丢包。需要计算在时间序中哪个时间段出现的丢包较为频繁。丢包是否是单独某条连接的问题。
 
 
 
+使用 zset 和 hash 表。
+
+zset 可以获取一个时间范围的丢包信息。而hash表可以获取到某个具体时间的丢包信息。
+
+```bash
+// HASH 表
+HGET task_id:traffic_stream 202208030905
+"23"
+
+HMGET task_id:traffic_stream 202208030905 202208030907 202208030908
+1）"23"
+2) "30"
+3) "0"
+
+// ZSET
+ZRANGEBYSCORE task_id:traffic_stream 202208030905 202208030908
+1）"23"
+2) "30"
+3) "0"
+```
+
+另外也可以基于 RedisTimeSeries 模块保存时间序列数据
+
+详情：[https://time.geekbang.org/column/article/282478](https://time.geekbang.org/column/article/282478)
+
+<br/>
 
 
 
