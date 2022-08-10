@@ -25,8 +25,8 @@ date: 2022-08-08 23:41:26
     - [Redis 在时间序场景的应用](/topic/interview/database/#redis-在时间序场景的应用)
 
 - [Elasticsearch](/topic/interview/database/#elasticsearch)
-
-
+  - [什么是倒排索引](/topic/interview/database/#什么是倒排索引)
+  - [文档索引步骤顺序](/topic/interview/database/#文档索引步骤顺序)
 
 ## Redis
 
@@ -178,5 +178,25 @@ ZRANGEBYSCORE task_id:traffic_stream 202208030905 202208030908
 
 ## Elasticsearch
 
+### 什么是倒排索引
 
+倒排索引包含两个部分：单词词典和倒排表。
 
+- 单词词典（Term Dictionary）：记录所有文档的单词，记录单词到倒排列表的关联关系（单词词典一般比较大，通过 B+ 树或哈希拉链法实现，以满足高性能的插入与查询）
+- 倒排表（Posting List）：记录了单词对应的文档结合，由倒排索引组成。
+  - 文档ID
+  - 词频 TF - 该单词在文档中分词的位置。用于语句搜索
+  - 位置（Position）- 单词在文档中分词的位置，用于语句搜索
+  - 偏移（Offset）- 记录单词的开始结束位置，实现高亮显示。
+
+详见：[https://kiosk007.top/post/elasticsearch/](https://kiosk007.top/post/elasticsearch/)
+
+<br/>
+
+### 文档索引步骤顺序
+
+1. 客户端向某节点1 发送新建、索引、或者删除请求
+2. 节点1 根据文档 _id 判断文档所属分片0，而分片0 在节点2上，请求被转发至Node2。
+3. Node2 执行请求，成功后，请求并行同步到Node1 和 Node3 的副本分片。一旦所有的副本分片都报告成功，Node2 回复 协调节点，协调节点向客户端报告成功。
+
+<br/>

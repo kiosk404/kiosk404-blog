@@ -17,7 +17,7 @@ refer: https://etcd.io/
 
 ----------------------------------------
 
-<img src="https://img1.kiosk007.top/static/images/etcd/etcd.png" />
+<img src="https://img1.kiosk007.top/static/images/etcd/etcd.png" style="zoom:67%; margin: auto; clear: both;display: block;" />
 
 # etcd简介
 
@@ -63,9 +63,10 @@ refer： [etcd 文档演示](https://etcd.io/docs/v3.4.0/demo/)
    支持监听某一key的变化，有变化即产生回调，另外还支持查找key 的历史版本。
 
 - lease 租约
-    
+  
+
    申请定时器，举例：申请一个TTL为10s的租约 lease，当 put 一个 key 时，携带该租约，当TTL到期时，key也会被删除，一个 lease id 可以关联多个key，也就是租约到期，多个key 可以被删除，想要防止被删除，可以用keepalive定期续租。
-   
+
 - txn 事物、loack 分布式锁
    etcd 支持将多个请求包装到一个事务中，或者添加一个分布式锁。
 
@@ -179,7 +180,7 @@ func Conn() {
 
 ## 简单操作 GET，PUT，DEL
 
-refer：https://godoc.org/go.etcd.io/etcd/clientv3
+refer：[https://godoc.org/go.etcd.io/etcd/clientv3](https://godoc.org/go.etcd.io/etcd/clientv3)
 
 etcd的操作强大在可以添加 `WithOption` 比如 `WithPrevKV()` 获取前一个Key 和 `WithPrefix()` 遍历
 
@@ -359,3 +360,55 @@ func (e *EtcdApi) DoTxn(leaseId clientv3.LeaseID) {
 	}
 }
 ```
+
+<br/>
+
+# 分布式锁
+
+etcd分布式锁并不是etcd server对外提供一个功能api，而是基于etcd的各种特性（lease、watch、mvcc等）集成的一个工具。
+
+## 实现思路
+
+etcd的几种特殊的机制都可以作为分布式锁的基础。etcd的键值对可以作为锁的本体，锁的创建与删除对应键值对的创建与删除。etcd的分布式一致性以及高可用可以保证锁的高可用性。
+
+- **prefix**：由于etcd支持前缀查找，可以将锁设置成“锁名称”+“唯一id”的格式，保证锁的对称性，即每个客户端只操作自己持有的锁。
+
+- **lease**：租约机制可以为锁做一个保活操作，在创建锁的时候绑定租约，并定期进行续约，如果获得锁期间客户端意外宕机，则持有的锁会被自动删除，避免了死锁的产生。
+
+- **Revision**：etcd内部维护了一个全局的Revision值，并会随着事务的递增而递增。可以用Revision值的大小来决定获取锁的先后顺序，在上锁的时候已经决定了获取锁先后顺序，后续有客户端释放锁也不会产生惊群效应。
+
+- **watch**：watch机制可以用于监听锁的删除事件，不必使用忙轮询的方式查看是否释放了锁，更加高效。同时，在watch时候可以通过Revision来进行监听，只需要监听距离自己最近而且比自己小的一个Revision就可以做到锁的实时获取。
+
+  <img src="https://img1.kiosk007.top/static/images/blog/etcd_distribute_lock.png" alt="etcd_distribute_lock" style="zoom: 40%; clear: both; margin: auto; display: block;" />
+
+<br/>
+
+## 源码分析
+
+在 etcd v3版本的客户端中已经有了分布式锁的实现。
+
+实例：
+
+```go
+func main() {
+    //初始化etcd客户端
+	cli, _ := clientv3.New(clientv3.Config{
+		Endpoints:   []string{"127.0.0.1:23790"},
+		DialTimeout: time.Second,
+	})
+    //创建一个session，并根据业务情况设置锁的ttl
+	s, _ := concurrency.NewSession(cli, concurrency.WithTTL(3))
+	defer s.Close()
+    //初始化一个锁的实例，并进行加锁解锁操作。
+	mu := concurrency.NewMutex(s, "mutex-kiosk")
+	if err := mu.Lock(context.TODO()); err != nil {
+		log.Fatal("m lock err: ", err)
+	}
+    //do something
+	if err := mu.Unlock(context.TODO()); err != nil {
+		log.Fatal("m unlock err: ", err)
+	}
+}
+```
+
+详见：[https://juejin.cn/post/7062900835038003208](https://juejin.cn/post/7062900835038003208)
