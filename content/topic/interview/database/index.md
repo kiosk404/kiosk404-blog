@@ -30,6 +30,8 @@ date: 2022-08-08 23:41:26
 
 ## Redis
 
+[20道Redis经典面试题](https://zhuanlan.zhihu.com/p/427496556)
+
 ### Redis 基础
 
 #### Redis 底层有哪些数据结构
