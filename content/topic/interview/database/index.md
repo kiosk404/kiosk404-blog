@@ -20,13 +20,24 @@ date: 2022-08-08 23:41:26
     - [Redis 为什么是一个单线程模型](/topic/interview/database/#redis-为什么是一个单线程的模型)
     - [zset的底层实现](/topic/interview/database/#zset-的底层实现)
     - [Redis的Key过期机制和淘汰原理](/topic/interview/database/#redis-的-key-过期机制和淘汰原理)
+    - [Redis的持久化机制](/topic/interview/database/#redis的持久化机制)
+    - [Redis 如何实现高可用](/topic/interview/database/#redis-如何实现高可用)
+    - [Redis 分布式锁](topic/interview/database/#redis-分布式锁)
+  - [Redis AOF 日志文件太大怎么办](/topic/interview/database/#redis-aof-日志文件太大怎么办)
   - [Redis使用](/topic/interview/database/#redis-使用)
     - [Redis 有什么操作会导致其变慢](/topic/interview/database/#redis-有什么操作会导致其变慢)
     - [Redis 在时间序场景的应用](/topic/interview/database/#redis-在时间序场景的应用)
-
 - [Elasticsearch](/topic/interview/database/#elasticsearch)
   - [什么是倒排索引](/topic/interview/database/#什么是倒排索引)
   - [文档索引步骤顺序](/topic/interview/database/#文档索引步骤顺序)
+- [MySQL](/topic/interview/database/#mysql)
+  - [myisam和innodb的区别](/topic/interview/database/#myisam-和-innodb-的区别)
+  - [MySQL的索引有哪些](/topic/interview/database/#mysql-的索引有哪些)
+  - [MySQL的锁类型有哪些](/topic/interview/database/#mysql的锁的类型有哪些呢)
+  - [事务的基本特性和隔离级别](/topic/interview/database/#事务的基本特性和隔离级别)
+  - [MySQL主从同步是如何实现的](/topic/interview/database/#mysql-主从同步是如何实现的)
+
+<br/>
 
 ## Redis
 
@@ -116,6 +127,22 @@ Redis 实现高可用有三种部署模式：**主从模式，哨兵模式，集
 
 <br/>
 
+#### redis 分布式锁
+
+
+
+<br/>
+
+#### redis AOF 日志文件太大怎么办
+
+AOF 重写
+
+<br/>
+
+
+
+
+
 ### Redis 使用
 
 #### Redis 有什么操作会导致其变慢
@@ -202,3 +229,78 @@ ZRANGEBYSCORE task_id:traffic_stream 202208030905 202208030908
 3. Node2 执行请求，成功后，请求并行同步到Node1 和 Node3 的副本分片。一旦所有的副本分片都报告成功，Node2 回复 协调节点，协调节点向客户端报告成功。
 
 <br/>
+
+
+
+## MySQL
+
+[MySQL常见面试题](https://zhuanlan.zhihu.com/p/222958908)
+
+### myisam 和 innodb 的区别？
+
+myisam 不支持事务、行级锁还有外键，所以一般用于有大量查询少量插入的场景。
+
+innodb 是基于聚簇索引建立的，innodb 支持 事务还有外键。
+
+<br/>
+
+### MySQL 的索引有哪些？
+
+按照数据结构来说，索引包含 B+树索引 和 Hash索引
+
+<br/>
+
+### MySQL的锁的类型有哪些呢？
+
+mysql锁分为**共享锁**和**排他锁**，也叫做读锁和写锁。
+
+读锁是共享的，可以通过lock in share mode实现，这时候只能读不能写。
+
+写锁是排他的，它会阻塞其他的写锁和读锁。从颗粒度来区分，可以分为**表锁**和**行锁**两种。
+
+表锁会锁定整张表并且阻塞其他用户对该表的所有读写操作，比如alter修改表结构的时候会锁表。
+
+行锁又可以分为**乐观锁**和**悲观锁**，悲观锁可以通过for update实现，乐观锁则通过版本号实现。
+
+<br/>
+
+### 事务的基本特性和隔离级别
+
+事务基本特性ACID分别是：
+
+**原子性**：一个事务中的操作要么全部成功，要么全部失败
+
+**一致性**：数据库总是从一个一致性的状态转换到另一个一致性的状态。（比如A给B转帐100元，sql 执行失败，A不会损失100，B也不会多出100）
+
+**隔离性**：一个事务的修改在最终提交之前，对其他事务不可见
+
+**持久性**：事务一旦提交，所做的修改就会永久的保存到数据库中。
+
+隔离性有4个隔离级别，分别是：
+
+- **read uncommit** 读未提交，可能会读到其他事务未提交的数据，也叫做脏读。
+- **read commit** 读已提交，同一次事务中两次读取结果不一致，叫做不可重复读。
+- **repeatable read** 可重复读，MySQL的默认级别，就是每次读取结果都一样，但是会产生幻读。
+- **serializable** 串行，一般不会使用，他会给每一行读数据加锁，会导致大量超时问题。
+
+<br/>
+
+### MySQL 主从同步是如何实现的
+
+主从同步原理：
+
+1. master 提交完事务后，写入 binlog
+2. master 创建dump线程，推送binglog 到 slave
+3. slave 再开启一个IO线程读取同步过来的master的binlog，记录到relay log 中继日志中
+4. slave 再开启一个 SQL 线程读取 relay log 事件并在 slave 执行，完成同步
+5. slave 记录自己的binlog
+
+由于mysql默认的复制方式是异步的，主库把日志发送给从库后不关心从库是否已经处理，这样会产生一个问题就是假设主库挂了，从库处理失败了，这时候从库升为主库后，日志就丢失了。由此产生两个概念。
+
+**全同步复制**
+
+主库写入binlog后强制同步日志到从库，所有的从库都执行完成后才返回给客户端，但是很显然这个方式的话性能会受到严重影响。
+
+**半同步复制**
+
+和全同步不同的是，半同步复制的逻辑是这样，从库写入日志成功后返回ACK确认给主库，主库收到至少一个从库的确认就认为写操作完成。
