@@ -13,8 +13,8 @@ date: 2022-06-08 23:41:26
 
 
 - [sample](/topic/interview/golang/#sample)
-  - [new 和 make 的区别？](topic/interview/golang/#new-和-make-的区别)
-  - [Golang 的参数值传递还是引用传递?](topic/interview/golang/#golang-的参数值传递还是引用传递)
+  - [new 和 make 的区别？](/topic/interview/golang/#new-和-make-的区别)
+  - [Golang 的参数值传递还是引用传递?](/topic/interview/golang/#golang-的参数值传递还是引用传递)
 - [medium](/topic/interview/golang/#medium)
   - [Golang 的内存管理](/topic/interview/golang/#golang-的内存管理)
     - [Go 是如何分配内存的](/topic/interview/golang/#go-是如何分配内存的)
@@ -75,6 +75,23 @@ golang 默认使用的是值传递，即拷贝传递，也就是深拷贝。只�
 
 详见：[https://zhuanlan.zhihu.com/p/352133292](https://zhuanlan.zhihu.com/p/352133292)
 
+
+
+`malloc()` 是 C 标准库提供的内存分配函数，对应到系统调用上有两种具体的实现。即 `brk()` 和 `mmap()` 。
+
+
+
+- 对于小内存而言，直接 brk() 来分配，也就是通过堆顶的位置来分配内存，内存释放后不会立即归还
+- 对于大内存而言，mmap() 来分配。
+
+这两种系统调用发生后，其实并没有发生真正的内存分配，只有在首次访问时才通过缺页异常来分配。
+
+整体来说，Linux 使用 **伙伴系统(buddy system)** 来管理分配内存，通过相邻页合并来减少内存碎片化。**slab 调度器** 来管理小内存，增加缓存。
+
+
+
+详见：[内存分配与回收](https://kiosk007.top/post/%E6%93%8D%E7%BA%B5%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E4%B8%8E%E5%9B%9E%E6%94%B6)
+
 <br/>
 
 #### Golang 的GC 过程
@@ -106,7 +123,7 @@ golang 默认使用的是值传递，即拷贝传递，也就是深拷贝。只�
 
 强三色不变式：强制性不允许黑色对象引用白色
 
-弱三色不变式：黑色对象可以引用白色对象，白色对象需要存在其他灰色的引用。
+弱三色不变式：黑色对象可以引用白色对象，但白色对象需要存在其他灰色的引用。
 
 <br/>
 
@@ -138,6 +155,8 @@ G 是 gorouting、M 是系统级线程、P是调度器。
 
 
 详见：[https://kiosk007.top/post/golang-gmp/](https://kiosk007.top/post/golang-gmp/)
+
+<br/>
 
 ### 协程阻塞，调度器会怎么做？
 
