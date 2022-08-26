@@ -32,6 +32,9 @@ There are all kinds of mysterious portals here...
     - [Go文件操作大全](https://colobu.com/2016/10/12/go-file-operations/)
 - Other 
     - [优秀开源日志包使用教程](https://github.com/marmotedu/geekbang-go/blob/master/%E4%BC%98%E7%A7%80%E5%BC%80%E6%BA%90%E6%97%A5%E5%BF%97%E5%8C%85%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
+- Cloud 
+    - [如何阅读OpenStack源码](https://www.jingh.top/2019/04/29/%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BBOpenStack%E6%BA%90%E7%A0%81(%E6%9B%B4%E6%96%B0%E7%89%88)/)
+    - [Kubernetes源码分析](https://blog.tianfeiyu.com/source-code-reading-notes/)
 
 ## Tools
 - Linux
