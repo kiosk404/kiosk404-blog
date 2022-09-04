@@ -1535,18 +1535,18 @@ floating ip 的含义是可以让外部直接访问到某个虚拟机实例，�
 
 
 ```bash
+# 或使用 openstack floating ip create public
 neutron floatingip-create ext-net
-neutron CLI is deprecated and will be removed in the Z cycle. Use openstack CLI instead.
 Created a new floatingip:
 +---------------------+--------------------------------------+
 | Field               | Value                                |
 +---------------------+--------------------------------------+
-| created_at          | 2022-09-03T15:49:21Z                 |
+| created_at          | 2022-09-04T03:24:56Z                 |
 | description         |                                      |
 | fixed_ip_address    |                                      |
-| floating_ip_address | 192.168.200.142                      |
+| floating_ip_address | 192.168.200.137                      |
 | floating_network_id | f873449b-5067-4b6d-9935-d7aa468a72c8 |
-| id                  | f9250ead-53a8-423d-a52f-200eea5f2545 |
+| id                  | 69b114d2-ead5-4ba2-9e9f-4726464df678 |
 | port_details        |                                      |
 | port_id             |                                      |
 | project_id          | e4b0206b8ac9460fbb9a1161200e60ad     |
@@ -1555,49 +1555,47 @@ Created a new floatingip:
 | status              | DOWN                                 |
 | tags                |                                      |
 | tenant_id           | e4b0206b8ac9460fbb9a1161200e60ad     |
-| updated_at          | 2022-09-03T15:49:21Z                 |
+| updated_at          | 2022-09-04T03:24:56Z                 |
 +---------------------+--------------------------------------+
 
 ```
 
 查看之前新建的 floatingip ，并且将floatingip 绑定
 
-
-
 ```bash
-![openstack_deploy8](/home/weijiaxiang/Project/hugo/kiosk404-blog/static/images/openstack/deployment/openstack_deploy8.png# 查看
+# 查看浮动IP 列表
 openstack floating ip list
 +--------------------------------------+---------------------+------------------+------+--------------------------------------+----------------------------------+
 | ID                                   | Floating IP Address | Fixed IP Address | Port | Floating Network                     | Project                          |
 +--------------------------------------+---------------------+------------------+------+--------------------------------------+----------------------------------+
-| f9250ead-53a8-423d-a52f-200eea5f2545 | 192.168.200.142     | None             | None | f873449b-5067-4b6d-9935-d7aa468a72c8 | e4b0206b8ac9460fbb9a1161200e60ad |
+| 69b114d2-ead5-4ba2-9e9f-4726464df678 | 192.168.200.137     | None             | None | f873449b-5067-4b6d-9935-d7aa468a72c8 | e4b0206b8ac9460fbb9a1161200e60ad |
 +--------------------------------------+---------------------+------------------+------+--------------------------------------+----------------------------------+
 
 
-# 查看端口列表
-neutron port-list
-neutron CLI is deprecated and will be removed in the Z cycle. Use openstack CLI instead.
-+--------------------------------------+------+----------------------------------+-------------------+----------------------------------------------------------------------------------------+
-| id                                   | name | tenant_id                        | mac_address       | fixed_ips                                                                              |
-+--------------------------------------+------+----------------------------------+-------------------+----------------------------------------------------------------------------------------+
-| 04b6bafe-f45a-4531-80be-d7972753fd87 |      |                                  | fa:16:3e:eb:d4:a4 | {"subnet_id": "5e268dc4-8bdc-4019-8224-b3535eb795f9", "ip_address": "192.168.200.176"} |
-| 25537718-780c-4394-a1dc-9155beb1f8ae |      | e4b0206b8ac9460fbb9a1161200e60ad | fa:16:3e:53:8e:76 | {"subnet_id": "87e628e0-ceca-4658-83a4-b70b762c3d61", "ip_address": "10.0.0.1"}        |
-| 7aab7771-8898-40b6-9b2d-9c7ca38a21fe |      | e4b0206b8ac9460fbb9a1161200e60ad | fa:16:3e:05:28:a5 | {"subnet_id": "87e628e0-ceca-4658-83a4-b70b762c3d61", "ip_address": "10.0.0.2"}        |
-| 9817baec-f5d4-44e6-ba8a-48574783332d |      |                                  | fa:16:3e:9d:6b:33 | {"subnet_id": "5e268dc4-8bdc-4019-8224-b3535eb795f9", "ip_address": "192.168.200.142"} |
-| d4e1e4c7-cd52-465d-be8f-be62aa685b74 |      | e4b0206b8ac9460fbb9a1161200e60ad | fa:16:3e:cd:f9:bf | {"subnet_id": "87e628e0-ceca-4658-83a4-b70b762c3d61", "ip_address": "10.0.0.186"}      |
-+--------------------------------------+------+----------------------------------+-------------------+----------------------------------------------------------------------------------------+
-
+# 查看主机列表
+openstack server list
++--------------------------------------+-------+--------+-----------------------+----------------+---------+
+| ID                                   | Name  | Status | Networks              | Image          | Flavor  |
++--------------------------------------+-------+--------+-----------------------+----------------+---------+
+| 3bbb4691-9246-40d1-8d21-63de864483d5 | vm001 | ACTIVE | tenant-net=10.0.0.186 | cirros-nocloud | m1.tiny |
++--------------------------------------+-------+--------+-----------------------+----------------+---------+
 
 # 绑定
-neutron floatingip-associate f9250ead-53a8-423d-a52f-200eea5f2545 d4e1e4c7-cd52-465d-be8f-be62aa685b74
-neutron CLI is deprecated and will be removed in the Z cycle. Use openstack CLI instead.
-Associated floating IP f9250ead-53a8-423d-a52f-200eea5f2545
+openstack server add floating ip vm001 192.168.200.137
+
+# 再次查看
+openstack server list
++--------------------------------------+-------+--------+----------------------------------------+----------------+---------+
+| ID                                   | Name  | Status | Networks                               | Image          | Flavor  |
++--------------------------------------+-------+--------+----------------------------------------+----------------+---------+
+| 3bbb4691-9246-40d1-8d21-63de864483d5 | vm001 | ACTIVE | tenant-net=10.0.0.186, 192.168.200.137 | cirros-nocloud | m1.tiny |
++--------------------------------------+-------+--------+----------------------------------------+----------------+---------+
 
 ```
 
 
 
-
+> 参考 [IP地址管理](https://docs.openstack.org/zh_CN/user-guide/cli-manage-ip-addresses.html)
 
 
 
