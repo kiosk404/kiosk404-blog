@@ -1,5 +1,5 @@
 ---
-title: 构建一个OpenStack
+title: 构建一个 OpenStack 云操作系统
 author: kiosk
 date: 2022-08-27 13:52:18
 lastmod: 2022-08-29 11:26:27
@@ -152,7 +152,7 @@ apt install crudini
 
 因为ubuntu20.04 默认安装的是 mysql8.0，创建用户和授权的方式不太一样，用官网的命令会报错。
 
-```bash
+```mysql
 mysql
 > CREATE DATABASE keystone;
 > CREATE USER 'keystone'@'%' IDENTIFIED BY 'KEYSTONE_DBPASS';
@@ -305,7 +305,7 @@ Image Service 在 OpenStack 中注册、发现及获取 VM 的映像文件。VM�
 
 ### 配置数据库
 
-```bash
+```mysql
 mysql
 > CREATE DATABASE glance;
 > CREATE USER 'glance'@'%' IDENTIFIED BY 'GLANCE_DBPASS';
@@ -437,7 +437,7 @@ Placement 参与到 nova-scheduler 选择目标主机的调度流程中，负责
 
 ### 配置数据库
 
-```bash
+```mysql
 mysql
 > CREATE DATABASE placement;
 > CREATE USER 'placement'@'%' IDENTIFIED BY 'PLACEMENT_DBPASS';
@@ -571,7 +571,7 @@ Compute Service ，主要提供计算服务，但本身Nova 又分为了计算�
 
 ### 配置数据库
 
-```bash
+```mysql
 mysql
 > CREATE DATABASE nova_api;
 > CREATE DATABASE nova;
@@ -764,7 +764,7 @@ Openstack 中的物理网络连接架构。
 
 ### 创建数据库
 
-```
+```mysql
 mysql
 > CREATE DATABASE neutron;
 > CREATE USER 'neutron'@'%' IDENTIFIED BY 'NEUTRON_DBPASS';
@@ -1026,6 +1026,107 @@ TIME_ZONE = "Asia/Shanghai"
 
 <br/>
 
+## Cinder
+
+Cinder 提供块存储功能，其实 Cinder 本不应该部署在 Compute 节点，块存储服务本应该是独立与 Openstack  Controller、Compute 节点的存在。
+
+其提供 Block Storage Service。其由 cinder-api、cinder-volume、cinder-scheduler 组成。
+
+
+
+详见：[认识 OpenStack -- Cinder](https://kiosk007.top/post/%E8%AE%A4%E8%AF%86-openstack/#cinder) 
+
+安装：[Install and configure for Ubuntu](https://docs.openstack.org/cinder/yoga/install/cinder-controller-install-ubuntu.html)
+
+<br/>
+
+### 配置MySQL数据库
+
+```mysql
+mysql
+> CREATE DATABASE cinder;
+> CREATE USER 'cinder'@'%' IDENTIFIED BY 'CINDER_DBPASS';
+> GRANT ALL PRIVILEGES ON cinder.* to 'cinder'@'%' WITH GRANT OPTION;
+```
+
+<br/>
+
+### 创建相应的 user、service、endpoint
+
+```bash
+openstack user create --domain default --password-prompt cinder
+openstack role add --project service --user cinder admin
+# 创建 serivce
+openstack service create --name cinderv3 \
+  --description "OpenStack Block Storage" volumev3
+# 创建 endpoint  
+openstack endpoint create --region RegionOne \
+  volumev3 public http://controller:8776/v3/%\(project_id\)s
+openstack endpoint create --region RegionOne \
+  volumev3 internal http://controller:8776/v3/%\(project_id\)s
+openstack endpoint create --region RegionOne \
+  volumev3 admin http://controller:8776/v3/%\(project_id\)s
+```
+
+<br/>
+
+### 安装 cinder
+
+1. 安装 cinder
+
+```bash
+apt install cinder-api cinder-scheduler
+```
+
+2. 修改配置文件 **/etc/cinder/cinder.conf** 
+
+```bash
+[database]
+connection = mysql+pymysql://cinder:CINDER_DBPASS@controller/cinder
+
+[DEFAULT]
+auth_strategy = keystone
+my_ip = 192.168.100.10
+
+[keystone_authtoken]
+www_authenticate_uri = http://controller:5000
+auth_url = http://controller:5000
+memcached_servers = controller:11211
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = cinder
+password = CINDER_PASS    # 请替换
+```
+
+3. 同步数据库
+
+```bash
+su -s /bin/sh -c "cinder-manage db sync" cinder
+```
+
+4. 编辑 **/etc/nova/nova.conf**
+
+```bash
+[cinder]
+os_region_name = RegionOne
+```
+
+5. 重启服务
+
+```bash
+systemctl restart nova-api
+systemctl restart cinder-scheduler 
+systemctl restart apache2
+```
+
+
+
+
+
+<br/>
+
 # 部署 Compute 节点
 
 >  以下操作在 instance_003 节点上进行
@@ -1100,7 +1201,15 @@ password = PLACEMENT_PASS  # 请替换
 3. 修改配置文件 `/etc/nova/nova.conf` 的 neutron 部分内容
 
 ```bash
-
+[neutron]
+auth_url = http://controller:5000
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+region_name = RegionOne
+project_name = service
+username = neutron
+password = redhat
 ```
 
 4. [可选] 修改配置文件 `/etc/nova/nova-compute.conf`
@@ -1303,6 +1412,126 @@ systemctl restart neutron-linuxbridge-agent
 openstack extension list --network
 openstack network agent list
 ```
+
+<br/>
+
+## Cinder
+
+> 注意：Cinder 服务对应的块存储服务本应该是部署在专门的存储服务集群的
+
+
+
+安装：[Install and configure a storage node](https://docs.openstack.org/cinder/yoga/install/cinder-storage-install-ubuntu.html)
+
+<br/>
+
+### 安装工具包
+
+```bash
+apt install cinder-volume tgt 
+apt install lvm2 thin-provisioning-tools
+apt install cinder-backup
+```
+
+<br/>
+
+### 配置 LVM 
+
+这块需要添加一块新的磁盘 /dev/sdb, 这里我们使用 vmware 可以直接添加一块新硬盘
+
+```bash
+# 查看当前的磁盘
+fdisk -l /dev/sdb
+Disk /dev/sdb: 5 GiB, 5368709120 bytes, 10485760 sectors
+Disk model: VMware Virtual S
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+# 创建 VG
+vgcreate cinder-volumes /dev/sdb
+  Physical volume "/dev/sdb" successfully created.
+  Volume group "cinder-volumes" successfully created
+
+# 编辑 /etc/lvm/lvm.conf ，主要是为了加强安全性，如果不指定，所有的都可以访问，比如下面的 /dev/sdb 可以访问，其他全部拒绝
+filter = [ "a/sdb/", "r/.*/"]
+```
+
+
+
+### 配置文件编辑
+
+**/etc/cinder/cinder.conf**
+
+````bash
+[database]
+connection = mysql+pymysql://cinder:CINDER_DBPASS@controller/cinder
+
+[DEFAULT]
+transport_url = rabbit://openstack:openstack@controller
+my_ip = 192.168.100.12
+enabled_backends = lvm
+glance_api_servers = http://controller:9292
+
+
+[lvm]
+volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+volume_group = cinder-volumes
+target_protocol = iscsi
+target_helper = tgtadm
+
+[oslo_concurrency]
+lock_path = /var/lib/cinder/tmp
+````
+
+<br/>
+
+### 重启服务
+
+```bash
+systemctl restart tgt
+systemctl restart cinder-volume
+```
+
+<br/>
+
+### 测试
+
+```
+cinder create --display-name testVloume 2
+
++--------------------------------+--------------------------------------+
+| Property                       | Value                                |
++--------------------------------+--------------------------------------+
+| attachments                    | []                                   |
+| availability_zone              | nova                                 |
+| bootable                       | false                                |
+| cluster_name                   | None                                 |
+| consistencygroup_id            | None                                 |
+...
+| updated_at                     | 2022-09-04T09:23:07.000000           |
+| user_id                        | aca26a682b4144989a20e4a3a6615279     |
+| volume_type                    | __DEFAULT__                          |
+| volume_type_id                 | 3bd8f104-0a6e-4d01-8834-161452566435 |
++--------------------------------+--------------------------------------+
+
+cinder list
++--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
+| ID                                   | Status    | Name       | Size | Consumes Quota | Volume Type | Bootable | Attached to |
++--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
+| 539a7ef8-61e7-4531-b892-c2facafe28d9 | available | testVloume | 2    | True           | __DEFAULT__ | false    |             |
++--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
+
+# 查看卷
+lvs
+  LV                                          VG             Attr       LSize Pool                Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  cinder-volumes-pool                         cinder-volumes twi-aotz-- 4.75g                            0.00   10.64                           
+  volume-539a7ef8-61e7-4531-b892-c2facafe28d9 cinder-volumes Vwi-a-tz-- 2.00g cinder-volumes-pool        0.00          
+```
+
+
+
+
 
 <br/>
 
@@ -1596,6 +1825,33 @@ openstack server list
 
 
 > 参考 [IP地址管理](https://docs.openstack.org/zh_CN/user-guide/cli-manage-ip-addresses.html)
+
+## 7. 关联 volume
+
+![openstack_deploy9](https://img1.kiosk007.top/static/images/blog/openstack_deploy9.png)
+
+```bash
+cinder list
++--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
+| ID                                   | Status    | Name       | Size | Consumes Quota | Volume Type | Bootable | Attached to |
++--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
+| 539a7ef8-61e7-4531-b892-c2facafe28d9 | available | testVloume | 2    | True           | __DEFAULT__ | false    |             |
++--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
+
+
+nova volume-attach vm001 539a7ef8-61e7-4531-b892-c2facafe28d9
++-----------------------+--------------------------------------+
+| Property              | Value                                |
++-----------------------+--------------------------------------+
+| delete_on_termination | False                                |
+| device                | /dev/vdb                             |
+| id                    | 539a7ef8-61e7-4531-b892-c2facafe28d9 |
+| serverId              | 3bbb4691-9246-40d1-8d21-63de864483d5 |
+| tag                   | -                                    |
+| volumeId              | 539a7ef8-61e7-4531-b892-c2facafe28d9 |
++-----------------------+--------------------------------------+
+
+```
 
 
 
