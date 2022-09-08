@@ -11,7 +11,8 @@ themesDir = "./themes"
 
 # website title
 # 网站标题
-title = "Kiosk's/"
+# title = "Kiosk's/"  为了应付SXXB检查,先注释掉
+title = "个人编程技术分享"
 
 # whether to use robots.txt
 # 是否使用 robots.txt
