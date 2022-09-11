@@ -294,9 +294,29 @@ interface_driver = linuxbridge
 
 南北流量分为 floating ip 和无 floating ip （fix ip）两种情况，唯一的区别在于 vm 最终离开 network node 访问internet 时，有 floating ip的vm源地址为 floating ip ，而使用 fix ip 的vm通过 snat 方式，源地址为 network node 的ip。vm 南北流量如下图所示：
 
+<img src="https://img1.kiosk007.top/static/images/blog/neutron8.png" alt="neutron8" style="zoom:150%;" />
 
+1. vm1 向公网发出通信请求，数据包被送往网关
+2. 数据包经过 linux bridge 通过其上的 iptables 安全策略检查，送往 br-int并打上内部vlan号
+3. 数据包脱掉内部的vlan号经过 br-tun，br-tun 的数据包经过vxlan封装打上vni号
+4. 数据包进入网络节点，经过br-tun的数据包完成vxlan的解封装去掉vni号。再送往br-int,此时打上内部的vlan号。
+5. 进入 router namespace 路由空间查询路由表项，vm1 的网关配置在此路由器的 qr 接口上
+6. 数据包在路由器内完成地址转换，源地址变成 qg 口 network node 节点的外网地址（floating ip 在 qg 口使用的是给vm分配的外网地址，需要提前将 fix ip 和 floating ip 绑定），送回br-int并打上内部vlan号。
+7. 数据包离开 br-int 进入 br-ex，脱掉内部的vlan号，打上外网ip的vlan号
+8. 最后借助 provider 的网络访问公网，此处也印成了 provider 网络只能是vlan 或者 flat 类型。
 
 <br/>
 
 # 常用操作
 
+## 网络、子网、路由、端口管理
+
+<img src="https://img1.kiosk007.top/static/images/blog/neutron9.png" alt="neutron9" style="zoom:150%;" />
+
+<br/>
+
+## 防火墙管理
+
+
+
+![neutron10](https://img1.kiosk007.top/static/images/blog/neutron10.png)
