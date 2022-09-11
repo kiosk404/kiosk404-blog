@@ -1,7 +1,6 @@
 ---
 title: OpenStack网络组件-Neutron
 author: kiosk
-draft: true
 tags: 
   - openstack
 categories:
