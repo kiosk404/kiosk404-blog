@@ -319,3 +319,17 @@ interface_driver = linuxbridge
 
 
 ![neutron10](https://img1.kiosk007.top/static/images/blog/neutron10.png)
+
+
+
+<br/>
+
+<br/>
+
+<br/>
+
+参考:
+
+- [OpenStack的Neutron组件详解](https://www.cnblogs.com/mh20131118/p/12954641.html)
+
+- [讲清楚说明白openstack中vm流量走向之1——集中式网络节点](https://blog.51cto.com/arkling/2406590)
