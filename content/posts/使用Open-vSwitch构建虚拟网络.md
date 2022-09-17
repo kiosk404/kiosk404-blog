@@ -5,7 +5,7 @@ fontawesome: true
 tags:
   - openstack
 categories:
-  - devops
+  - cloud_computing
 date: 2022-08-22 11:23:00
 ---
 
