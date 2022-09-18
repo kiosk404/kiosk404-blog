@@ -200,11 +200,11 @@ int probe_entry_SSL_write(struct pt_regs* ctx) {
 
 <br>
 
-入口函数中，先获取当前进程的 PID 并对比是不是感兴趣的PID，如果没有 target_pid 没有定义的话，则默认监控所有的 ssl 通信。如果是感兴趣的目标PID，则探测器会读取缓冲区指针并将值存储在全局PID 中 active_ssl_write_args_map 。
+1. 入口函数中，先获取当前进程的 PID 并对比是不是感兴趣的PID，如果没有 target_pid 没有定义的话，则默认监控所有的 ssl 通信。如果是感兴趣的目标PID，则探测器会读取缓冲区指针并将值存储在全局PID 中 active_ssl_write_args_map 。
 
-通过 PT_REGS_PARM1 获取 int SSL_write(SSL *ssl, const void *buf, int num);  函数中的第一个参数 ssl 。再通过 bpf_probe_read_user 辅助函数将ssl里的信息读入到 ssl结构体里。
+2. 通过 PT_REGS_PARM1 获取 int SSL_write(SSL *ssl, const void *buf, int num);  函数中的第一个参数 ssl 。再通过 bpf_probe_read_user 辅助函数将ssl里的信息读入到 ssl结构体里。读ssl结构体主要是为了取到 fd ，后面用作关联。
 
-第二个参数 buf 是实际的明文数据，是写入加密前的明文数据。再将数据通过辅助函数 [bpf_map_update_elem() ](https://prototype-kernel.readthedocs.io/en/latest/bpf/ebpf_maps.html#interacting-with-maps) 将BPF映射中的数据修改。
+3. 第二个参数 buf 是实际的明文数据，是写入加密前的明文数据。再将数据通过辅助函数 [bpf_map_update_elem() ](https://prototype-kernel.readthedocs.io/en/latest/bpf/ebpf_maps.html#interacting-with-maps) 将BPF映射中的数据修改。
 
 
 

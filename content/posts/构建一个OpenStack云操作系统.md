@@ -222,7 +222,7 @@ openstack project create --domain default \
   --description "Service Project" service
 ```
 
-
+> configure bash shell script: http://s1.kiosk007.top/config_controller_keystone.sh
 
 <br/>
 
@@ -395,6 +395,10 @@ su -s /bin/sh -c "glance-manage db_sync" glance
 
 5. 重启服务 `systemctl restart glance-api `
 
+
+
+> configure bash shell script: http://s1.kiosk007.top/config_controller_glance.sh
+
 ### 验证
 
 下载一个镜像，再传到 glance 服务上。
@@ -510,6 +514,8 @@ su -s /bin/sh -c "placement-manage db sync" placement
 ```bash
 systemctl restart apache2
 ```
+
+> configure bash shell script: http://s1.kiosk007.top/config_controller_placement.sh
 
 <br/>
 
@@ -709,6 +715,8 @@ su -s /bin/sh -c "nova-manage cell_v2 list_cells" nova
 +-------+--------------------------------------+------------------------------------------+-------------------------------------------------+----------+
 
 ```
+
+> configure bash shell script: http://s1.kiosk007.top/config_controller_nova.sh
 
 <br/>
 
@@ -970,7 +978,7 @@ service neutron-l3-agent restart
 
 ```
 
-
+> configure bash shell script: http://s1.kiosk007.top/config_controller_neutron.sh
 
 <br/>
 
@@ -1001,7 +1009,7 @@ CACHES = {
          'LOCATION': 'controller:11211',
     }
 }
-OPENSTACK_KEYSTONE_URL = "http://%s:5000/identity/v3" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
 OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
 OPENSTACK_API_VERSIONS = {
     "identity": 3,
@@ -1254,6 +1262,8 @@ Found 1 unmapped computes in cell: 8f33b975-8d3f-4cf9-a4ee-e6691b863ba6
 
 ```
 
+> configure bash shell script: http://s1.kiosk007.top/config_compute_nova.sh
+
 <br/>
 
 ### 验证
@@ -1403,6 +1413,8 @@ password = redhat
 systemctl restart nova-compute 
 systemctl restart neutron-linuxbridge-agent
 ```
+
+> configure bash shell script: http://s1.kiosk007.top/config_compute_neutron.sh
 
 ### 验证
 
