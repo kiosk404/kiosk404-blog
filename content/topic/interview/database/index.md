@@ -36,6 +36,7 @@ date: 2022-08-08 23:41:26
   - [MySQL的锁类型有哪些](/topic/interview/database/#mysql的锁的类型有哪些呢)
   - [事务的基本特性和隔离级别](/topic/interview/database/#事务的基本特性和隔离级别)
   - [MySQL主从同步是如何实现的](/topic/interview/database/#mysql-主从同步是如何实现的)
+  - [MySQL 事务中什么是幻读](/topic/interview/database/#MySQL 事务中什么是幻读)
 
 <br/>
 
@@ -112,9 +113,17 @@ Key 过期策略：
 
 AOF ：通过靠保存 Redis 服务器所执行命令日志的方式
 
+- 优点：故障时，丢的数据量小。
+- 缺点：体积大，恢复慢
+
 RDB：通过内存快照的机制把内存中的数据集写入磁盘，也就是 Snapshot 快照（数据库中所有键值对数据）
 
+- 优点：快照文件，数据紧凑，体积小，恢复时速度快。
+- 缺点：服务器故障时，因为不能实时保存内存。所以有可能要丢失一段时间的数据。
+
 详见：[https://kiosk007.top/post/redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/](https://kiosk007.top/post/redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/)
+
+[https://cloud.tencent.com/developer/news/307359](https://cloud.tencent.com/developer/news/307359)
 
 <br/>
 
@@ -130,13 +139,35 @@ Redis 实现高可用有三种部署模式：**主从模式，哨兵模式，集
 
 #### redis 分布式锁
 
+和单机模式上的锁机制类似，分布式锁同样可以用一个变量来实现。但是有两个要求，要求一：需要实现分布式的原子性。要求二：共享存储系统的可靠性。
+
+假设一个变量 redis_lock，初始值是0。A来加锁，由0变1，此时B再来持锁，就持锁失败了。因为变量 redis_lock 已经是1了。再由于redis是一个单线程模型，redis会串行处理他们的请求。
+
+使用 SETNS 和 DEL 两个命令实现加锁和释放锁。(SETNX 命令，它用于设置键值对的值。具体来说，就是这个命令在执行时会判断键值对是否存在，如果不存在，就设置键值对的值，如果存在，就不做任何设置)
+
+```redis
+// 加锁
+SETNX lock_key 1
+// 业务逻辑
+DO THINGS
+// 释放锁
+DEL lock_key
+```
+
+附加：
+
+1. 可以给变量加个过期时间。当客户端异常没有主动解锁时，可以自动删除锁。
+2. 为了保证锁不被其他客户端误释放，可以加一个 unique_value 。只有unique_value相同才可以操作。
+
 
 
 <br/>
 
 #### redis AOF 日志文件太大怎么办
 
-AOF 重写
+AOF 重写。根据数据库的现状重新创建一个新的 AOF 文件，对每个键值对只记录最新的最终状态。
+
+
 
 <br/>
 
@@ -303,3 +334,55 @@ mysql锁分为**共享锁**和**排他锁**，也叫做读锁和写锁。
 **半同步复制**
 
 和全同步不同的是，半同步复制的逻辑是这样，从库写入日志成功后返回ACK确认给主库，主库收到至少一个从库的确认就认为写操作完成。
+
+<br/>
+
+### MySQL 事务中什么是幻读
+
+幻读是指事务A执行过程中由于事务B并发插入了一条新的数据记录。事务A两次读数据的内容不一样，出现了“虚幻”的新记录。
+
+MySQL 的 InnoDB 引擎在RR级别下可以防止幻读的发生
+
+- 在快照读（snapshot read）的情况下，MySQL 通过 MVCC（多版本并发控制）来避免幻读
+- 在当前读（current read）的情况下，MySQL 通过next-key lock 来避免幻读
+
+InnoDB支持三种行锁定的方式。
+
+1. 行锁（Record Lock）：锁直接加载索引记录上面（无索引项时蜕变成表锁）
+2. 间隙锁（Gap Lock）：锁定索引记录间隙，确保索引记录的间隙不变，间隙锁是针对事务隔离级别为可重复读或以上级别。
+3. Next-Key Lock：行锁和间隙锁组合起来就是 Next-Key Lock
+
+<br/>
+
+参考: [https://www.jianshu.com/p/d5c2613cbb81](https://www.jianshu.com/p/d5c2613cbb81)
+
+<br/>
+
+### 什么是 MySQL 的两段式提交，为什么必须要“两段式”提交？
+
+1. 什么是两段式提交
+
+当有数据修改时，会先将修改 redo log cache 和 binlog cache 然后再刷入到磁盘形成 redo log file，当 redo log file 全部刷入磁盘时（prepare 状态）和提交成功后才能将 binlog cache刷入磁盘。当 binlog 全部刷新到磁盘后会形成一个 xid，然后redo log file上打上 commit 标志（commit 阶段）
+
+2. 为什么要两段式提交
+
+在没有两段式提交的情况下。
+
+- 如果先写redo log，后 binlog，在 redo log 写完，binlog 还没写完时数据库崩溃，当恢复后，主数据库被修改了，但是 binlog 并没有该语句，因此从库会丢失该更新导致主从不一致。
+
+- 如果先写 binlog，后写 redolog，在 binlog 写完，redo log 还没写完时崩溃，恢复后从库比主库多了一条更新，导致主从不一致。
+
+有了两段式提交。
+
+- redo 写入时崩溃，因为此时 binlog 还没有写入，恢复数据不受影响
+
+- redo 写好后，binlog 写入时崩溃，这时的redo 是 prepare 状态，还没有提交，恢复时事务会回滚，binlog没有记录，不影响。
+
+- redo 写好，binlog 也写好了，但是没有commit时崩溃了，这时判断对应事务的binlog是否存在并完整
+
+  - 如果存在并完整则提交
+  - 如果binlog 不存在或者不完整，会恢复事务提交之前的状态。
+
+- redo 已经有了commit 标识，则直接提交事务，同时因为binlog有记录，则恢复数据不受影响。
+
+  <img src="https://img1.kiosk007.top/static/images/blog/mysql15.png" alt="mysql15" style="zoom:50%;clear:both;display:block;margin:auto;" />
