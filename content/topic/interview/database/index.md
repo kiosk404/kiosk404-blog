@@ -22,8 +22,9 @@ date: 2022-08-08 23:41:26
     - [Redis的Key过期机制和淘汰原理](/topic/interview/database/#redis-的-key-过期机制和淘汰原理)
     - [Redis的持久化机制](/topic/interview/database/#redis的持久化机制)
     - [Redis 如何实现高可用](/topic/interview/database/#redis-如何实现高可用)
-    - [Redis 分布式锁](topic/interview/database/#redis-分布式锁)
-  - [Redis AOF 日志文件太大怎么办](/topic/interview/database/#redis-aof-日志文件太大怎么办)
+    - [Redis 分布式锁](/topic/interview/database/#redis-分布式锁)
+    - [Redis如何应对并发访问](/topic/interview/database/#redis如何应对并发访问)
+    - [Redis AOF 日志文件太大怎么办](/topic/interview/database/#redis-aof-日志文件太大怎么办)
   - [Redis使用](/topic/interview/database/#redis-使用)
     - [Redis 有什么操作会导致其变慢](/topic/interview/database/#redis-有什么操作会导致其变慢)
     - [Redis 在时间序场景的应用](/topic/interview/database/#redis-在时间序场景的应用)
@@ -36,7 +37,7 @@ date: 2022-08-08 23:41:26
   - [MySQL的锁类型有哪些](/topic/interview/database/#mysql的锁的类型有哪些呢)
   - [事务的基本特性和隔离级别](/topic/interview/database/#事务的基本特性和隔离级别)
   - [MySQL主从同步是如何实现的](/topic/interview/database/#mysql-主从同步是如何实现的)
-  - [MySQL 事务中什么是幻读](/topic/interview/database/#MySQL 事务中什么是幻读)
+  - [MySQL事务中什么是幻读](/topic/interview/database/#MySQL事务中什么是幻读)
 
 <br/>
 
@@ -159,15 +160,26 @@ DEL lock_key
 1. 可以给变量加个过期时间。当客户端异常没有主动解锁时，可以自动删除锁。
 2. 为了保证锁不被其他客户端误释放，可以加一个 unique_value 。只有unique_value相同才可以操作。
 
+```
+// 加锁, unique_value作为客户端唯一性的标识
+SET lock_key unique_value NX PX 10000
+```
 
+
+
+<br/>
+
+#### Redis如何应对并发访问
+
+首先加锁可以解决并发访问问题，其次 Redis 提供两种原子操作的方法来实现并发控制，分别是单命令操作和Lua脚本。
+
+其本质是将多个操作放到 Lua 脚本中原子执行
 
 <br/>
 
 #### redis AOF 日志文件太大怎么办
 
 AOF 重写。根据数据库的现状重新创建一个新的 AOF 文件，对每个键值对只记录最新的最终状态。
-
-
 
 <br/>
 
@@ -337,7 +349,7 @@ mysql锁分为**共享锁**和**排他锁**，也叫做读锁和写锁。
 
 <br/>
 
-### MySQL 事务中什么是幻读
+### MySQL事务中什么是幻读
 
 幻读是指事务A执行过程中由于事务B并发插入了一条新的数据记录。事务A两次读数据的内容不一样，出现了“虚幻”的新记录。
 
@@ -386,3 +398,21 @@ InnoDB支持三种行锁定的方式。
 - redo 已经有了commit 标识，则直接提交事务，同时因为binlog有记录，则恢复数据不受影响。
 
   <img src="https://img1.kiosk007.top/static/images/blog/mysql15.png" alt="mysql15" style="zoom:50%;clear:both;display:block;margin:auto;" />
+
+<br/>
+
+### MySQL 索引为什么用B+树
+
+首先二叉树必须是平衡的才有比较高的查询效率，如果不平衡最差会退化成链表。
+
+B树是多叉树又名平衡多路查找树（查找路径不止两个）， 相对平衡二叉树在节点空间的利用率上进行了改进，B树在每个节点保存了更多的数据，减少了树的高度从而提升了查找的性能，使用B树的数据库，一般节点大小是4K，这是考虑到磁盘数据存储是采用块的形式存储，每个块大小为4K，每次对磁盘进行 IO 数据读取时，一个磁盘IO可以读取B树的一个节点。
+
+B+树是对B树的一个改进。主要是查询的稳定性和数据排序方面更友好。
+
+B+树的非叶子节点不保存具体数据，之保存关键字的索引，而所有的数据最终会保存到叶子节点。
+
+其也自己诶点的关键字从小到大有序排列，左边结尾数据都会保存右边节点开始数据的指针，因为叶子节点都是有序排列的，所以B+树对数据的排序支持有着更好的支持。
+
+参考：[https://zhuanlan.zhihu.com/p/27700617](https://zhuanlan.zhihu.com/p/27700617) （里面有图，更助于理解）
+
+<br/>
