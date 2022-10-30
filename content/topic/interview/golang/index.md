@@ -15,10 +15,14 @@ date: 2022-06-08 23:41:26
 - [sample](/topic/interview/golang/#sample)
   - [new 和 make 的区别？](/topic/interview/golang/#new-和-make-的区别)
   - [Golang 的参数值传递还是引用传递?](/topic/interview/golang/#golang-的参数值传递还是引用传递)
+  - [Golang Slice](/topic/interview/golang/#golang-slice)
+  - [interface{}变量和nil做比较](/topic/interview/golang/#interface{}变量和nil做比较)
+  - [go中 import/const/var/init/main 的执行顺序](/topic/interview/golang/#go中-importconstvarinitmain-的执行顺序)
+  - [defer的执行顺序](/topic/interview/golang/#defer的执行顺序)
 - [medium](/topic/interview/golang/#medium)
   - [Golang 的内存管理](/topic/interview/golang/#golang-的内存管理)
     - [Go 是如何分配内存的](/topic/interview/golang/#go-是如何分配内存的)
-    - [Golang 的GC过程](/topic/interview/golang/#golang-的gc-过程)
+    - [Golang 的GC过程](/topic/interview/golang/#golang-的-gc-过程)
     - [什么是强弱三色不变式](/topic/interview/golang/#什么是强弱三色不变式)
     - [GC的时机是什么时候](/topic/interview/golang/#gc的时机是什么时候)
   - [GMP](topic/interview/golang/#gmp)
@@ -40,7 +44,11 @@ date: 2022-06-08 23:41:26
     - [读一个已关闭的channel会怎样、没初始化的channel写会怎样](/topic/interview/golang/#读一个已关闭的channel会怎样没初始化的channel写会怎样)
     - [已关闭的channel写数据会怎样，如何判断一个channel已关闭](/topic/interview/golang/#已关闭的channel写数据会怎样如何判断一个channel已关闭)
     - [select case 中有2个case 读channel，其中一个关闭，读数据会怎样](/topic/interview/golang/#select-case-中有2个case-读channel其中一个关闭读数据会怎样)
-
+    - [golang如何限制并发](/topic/interview/golang/#golang如何限制并发)
+  - [context](/topic/interview/golang/#context)
+    - [golang中的context有什么用](/topic/interview/golang/#golang中的context有什么用)
+    - [context.Background的意义](/topic/interview/golang/#contextbackground-的意义)
+    - [WithCancel() 和 WithTimeout() 可以通知多个goroutine, 如何实现的](/topic/interview/golang/#withcancel-和-withtimeout-可以通知多个goroutine-如何实现的)
 ## sample
 
 ### new 和 make 的区别？
@@ -49,7 +57,7 @@ Go语言中 new 和 make 是两个内置函数，主要用来创建并分配类�
 
 new 只分配内存，而 make 只能用于 slice、map 和 channel 的初始化。
 
-new返回的是他们的指针，指针指向分配类型的内存地址。而make 返回的是他们类型的本身，因为chan、make、slice 本身就是引用类型，所以没有必要再返回他们的指针。
+new返回的是他们的指针，指针指向分配类型的内存地址。而make 返回的是他们类型的本身，因为chan、map、slice 本身就是引用类型，所以没有必要再返回他们的指针。
 
 <br/>
 
@@ -57,7 +65,79 @@ new返回的是他们的指针，指针指向分配类型的内存地址。而ma
 
 golang 默认使用的是值传递，即拷贝传递，也就是深拷贝。只有一些特定的类型，如 slice、map、channel、function、pointer 这种天生就是指针的类型是通过引用传递的。
 
-> 但是传指针会发生逃逸，会导致本来应该分配到栈上的内存逃逸到堆上。
+**但是传指针会发生逃逸，会导致本来应该分配到栈上的内存逃逸到堆上。**
+
+<br/>
+
+### Golang Slice 
+1. 底层是如何实现的？
+>答：切片本身并不是动态数组或者数组指针。它内部实现的数据结构通过指针引用底层数组
+>
+>```go
+>type slice struct {
+>	array unsafe.Pointer
+>	len   int
+>	cap   int
+>}
+>```
+>切片的结构体由3部分构成，Pointer 是指向一个数组的指针，len 代表当前切片的长度，cap 是当前切片的容量。cap 总是大于等于 len 的。
+>
+> 详见：[https://halfrost.com/go_slice/](https://halfrost.com/go_slice/)
+
+
+2. 如何扩容
+
+> 当前所需容量大于原先容量的2倍时，则申请当前所需的容量。
+> 
+> 如果上述条件不满足，则进行如下判断
+> 
+> 原切片长度小于1024则申请原先容量的2倍
+> 
+> 否则每次增加 1/4 ，直到大于所需的容量为止。
+>
+> 详见：[https://halfrost.com/go_slice/](https://halfrost.com/go_slice/)
+
+3. 判断 cap 的技巧
+> 核心问题：如果append需要扩容，就会完全开辟一个新空间。
+>
+> 详见：[https://coolshell.cn/articles/21128.html](https://coolshell.cn/articles/21128.html)
+
+<br/>
+
+### interface{}变量和nil做比较
+
+一个 []string 切片的空值经过函数调用后再比较会不等于 nil, 
+
+Go 语言中有两种略微不同的接口，一种是带有一组方法的接口，另一种是不带任何方法的空接口 interface{}。
+
+Go 语言使用`runtime.iface`表示带方法的接口，使用`runtime.eface`表示不带任何方法的空接口interface{}。如下是 runtime.eface 的定义。
+``` go
+type eface struct { // 16 字节
+	_type *_type
+	data  unsafe.Pointer
+}
+```
+而从空接口的定义得知需要两个指针均为0才行，但是经过一次传递会导致其变成一个值为空结构体 slice 的一个变量。
+
+空切片为 nil 因为其值为零值，类型为 []string 的空切片传给空接口后，因为空接口的值并不是零值，所以接口变量不是 nil。
+
+详见：[https://cloud.tencent.com/developer/article/1911289](https://cloud.tencent.com/developer/article/1911289)
+ 
+
+<br/>
+
+### go中 import/const/var/init/main 的执行顺序
+import > const > var > init > main
+
+<br/>
+
+### defer的执行顺序
+多个defer出现的时候，它是一个栈的关系，先进后出
+
+当return 和 defer 同时出现时，**先调用return再调用defer**
+
+详见: [了解defer的执行顺序](https://kiosk007.top/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/)
+
 
 <br/>
 
@@ -347,5 +427,32 @@ func CompareAndSwapUint32(addr *uint32, old, new uint32) (swapped bool)
 ### select case 中有2个case 读channel，其中一个关闭，读数据会怎样。
 
 每次 select 都是随机读的，即便有已经关闭的channel，依旧还是会读到。
+
+<br/>
+
+### golang如何限制并发 
+channel的方式。
+详见: [https://cloud.tencent.com/developer/article/1986989](https://cloud.tencent.com/developer/article/1986989)
+
+<br/>
+
+## context
+详见: [Golang Context](https://zhuanlan.zhihu.com/p/482953942)
+
+### golang中的context有什么用
+1. context可用于指定超时时长取消多个goroutine (使用WithTimeout方法)
+2. 可以指定触发条件，取消多个 goroutine 的运行 (使用WithCancel方法)
+3. 设置 key \ value（使用WithValue，Value方法）
+
+<br/>
+
+### context.Background() 的意义
+用于new(emptyCtx),作为初始节点, emptyCtx属于int类型, 但实现了context.Context接口的所有方法, 故初始化了Context, 方便以后初始化cancelCtx, timerCtx. 
+
+<br/>
+
+### WithCancel() 和 WithTimeout() 可以通知多个goroutine, 如何实现的
+
+close 单项接收管道,返回空结构体, 使select监听的ctx.Done()返回空结构体, 取消阻塞, 结束多个协程, 返回自定义的结果。
 
 <br/>

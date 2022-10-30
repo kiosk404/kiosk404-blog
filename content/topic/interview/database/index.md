@@ -28,6 +28,7 @@ date: 2022-08-08 23:41:26
   - [Redis使用](/topic/interview/database/#redis-使用)
     - [Redis 有什么操作会导致其变慢](/topic/interview/database/#redis-有什么操作会导致其变慢)
     - [Redis 在时间序场景的应用](/topic/interview/database/#redis-在时间序场景的应用)
+    - [Redis缓存失效](/topic/interview/database/#redis缓存失效)
 - [Elasticsearch](/topic/interview/database/#elasticsearch)
   - [什么是倒排索引](/topic/interview/database/#什么是倒排索引)
   - [文档索引步骤顺序](/topic/interview/database/#文档索引步骤顺序)
@@ -37,7 +38,11 @@ date: 2022-08-08 23:41:26
   - [MySQL的锁类型有哪些](/topic/interview/database/#mysql的锁的类型有哪些呢)
   - [事务的基本特性和隔离级别](/topic/interview/database/#事务的基本特性和隔离级别)
   - [MySQL主从同步是如何实现的](/topic/interview/database/#mysql-主从同步是如何实现的)
-  - [MySQL事务中什么是幻读](/topic/interview/database/#MySQL事务中什么是幻读)
+  - [MySQL事务中什么是幻读](/topic/interview/database/#mysql事务中什么是幻读)
+  - [什么是Next-Key Lock](/topic/interview/database/#什么是next-key-lock)
+  - [什么是 MVCC](/topic/interview/database/#什么是-mvcc)
+  - [MySQL的日志 undo log \ redo log \ binlog](/topic/interview/database/#mysql的日志-undo-log--redo-log--binlog)
+  - [什么是MySQL的两段式提交](/topic/interview/database/#什么是-mysql-的两段式提交为什么必须要两段式提交)
 
 <br/>
 
@@ -245,6 +250,11 @@ ZRANGEBYSCORE task_id:traffic_stream 202208030905 202208030908
 
 <br/>
 
+### Redis缓存失效
+
+直接参考: [Redis基础-缓存设计](https://kiosk007.top/post/redis%E5%9F%BA%E7%A1%80/#%E7%BC%93%E5%AD%98%E8%AE%BE%E8%AE%A1)
+
+<br/>
 
 
 ## Elasticsearch
@@ -294,7 +304,7 @@ innodb 是基于聚簇索引建立的，innodb 支持 事务还有外键。
 
 ### MySQL的锁的类型有哪些呢？
 
-mysql锁分为**共享锁**和**排他锁**，也叫做读锁和写锁。
+mysql锁分为**共享锁**和**排他锁**，也叫做**读锁**和**写锁**。
 
 读锁是共享的，可以通过lock in share mode实现，这时候只能读不能写。
 
@@ -310,13 +320,13 @@ mysql锁分为**共享锁**和**排他锁**，也叫做读锁和写锁。
 
 事务基本特性ACID分别是：
 
-**原子性**：一个事务中的操作要么全部成功，要么全部失败
+**原子性(atomicity)**：一个事务中的操作要么全部成功，要么全部失败
 
-**一致性**：数据库总是从一个一致性的状态转换到另一个一致性的状态。（比如A给B转帐100元，sql 执行失败，A不会损失100，B也不会多出100）
+**一致性(consistency)**：数据库总是从一个一致性的状态转换到另一个一致性的状态。（比如A给B转帐100元，sql 执行失败，A不会损失100，B也不会多出100）
 
-**隔离性**：一个事务的修改在最终提交之前，对其他事务不可见
+**隔离性(isolation)**：一个事务的修改在最终提交之前，对其他事务不可见
 
-**持久性**：事务一旦提交，所做的修改就会永久的保存到数据库中。
+**持久性(durability)**：事务一旦提交，所做的修改就会永久的保存到数据库中。
 
 隔离性有4个隔离级别，分别是：
 
@@ -356,17 +366,55 @@ mysql锁分为**共享锁**和**排他锁**，也叫做读锁和写锁。
 MySQL 的 InnoDB 引擎在RR级别下可以防止幻读的发生
 
 - 在快照读（snapshot read）的情况下，MySQL 通过 MVCC（多版本并发控制）来避免幻读
+> 快照读，读取的是记录的可见版本 (有可能是历史版本)，不用加锁。主要应用于无需加锁的普通查询（select）操作。
 - 在当前读（current read）的情况下，MySQL 通过next-key lock 来避免幻读
+> 当前读，读取的是记录的最新版本，并且会对当前记录加锁，防止其他事务发修改这条记录。加行共享锁（SELECT ... LOCK IN SHARE MODE ）、加行排他锁（SELECT ... FOR UPDATE / INSERT / UPDATE / DELETE）的操作都会用到当前度。
 
 InnoDB支持三种行锁定的方式。
 
-1. 行锁（Record Lock）：锁直接加载索引记录上面（无索引项时蜕变成表锁）
+1. 行锁（Record Lock）：锁直接加在索引记录上面（无索引项时蜕变成表锁）
 2. 间隙锁（Gap Lock）：锁定索引记录间隙，确保索引记录的间隙不变，间隙锁是针对事务隔离级别为可重复读或以上级别。
 3. Next-Key Lock：行锁和间隙锁组合起来就是 Next-Key Lock
 
+参考: [https://www.jianshu.com/p/d5c2613cbb81](https://www.jianshu.com/p/d5c2613cbb81)
+
 <br/>
 
-参考: [https://www.jianshu.com/p/d5c2613cbb81](https://www.jianshu.com/p/d5c2613cbb81)
+
+### 什么是Next-Key Lock
+InnoDB采用Next-Key Lock解决幻读问题。
+Next-Key Lock 是行锁和间隙锁组合起来。
+
+Next-Key Lock 的规则：
+1. 原则1：加锁的基本单位是 next-key lock, next-key lock 是前开后闭的区间。
+2. 原则2：只有访问到的对象才会加锁
+
+优化
+1. 优化1：命中唯一索引时，退化为行锁。命中普通索引时，左右两边的GAP Lock 和 行锁。
+2. 优化2：索引上的等值查询时，向右遍历时且最后一个值不满足等值条件的时候, 退化为GAP锁。
+
+参考: [MySQL实战45-为什么只改一行的语句，锁这么多](https://time.geekbang.org/column/article/75659)、[Next-Key Lock 的规则](https://zhuanlan.zhihu.com/p/382616006)
+
+<br/>
+
+### MySQL的日志 undo log \ redo log \ binlog
+
+1. undo log除了实现MVCC外，还用于事务的回滚。
+2. binlog，是mysql服务层产生的日志，常用来进行数据恢复、数据库复制
+3. redo log记录了数据操作在物理层面的修改，mysql中使用了大量缓存，缓存存在于内存中，修改操作时会直接修改内存，而不是立刻修改磁盘，当内存和磁盘的数据不一致时，称内存中的数据为脏页(dirty page)。为了保证数据的安全性，事务进行中时会不断的产生redo log，在事务提交时进行一次flush操作，保存到磁盘中, redo log是按照顺序写入的，磁盘的顺序读写的速度远大于随机读写。当数据库或主机失效重启时，会根据redo log进行数据的恢复，如果redo log中有事务提交，则进行事务提交修改数据。这样实现了事务的原子性、一致性和持久性。
+
+<br/>
+
+### 什么是 MVCC 
+MVCC 多版本控制，其是为了提高并发，读写之间不冲突，就是读取数据时通过一种类似快照的方式将数据保存下来，这样读锁就和写锁不冲突了，不同的事务session会看到自己特定版本的数据。
+只在 READ COMMITTED 和 REPEATABLE READ 两个级别下工作。
+
+- 实现原理
+InnoDB中通过undo log实现了数据的多版本，而并发控制通过锁来实现。
+ReadView中主要就是有个列表来存储我们系统中当前活跃着的读写事务，也就是begin了还未提交的事务。通过这个列表来判断记录的某个版本是否对当前事务可见
+MySQL 的 MVCC 通过版本链，实现多版本，可并发读-写，写-读。通过ReadView生成策略的不同实现不同的隔离级别。
+
+详见：[一文理解MySQL MVCC](https://zhuanlan.zhihu.com/p/66791480)
 
 <br/>
 
