@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>认识 QUIC 协议 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:title" content="认识 QUIC 协议" />
+<meta property="og:description" content="HTTP 3 ，它来了，QUIC（quick udp internet connection “快速 UDP 互联网连接”）正如其名一样，它就是快。其正在标准化为新一代的互联网传输协议。是由google提出的使用udp进行多路并发的传输协议。
+如果想要网站在弱网情况下提升网络访问速度，那么QUIC将是一个不错的选择。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://kiosk007.top/post/quic-%E5%8D%8F%E8%AE%AE/" /><meta property="og:image" content="https://kiosk007.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-04-06T18:24:00+00:00" />
+<meta property="article:modified_time" content="2020-04-06T18:24:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://kiosk007.top/logo.png"/>
+
+<meta name="twitter:title" content="认识 QUIC 协议"/>
+<meta name="twitter:description" content="HTTP 3 ，它来了，QUIC（quick udp internet connection “快速 UDP 互联网连接”）正如其名一样，它就是快。其正在标准化为新一代的互联网传输协议。是由google提出的使用udp进行多路并发的传输协议。
+如果想要网站在弱网情况下提升网络访问速度，那么QUIC将是一个不错的选择。"/>
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="https://kiosk007.top/post/quic-%E5%8D%8F%E8%AE%AE/" /><link rel="prev" href="https://kiosk007.top/post/time_wait-%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/" /><link rel="next" href="https://kiosk007.top/post/%E8%87%AA%E5%BB%BA-nginx-%E7%AB%99%E7%82%B9%E9%83%A8%E7%BD%B2/" /><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "认识 QUIC 协议",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/kiosk007.top\/post\/quic-%E5%8D%8F%E8%AE%AE\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "https:\/\/kiosk007.top\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "QUIC","wordcount":  888 ,
+        "url": "https:\/\/kiosk007.top\/post\/quic-%E5%8D%8F%E8%AE%AE\/","datePublished": "2020-04-06T18:24:00+00:00","dateModified": "2020-04-06T18:24:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/kiosk007.top\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/quic-%E5%8D%8F%E8%AE%AE/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">认识 QUIC 协议</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>network</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-04-06">2020-04-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;888 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;<span id="/post/quic-%E5%8D%8F%E8%AE%AE/" class="leancloud_visitors" data-flag-title="认识 QUIC 协议">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;views
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#quic-概述">QUIC 概述</a>
+          <ul>
+            <li><a href="#现有问题">现有问题</a>
+              <ul>
+                <li><a href="#中间设备僵化和操作系统老旧">中间设备僵化和操作系统老旧</a></li>
+                <li><a href="#建立连接的握手延迟大">建立连接的握手延迟大</a></li>
+                <li><a href="#队头阻塞">队头阻塞</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#协议解析">协议解析</a>
+          <ul>
+            <li><a href="#如何实现连接迁移">如何实现连接迁移</a></li>
+            <li><a href="#如何实现多路复用">如何实现多路复用</a></li>
+            <li><a href="#如何阻塞队头阻塞">如何阻塞队头阻塞</a></li>
+          </ul>
+        </li>
+        <li><a href="#quic核心特性">QUIC核心特性</a>
+          <ul>
+            <li><a href="#0rtt握手">0RTT握手</a></li>
+            <li><a href="#改进的拥塞控制">改进的拥塞控制</a></li>
+            <li><a href="#无队头阻塞">无队头阻塞</a></li>
+            <li><a href="#加密认证的报文">加密认证的报文</a></li>
+            <li><a href="#基于-stream-和-connecton-级别的流量控制">基于 stream 和 connecton 级别的流量控制</a></li>
+            <li><a href="#更灵活的拥塞控制算法">更灵活的拥塞控制算法</a>
+              <ul>
+                <li><a href="#单调递增的package-number">单调递增的Package Number</a></li>
+                <li><a href="#更多的-ack-块">更多的 Ack 块</a></li>
+                <li><a href="#ack-delay-时间">Ack Delay 时间</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#参考">参考:</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>HTTP 3 ，它来了，<a href="https://www.fastvue.co/fastvue/blog/googles-quic-protocols-security-and-reporting-implications/" target="_blank" rel="noopener noreffer">QUIC（quick udp internet connection “快速 UDP 互联网连接”）</a>正如其名一样，它就是快。其正在标准化为新一代的互联网传输协议。是由google提出的使用udp进行多路并发的传输协议。</p>
+<p>如果想要网站在弱网情况下提升网络访问速度，那么QUIC将是一个不错的选择。</p>
+<img src="https://img1.kiosk007.top/static/images/network/QUIC/gquic-stack.png" style="width:600px;height:400px" />
+<h2 id="quic-概述">QUIC 概述</h2>
+<p>QUIC解决了什么问题呢？从上世纪90年代至今，互联网一直按照一成不变的模式发展着。使用ipv4进行路由，使用tcp进行连接层面的拥塞控制，并保证其传输的可靠性，使用tls层进行安全加密和身份验证，使用http进行应用的数据传输。
+这么多年的发展，这些协议只是小部分或者细节上有了改变，tcp提出了几个新的拥塞控制算法，tls改变了加密方式，http层进化出了h2。但是互联网发展至今，网络传输的内容越来越大，用户对传输的时延，带宽提出越来越大的要求。
+tcp虽然也在拥塞控制上提出了一些优秀的拥塞控制算法，如BBR但是限制于其对操作系统内核版本的要求，windows操作系统又支持不好等。导致想要切换成更高效的协议成本巨大。</p>
+<p>这里列出几个主要的矛盾。</p>
+<ol>
+<li>协议历史悠久导致中间设备僵化。</li>
+<li>依赖于操作系统的实现导致协议本身僵化。</li>
+<li>建立连接的握手延迟大。</li>
+<li>队头阻塞。</li>
+</ol>
+<p>QUIC孕育而生，其抛开了TCP直接采用UDP，如一些拥塞算法，可靠性保证机制，不再依赖操作系统内核，而是可以自定义。
+QUIC 相比现在广泛应用的 http2+tcp+tls 协议有如下优势：</p>
+<ol>
+<li>快速（0-RTT）建连，类似于TLS的false start和TCP的TFO。</li>
+<li>集成的拥塞控制算法，可插拔。</li>
+<li>高安全性，类似于TLS，QUIC的报文始终被加密和认证。</li>
+<li>避免队头阻塞的多路复用。</li>
+<li>基于Connection ID 的连接迁移，减少与移动端的重复建联。</li>
+<li>前向冗余纠错（using FEC – Forward Error Correction）。</li>
+</ol>
+<h3 id="现有问题">现有问题</h3>
+<h4 id="中间设备僵化和操作系统老旧">中间设备僵化和操作系统老旧</h4>
+<p>有些防火墙只允许通过 80 和 443，不放通其他端口。因为通信协议栈都是固化到操作系统中的，只能通过内核参数进行调整，但是这样的调整极其有限，如果想要新加协议，只能重新编译内核。而现实是，可能还有一些Centos5 还作为某些古董公司的线上服务器。另外，windows xp 可能还是某些事业单位的办公电脑上装的操作系统，尽管xp的时代已经过去20年了。</p>
+<h4 id="建立连接的握手延迟大">建立连接的握手延迟大</h4>
+<p>知道一个首次https网站的访问都要有哪些步骤吗？dns解析需要1个RTT，TCP三次握手，HTTP 302 跳转 HTTPS又需要RTT，TCP重新握手。TLS握手再消耗2个。解析CA的DNS（因为浏览器获取到证书后，有可能需要发起 OCSP 或者 CRL 请求，查询证书状态）再对CA进行TCP握手，OCSP响应。密钥协商又是RTT。当然这种情况是最极端的，大部分情况下不是所有流程都需要走一遍的。</p>
+<p>More info: <a href="https://developer.baidu.com/resources/online/doc/security/https-pratice-2.html" target="_blank" rel="noopener noreffer">大型网站的 HTTPS 实践（二）&ndash; HTTPS 对性能的影响</a></p>
+<h4 id="队头阻塞">队头阻塞</h4>
+<ul>
+<li><code>HTTP1.1的队头阻塞</code> HTTP1.1 是一发一收，也就是第一个数据没响应之前不能发第二个请求。</li>
+<li><code>TCP的队头阻塞</code> 一个数据包丢了，后面的数据就算都收到了，内核也不会将缓冲区的数据交给应用层。所以基于TCP的HTTP2 在处理4层的队头阻塞问题上也是无能为力。</li>
+<li><code>TLS的队头阻塞</code> TLS 协议都是按照 record 来处理数据的，如果一个 record 中丢失了数据，也会导致整个 record 无法正确处理。这个目前也没有很好的解决方法。</li>
+</ul>
+<p>基于以上的原因，QUIC选择了UDP。没有了三次握手，在应用层面完成了传输的可靠性，拥塞控制还有TLS的安全性。只要应用软件的客户端和服务端支持就行，绕开了操作系统内核版本这个硬骨头。</p>
+<h2 id="协议解析">协议解析</h2>
+<p>最早这一实验性协议由 Google 推出，并命名为 gQUIC，因此，IETF 草案中仍然保留了 QUIC 概念</p>
+<ul>
+<li>QUIC 层由https://tools.ietf.org/html/draft-ietf-quic-transport-29 描述，它定义了连接、报文的可靠传输、有序字节流的实现；</li>
+<li>TLS 协议会将 QUIC 层的部分报文头部暴露在明文中，方便代理服务器进行路由。https://tools.ietf.org/html/draft-ietf-quic-tls-29 规范定义了 QUIC 与 TLS 的结合方式；</li>
+<li>丢包检测、RTO 重传定时器预估等功能由https://tools.ietf.org/html/draft-ietf-quic-recovery-29 定义，目前拥塞控制使用了类似TCP New RENO 的算法，未来有可能更换为基于带宽检测的算法（例如BBR）；</li>
+<li>基于以上 3 个规范，https://tools.ietf.org/html/draft-ietf-quic-http-29 定义了 HTTP 语义的实现，包括服务器推送、请求响应的传输等；</li>
+<li>在 HTTP/2 中，由 HPACK 规范定义 HTTP 头部的压缩算法。由于 HPACK 动态表的更新具有时序性，无法满足 HTTP/3 的要求。在 HTTP/3 中，QPACK 定义 HTTP 头部的编码：https://tools.ietf.org/html/draft-ietf-quic-qpack-16。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">UDP Header
+</span></span><span class="line"><span class="cl">Packet Header     -----
+</span></span><span class="line"><span class="cl">QUIC Frame Header    --  TLS1.3
+</span></span><span class="line"><span class="cl">HTTP3 Frame Header   -- 
+</span></span><span class="line"><span class="cl">HTTP Message      -----
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>为了实现 多路复用、链接迁移、非队头阻塞等特性，QUIC必须做到多层定义，另外层与层之间要做到非强依赖。
+这 3 层 Header 实现的功能各不相同：</p>
+<ul>
+<li>Packet Header 实现了可靠的连接。当 UDP 报文丢失后，通过 Packet Header 中的 Packet Number 实现报文重传。连接也是通过其中的 Connection ID 字段定义的；</li>
+<li>QUIC Frame Header 不可跨越Packet，在无序的 Packet 报文中，基于 QUIC Stream 概念实现了有序的字节流，这允许 HTTP 消息可以像在 TCP 连接上一样传输；</li>
+<li>HTTP/3 Frame Header 可跨越多个Packet,定义了 HTTP Header、Body 的格式，以及服务器推送、QPACK 编解码流等功能。</li>
+<li>HTTP Message</li>
+</ul>
+<h3 id="如何实现连接迁移">如何实现连接迁移</h3>
+<p>Packet Header 可以细分为两种：Long Packet Header 用于首次建立连接；Short Packet Header 用于日常传输数据。</p>
+<p><strong>Long Packet Header</strong>
+其中，Long Packet Header 的格式如下图所示：
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/quic_longpacket.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/quic_longpacket.png, https://img1.kiosk007.top/static/images/network/QUIC/quic_longpacket.png 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/quic_longpacket.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/quic_longpacket.png"
+        title="quic_longpacket" /></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/quic_longpacket_pcap.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/quic_longpacket_pcap.png, https://img1.kiosk007.top/static/images/network/QUIC/quic_longpacket_pcap.png 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/quic_longpacket_pcap.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/quic_longpacket_pcap.png"
+        title="quic_longpacket_pcap" /></p>
+<p>建立连接时，连接是由服务器通过 Source Connection ID 字段分配的，这样，后续传输时，双方只需要固定住 Destination Connection ID，就可以在客户端 IP 地址、端口变化后，绕过 UDP 四元组（与 TCP 四元组相同），实现连接迁移功能。下面是 <strong>Short Packet Header</strong> 头部的格式，这里就不再需要传输 Source Connection ID 字段了：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/quic_shortpacket.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/quic_shortpacket.png, https://img1.kiosk007.top/static/images/network/QUIC/quic_shortpacket.png 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/quic_shortpacket.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/quic_shortpacket.png"
+        title="quic_shortpacket" /></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/quic_shortpacket_pcap.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/quic_shortpacket_pcap.png, https://img1.kiosk007.top/static/images/network/QUIC/quic_shortpacket_pcap.png 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/quic_shortpacket_pcap.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/quic_shortpacket_pcap.png"
+        title="quic_longpacket_pcap" /></p>
+<p><strong>Packet Number</strong> 是每个报文独一无二的序号，基于它可以实现丢失报文的精准重发。<strong>为了防范各类网络攻击 Packet Number 会被 TLS 层加密保护。自Packet以下基本实现了全加密，Packet层自己也实现了半加密（握手除外）</strong></p>
+<h3 id="如何实现多路复用">如何实现多路复用</h3>
+<p>一个 Packet 报文中可以存放多个 QUIC Frame，所有 Frame 的长度之和不能大于 PMTUD（Path Maximum Transmission Unit Discovery，这是大于 1200 字节的值），你可以把它与 IP 路由中的 MTU 概念对照理解：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/quic_frame.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/quic_frame.png, https://img1.kiosk007.top/static/images/network/QUIC/quic_frame.png 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/quic_frame.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/quic_frame.png"
+        title="quic_frame" /></p>
+<p>每一个 Frame 都有明确的类型：如PADDING、PING等
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/quic_frame_type.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/quic_frame_type.png, https://img1.kiosk007.top/static/images/network/QUIC/quic_frame_type.png 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/quic_frame_type.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/quic_frame_type.png"
+        title="quic_frame" /></p>
+<p>其中， <strong>0x08-0x0f 这 8 种 STREAM 类型的 Frame 用于传递 HTTP 消息</strong>，它的格式如下所示：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/quic_frame_stream.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/quic_frame_stream.png, https://img1.kiosk007.top/static/images/network/QUIC/quic_frame_stream.png 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/quic_frame_stream.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/quic_frame_stream.png"
+        title="quic_frame" /></p>
+<p>可见，Stream Frame 头部的 3 个字段，完成了多路复用、有序字节流以及报文段层面的二进制分隔功能，包括：</p>
+<ul>
+<li>
+<p>Stream ID 定义了一个有序字节流。当 HTTP Body 非常大，需要跨越多个 Packet 时，只要在每个 Stream Frame 中含有同样的 Stream ID，就可以传输任意长度的消息。多个并发传输的 HTTP 消息，通过不同的 Stream ID 加以区别；</p>
+</li>
+<li>
+<p>消息序列化后的“有序”特性，是通过 Offset 字段完成的，它类似于 TCP 协议中的 Sequence 序号，用于实现 Stream 内多个 Frame 间的累计确认功能；</p>
+</li>
+<li>
+<p>Length 指明了 Frame 数据的长度。</p>
+</li>
+</ul>
+<p>0x08-0x0f 这 8 种类型其实是由 3 个二进制位组成，它们实现了以下 3 标志位的组合：</p>
+<ul>
+<li>第 1 位表示是否含有 Offset，当它为 0 时，表示这是 Stream 中的起始 Frame，这也是上图中 Offset 是可选字段的原因；</li>
+<li>第 2 位表示是否含有 Length 字段；</li>
+<li>第 3 位 Fin，表示这是 Stream 中最后 1 个 Frame，与 HTTP/2 协议 Frame 帧中的 FIN 标志位相同。</li>
+</ul>
+<p>Stream 数据中并不会直接存放 HTTP 消息，因为 HTTP/3 还需要实现服务器推送、权重优先级设定、流量控制等功能，所以 Stream Data 中首先存放了 <strong>HTTP/3 Frame</strong> (这里就相当于是HTTP2的FRAME了，如 HEADER 帧、DATA 帧 、 SETTINGS 帧等)：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/quic_http3.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/quic_http3.png, https://img1.kiosk007.top/static/images/network/QUIC/quic_http3.png 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/quic_http3.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/quic_http3.png"
+        title="quic_http3" /></p>
+<p>其中，Length 指明了 HTTP 消息的长度，而 Type 字段（低 2 位在 QPACK 实现上有特殊用途）。QUIC Stream Frame 定义了有序字节流，且多个 Stream 间的传输没有时序性要求。这样，HTTP 消息基于 QUIC Stream 就实现了真正的多路复用，队头阻塞问题自然就被解决掉了。</p>
+<h3 id="如何阻塞队头阻塞">如何阻塞队头阻塞</h3>
+<p>其实上面的多路复用已经解决了一大半的对头阻塞问题。但实际上在H2时代除了 TCP 、TLS 的队头阻塞还有一个 HPACK 的动态表阻塞。</p>
+<p>所谓动态表，就是将未包含在静态表中的 Header 项，在其首次出现时加入动态表，这样后续传输时仅用 1 个数字表示，大大提升了编码效率。因此，动态表是天然具备时序性的，如果首次出现的请求出现了丢包，后续请求解码 HPACK 头部时，一定会被阻塞！</p>
+<p>QPACK 将动态表的编码、解码独立在单向 Stream 中传输，仅当单向 Stream 中的动态表编码成功后，接收端才能解码双向 Stream 上 HTTP 消息里的动态表索引。</p>
+<p>QUIC Stream Frame 中的 Stream ID 别有玄机，除了标识 Stream 外，它的低 2 位还可以表达以下组合：
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/quic_stream_id.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/quic_stream_id.png, https://img1.kiosk007.top/static/images/network/QUIC/quic_stream_id.png 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/quic_stream_id.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/quic_stream_id.png"
+        title="quic_stream" /></p>
+<p>当 Stream ID 是 0、4、8、12 时，这就是客户端发起的双向 Stream（HTTP/3 不支持服务器发起双向 Stream），它用于传输 HTTP 请求与响应。单向 Stream 有很多用途，所以它在数据前又多出一个 Stream Type 字段，当 Stream Type 为</p>
+<ul>
+<li>0x02：用于编码 QPACK 动态表，比如面对不属于静态表的 HTTP 请求头部，客户端可以通过这个 Stream 发送动态表编码；</li>
+<li>0x03：用于通知编码端 QPACK 动态表的更新结果。</li>
+</ul>
+<p>由于 HTTP/3 的 Stream 之间是乱序传输的，因此，若先发送的编码 Stream 后到达，双向 Stream 中的 QPACK 头部就无法解码，此时传输 HTTP 消息的双向 Stream 就会进入 Block 阻塞状态。 而单向流中的QUIC FRAME 会立马更新动态表内容。</p>
+<blockquote>
+<p>另外可以看到，QUIC的每一层之间都实现了良好的隔离性，这就意味着其实QUIC可以作为一个传输协议，上面不仅可以跑 HTTP协议，还可以用来跑raw data。就是剥离 HTTP3 层以上的数据即可。</p>
+</blockquote>
+<h2 id="quic核心特性">QUIC核心特性</h2>
+<h3 id="0rtt握手">0RTT握手</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/quic_0rtt.gif"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/quic_0rtt.gif, https://img1.kiosk007.top/static/images/network/QUIC/quic_0rtt.gif 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/quic_0rtt.gif 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/quic_0rtt.gif"
+        title="quic_0rtt" /></p>
+<p>在HTTPS over TCP+TLS的时代。HTTPS需要3个RTT，在session 复用的情况下是2个RTT。而QUIC做到了1RTT和会话复用的0RTT。
+QUIC的TLS只能使用TLS1.3，这就可以做到PSK的0RTT。</p>
+<h3 id="改进的拥塞控制">改进的拥塞控制</h3>
+<p>TCP 的拥塞控制实际上包含了四个算法：慢启动，拥塞避免，快速重传，快速恢复。其中TCP中拥塞控制是被编译进内核中的，如果想要更改就需要改变内核参数，但是想要对已有的拥塞控制算法进行更改就需要重新编译内核。QUIC用很多应用层实现的拥塞控制算法，想要修改是十分方便的。</p>
+<h3 id="无队头阻塞">无队头阻塞</h3>
+<p>TCP和TLS由于设计都会存在队头阻塞的情况。</p>
+<ul>
+<li><code>TCP队头阻塞</code> 是由于传输的请求由于中间的报文没有收全，会一直重传，直到报文被重传成功，之后的数据才能接着传。</li>
+<li><code>TLS队头阻塞</code> Record 是 TLS 协议处理的最小单位，最大不能超过 16K，Record由Encrypt和SSL Record Header组成， 一个Record可能是由多个TCP Segment组成，只要是Record中16KB有一个字节没有收到，整个TLS过程都无法完成。</li>
+</ul>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/QUIC/tls_record.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/QUIC/tls_record.png, https://img1.kiosk007.top/static/images/network/QUIC/tls_record.png 1.5x, https://img1.kiosk007.top/static/images/network/QUIC/tls_record.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/QUIC/tls_record.png"
+        title="tls_record" /></p>
+<ul>
+<li><code>HPACK队头阻塞</code> Hpack是H2中提出的一个压缩传输体积的算法，但是HPACK是一个有时间顺序的算法。（上面已解释）</li>
+</ul>
+<p>基于UDP实现的QUIC，当丢包发生之后，不必等丢失的报文完全响应，可以将已经收到的响应交给上层处理。QUIC的解决思路如下</p>
+<ul>
+<li>QUIC 最基本的传输单元是 Packet，不会超过 MTU 的大小，整个加密和认证过程都是基于 Packet 的，不会跨越多个 Packet。这样就能避免 TLS 协议存在的队头阻塞。</li>
+<li>Stream 之间相互独立，比如 Stream2 丢了一个 Pakcet，不会影响 Stream3 和 Stream4。不存在 TCP 队头阻塞。这是基于QUIC 的Packet Header 中的Connection Id 实现的。</li>
+</ul>
+<h3 id="加密认证的报文">加密认证的报文</h3>
+<p>TCP 协议头部没有经过任何加密和认证，所以在传输过程中很容易被中间网络设备篡改，注入和窃听。比如修改序列号、滑动窗口。这些行为有可能是出于性能优化，也有可能是主动攻击。</p>
+<p>但是 QUIC 的 packet 可以说是武装到了牙齿。除了个别报文比如 PUBLIC_RESET 和 CHLO，所有报文头部都是经过认证的，报文 Body 都是经过加密的。这样只要对 QUIC 报文任何修改，接收端都能够及时发现，有效地降低了安全风险。</p>
+<h3 id="基于-stream-和-connecton-级别的流量控制">基于 stream 和 connecton 级别的流量控制</h3>
+<p>QUIC 的流量控制类似 HTTP2，即在 Connection 和 Stream 级别提供了两种流量控制。</p>
+<ul>
+<li>Stream 可以认为就是一条 HTTP 请求。</li>
+<li>Connection 可以类比一条 TCP 连接。多路复用意味着在一条 Connetion 上会同时存在多条 Stream。既需要对单个 Stream 进行控制，又需要针对所有 Stream 进行总体控制。</li>
+</ul>
+<p>QUIC 实现流量控制的原理比较简单：
+通过 window_update 帧告诉对端自己可以接收的字节数，这样发送方就不会发送超过这个数量的数据。</p>
+<p>通过 BlockFrame 告诉对端由于流量控制被阻塞了，无法发送数据。QUIC 的流量控制和 TCP 有点区别，TCP 为了保证可靠性，窗口左边沿向右滑动时的长度取决于已经确认的字节数。如果中间出现丢包，就算接收到了更大序号的 Segment，窗口也无法超过这个序列号。</p>
+<p>但 QUIC 不同，就算此前有些 packet 没有接收到，它的滑动只取决于接收到的最大偏移字节数。</p>
+<p>针对 QUIC Stream：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">可用窗口数 = 最大窗口数 - 接收到的最大偏移数
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>针对 Connection：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">可用窗口数 = Stream1窗口 + Stream2窗口 + Stream3窗口 + SteamN窗口
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="更灵活的拥塞控制算法">更灵活的拥塞控制算法</h3>
+<p>QUIC 协议当前默认使用了 TCP 协议的 Cubic 拥塞控制算法，但是可以灵活的支持 CubicBytes, Reno, RenoBytes, BBR, PCC 等拥塞控制算法</p>
+<h4 id="单调递增的package-number">单调递增的Package Number</h4>
+<p>TCP 为了保证可靠性，使用了基于字节序号的 Sequence Number 及 Ack 来确认消息的有序到达。</p>
+<p>QUIC 同样是一个可靠的协议，它使用 Packet Number 代替了 TCP 的 sequence number，并且每个 Packet Number 都严格递增，也就是说就算 Packet N 丢失了，重传的 Packet N 的 Packet Number 已经不是 N，而是一个比 N 大的值。而 TCP 呢，重传 segment 的 sequence number 和原始的 segment 的 Sequence Number 保持不变，也正是由于这个特性，引入了 Tcp 重传的歧义问题。</p>
+<img src="https://img1.kiosk007.top/static/images/network/QUIC/tcp_rt.jpg" style="width:600px;height:200px">
+<p>如上图所示，超时事件 RTO 发生后，客户端发起重传，然后接收到了 Ack 数据。由于序列号一样，这个 Ack 数据到底是原始请求的响应还是重传请求的响应呢？不好判断。</p>
+<p>如果算成原始请求的响应，但实际上是重传请求的响应（上图左），会导致采样 RTT 变大。如果算成重传请求的响应，但实际上是原始请求的响应，又很容易导致采样 RTT 过小。</p>
+<p>由于 Quic 重传的 Packet 和原始 Packet 的 Pakcet Number 是严格递增的，所以很容易就解决了这个问题。
+<img src="https://img1.kiosk007.top/static/images/network/QUIC/quic_rt.jpg" style="width:600px;height:200px">
+如上图所示，RTO 发生后，根据重传的 Packet Number 就能确定精确的 RTT 计算。如果 Ack 的 Packet Number 是 N+M，就根据重传请求计算采样 RTT。如果 Ack 的 Pakcet Number 是 N，就根据原始请求的时间计算采样 RTT，没有歧义性。</p>
+<p>但是单纯依靠严格递增的 Packet Number 肯定是无法保证数据的顺序性和可靠性。QUIC 又引入了一个 Stream Offset 的概念。</p>
+<p>即一个 Stream 可以经过多个 Packet 传输，Packet Number 严格递增，没有依赖。但是 Packet 里的 Payload 如果是 Stream 的话，就需要依靠 Stream 的 Offset 来保证应用数据的顺序。如错误! 未找到引用源。所示，发送端先后发送了 Pakcet N 和 Pakcet N+1，Stream 的 Offset 分别是 x 和 x+y。</p>
+<p>假设 Packet N 丢失了，发起重传，重传的 Packet Number 是 N+2，但是它的 Stream 的 Offset 依然是 x，这样就算 Packet N + 2 是后到的，依然可以将 Stream x 和 Stream x+y 按照顺序组织起来，交给应用程序处理。</p>
+<h4 id="更多的-ack-块">更多的 Ack 块</h4>
+<p>TCP 的 Sack 选项能够告诉发送方已经接收到的连续 Segment 的范围，方便发送方进行选择性重传。</p>
+<p>由于 TCP 头部最大只有 60 个字节，标准头部占用了 20 字节，所以 Tcp Option 最大长度只有 40 字节，再加上 Tcp Timestamp option 占用了 10 个字节，所以留给 Sack 选项的只有 30 个字节。</p>
+<p>每一个 Sack Block 的长度是 8 个，加上 Sack Option 头部 2 个字节，也就意味着 Tcp Sack Option 最大只能提供 3 个 Block。</p>
+<p>但是 Quic Ack Frame 可以同时提供 256 个 Ack Block，在丢包率比较高的网络下，更多的 Sack Block 可以提升网络的恢复速度，减少重传量。</p>
+<h4 id="ack-delay-时间">Ack Delay 时间</h4>
+<p>Tcp 的 Timestamp 选项存在一个问题，它只是回显了发送方的时间戳，但是没有计算接收端接收到 segment 到发送 Ack 该 segment 的时间。这个时间可以简称为 Ack Delay。这样就会导致RTT计算误差</p>
+<img src="https://img1.kiosk007.top/static/images/network/QUIC/ack_delay.jpg" style="width:600px;height:300px">
+<p>可以认为 TCP 的 RTT 计算：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">RTT = timestamp1 - timestamp2 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>QUIC 的 RTT 计算：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">RTT = timestamp1 - timestamp2 - Ack Delay
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当然具体还得基于采样和历史数据综合计算。</p>
+<h2 id="参考">参考:</h2>
+<p>[1] <a href="https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&amp;mid=2651000241&amp;idx=2&amp;sn=2b6e9426d15099c799c1d0a34d3877d4&amp;chksm=bdbef5e28ac97cf4207ebcb8d119eafc96d590e167921bbc29b180210321a9d21d5c38c44f77&amp;scene=27#wechat_redirect" target="_blank" rel="noopener noreffer">科普：QUIC协议原理分析
+</a></p>
+<p>[2] <a href="https://www.sohu.com/a/126685728_355140" target="_blank" rel="noopener noreffer">腾讯HTTPS优化性能实践</a></p>
+<p>[3] <a href="https://www.infoq.cn/article/Iiv7uzf6ayb9jsxWqkbe" target="_blank" rel="noopener noreffer">QUIC 协议在腾讯的实践和优化
+</a></p>
+<p>[4] <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1309" target="_blank" rel="noopener noreffer">技术扫盲-新一代的基于UDP的低延时网络传输协议</a></p>
+<p>[5] <a href="http://www.alloyteam.com/2020/05/14385/" target="_blank" rel="noopener noreffer">HTTP3原理与实践</a></p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-04-06</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/quic-%E5%8D%8F%E8%AE%AE/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://kiosk007.top/post/quic-%E5%8D%8F%E8%AE%AE/" data-title="认识 QUIC 协议"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://kiosk007.top/post/quic-%E5%8D%8F%E8%AE%AE/" data-title="认识 QUIC 协议"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="https://kiosk007.top/post/quic-%E5%8D%8F%E8%AE%AE/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/quic/">QUIC</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/time_wait-%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/" class="prev" rel="prev" title="TIME_WAIT 问题解决"><i class="fas fa-angle-left fa-fw"></i>TIME_WAIT 问题解决</a>
+            <a href="/post/%E8%87%AA%E5%BB%BA-nginx-%E7%AB%99%E7%82%B9%E9%83%A8%E7%BD%B2/" class="next" rel="next" title="自建 Nginx 部署">自建 Nginx 部署<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.102.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{"valine":{"appId":"XhYn8GEq1Sg7ufJQAVmR4dWN-gzGzoHsz","appKey":"r42k4lqU022wD7IvtwGaQfjN","avatar":"mp","el":"#valine","emojiCDN":"https://fastly.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"en","pageSize":10,"placeholder":"Your comment ...","recordIP":true,"serverURLs":"https://xhyn8geq.lc-cn-n1-shared.com","visitor":true}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

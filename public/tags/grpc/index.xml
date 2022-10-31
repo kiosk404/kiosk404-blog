@@ -1,0 +1,15 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>grpc - Tag - Kiosk&#39;s 个人编程技术分享</title>
+        <link>https://kiosk007.top/tags/grpc/</link>
+        <description>grpc - Tag - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 25 Nov 2020 23:37:00 &#43;0000</lastBuildDate><atom:link href="https://kiosk007.top/tags/grpc/" rel="self" type="application/rss+xml" /><item>
+    <title>gRPC Quick Start </title>
+    <link>https://kiosk007.top/post/grpc-quick-start/</link>
+    <pubDate>Wed, 25 Nov 2020 23:37:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/grpc-quick-start/</guid>
+    <description><![CDATA[<p>RPC 全称 (Remote Procedure Call)，远程过程调用，指的是一台计算机通过网络请求另一台计算机的上服务，从而不需要了解底层网络细节，RPC 是构建在已经存在的协议（TCP/IP，HTTP 等）之上的。<code>gRPC</code> 是云原生计算基金会（CNCF）项目，gRPC 一开始由 google 开发，是一款语言中立、平台中立的服务间通信框架，使用 gRPC 可以使得客户端像调用本地方法一样，调用远程主机提供的服务。可以在任何地方运行，它使客户端和服务器应用程序能够透明地进行通信，并使构建连接系统变得更加容易。</p>]]></description>
+</item></channel>
+</rss>

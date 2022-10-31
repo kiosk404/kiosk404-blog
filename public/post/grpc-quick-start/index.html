@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>gRPC Quick Start  - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:title" content="gRPC Quick Start " />
+<meta property="og:description" content="RPC 全称 (Remote Procedure Call)，远程过程调用，指的是一台计算机通过网络请求另一台计算机的上服务，从而不需要了解底层网络细节，RPC 是构建在已经存在的协议（TCP/IP，HTTP 等）之上的。gRPC 是云原生计算基金会（CNCF）项目，gRPC 一开始由 google 开发，是一款语言中立、平台中立的服务间通信框架，使用 gRPC 可以使得客户端像调用本地方法一样，调用远程主机提供的服务。可以在任何地方运行，它使客户端和服务器应用程序能够透明地进行通信，并使构建连接系统变得更加容易。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://kiosk007.top/post/grpc-quick-start/" /><meta property="og:image" content="https://kiosk007.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-11-25T23:37:00+00:00" />
+<meta property="article:modified_time" content="2020-11-25T23:37:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://kiosk007.top/logo.png"/>
+
+<meta name="twitter:title" content="gRPC Quick Start "/>
+<meta name="twitter:description" content="RPC 全称 (Remote Procedure Call)，远程过程调用，指的是一台计算机通过网络请求另一台计算机的上服务，从而不需要了解底层网络细节，RPC 是构建在已经存在的协议（TCP/IP，HTTP 等）之上的。gRPC 是云原生计算基金会（CNCF）项目，gRPC 一开始由 google 开发，是一款语言中立、平台中立的服务间通信框架，使用 gRPC 可以使得客户端像调用本地方法一样，调用远程主机提供的服务。可以在任何地方运行，它使客户端和服务器应用程序能够透明地进行通信，并使构建连接系统变得更加容易。"/>
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="https://kiosk007.top/post/grpc-quick-start/" /><link rel="prev" href="https://kiosk007.top/post/%E5%9F%BA%E4%BA%8Enginx%E5%AE%9E%E7%8E%B0%E7%9A%84rtmp%E6%9C%8D%E5%8A%A1/" /><link rel="next" href="https://kiosk007.top/post/git-quick-start/" /><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "gRPC Quick Start ",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/kiosk007.top\/post\/grpc-quick-start\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "https:\/\/kiosk007.top\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "grpc","wordcount":  1750 ,
+        "url": "https:\/\/kiosk007.top\/post\/grpc-quick-start\/","datePublished": "2020-11-25T23:37:00+00:00","dateModified": "2020-11-25T23:37:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/kiosk007.top\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/grpc-quick-start/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">gRPC Quick Start </h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>network</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-25">2020-11-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1750 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;9 minutes&nbsp;<span id="/post/grpc-quick-start/" class="leancloud_visitors" data-flag-title="gRPC Quick Start ">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;views
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#context">Context</a></li>
+    <li><a href="#protocal-buffer">Protocal Buffer</a>
+      <ul>
+        <li><a href="#profile">Profile</a></li>
+        <li><a href="#demo">Demo</a></li>
+        <li><a href="#golang-protocol-buffer">Golang protocol buffer</a></li>
+      </ul>
+    </li>
+    <li><a href="#grpc-start">gRPC Start</a>
+      <ul>
+        <li><a href="#install">install</a></li>
+        <li><a href="#define-proto">define proto</a></li>
+        <li><a href="#grpc-server">gRPC server</a></li>
+        <li><a href="#grpc-client">gRPC client</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>RPC 全称 (Remote Procedure Call)，远程过程调用，指的是一台计算机通过网络请求另一台计算机的上服务，从而不需要了解底层网络细节，RPC 是构建在已经存在的协议（TCP/IP，HTTP 等）之上的。<code>gRPC</code> 是云原生计算基金会（CNCF）项目，gRPC 一开始由 google 开发，是一款语言中立、平台中立的服务间通信框架，使用 gRPC 可以使得客户端像调用本地方法一样，调用远程主机提供的服务。可以在任何地方运行，它使客户端和服务器应用程序能够透明地进行通信，并使构建连接系统变得更加容易。</p>
+<h1 id="context">Context</h1>
+<ul>
+<li>gRPC 默认采用 protocol buffer 作为 IDL (Interface Description Lanage) 接口描述语言，服务之间通信的数据序列化和反序列化也是基于 protocol buffer 的，因为 protocol buffer 的特殊性，所以 gRPC 框架是跨语言的通信框架（与编程语言无关性）</li>
+<li>gRPC 是基于 http2 协议实现,多路复用支持通过同一连接发送多个并行请求,双向全双工通信，用于同时发送客户端请求和服务器响应,内置流式传输使请求和响应能够异步流式传输大数据集</li>
+<li>gRPC 并没有直接实现负载均衡和服务发现的功能，但是已经提供了自己的设计思路。已经为命名解析和负载均衡提供了接口。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-proto" data-lang="proto"><span class="line"><span class="cl"><span class="kd">service</span> <span class="n">Greeter</span> <span class="p">{</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>   <span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">   以下 分别是 服务端 推送流， 客户端 推送流 ，双向流。
+</span></span></span><span class="line"><span class="cl"><span class="cm">   */</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="k">rpc</span> <span class="n">GetStream</span> <span class="p">(</span><span class="n">StreamReqData</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">stream</span> <span class="n">StreamResData</span><span class="p">){}</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="k">rpc</span> <span class="n">PutStream</span> <span class="p">(</span><span class="n">stream</span> <span class="n">StreamReqData</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">StreamResData</span><span class="p">){}</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="k">rpc</span> <span class="n">AllStream</span> <span class="p">(</span><span class="n">stream</span> <span class="n">StreamReqData</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">stream</span> <span class="n">StreamResData</span><span class="p">){}</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="p">}</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="protocal-buffer">Protocal Buffer</h1>
+<h2 id="profile">Profile</h2>
+<p><a href="https://developers.google.cn/protocol-buffers" target="_blank" rel="noopener noreffer">Protocol buffers</a> 是一个灵活的、高效的、自动化的用于对结构化数据进行序列化的协议，与XML相比，Protocol buffers序列化后的码流更小、速度更快、操作更简单。</p>
+<p><code>序列化(serialization、marshalling)</code>的过程是指将数据结构或者对象的状态转换成可以存储(比如文件、内存)或者传输的格式(比如网络)。反向操作就是反序列化<code>(deserialization、unmarshalling)</code>的过程。</p>
+<ul>
+<li>二十世纪九十年代后期，XML开始流行，它是一种人类易读的基于文本的编码方式，易于阅读和理解，但是失去了紧凑的基于字节流的编码的优势。</li>
+<li>JSON是一种更轻量级的基于文本的编码方式，经常用在client/server端的通讯中。</li>
+<li>YAML类似JSON，新的特性更强大，更适合人类阅读，也更紧凑。</li>
+</ul>
+<p>除了上面这些和Protobuf，还有许许多多的序列化格式，比如Thrift、Avro、BSON、CBOR、MessagePack, 还有很多非跨语言的编码格式。项目<a href="https://github.com/smallnest/gosercomp" target="_blank" rel="noopener noreffer">gosercomp</a>对比了各种go的序列化库，包括序列化和反序列的性能，以及序列化后的数据大小。总体来说Protobuf序列化和反序列的性能都是比较高的，编码后的数据大小也不错。</p>
+<p><font color='blue'>如果你并不希望一定要在传输过程中消息数据可读，那么可以用 Protocal Buffer 来代替 Json 。</font></p>
+<h2 id="demo">Demo</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-proto" data-lang="proto"><span class="line"><span class="cl"><span class="n">syntax</span> <span class="o">=</span> <span class="s">&#34;proto3&#34;</span><span class="p">;</span> <span class="err"> </span> <span class="err"> </span>  <span class="c1">// 版本定义
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="kd">message</span> <span class="nc">SearchRequest</span> <span class="p">{</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="kt">int32</span>  <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="kt">string</span> <span class="n">name</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="kt">bool</span>   <span class="n">rich</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="p">}</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>第一行指定<code>protobuf</code>的版本，这里是以proto3格式定义。</p>
+<p>第三行 <code>message</code> 表示定义了一个结构体，在这个结构体里，最常见的类型有以下几种</p>
+<ol>
+<li><font color='#FFB90F'>数值型</font> ，如 double, float, int32, int64 &hellip;</li>
+<li><font color='#FFB90F'>布尔型</font>，bool 只有True和False</li>
+<li><font color='#FFB90F'>字符型</font>，string 表示任意字符，但是长度不可超过2的32次方</li>
+<li><font color='#FFB90F'>字节型</font>，bytes表示任意的byte数组序列，但是长度也不可以超过2的32次方，比如可以用来传递一个图片。</li>
+<li><font color='#FFB90F'>枚举型</font>，enum 表示枚举。可独立在 message 之外。可通过 <code>option allow_alias = true;</code> 给枚举定义别名。</li>
+<li>字典型，map类型需要设置键和值的类型。</li>
+<li><font color='#FFB90F'>Well-Known类型</font>, Protobuf也提供了定义，比如Timestamp和Duration。这些定义被放在<code>github.com/golang/protobuf/ptypes/</code>。</li>
+</ol>
+<p><strong>引入其它proto文件</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-proto" data-lang="proto"><span class="line"><span class="cl"><span class="k">import</span>  <span class="s">&#34;other.proto&#34;</span><span class="p">;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">import</span> <span class="n">public</span> <span class="s">&#34;other2.proto&#34;</span><span class="p">;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">import</span> <span class="n">weak</span> <span class="s">&#34;other.proto&#34;</span><span class="p">;</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>比较少使用的是public和weak关键字。默认情况下weak引入的文件允许不存在(missing)，只为了google内部使用。public具有传递性，如果你在文件中通过public引入第三方的proto文件，那么引入你这个文件同时也会引入第三方的proto。</p>
+<p><strong>关键字：</strong></p>
+<ol>
+<li><font color='#FFB90F'> option</font> ：option可以用在proto的scope中，或者message、enum、service的定义中。一般常用的就是定义某语言生成后的package名，最常见的用法，如 <code>option go_package = &quot;xxx&quot;;</code></li>
+<li><font color='#FFB90F'>repeated</font> : 指定某一个字段可以存放同一个类型的多个数据, 相当于golang里的slice。可采用<code>[packed=true]</code>以实现更高
+效的编码。<code>repeated int32 samples = 4 [packed=true];</code></li>
+<li><font color='#FFB90F'> reserved</font> : 保护某字段或定义，如在message中指定 数字1 被保护，或变量名 person 被保护。一般用来保护废弃的数字定义。如<code>reserved 5;  reserved &quot;salary&quot;;</code> 如果再使用5 或者 salary 则会报错。</li>
+</ol>
+<p><strong>demo</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">syntax</span> <span class="p">=</span> <span class="s">&#34;proto3&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">my</span><span class="p">.</span><span class="nx">project</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="s">&#34;google/protobuf/timestamp.proto&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">option</span> <span class="nx">go_package</span> <span class="p">=</span> <span class="s">&#34;pb&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">message</span> <span class="nx">PersonMessage</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int32</span>   <span class="nx">id</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">bool</span>    <span class="nx">is_adult</span> <span class="p">=</span><span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">string</span>  <span class="nx">name</span> <span class="p">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">float</span>   <span class="nx">height</span> <span class="p">=</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">float</span>   <span class="nx">weight</span> <span class="p">=</span> <span class="mi">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">bytes</span>   <span class="nx">avatar</span> <span class="p">=</span> <span class="mi">6</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">string</span>  <span class="nx">email</span> <span class="p">=</span> <span class="mi">7</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">bool</span>    <span class="nx">email_verified</span> <span class="p">=</span> <span class="mi">8</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">repeated</span> <span class="kt">string</span> <span class="nx">phone_numbers</span> <span class="p">=</span> <span class="mi">9</span><span class="p">;</span>  <span class="c1">// packed
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">Gender</span>  <span class="nx">gender</span> <span class="p">=</span> <span class="mi">11</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Date</span>    <span class="nx">birthday</span> <span class="p">=</span> <span class="mi">12</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">repeated</span> <span class="nx">Address</span> <span class="nx">addresses</span> <span class="p">=</span> <span class="mi">13</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">google</span><span class="p">.</span><span class="nx">protobuf</span><span class="p">.</span><span class="nx">Timestamp</span> <span class="nx">lastModified</span> <span class="p">=</span> <span class="mi">14</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">enum</span> <span class="nx">Gender</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">option</span> <span class="nx">allow_alias</span> <span class="p">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Not_SPECIFIED</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MALE</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">FEMALE</span> <span class="p">=</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MAN</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">WOMAN</span> <span class="p">=</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">message</span> <span class="nx">Address</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">string</span> <span class="nx">province</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">string</span> <span class="nx">city</span> <span class="p">=</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">string</span> <span class="nx">zip_code</span> <span class="p">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">string</span> <span class="nx">street</span> <span class="p">=</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">string</span> <span class="nx">number</span> <span class="p">=</span> <span class="mi">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">reserved</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span> <span class="nx">to</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span> <span class="nx">to</span> <span class="nx">max</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">reserved</span> <span class="s">&#34;foo&#34;</span><span class="p">,</span><span class="s">&#34;bar&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">message</span> <span class="nx">Date</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int32</span> <span class="nx">year</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int32</span> <span class="nx">month</span> <span class="p">=</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int32</span> <span class="nx">day</span> <span class="p">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="golang-protocol-buffer">Golang protocol buffer</h2>
+<p>定义 <code>.proto</code> 文件后，使用命令
+<code>protoc --protoc_path src/ -go_out=src/ src/person.proto</code> 生成golang 文件</p>
+<p><strong>定义一个pb</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewPersonMessage</span><span class="p">()</span> <span class="o">*</span><span class="nx">pb</span><span class="p">.</span><span class="nx">PersonMessage</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">pb</span><span class="p">.</span><span class="nx">PersonMessage</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">IsAdult</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Kiosk&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Height</span><span class="p">:</span> <span class="mi">177</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Weight</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Gender</span><span class="p">:</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">PersonMessage_MALE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">PhoneNumbers</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;15667026708&#34;</span><span class="p">,</span><span class="s">&#34;17610660213&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Email</span><span class="p">:</span> <span class="s">&#34;weijiaxiang007@foxmail.com&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>** 将 pb 写入文件 **</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">writeToFile</span><span class="p">(</span><span class="nx">filename</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">pb</span> <span class="nx">proto</span><span class="p">.</span><span class="nx">Message</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">dataBytes</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">proto</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">pb</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="s">&#34;无法序列化&#34;</span><span class="p">)</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">WriteFile</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="nx">dataBytes</span><span class="p">,</span> <span class="mo">0644</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="s">&#34;无法写入文件&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;成功写入到文件&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pm</span> <span class="o">:=</span> <span class="nf">NewPersonMessage</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">_</span> <span class="p">=</span> <span class="nf">writeToFile</span><span class="p">(</span><span class="s">&#34;person.bin&#34;</span><span class="p">,</span><span class="nx">pm</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>** 从文件读出 pb **</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">readFromFile</span><span class="p">(</span><span class="nx">filename</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">pb</span> <span class="nx">proto</span><span class="p">.</span><span class="nx">Message</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">dataBytes</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadFile</span><span class="p">(</span><span class="nx">filename</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="s">&#34;读取文件错误&#34;</span><span class="p">,</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">proto</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">dataBytes</span><span class="p">,</span> <span class="nx">pb</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="s">&#34;反序列化失败&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pm</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">demo</span><span class="p">.</span><span class="nx">PersonMessage</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">_</span> <span class="p">=</span> <span class="nf">readFromFile</span><span class="p">(</span><span class="s">&#34;person.bin&#34;</span><span class="p">,</span> <span class="nx">pm</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">pm</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>pb 转 json &amp;&amp; json 转 pb</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">toJson</span><span class="p">(</span><span class="nx">pb</span> <span class="nx">proto</span><span class="p">.</span><span class="nx">Message</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">marshaler</span> <span class="o">:=</span> <span class="nx">jsonpb</span><span class="p">.</span><span class="nx">Marshaler</span><span class="p">{</span><span class="nx">Indent</span><span class="p">:</span> <span class="s">&#34;    &#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">str</span> <span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">marshaler</span><span class="p">.</span><span class="nf">MarshalToString</span><span class="p">(</span><span class="nx">pb</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="s">&#34;转换为JSON时发生错误&#34;</span><span class="p">,</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">str</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">fromJson</span><span class="p">(</span><span class="nx">in</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">pb</span> <span class="nx">proto</span><span class="p">.</span><span class="nx">Message</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">jsonpb</span><span class="p">.</span><span class="nf">UnmarshalString</span><span class="p">(</span><span class="nx">in</span><span class="p">,</span> <span class="nx">pb</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>gogo库</strong></p>
+<p>虽然官方库 <font color='#68228B'><a href="https://github.com/golang/protobuf" target="_blank" rel="noopener noreffer">golang/protobu</a> </font>提供了对Protobuf的支持，但是使用最多还是第三方实现的库<a href="https://github.com/gogo/protobuf" target="_blank" rel="noopener noreffer">gogo/protobuf</a>。</p>
+<p>gogo库基于官方库开发，增加了很多的功能，包括：</p>
+<ol>
+<li>快速的序列化和反序列化</li>
+<li>更规范的Go数据结构</li>
+<li>goprotobuf兼容</li>
+<li>可选择的产生一些辅助方法，减少使用中的代码输入</li>
+<li>可以选择产生测试代码和benchmark代码</li>
+<li>其它序列化格式</li>
+</ol>
+<blockquote>
+<p>更多参考github： <a href="http://github.com/gogo/protobuf" target="_blank" rel="noopener noreffer">http://github.com/gogo/protobuf</a></p>
+</blockquote>
+<h1 id="grpc-start">gRPC Start</h1>
+<p>进入主题了, gRPC 是Google发布的基于HTTP 2.0传输层协议承载的高性能开源软件框架。提供了支持多种编程语言的、对网络设备进行配置和纳管的方法。</p>
+<p>RPC是远程函数调用，因此每次调用的函数参数和返回值不能太大，否则将严重影响每次调用的响应时间。因此传统的RPC方法调用对于上传和下载较大数据量场景并不适合。同时传统RPC模式也不适用于对时间不确定的订阅和发布模式。为此，gRPC框架针对服务器端和客户端分别提供了流特性。
+<font color='#483D8B'>支持 服务端 推送流， 客户端 推送流 ，双向流。</font></p>
+<img alt="Smiley face" height="420" src="https://img1.kiosk007.top/static/images/network/gRPC/grpc_concept_diagram.png" />
+<h2 id="install">install</h2>
+<p>gRPC要求 Go 版本 &gt;= 1.6</p>
+<ol>
+<li>安装grpc</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ go get -u -v google.golang.org/grpc
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>安装 Protocol Buffers v3、protoc-gen-go:</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ go get -v -u github.com/golang/protobuf/protoc-gen-go
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>生成grpc代码</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ protoc -I. --go_out<span class="o">=</span><span class="nv">plugins</span><span class="o">=</span>grpc:. helloworld.proto
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="define-proto">define proto</h2>
+<p>gRPC需要事先定义proto文件，如下所示。定义完成后需要执行命令 <code>protoc --go_out=plugins=grpc:. message.proto</code> 生成相关的go语言代码。更多详细的操作参考官方例子 <a href="https://grpc.io/docs/languages/go/quickstart/" target="_blank" rel="noopener noreffer">Quick start - gRPC</a>
+             
+<a href="/images/network/gRPC/message.proto" rel="">点击查看</a></p>
+<h2 id="grpc-server">gRPC server</h2>
+<p>gRPC服务的启动流程和标准库的RPC服务启动流程类似：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">const</span> <span class="nx">port</span>  <span class="p">=</span> <span class="s">&#34;:5001&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">listen</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nf">Listen</span><span class="p">(</span><span class="s">&#34;tcp&#34;</span><span class="p">,</span> <span class="nx">port</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>  <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">()</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">options</span> <span class="p">[]</span><span class="nx">grpc</span><span class="p">.</span><span class="nx">ServerOption</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">options</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">grpc</span><span class="p">.</span><span class="nf">HeaderTableSize</span><span class="p">(</span><span class="mi">2048</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">server</span> <span class="o">:=</span> <span class="nx">grpc</span><span class="p">.</span><span class="nf">NewServer</span><span class="p">(</span><span class="nx">options</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pb</span><span class="p">.</span><span class="nf">RegisterEmployeeServiceServer</span><span class="p">(</span><span class="nx">server</span><span class="p">,</span> <span class="nb">new</span><span class="p">(</span><span class="nx">example</span><span class="p">.</span><span class="nx">EmployeeService</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;gRPC Server started ...\n Listen on port %s&#34;</span><span class="p">,</span> <span class="nx">port</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">_</span> <span class="p">=</span> <span class="nx">server</span><span class="p">.</span><span class="nf">Serve</span><span class="p">(</span><span class="nx">listen</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>这里设置监听在 tcp 的 5001 端口.</li>
+<li><code>grpc.ServerOption</code> 可以设置gRPC的服务端监听参数， 这里我仅设置了 H2 的 header 动态表大小。除此之外，如设置 TLS证书载入：<code>grpc.Creds(c credentials.TransportCredentials)</code>。
+最大并发数、收发最大消息Size等等，详见 <a href="https://godoc.org/google.golang.org/grpc#ServerOption" target="_blank" rel="noopener noreffer">https://godoc.org/google.golang.org/grpc#ServerOption</a></li>
+<li><code>pb.RegisterEmployeeServiceServer</code> 是proto生成的 message.pb.go 提供的服务端注册方法。<code>example.EmployeeService</code> 是我们后面手动创建的空结构，后面的函数方法都需要基于这个空结构实现。</li>
+<li>server.Serve 将监听套接字传入。</li>
+</ul>
+<p><strong>实现 EmployeeService</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-proto" data-lang="proto"><span class="line"><span class="cl"><span class="kd">service</span> <span class="n">EmployeeService</span> <span class="p">{</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="k">rpc</span> <span class="n">GetByNo</span><span class="p">(</span><span class="n">GetByNoRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">EmployeeResponse</span><span class="p">);</span>         <span class="c1">// 一元请求
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="err"> </span><span class="k">rpc</span> <span class="n">GetAll</span><span class="p">(</span><span class="n">GetAllRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">stream</span> <span class="n">EmployeeResponse</span><span class="p">);</span> <span class="err"> </span>  <span class="c1">// 客户端推送流
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="err"> </span><span class="k">rpc</span> <span class="n">AddPhoto</span><span class="p">(</span><span class="n">stream</span> <span class="n">AddPhotoRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">AddPhotoResponse</span><span class="p">);</span> <span class="c1">// 服务端推送流
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="err"> </span><span class="k">rpc</span> <span class="n">SaveAll</span><span class="p">(</span><span class="n">stream</span> <span class="n">EmployeeRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">stream</span> <span class="n">EmployeeResponse</span><span class="p">);</span> <span class="c1">// 双向流
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">对应的</span><span class="n">pb生成代码</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c1">// EmployeeServiceServer is the server API for EmployeeService service.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">type</span> <span class="n">EmployeeServiceServer</span> <span class="n">interface</span> <span class="p">{</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>	<span class="n">GetByNo</span><span class="p">(</span><span class="n">context.Context</span><span class="p">,</span> <span class="err">*</span><span class="n">GetByNoRequest</span><span class="p">)</span> <span class="p">(</span><span class="err">*</span><span class="n">EmployeeResponse</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>	<span class="n">GetAll</span><span class="p">(</span><span class="err">*</span><span class="n">GetAllRequest</span><span class="p">,</span> <span class="n">EmployeeService_GetAllServer</span><span class="p">)</span> <span class="n">error</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>	<span class="n">AddPhoto</span><span class="p">(</span><span class="n">EmployeeService_AddPhotoServer</span><span class="p">)</span> <span class="n">error</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>	<span class="n">SaveAll</span><span class="p">(</span><span class="n">EmployeeService_SaveAllServer</span><span class="p">)</span> <span class="n">error</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="p">}</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先需要定义 <code>type EmployeeService struct {}</code> 后面的所有方法都需要基于这个实现，这个也是服务端注册的参数。</p>
+<ul>
+<li>**一元请求 <code>GetByNo()</code> **</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">EmployeeService</span><span class="p">)</span> <span class="nf">GetByNo</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">request</span> <span class="o">*</span><span class="nx">pb</span><span class="p">.</span><span class="nx">GetByNoRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeResponse</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">No</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span><span class="nx">e</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">employees</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">request</span><span class="p">.</span><span class="nx">No</span> <span class="o">==</span> <span class="nx">e</span><span class="p">.</span><span class="nx">No</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="o">&amp;</span><span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeResponse</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Employee</span><span class="p">:</span>           <span class="o">&amp;</span><span class="nx">e</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">},</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;the employee does not exist&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>请求参数是 <code>GetByNoRequest</code>， 通过上面的pb定义得知，这个message是有一个No参数。所以可以取出来当请求参数。返回的参数是<code>EmployeeResponse</code>，通过pb定义得知，其返回参数是 <code>Employee</code> 对象。</p>
+<ul>
+<li><strong>服务端返回流 <code>GetAll()</code></strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">EmployeeService</span><span class="p">)</span> <span class="nf">GetAll</span><span class="p">(</span><span class="nx">request</span> <span class="o">*</span><span class="nx">pb</span><span class="p">.</span><span class="nx">GetAllRequest</span><span class="p">,</span> <span class="nx">stream</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeService_GetAllServer</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span><span class="nx">e</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">employees</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Send</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeResponse</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Employee</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">e</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">})</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>注意，返回的参数是一条流，其流发送的方法也可以使用Send函数，这里是一个循环，将employee对象循环写入这条流中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">type EmployeeService_GetAllServer interface {
+</span></span><span class="line"><span class="cl">	Send(*EmployeeResponse) error
+</span></span><span class="line"><span class="cl">	grpc.ServerStream
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>客户端推送流 <code>AddPhoto()</code></strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">EmployeeService</span><span class="p">)</span> <span class="nf">AddPhoto</span><span class="p">(</span><span class="nx">stream</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeService_AddPhotoServer</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">md</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">metadata</span><span class="p">.</span><span class="nf">FromIncomingContext</span><span class="p">(</span><span class="nx">stream</span><span class="p">.</span><span class="nf">Context</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">ok</span> <span class="p">{</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;employee: %s&#34;</span><span class="p">,</span> <span class="nx">md</span><span class="p">[</span><span class="s">&#34;no&#34;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">images</span> <span class="p">[]</span><span class="kt">byte</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">data</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Recv</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;File Size %d\n&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">images</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">SendAndClose</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">pb</span><span class="p">.</span><span class="nx">AddPhotoResponse</span><span class="p">{</span><span class="nx">IsOk</span><span class="p">:</span> <span class="kc">true</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;File received: %d\n&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">Data</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">images</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">images</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Data</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个函数实现了客户端将一张图片拆分成 bytes 再一点一点发送给服务端的demo。读到EOF表示成功读完。Data正是在 pb 里定义的<code>AddPhotoRequest</code>的客户端请求内容。</p>
+<ul>
+<li><strong>双向流 <code>SaveAll()</code></strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">EmployeeService</span><span class="p">)</span> <span class="nf">SaveAll</span><span class="p">(</span><span class="nx">stream</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeService_SaveAllServer</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">empReq</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Recv</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">break</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span><span class="k">else</span> <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">employees</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">employees</span><span class="p">,</span> <span class="o">*</span><span class="nx">empReq</span><span class="p">.</span><span class="nx">Employee</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">1000</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Microsecond</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">_</span> <span class="p">=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Send</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeResponse</span><span class="p">{</span><span class="nx">Employee</span><span class="p">:</span> <span class="nx">empReq</span><span class="p">.</span><span class="nx">Employee</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">_</span> <span class="p">,</span> <span class="nx">emp</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">employees</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">emp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在这个方法中，服务端每读一份数据，休眠100ms，再将读入的数据原封不动的返回给客户端。</p>
+<h2 id="grpc-client">gRPC client</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">options</span> <span class="p">[]</span><span class="nx">grpc</span><span class="p">.</span><span class="nx">DialOption</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">options</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">grpc</span><span class="p">.</span><span class="nf">WithInsecure</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">grpc</span><span class="p">.</span><span class="nf">Dial</span><span class="p">(</span><span class="s">&#34;localhost&#34;</span> <span class="o">+</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">options</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="s">&#34;can&#39;t dial server &#34;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">conn</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">client</span> <span class="o">:=</span> <span class="nx">pb</span><span class="p">.</span><span class="nf">NewEmployeeServiceClient</span><span class="p">(</span><span class="nx">conn</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// GetByNo(client)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// getAll(client)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">//addPhoto(client)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">saveAll</span><span class="p">(</span><span class="nx">client</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>客户端也有一个类似Server端的<code>grpc.DialOption</code>, 这里因为服务端没有使用证书，所以客户端必须添加 <code>WithInsecure</code> 选项。调用 <code>pb.NewEmployeeServiceClient(conn)</code> 会返回一个 Client <code>employeeServiceClient</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">employeeServiceClient</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">cc</span> <span class="nx">grpc</span><span class="p">.</span><span class="nx">ClientConnInterface</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个client拥有之前定义的客户端可调用的 RPC 方法。如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+</span></span><span class="line"><span class="cl">type EmployeeServiceClient interface {
+</span></span><span class="line"><span class="cl">	GetByNo(ctx context.Context, in *GetByNoRequest, opts ...grpc.CallOption) (*EmployeeResponse, error)
+</span></span><span class="line"><span class="cl">	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (EmployeeService_GetAllClient, error)
+</span></span><span class="line"><span class="cl">	AddPhoto(ctx context.Context, opts ...grpc.CallOption) (EmployeeService_AddPhotoClient, error)
+</span></span><span class="line"><span class="cl">	SaveAll(ctx context.Context, opts ...grpc.CallOption) (EmployeeService_SaveAllClient, error)
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>实现 Client 调用</strong></p>
+<ul>
+<li><strong>一元请求 <code>GetByNo()</code></strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">GetByNo</span><span class="p">(</span><span class="nx">client</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeServiceClient</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">GetByNo</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">pb</span><span class="p">.</span><span class="nx">GetByNoRequest</span><span class="p">{</span><span class="nx">No</span><span class="p">:</span> <span class="mi">1996</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">Employee</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>传入的参数拥有 <code>GetByNo()</code> 这个方法，直接调用即可。</p>
+<p>抓包可以看到，整个gRPC的调用过程是基于HTTP2的, 本质是发起了一个H2的POST请求, 和传统H2不同的是，response 的 Header帧有2个，结尾处还有一个。第2个表示调用结束。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Stream: HEADERS, Stream ID: 1, Length 80, POST /employee.EmployeeService/GetByNo
+</span></span><span class="line"><span class="cl">    Length: <span class="m">80</span>
+</span></span><span class="line"><span class="cl">    Type: HEADERS <span class="o">(</span>1<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    Flags: 0x04
+</span></span><span class="line"><span class="cl">    0... .... .... .... .... .... .... .... <span class="o">=</span> Reserved: 0x0
+</span></span><span class="line"><span class="cl">    .000 <span class="m">0000</span> <span class="m">0000</span> <span class="m">0000</span> <span class="m">0000</span> <span class="m">0000</span> <span class="m">0000</span> <span class="nv">0001</span> <span class="o">=</span> Stream Identifier: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    <span class="o">[</span>Pad Length: 0<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Header Block Fragment: 3fe10f8386459960b4d741fd14abe0a6ba0fe8a5dc5b3b98…
+</span></span><span class="line"><span class="cl">    <span class="o">[</span>Header Length: 202<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    <span class="o">[</span>Header Count: 8<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    Header table size update
+</span></span><span class="line"><span class="cl">    Header: :method: POST
+</span></span><span class="line"><span class="cl">    Header: :scheme: http
+</span></span><span class="line"><span class="cl">    Header: :path: /employee.EmployeeService/GetByNo
+</span></span><span class="line"><span class="cl">    Header: :authority: localhost:5001
+</span></span><span class="line"><span class="cl">    Header: content-type: application/grpc
+</span></span><span class="line"><span class="cl">    Header: user-agent: grpc-go/1.33.2
+</span></span><span class="line"><span class="cl">    Header: te: trailers
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/gRPC/grpc_v1.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/gRPC/grpc_v1.png, https://img1.kiosk007.top/static/images/network/gRPC/grpc_v1.png 1.5x, https://img1.kiosk007.top/static/images/network/gRPC/grpc_v1.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/gRPC/grpc_v1.png"
+        title="https://img1.kiosk007.top/static/images/network/gRPC/grpc_v1.png" /></p>
+<ul>
+<li><strong>服务端返回流 <code>GetAll()</code></strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">getAll</span><span class="p">(</span><span class="nx">client</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeServiceClient</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">stream</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">pb</span><span class="p">.</span><span class="nx">GetAllRequest</span><span class="p">{})</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Recv</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span><span class="k">else</span> <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">Employee</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>服务端返回的流可以使用 <code>stream.Recv()</code> 循环接收。
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/network/gRPC/grpc_v2.png"
+        data-srcset="https://img1.kiosk007.top/static/images/network/gRPC/grpc_v2.png, https://img1.kiosk007.top/static/images/network/gRPC/grpc_v2.png 1.5x, https://img1.kiosk007.top/static/images/network/gRPC/grpc_v2.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/network/gRPC/grpc_v2.png"
+        title="https://img1.kiosk007.top/static/images/network/gRPC/grpc_v2.png" /></p>
+<ul>
+<li><strong>客户端推送流 <code>AddPhoto()</code></strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">addPhoto</span><span class="p">(</span><span class="nx">client</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeServiceClient</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">imgFile</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Open</span><span class="p">(</span><span class="s">&#34;/home/kiosk007/Pictures/2020-09-22_00-15.png&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">imgFile</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">md</span> <span class="o">:=</span> <span class="nx">metadata</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;no&#34;</span><span class="p">:</span> <span class="s">&#34;1996&#34;</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">context</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">context</span> <span class="p">=</span> <span class="nx">metadata</span><span class="p">.</span><span class="nf">NewOutgoingContext</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">md</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">stream</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">AddPhoto</span><span class="p">(</span><span class="nx">context</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">chunk</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">128</span><span class="o">*</span><span class="mi">24</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">chunkSize</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">imgFile</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">chunk</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">break</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">chunkSize</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">chunk</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">chunk</span> <span class="p">=</span> <span class="nx">chunk</span><span class="p">[:</span><span class="nx">chunkSize</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">_</span> <span class="p">=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Send</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">pb</span><span class="p">.</span><span class="nx">AddPhotoRequest</span><span class="p">{</span><span class="nx">Data</span><span class="p">:</span> <span class="nx">chunk</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">CloseAndRecv</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">IsOk</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>客户端推送流实现了一个照片流式上传的功能。每次发送 3072字节 (128*24)。</p>
+<ul>
+<li><strong>双向流 <code>SaveAll()</code></strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">saveAll</span><span class="p">(</span><span class="nx">client</span> <span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeServiceClient</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">employees</span> <span class="o">:=</span> <span class="p">[]</span><span class="nx">pb</span><span class="p">.</span><span class="nx">Employee</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">pb</span><span class="p">.</span><span class="nx">Employee</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Id</span><span class="p">:</span>                   <span class="mi">300</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">No</span><span class="p">:</span>                   <span class="mi">5001</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">FirstName</span><span class="p">:</span>            <span class="s">&#34;Monica&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">LastName</span><span class="p">:</span>             <span class="s">&#34;Geller&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">MonthSalary</span><span class="p">:</span>          <span class="mi">15500</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Status</span><span class="p">:</span>               <span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeStatus_RETIRED</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">LastModified</span><span class="p">:</span>         <span class="o">&amp;</span><span class="nx">timestamp</span><span class="p">.</span><span class="nx">Timestamp</span><span class="p">{</span> <span class="nx">Seconds</span><span class="p">:</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">Unix</span><span class="p">()</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">pb</span><span class="p">.</span><span class="nx">Employee</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Id</span><span class="p">:</span>                   <span class="mi">301</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">No</span><span class="p">:</span>                   <span class="mi">5002</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">FirstName</span><span class="p">:</span>            <span class="s">&#34;Joey&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">LastName</span><span class="p">:</span>             <span class="s">&#34;Green&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">MonthSalary</span><span class="p">:</span>          <span class="mi">200</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Status</span><span class="p">:</span>               <span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeStatus_RESIGNED</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">LastModified</span><span class="p">:</span>         <span class="o">&amp;</span><span class="nx">timestamp</span><span class="p">.</span><span class="nx">Timestamp</span><span class="p">{</span> <span class="nx">Seconds</span><span class="p">:</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">Unix</span><span class="p">()</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">stream</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">SaveAll</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">finishChannel</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+</span></span><span class="line"><span class="cl">	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">res</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Recv</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">finishChannel</span> <span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{}{}</span>
+</span></span><span class="line"><span class="cl">				<span class="k">break</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span><span class="k">else</span> <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">Employee</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span><span class="nx">e</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">employees</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Send</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">pb</span><span class="p">.</span><span class="nx">EmployeeRequest</span><span class="p">{</span><span class="nx">Employee</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">e</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">500</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Microsecond</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">_</span> <span class="p">=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">CloseSend</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="o">&lt;-</span> <span class="nx">finishChannel</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>参考：</strong></p>
+<ol>
+<li><a href="https://colobu.com/2019/10/03/protobuf-ultimate-tutorial-in-go" target="_blank" rel="noopener noreffer">Protobuf 终极教程  &ndash; 鸟窝</a></li>
+</ol></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-11-25</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/grpc-quick-start/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://kiosk007.top/post/grpc-quick-start/" data-title="gRPC Quick Start "><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://kiosk007.top/post/grpc-quick-start/" data-title="gRPC Quick Start "><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="https://kiosk007.top/post/grpc-quick-start/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/grpc/">grpc</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/%E5%9F%BA%E4%BA%8Enginx%E5%AE%9E%E7%8E%B0%E7%9A%84rtmp%E6%9C%8D%E5%8A%A1/" class="prev" rel="prev" title="基于Nginx的实时音频直播服务"><i class="fas fa-angle-left fa-fw"></i>基于Nginx的实时音频直播服务</a>
+            <a href="/post/git-quick-start/" class="next" rel="next" title="Git Quick Start">Git Quick Start<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.102.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{"valine":{"appId":"XhYn8GEq1Sg7ufJQAVmR4dWN-gzGzoHsz","appKey":"r42k4lqU022wD7IvtwGaQfjN","avatar":"mp","el":"#valine","emojiCDN":"https://fastly.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"en","pageSize":10,"placeholder":"Your comment ...","recordIP":true,"serverURLs":"https://xhyn8geq.lc-cn-n1-shared.com","visitor":true}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

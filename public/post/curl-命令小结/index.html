@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>curl 命令小结 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:title" content="curl 命令小结" />
+<meta property="og:description" content="curl 命令是我日常工作中最常用的命令之一，所以很有必要总结一下curl命令的一些用法。如统计耗时、以指定的ip访问某个域名。添加携带某些Header等。curl命令绝对是日常debug之神。
+
+        
+    CURL
+    " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://kiosk007.top/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/" /><meta property="og:image" content="https://kiosk007.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-05-29T15:22:00+00:00" />
+<meta property="article:modified_time" content="2021-05-29T15:22:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://kiosk007.top/logo.png"/>
+
+<meta name="twitter:title" content="curl 命令小结"/>
+<meta name="twitter:description" content="curl 命令是我日常工作中最常用的命令之一，所以很有必要总结一下curl命令的一些用法。如统计耗时、以指定的ip访问某个域名。添加携带某些Header等。curl命令绝对是日常debug之神。
+
+        
+    CURL
+    "/>
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="https://kiosk007.top/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/" /><link rel="prev" href="https://kiosk007.top/post/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/" /><link rel="next" href="https://kiosk007.top/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/" /><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "curl 命令小结",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/kiosk007.top\/post\/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "https:\/\/kiosk007.top\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "ops","wordcount":  860 ,
+        "url": "https:\/\/kiosk007.top\/post\/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93\/","datePublished": "2021-05-29T15:22:00+00:00","dateModified": "2021-05-29T15:22:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/kiosk007.top\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">curl 命令小结</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>network</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-05-29">2021-05-29</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;860 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;<span id="/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/" class="leancloud_visitors" data-flag-title="curl 命令小结">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;views
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#基本用法">基本用法</a></li>
+    <li><a href="#高级用法">高级用法</a></li>
+    <li><a href="#http3-新特性">HTTP3 新特性</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>curl 命令是我日常工作中最常用的命令之一，所以很有必要总结一下curl命令的一些用法。如统计耗时、以指定的ip访问某个域名。添加携带某些Header等。curl命令绝对是日常debug之神。</p>
+<figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" title="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" data-thumbnail="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" data-sub-html="<h2>CURL</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/network/curl/curl-command.png"
+            data-srcset="https://img1.kiosk007.top/static/images/network/curl/curl-command.png, https://img1.kiosk007.top/static/images/network/curl/curl-command.png 1.5x, https://img1.kiosk007.top/static/images/network/curl/curl-command.png 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" />
+    </a><figcaption class="image-caption">CURL</figcaption>
+    </figure>
+<ul>
+<li>curl 官网：https://curl.se</li>
+<li>curl 支持：
+DICT, FILE, FTP, FTPS, GOPHER, GOPHERS, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, MQTT, POP3, POP3S, RTMP, RTMPS, RTSP, SCP, SFTP, SMB, SMBS, SMTP, SMTPS, TELNET and TFTP. curl supports SSL certificates, HTTP POST, HTTP PUT, FTP uploading, HTTP form based upload, proxies, HTTP/2, HTTP/3, cookies, user+password authentication (Basic, Plain, Digest, CRAM-MD5, SCRAM-SHA, NTLM, Negotiate and Kerberos), file transfer resume, proxy tunneling and more.</li>
+</ul>
+<h1 id="基本用法">基本用法</h1>
+<ul>
+<li>指定解析：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl https://github.com --resolve github.com:443:13.229.188.59 -v -o /dev/null
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>POST请求携带json数据</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -H <span class="s2">&#34;Content-Type: application/json&#34;</span> -X POST -d <span class="s1">&#39;{&#34;abc&#34;:123,&#34;bcd&#34;:&#34;nihao&#34;}&#39;</span> URL
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>修改请求头</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -H <span class="s2">&#34;host: www.baidu.com&#34;</span> https://127.0.0.1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>限速</li>
+</ul>
+<p>限制curl使用的最大带宽；如果未指定单位，默认单位为“bytes/秒”，你也可以指定单位为“K”、“M”、“G”等单位，如：“&ndash;limit-rate 1m”为限制最大使用带宽为“1m字节/秒”；</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl https://www.baidu.com --limit-rate 10k
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>下载</li>
+</ul>
+<p>显示进度条(option：-#)或不显示进度条(option：-s)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -# -O https://img1.kiosk007.top/static/images/network/curl/curl-command.png
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="高级用法">高级用法</h1>
+<p>curl 命令提供了 -w 参数，这个参数在 manpage 是这样解释的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">-w, --write-out &lt;format&gt;
+</span></span><span class="line"><span class="cl">              Make curl display information on stdout after a completed transfer. The format is a string that may contain plain text mixed with any number of variables. The
+</span></span><span class="line"><span class="cl">              format can be specified as a literal <span class="s2">&#34;string&#34;</span>, or you can have curl <span class="nb">read</span> the format from a file with <span class="s2">&#34;@filename&#34;</span> and to tell curl  to  <span class="nb">read</span>  the  format  from
+</span></span><span class="line"><span class="cl">              stdin you write <span class="s2">&#34;@-&#34;</span>.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">              The  variables  present in the output format will be substituted by the value or text that curl thinks fit, as described below. All variables are specified as
+</span></span><span class="line"><span class="cl">              %<span class="o">{</span>variable_name<span class="o">}</span> and to output a normal % you just write them as %%. You can output a newline by using <span class="se">\n</span>, a carriage <span class="k">return</span> with <span class="se">\r</span> and a tab space with <span class="se">\t</span>.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">              The output will be written to standard output, but this can be switched to standard error by using %<span class="o">{</span>stderr<span class="o">}</span>.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">              NOTE: The %-symbol is a special symbol in the win32-environment, where all occurrences of % must be doubled when using this option.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>它能够按照指定的格式打印某些信息，里面可以使用某些特定的变量，而且支持 \n、\t和 \r 转义字符。提供的变量很多，比如 status_code、local_port、size_download 等等，这篇文章我们只关注和请求时间有关的变量（以 time_ 开头的变量）。</p>
+<p>具体支持的变量如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">% content_type   The Content-Type of the requested document, <span class="k">if</span> there was any.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% filename_effective   The ultimate filename that curl writes out to. This is only meaningful <span class="k">if</span> curl is told to write to a file with the  -O,  --remote-name  or  -o, --output option. It<span class="s1">&#39;s most useful in combination with the -J, --remote-header-name option. (Added in 7.26.0)&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% ftp_entry_path The initial path curl ended up in when logging on to the remote FTP server. <span class="o">(</span>Added in 7.15.4<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% http_code      The  numerical  response  code  that was found in the last retrieved HTTP<span class="o">(</span>S<span class="o">)</span> or FTP<span class="o">(</span>s<span class="o">)</span> transfer. In 7.18.2 the <span class="nb">alias</span> response_code was added to show the same info.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% http_connect   The numerical code that was found in the last response <span class="o">(</span>from a proxy<span class="o">)</span> to a curl CONNECT request. <span class="o">(</span>Added in 7.12.4<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% http_version   The http version that was effectively used. <span class="o">(</span>Added in 7.50.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% local_ip       The IP address of the <span class="nb">local</span> end of the most recently <span class="k">done</span> connection - can be either IPv4 or IPv6 <span class="o">(</span>Added in 7.29.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% local_port     The <span class="nb">local</span> port number of the most recently <span class="k">done</span> connection <span class="o">(</span>Added in 7.29.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% num_connects   Number of new connects made in the recent transfer. <span class="o">(</span>Added in 7.12.3<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% num_redirects  Number of redirects that were followed in the request. <span class="o">(</span>Added in 7.12.3<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% proxy_ssl_verify_result   The result of the HTTPS proxy<span class="s1">&#39;s SSL peer certificate verification that was requested. 0  means  the  verification  was  successful.  (Added  in 7.52.0)&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% redirect_url   When an HTTP request was made without -L, --location to follow redirects <span class="o">(</span>or when --max-redir is met<span class="o">)</span>, this variable will show the actual URL a redirect would have gone to. <span class="o">(</span>Added in 7.18.2<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% remote_ip      The remote IP address of the most recently <span class="k">done</span> connection - can be either IPv4 or IPv6 <span class="o">(</span>Added in 7.29.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">% remote_port    The remote port number of the most recently <span class="k">done</span> connection <span class="o">(</span>Added in 7.29.0<span class="o">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>先往文本文件 curl-format.txt 写入下面的内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  ~ cat curl-format.txt
+</span></span><span class="line"><span class="cl">time_namelookup:  %<span class="o">{</span>time_namelookup<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">time_connect:  %<span class="o">{</span>time_connect<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">time_appconnect:  %<span class="o">{</span>time_appconnect<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">time_pretransfer:  %<span class="o">{</span>time_pretransfer<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">time_redirect:  %<span class="o">{</span>time_redirect<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">time_starttransfer:  %<span class="o">{</span>time_starttransfer<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">----------<span class="se">\n</span>
+</span></span><span class="line"><span class="cl">time_total:  %<span class="o">{</span>time_total<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">http_code:  %<span class="o">{</span>http_code<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">----------<span class="se">\n</span>
+</span></span><span class="line"><span class="cl">local_ip:  %<span class="o">{</span>local_ip<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">size_download:  %<span class="o">{</span>size_download<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">size_header:  %<span class="o">{</span>size_header<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">size_request:  %<span class="o">{</span>size_request<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">size_upload:  %<span class="o">{</span>size_upload<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">speed_download:  %<span class="o">{</span>speed_download<span class="o">}</span><span class="se">\n</span>
+</span></span><span class="line"><span class="cl">speed_upload:  %<span class="o">{</span>speed_upload<span class="o">}</span><span class="se">\n</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>ime_namelookup：DNS 域名解析的时候，就是把 <a href="https://zhihu.com" target="_blank" rel="noopener noreffer">https://zhihu.com</a> 转换成 ip 地址的过程</li>
+<li>time_connect：TCP 连接建立的时间，就是三次握手的时间</li>
+<li>time_appconnect：SSL/SSH 等上层协议建立连接的时间，比如 connect/handshake 的时间</li>
+<li>time_redirect：从开始到最后一个请求事务的时间</li>
+<li>time_pretransfer：从请求开始到响应开始传输的时间</li>
+<li>time_starttransfer：从请求开始到第一个字节将要传输的时间</li>
+<li>time_total：这次请求花费的全部时间</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">% curl -w<span class="s2">&#34;@curl-format.txt&#34;</span> -o /dev/null -s -L https://kiosk007.top/   
+</span></span><span class="line"><span class="cl">time_namelookup:  0.011032
+</span></span><span class="line"><span class="cl">time_connect:  0.103585
+</span></span><span class="line"><span class="cl">time_appconnect:  0.235695
+</span></span><span class="line"><span class="cl">time_pretransfer:  0.235911
+</span></span><span class="line"><span class="cl">time_redirect:  0.000000
+</span></span><span class="line"><span class="cl">time_starttransfer:  0.375289
+</span></span><span class="line"><span class="cl">----------
+</span></span><span class="line"><span class="cl">time_total:  0.657439
+</span></span><span class="line"><span class="cl">http_code:  <span class="m">200</span>
+</span></span><span class="line"><span class="cl">----------
+</span></span><span class="line"><span class="cl">local_ip:  192.168.0.112
+</span></span><span class="line"><span class="cl">size_download:  <span class="m">18180</span>
+</span></span><span class="line"><span class="cl">size_header:  <span class="m">661</span>
+</span></span><span class="line"><span class="cl">size_request:  <span class="m">74</span>
+</span></span><span class="line"><span class="cl">size_upload:  <span class="m">0</span>
+</span></span><span class="line"><span class="cl">speed_download:  27671.000
+</span></span><span class="line"><span class="cl">speed_upload:  0.000
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="http3-新特性">HTTP3 新特性</h1>
+<p><a href="https://curl.se/docs/http3.html" target="_blank" rel="noopener noreffer">https://curl.se/docs/http3.html</a></p>
+<p>curl 可以基于 <a href="https://github.com/cloudflare/quiche" target="_blank" rel="noopener noreffer">quiche</a> 实现HTTP3 的能力，当前H3的草案还没有完全定稿，所以curl 的quic不一定能够访问成功所有的QUIC服务端实现。</p>
+<p>通过以下方式编译支持H3特性的curl</p>
+<p>Build quiche and BoringSSL:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"> % git clone --recursive https://github.com/cloudflare/quiche
+</span></span><span class="line"><span class="cl"> % <span class="nb">cd</span> quiche
+</span></span><span class="line"><span class="cl"> % cargo build --release --features ffi,pkg-config-meta,qlog
+</span></span><span class="line"><span class="cl"> % mkdir deps/boringssl/src/lib
+</span></span><span class="line"><span class="cl"> % ln -vnf <span class="k">$(</span>find target/release -name libcrypto.a -o -name libssl.a<span class="k">)</span> deps/boringssl/src/lib/
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Build curl:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"> % <span class="nb">cd</span> ..
+</span></span><span class="line"><span class="cl"> % git clone https://github.com/curl/curl
+</span></span><span class="line"><span class="cl"> % <span class="nb">cd</span> curl
+</span></span><span class="line"><span class="cl"> % ./buildconf
+</span></span><span class="line"><span class="cl"> % ./configure <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&#34;-Wl,-rpath,</span><span class="nv">$PWD</span><span class="s2">/../quiche/target/release&#34;</span> --with-openssl<span class="o">=</span><span class="nv">$PWD</span>/../quiche/deps/boringssl/src --with-quiche<span class="o">=</span><span class="nv">$PWD</span>/../quiche/target/release
+</span></span><span class="line"><span class="cl"> % make
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Use HTTP/3 directly:</p>
+<p><code>curl --http3 https://nghttp2.org:4433/</code>
+Upgrade via Alt-Svc:</p>
+<p><code>curl --alt-svc altsvc.cache https://quic.aiortc.org/</code></p>
+<p>See this list of <a href="https://bagder.github.io/HTTP3-test/" target="_blank" rel="noopener noreffer">public HTTP/3 servers</a></p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-05-29</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://kiosk007.top/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/" data-title="curl 命令小结"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://kiosk007.top/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/" data-title="curl 命令小结"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="https://kiosk007.top/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ops/">ops</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/" class="prev" rel="prev" title="Go 测试框架 stretchr/testify"><i class="fas fa-angle-left fa-fw"></i>Go 测试框架 stretchr/testify</a>
+            <a href="/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/" class="next" rel="next" title="如何减少TTFB以提升WordPress加载性能">如何减少TTFB以提升WordPress加载性能<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.102.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{"valine":{"appId":"XhYn8GEq1Sg7ufJQAVmR4dWN-gzGzoHsz","appKey":"r42k4lqU022wD7IvtwGaQfjN","avatar":"mp","el":"#valine","emojiCDN":"https://fastly.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"en","pageSize":10,"placeholder":"Your comment ...","recordIP":true,"serverURLs":"https://xhyn8geq.lc-cn-n1-shared.com","visitor":true}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Go 测试框架 stretchr/testify - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:title" content="Go 测试框架 stretchr/testify" />
+<meta property="og:description" content="golang的测试框架stretchr/testify 简单的API去检验你的GoLang代码按照你的意愿运行。
+项目地址： https://github.com/stretchr/testify" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://kiosk007.top/post/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/" /><meta property="og:image" content="https://kiosk007.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-04-29T22:43:00+00:00" />
+<meta property="article:modified_time" content="2021-04-29T22:43:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://kiosk007.top/logo.png"/>
+
+<meta name="twitter:title" content="Go 测试框架 stretchr/testify"/>
+<meta name="twitter:description" content="golang的测试框架stretchr/testify 简单的API去检验你的GoLang代码按照你的意愿运行。
+项目地址： https://github.com/stretchr/testify"/>
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="https://kiosk007.top/post/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/" /><link rel="prev" href="https://kiosk007.top/post/%E6%90%AD%E5%BB%BA%E6%88%91%E7%9A%84elk-7-2/" /><link rel="next" href="https://kiosk007.top/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/" /><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Go 测试框架 stretchr/testify",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/kiosk007.top\/post\/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "https:\/\/kiosk007.top\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "golang","wordcount":  502 ,
+        "url": "https:\/\/kiosk007.top\/post\/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify\/","datePublished": "2021-04-29T22:43:00+00:00","dateModified": "2021-04-29T22:43:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/kiosk007.top\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Go 测试框架 stretchr/testify</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>programming</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-04-29">2021-04-29</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;502 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;<span id="/post/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/" class="leancloud_visitors" data-flag-title="Go 测试框架 stretchr/testify">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;views
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#安装">安装</a></li>
+    <li><a href="#使用">使用</a>
+      <ul>
+        <li><a href="#assert-package">assert package</a></li>
+        <li><a href="#require-package">require package</a></li>
+        <li><a href="#mock-package">mock package</a></li>
+        <li><a href="#suite-package">suite package</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>golang的测试框架stretchr/testify 简单的API去检验你的GoLang代码按照你的意愿运行。</p>
+<p>项目地址： <code>https://github.com/stretchr/testify</code></p>
+<p><strong>特性：</strong></p>
+<ul>
+<li>易用的断言接口 (<a href="https://github.com/stretchr/testify#assert-package" target="_blank" rel="noopener noreffer">Easy assertions</a>)</li>
+<li>接口模拟 (<a href="https://github.com/stretchr/testify#mock-package" target="_blank" rel="noopener noreffer">Mocking</a>)</li>
+<li>测试套件接口与性能 (<a href="https://github.com/stretchr/testify#suite-package" target="_blank" rel="noopener noreffer">Testing suite interfaces and functions</a>)</li>
+</ul>
+<h1 id="安装">安装</h1>
+<p>使用 <code>go get</code> 安装</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ go get github.com/stretchr/testify
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>安装后获得以下包</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">github.com/stretchr/testify/assert
+</span></span><span class="line"><span class="cl">github.com/stretchr/testify/require
+</span></span><span class="line"><span class="cl">github.com/stretchr/testify/mock
+</span></span><span class="line"><span class="cl">github.com/stretchr/testify/suite
+</span></span><span class="line"><span class="cl">github.com/stretchr/testify/http <span class="o">(</span>deprecated
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="使用">使用</h1>
+<ul>
+<li>assert package</li>
+<li>require package</li>
+<li>mock package</li>
+<li>suite package</li>
+</ul>
+<p>**这里面最常用的是前两个 package，他们的唯一差别就是require的函数会直接导致case结束，而assert虽然也标记为case失败，但case不会退出，而是继续往下执行
+**</p>
+<h2 id="assert-package">assert package</h2>
+<p><code>assert</code> 包提供了一些有用的方法，允许您在Go中编写更好的测试代码。</p>
+<ul>
+<li>友好输出，更详细的问题描述</li>
+<li>代码可读性强</li>
+<li>可以选择用消息注释断言</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">test</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/stretchr/testify/assert&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;testing&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">TestCase1</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">name</span> <span class="o">:=</span> <span class="s">&#34;Bob&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">age</span> <span class="o">:=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">assert</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="s">&#34;Bob&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">assert</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="nx">age</span><span class="p">,</span><span class="s">&#34;年龄不相等&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输出</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">===</span> RUN   TestCase1
+</span></span><span class="line"><span class="cl">    TestCase1: abc_test.go:18: 
+</span></span><span class="line"><span class="cl">        	Error Trace:	abc_test.go:18
+</span></span><span class="line"><span class="cl">        	Error:      	Not equal: 
+</span></span><span class="line"><span class="cl">        	            	expected: <span class="m">20</span>
+</span></span><span class="line"><span class="cl">        	            	actual  : <span class="m">10</span>
+</span></span><span class="line"><span class="cl">        	Test:       	TestCase1
+</span></span><span class="line"><span class="cl">        	Messages:   	年龄不相等
+</span></span><span class="line"><span class="cl">--- FAIL: TestCase1 <span class="o">(</span>0.00s<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Expected :20
+</span></span><span class="line"><span class="cl">Actual   :10
+</span></span><span class="line"><span class="cl">&lt;Click to see difference&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">FAIL
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Process finished with <span class="nb">exit</span> code <span class="m">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="require-package">require package</h2>
+<p><code>require</code>包提供与assert包相同的全局函数，但它们不会返回布尔结果，而是终止当前测试。</p>
+<h2 id="mock-package">mock package</h2>
+<p><code>mock</code>包提供了一种机制，可以方便地编写mock对象，在编写测试代码时可以用它代替真实对象。</p>
+<p>如下一个示例测试函数，它测试依赖外部对象<code>testObj</code>的一段代码，可以设置期望（证明）并断言它们确实发生了。</p>
+<p>例如，一个是消息服务或电子邮件服务，无论何时被调用，都会向客户端发送电子邮件。如果我们正在积极地开发我们的代码库，可能每天会运行数百次测试，但我们不希望每天向客户发送数百封电子邮件或消息，因为那样他们可能会不高兴。</p>
+<blockquote>
+<p>那么，我们要如何使用 testify 包来模拟呢？</p>
+</blockquote>
+<p>让我们来看一下如何将 <code>mocks</code> 应用到一个相当简单的例子中。在这个例子中，我们有一个系统会尝试向客户收取产品或服务的费用。当 <code>ChargeCustomer()</code> 被调用时，它将随后调用 <code>Message Service</code>，向客户发送 SMS 文本消息来通知他们已经被收取的金额。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="c1">// MessageService 通知客户被收取的费用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">MessageService</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">SendChargeNotification</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="kt">error</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// SMSService 是 MessageService 的实现
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">SMSService</span> <span class="kd">struct</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// MyService 使用 MessageService 来通知客户
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">MyService</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">messageService</span> <span class="nx">MessageService</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// SendChargeNotification 通过 SMS 来告知客户他们被收取费用
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 这就是我们将要模拟的方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">sms</span> <span class="nx">SMSService</span><span class="p">)</span> <span class="nf">SendChargeNotification</span><span class="p">(</span><span class="nx">value</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Sending Production Charge Notification&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ChargeCustomer 向客户收取费用
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 在真实系统中，我们会模拟这个
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 但是在这里，我想在每次运行时都赚点钱
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="nx">MyService</span><span class="p">)</span> <span class="nf">ChargeCustomer</span><span class="p">(</span><span class="nx">value</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">a</span><span class="p">.</span><span class="nx">messageService</span><span class="p">.</span><span class="nf">SendChargeNotification</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Charging Customer For the value of %d\n&#34;</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 一个 &#34;Production&#34; 例子
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Hello World&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">smsService</span> <span class="o">:=</span> <span class="nx">SMSService</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">myService</span> <span class="o">:=</span> <span class="nx">MyService</span><span class="p">{</span><span class="nx">smsService</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">myService</span><span class="p">.</span><span class="nf">ChargeCustomer</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>那么，我们如何进行测试以确保我们不会让客户疯掉？好吧，我们通过创建一个新的 struct 称之为 <code>smsServiceMock</code> ，用来模拟我们的 <code>SMSService</code>，并且将 <code>mock.Mock</code> 添加到它的字段列表中。</p>
+<p>然后我们将改写 <code>SendChargeNotification</code> 方法，这样它就不会向我们的客户发送通知并返回 nil 错误。</p>
+<p>最后，我们创建 <code>TestChargeCustomer</code> 测试函数，接着实例化一个新的类型实例 <code>smsServiceMock</code> 并指定 <code>SendChargeNotification </code>在被调用时应该做什么。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="c1">// smsServiceMock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">smsServiceMock</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">mock</span><span class="p">.</span><span class="nx">Mock</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 我们模拟的 smsService 方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="nx">smsServiceMock</span><span class="p">)</span> <span class="nf">SendChargeNotification</span><span class="p">(</span><span class="nx">value</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Mocked charge notification function&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Value passed in: %d\n&#34;</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 这将记录方法被调用以及被调用时传进来的参数值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">args</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nf">Called</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 它将返回任何我需要返回的
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// 这种情况下模拟一个 SMS Service Notification 被发送出去
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">args</span><span class="p">.</span><span class="nf">Bool</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// TestChargeCustomer 是个奇迹发生的地方
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 在这里我们将创建 SMSService mock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">TestChargeCustomer</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">smsService</span> <span class="nx">smsServiceMock</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 然后我们将定义当 100 传递给 SendChargeNotification 时，需要返回什么
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// 在这里，我们希望它在成功发送通知后返回 true
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">smsService</span><span class="p">.</span><span class="nf">On</span><span class="p">(</span><span class="s">&#34;SendChargeNotification&#34;</span><span class="p">,</span> <span class="mi">100</span><span class="p">).</span><span class="nf">Return</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 接下来，我们要定义要测试的服务
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">myService</span> <span class="o">:=</span> <span class="nx">MyService</span><span class="p">{</span><span class="nx">smsService</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 然后调用方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">myService</span><span class="p">.</span><span class="nf">ChargeCustomer</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 最后，我们验证 myService.ChargeCustomer 调用了我们模拟的 SendChargeNotification 方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">smsService</span><span class="p">.</span><span class="nf">AssertExpectations</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>所以，当我们运行 <code>go test ./... -v </code>时，我们应该看到以下输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="k">go</span> <span class="nx">test</span> <span class="p">.</span><span class="o">/...</span> <span class="o">-</span><span class="nx">v</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span><span class="p">=</span> <span class="nx">RUN</span>   <span class="nx">TestChargeCustomer</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Mocked</span> <span class="nx">charge</span> <span class="nx">notification</span> <span class="nx">function</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Value</span> <span class="nx">passed</span> <span class="nx">in</span><span class="p">:</span> <span class="mi">100</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Charging</span> <span class="nx">Customer</span> <span class="nx">For</span> <span class="nx">the</span> <span class="nx">value</span> <span class="nx">of</span> <span class="mi">100</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span> <span class="nx">PASS</span><span class="p">:</span> <span class="nf">TestChargeCustomer</span> <span class="p">(</span><span class="mf">0.00</span><span class="nx">s</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">main_test</span><span class="p">.</span><span class="k">go</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span> <span class="nx">PASS</span><span class="p">:</span>      <span class="nf">SendChargeNotification</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">PASS</span>
+</span></span><span class="line"><span class="cl"><span class="nx">ok</span>      <span class="nx">_</span><span class="o">/</span><span class="nx">Users</span><span class="o">/</span><span class="nx">elliot</span><span class="o">/</span><span class="nx">Documents</span><span class="o">/</span><span class="nx">Projects</span><span class="o">/</span><span class="nx">tutorials</span><span class="o">/</span><span class="nx">golang</span><span class="o">/</span><span class="k">go</span><span class="o">-</span><span class="nx">testify</span><span class="o">-</span><span class="nx">tutorial</span>  <span class="mf">0.012</span><span class="nx">s</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这证明我们的 myService.ChargeCustomer() 方法按照我们所期望的方式在运行！</p>
+<p>我们现在已经能够使用模拟的方法来全面测试更复杂的项目。值得注意的是，此技术可用于各种不同的系统，例如模拟数据库查询或者是如何与其他 API 交互。总的来说，模拟是非常强大的手段</p>
+<h2 id="suite-package">suite package</h2>
+<p>这个包不太常用</p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-04-29</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://kiosk007.top/post/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/" data-title="Go 测试框架 stretchr/testify"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://kiosk007.top/post/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/" data-title="Go 测试框架 stretchr/testify"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="https://kiosk007.top/post/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/golang/">golang</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/%E6%90%AD%E5%BB%BA%E6%88%91%E7%9A%84elk-7-2/" class="prev" rel="prev" title="搭建我的ELK 7.12"><i class="fas fa-angle-left fa-fw"></i>搭建我的ELK 7.12</a>
+            <a href="/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/" class="next" rel="next" title="curl 命令小结">curl 命令小结<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.102.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{"valine":{"appId":"XhYn8GEq1Sg7ufJQAVmR4dWN-gzGzoHsz","appKey":"r42k4lqU022wD7IvtwGaQfjN","avatar":"mp","el":"#valine","emojiCDN":"https://fastly.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"en","pageSize":10,"placeholder":"Your comment ...","recordIP":true,"serverURLs":"https://xhyn8geq.lc-cn-n1-shared.com","visitor":true}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

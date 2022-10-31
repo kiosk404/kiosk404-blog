@@ -1,0 +1,29 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>elasticsearch - Tag - Kiosk&#39;s 个人编程技术分享</title>
+        <link>https://kiosk007.top/tags/elasticsearch/</link>
+        <description>elasticsearch - Tag - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 18 Jun 2022 13:52:18 &#43;0000</lastBuildDate><atom:link href="https://kiosk007.top/tags/elasticsearch/" rel="self" type="application/rss+xml" /><item>
+    <title>elasticsearch 原理及入门</title>
+    <link>https://kiosk007.top/post/elasticsearch/</link>
+    <pubDate>Sat, 18 Jun 2022 13:52:18 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/elasticsearch/</guid>
+    <description><![CDATA[前言：最近打算将自己的一些服务尽可能的迁移到 k8s 集群里，ELK 就是其中的一个，后面可以的话将本博客的 搜索功能从 algolia 迁移到 自己的ES 里。搜索这个东西的确很有意思的，在没有自己的 OLAP 分析平台之前，ES 的确是最佳选择。值得好好学习一下。
+前面已经有文章介绍 k8s 集群的搭建方法和ES的部署方式了。
+ubuntu20.04 部署 kubernetes（k8s） Elasticsearch 简介 Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况。
+快速入门 基本概念 节点 Node、集群 Cluster 和 分片 Shard ElasticSearch 是分布式数据库，允许多台服务器协同工作，每台服务器可以运行多个实例。单个实例称为一个节点（node），一组节点构成一个集群（cluster）。分片是底层的工作单元，文档保存在分片内，分片又被分配到集群内的各个节点里，每个分片仅保存全部数据的一部分。
+索引 Index、类型 Type 和 文档 Document 索引是一类文档的结合。而文档是具体的一条数据。对比我们比较熟悉的关系型数据库如下：
+RDBMS(MySQL) Elasticsearch Table Index(Type) Row Doucment Column Field Schema Mapping SQL DSL 使用 Restful API 交互 elasticsearch 本身使用 Restful API 通过端口 9200进行交互。其基本组成如下
+1 curl -X&lt;VERB&gt; &#39;&lt;PROTOCOL&gt;://&lt;HOST&gt;:&lt;PORT&gt;/&lt;PATH&gt;?&lt;QUERY_STRING&gt;&#39; -d &#39;&lt;BODY&gt;&#39; CRUD 具体内容可以参考 这篇文章]]></description>
+</item><item>
+    <title>搭建我的ELK 7.12</title>
+    <link>https://kiosk007.top/post/%E6%90%AD%E5%BB%BA%E6%88%91%E7%9A%84elk-7-2/</link>
+    <pubDate>Sat, 27 Mar 2021 13:52:18 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/%E6%90%AD%E5%BB%BA%E6%88%91%E7%9A%84elk-7-2/</guid>
+    <description><![CDATA[<p>Elasticsearch 是一个实时的分布式搜索分析引擎，它能让你以前所未有的速度和规模，去探索你的数据。</p>
+<p>“ELK”是三个开源项目的首字母缩写，这三个项目分别是：Elasticsearch、Logstash 和 Kibana。Elasticsearch 是一个搜索和分析引擎。Logstash 是服务器端数据处理管道，能够同时从多个来源采集数据，转换数据，然后将数据发送到诸如 Elasticsearch 等“存储库”中。Kibana 则可以让用户在 Elasticsearch 中使用图形和图表对数据进行可视化。</p>]]></description>
+</item></channel>
+</rss>

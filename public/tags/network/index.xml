@@ -1,0 +1,46 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>network - Tag - Kiosk&#39;s 个人编程技术分享</title>
+        <link>https://kiosk007.top/tags/network/</link>
+        <description>network - Tag - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 28 Feb 2022 18:20:00 &#43;0000</lastBuildDate><atom:link href="https://kiosk007.top/tags/network/" rel="self" type="application/rss+xml" /><item>
+    <title>HTTP2 下的 Transfer-Encoding: chunked</title>
+    <link>https://kiosk007.top/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/</link>
+    <pubDate>Mon, 28 Feb 2022 18:20:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/</guid>
+    <description><![CDATA[<p>在 <span style="color:#FF7F50"> HTTP </span> 中传输数据有一个 <span style="color:#FF7F50">chunked</span> 的方式, 又称“分块传输”。在响应报文里用头字段<span style="color:#FF7F50">Transfer-Encoding: chunked</span> 来表示。意思是报文里的 body 部分不是一次性发过来的，而是分成了许多的块（<span style="color:#FF7F50">chunk</span>）逐个发送。而 <span style="color:#FF7F50">HTTP2.0</span> 协议作为 <span style="color:#FF7F50">HTTP</span>协议的升级，自然是对<span style="color:#FF7F50">chunked</span>模式做支持？不然！</p>
+<p><strong>HTTP2 是没有 chunked 的！</strong></p>]]></description>
+</item><item>
+    <title>HTTP/2.0 Header Compression</title>
+    <link>https://kiosk007.top/post/http-2-0-header-compression/</link>
+    <pubDate>Sat, 26 Feb 2022 15:01:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/http-2-0-header-compression/</guid>
+    <description><![CDATA[<p>在 <span style="color:#FF7F50">HTTP/1.x </span>时代，支持Body压缩，Header不支持压缩。而现在一个网页可能有几十到上百个请求，一个请求Header至少 500Byte 以上。而这些页面的请求Header大多都是一些重复的字符如UA、Cookie，会消耗不必要的带宽，增加延迟。</p>
+<p>在<span style="color:#FF7F50">HTTP/2.0</span>中，引入了<span style="color:#FF7F5">Header Compression</span>（<a href="https://datatracker.ietf.org/doc/html/rfc7541" style="color:#556B2F">rfc7541</a>），头部压缩技术使用了HPACK，有效的压缩了Header。</p>]]></description>
+</item><item>
+    <title>尝试 Nginx 上使用HTTP3</title>
+    <link>https://kiosk007.top/post/%E5%B0%9D%E8%AF%95-nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8http3/</link>
+    <pubDate>Sat, 31 Jul 2021 21:41:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/%E5%B0%9D%E8%AF%95-nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8http3/</guid>
+    <description><![CDATA[<p>之前的文章介绍了<a href="https://kiosk007.top/2021/07/24/QUIC-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" target="_blank" rel="noopener noreffer">QUIC发生了什么</a>, QUIC 已经演变成了一个“传输层”协议。其上可以运行 HTTP 协议。</p>]]></description>
+</item><item>
+    <title>性能大杀器epoll</title>
+    <link>https://kiosk007.top/post/%E6%80%A7%E8%83%BD%E5%A4%A7%E6%9D%80%E5%99%A8epoll/</link>
+    <pubDate>Mon, 01 Jun 2020 23:58:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/%E6%80%A7%E8%83%BD%E5%A4%A7%E6%9D%80%E5%99%A8epoll/</guid>
+    <description><![CDATA[<p><a href="http://www.kegel.com/c10k.html" target="_blank" rel="noopener noreffer">C10K</a> 单机同时处理 1万个请求（并发连接 1 万）的问题，最早由 Dan Kegel 在 1999 年提出。那时的服务器还只是 32 位系统，运行着 Linux 2.2 版本（后来又升级到了 2.4 和 2.6，而 2.6 才支持 x86_64），只配置了很少的内存（2GB）和千兆网卡。在这样的系统能实现C10K问题吗？</p>
+<p>这在当年看似十分难以实现的问题，在当下epoll这个性能大杀器实现了我们单机并发10K的梦想。</p>]]></description>
+</item><item>
+    <title>VMTrafficShark 自制弱网模拟器</title>
+    <link>https://kiosk007.top/post/vmtrafficshark-%E8%87%AA%E5%88%B6%E5%BC%B1%E7%BD%91%E6%A8%A1%E6%8B%9F%E5%99%A8/</link>
+    <pubDate>Sat, 30 May 2020 09:21:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/vmtrafficshark-%E8%87%AA%E5%88%B6%E5%BC%B1%E7%BD%91%E6%A8%A1%E6%8B%9F%E5%99%A8/</guid>
+    <description><![CDATA[<p>VMTrafficShark是参考 <a href="http://geekluo.com/contents/2017/05/02/38-trafficshark-tool-for-network.html" target="_blank" rel="noopener noreffer">TrafficShark</a> 改造后的弱网模拟和抓包工具。其本质是参考Facebook开源的弱网模拟器 <a href="https://github.com/facebookarchive/augmented-traffic-control" target="_blank" rel="noopener noreffer">ATC</a> 。方便应用开发测试人员模拟弱网环境下的用户体验。VMTrafficShark是基于Vmware/VirtualBox 虚拟机，方便移动部署，一键开机，配置灵活，功能强大。</p>]]></description>
+</item></channel>
+</rss>

@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Nginx Lua 扩展 --（Nginx 监控） - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:title" content="Nginx Lua 扩展 --（Nginx 监控）" />
+<meta property="og:description" content="上周我从腾讯云买了一台服务器，开始将本站解析到腾讯云上，至此本站彻底支持了HTTP3访问。不过也需要对Nginx进行一定程度的封装。一个最佳的选择是使用 lua-nginx-module 来扩展Nginx的能力，比如我想对请求进行一些访问统计，将数据发送到 open-falcon 或者 Prometheus 上。
+lua-nginx-module 是一个实现使用lua语言直接控制Nginx内HTTP请求的一个Nginx module。这个组合很强大，提供了动态语言的强悍性能和生产力。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://kiosk007.top/post/nginx-lua-%E5%85%A5%E9%97%A8/" /><meta property="og:image" content="https://kiosk007.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-04T10:16:00+00:00" />
+<meta property="article:modified_time" content="2021-12-04T10:16:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://kiosk007.top/logo.png"/>
+
+<meta name="twitter:title" content="Nginx Lua 扩展 --（Nginx 监控）"/>
+<meta name="twitter:description" content="上周我从腾讯云买了一台服务器，开始将本站解析到腾讯云上，至此本站彻底支持了HTTP3访问。不过也需要对Nginx进行一定程度的封装。一个最佳的选择是使用 lua-nginx-module 来扩展Nginx的能力，比如我想对请求进行一些访问统计，将数据发送到 open-falcon 或者 Prometheus 上。
+lua-nginx-module 是一个实现使用lua语言直接控制Nginx内HTTP请求的一个Nginx module。这个组合很强大，提供了动态语言的强悍性能和生产力。"/>
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="https://kiosk007.top/post/nginx-lua-%E5%85%A5%E9%97%A8/" /><link rel="prev" href="https://kiosk007.top/post/go-module-%E6%B1%87%E6%80%BB/" /><link rel="next" href="https://kiosk007.top/post/golang-%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" /><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Nginx Lua 扩展 --（Nginx 监控）",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/kiosk007.top\/post\/nginx-lua-%E5%85%A5%E9%97%A8\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "https:\/\/kiosk007.top\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "nginx","wordcount":  2015 ,
+        "url": "https:\/\/kiosk007.top\/post\/nginx-lua-%E5%85%A5%E9%97%A8\/","datePublished": "2021-12-04T10:16:00+00:00","dateModified": "2021-12-04T10:16:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/kiosk007.top\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/nginx-lua-%E5%85%A5%E9%97%A8/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Nginx Lua 扩展 --（Nginx 监控）</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/nginx/"><i class="far fa-folder fa-fw"></i>Nginx</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-04">2021-12-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2015 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;10 minutes&nbsp;<span id="/post/nginx-lua-%E5%85%A5%E9%97%A8/" class="leancloud_visitors" data-flag-title="Nginx Lua 扩展 --（Nginx 监控）">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;views
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#安装">安装</a></li>
+    <li><a href="#nginx-lua-入门">Nginx Lua 入门</a>
+      <ul>
+        <li><a href="#生效阶段">生效阶段</a></li>
+        <li><a href="#lua-简单语法">lua 简单语法</a></li>
+        <li><a href="#最小实现">最小实现</a></li>
+        <li><a href="#nginx-lua-api">Nginx Lua API</a></li>
+        <li><a href="#worker-件通信">worker 件通信</a></li>
+      </ul>
+    </li>
+    <li><a href="#prometheus-监控-nginx">prometheus 监控 Nginx</a>
+      <ul>
+        <li><a href="#安装-prometheus">安装 prometheus</a></li>
+        <li><a href="#监控">监控</a>
+          <ul>
+            <li><a href="#prometheus-四大度量指标">Prometheus 四大度量指标</a></li>
+            <li><a href="#使用promql-查询监控">使用PromQL 查询监控</a></li>
+          </ul>
+        </li>
+        <li><a href="#grafana-监控">grafana 监控</a></li>
+      </ul>
+    </li>
+    <li><a href="#nginx-lua-prometheus">nginx-lua-prometheus</a>
+      <ul>
+        <li><a href="#源码分析">源码分析</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>上周我从腾讯云买了一台服务器，开始将本站解析到腾讯云上，至此本站彻底支持了HTTP3访问。不过也需要对Nginx进行一定程度的封装。一个最佳的选择是使用 <code>lua-nginx-module</code> 来扩展Nginx的能力，比如我想对请求进行一些访问统计，将数据发送到 open-falcon 或者 Prometheus 上。</p>
+<p><a href="https://github.com/openresty/lua-nginx-module" target="_blank" rel="noopener noreffer">lua-nginx-module</a> 是一个实现使用lua语言直接控制Nginx内HTTP请求的一个Nginx module。这个组合很强大，提供了动态语言的强悍性能和生产力。</p>
+<h1 id="安装">安装</h1>
+<p>安装可以参考我的之前这篇文章 <a href="https://kiosk007.top/2021/07/31/%E5%B0%9D%E8%AF%95-Nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8HTTP3/#%E9%AA%8C%E8%AF%81" target="_blank" rel="noopener noreffer">尝试 Nginx 上使用HTTP3</a>，不过有个坑，直接从github上下载的 lua-nginx-module 执行 nginx 命令时会失败，需要切换分支至 <code>v0.10.14</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ <span class="nb">cd</span> lua-nginx-module
+</span></span><span class="line"><span class="cl">$ git checkout v0.10.14
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="nginx-lua-入门">Nginx Lua 入门</h1>
+<p>Nginx Lua 首先是基于一个运行状态的Nginx，而Nginx的运行架构是 <strong>MASTER-WORKER</strong> 模式。
+NGINX 启动后，会有一个 Master 进程和多个 Worker 进程。
+<img src="https://img1.kiosk007.top/static/images/nginx/nginx-master-worker.webp" style="height:500px"></p>
+<p><strong>Master 进程</strong>：并不负责处理终端的请求。它是用来管理 Worker 进程的，包括接受管理员发送的信号量、监控 Worker 的运行状态。当 Worker 进程异常退出时，Master 进程会重新启动一个新的 Worker 进程。</p>
+<p><strong>Worker 进程</strong>：用来处理终端用户的请求。它是从 Master 进程 fork 出来的，彼此之间相互独立，互不影响。即使某个进程崩溃退出了，也不会影响其他 Worker 进程正常工作。</p>
+<h2 id="生效阶段">生效阶段</h2>
+<p>从 ngx_http_core_module.h 的源码中，可以看到Nginx有11个执行阶段。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">enum</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_POST_READ_PHASE</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_SERVER_REWRITE_PHASE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_FIND_CONFIG_PHASE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_REWRITE_PHASE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_POST_REWRITE_PHASE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_PREACCESS_PHASE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_ACCESS_PHASE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_POST_ACCESS_PHASE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_PRECONTENT_PHASE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_CONTENT_PHASE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">NGX_HTTP_LOG_PHASE</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">ngx_http_phases</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>lua-nginx-module</code> 有 11 个 *_by_lua指令，它们和 NGINX 阶段的关系如下图所示（图片来自 lua-nginx-module 文档）：</p>
+<img src="https://img1.kiosk007.top/static/images/nginx/lua/nginx_lua_module.webp">
+<p>其中， <code>init_by_lua</code> 只会在 Master 进程被创建时执行，<code>init_worker_by_lua</code> 只会在每个 Worker 进程被创建时执行。其他的 <code>*_by_lua</code> 指令则是由终端请求触发，会被反复执行。</p>
+<p>所以在 <code>init_by_lua</code> 阶段，我们可以预先加载 Lua 模块和公共的只读数据，这样可以利用操作系统的 COW（copy on write）特性，来节省一些内存。对于业务代码来说，其实大部分的操作都可以在 <code>content_by_lua</code> 里面完成，但我更推荐的做法，是根据不同的功能来进行拆分。</p>
+<h2 id="lua-简单语法">lua 简单语法</h2>
+<p>Lua 是一种轻量小巧的脚本语言，用标准C语言编写并以源代码形式开放， 其设计目的是为了嵌入应用程序中，从而为应用程序提供灵活的扩展和定制功能。lua的语法简单到直接参考一些网上教程就生产级别可用的代码。可以可参考 <a href="https://www.w3cschool.cn/lua/lua-tutorial.html" target="_blank" rel="noopener noreffer">Lua 入门教程</a></p>
+<p>详细的语法介绍介绍可以参考上述链接。这里不详述，需要注意的是 table 是 Lua 中唯一的数据结构，自然非常重要。另外lua有很多库，有 lua <a href="https://www.w3cschool.cn/lua/lua-strings.html" target="_blank" rel="noopener noreffer">string 库</a>、<a href="https://www.w3cschool.cn/lua/lua-tables.html" target="_blank" rel="noopener noreffer">table 库</a>(常用的 table.concat 、table.sort 等少数几个函数)</p>
+<p><strong>局部变量 local</strong>
+lua 中的变量默认是全局变量，除非明确使用 <code>local</code> 声明。
+lua 代码中可以看到大量的使用 <code>local</code> 关键字。
+原因:</p>
+<blockquote>
+<ul>
+<li>避免命名冲突</li>
+<li>访问速度更快（原因是local变量是存放在lua的堆栈里面的是array操作，而全局变量是存放在_G中的table中，效率不及堆栈）</li>
+</ul>
+</blockquote>
+<p><strong>这里会只介绍一下 lua 的唯一数据结构 table 和 metatable 特性。</strong></p>
+<p>lua,只有 table 这一个数据结构，并没有区分开数组、哈希、集合等概念，而是揉在了一起。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">color</span> <span class="o">=</span> <span class="p">{</span><span class="n">first</span> <span class="o">=</span> <span class="s2">&#34;red&#34;</span><span class="p">,</span> <span class="s2">&#34;blue&#34;</span><span class="p">,</span> <span class="n">third</span> <span class="o">=</span> <span class="s2">&#34;green&#34;</span><span class="p">,</span> <span class="s2">&#34;yellow&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">print</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="s2">&#34;first&#34;</span><span class="p">])</span>                 <span class="c1">--&gt; output: red</span>
+</span></span><span class="line"><span class="cl"><span class="n">print</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>                       <span class="c1">--&gt; output: blue</span>
+</span></span><span class="line"><span class="cl"><span class="n">print</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="s2">&#34;third&#34;</span><span class="p">])</span>                 <span class="c1">--&gt; output: green</span>
+</span></span><span class="line"><span class="cl"><span class="n">print</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>                       <span class="c1">--&gt; output: yellow</span>
+</span></span><span class="line"><span class="cl"><span class="n">print</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>                       <span class="c1">--&gt; output: nil</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个例子中， color 这个 table 包含了数组和哈希，并且可以互不干扰地进行访问。比如，你可以用 ipairs 函数，只遍历数组部分的内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">color</span> <span class="o">=</span> <span class="p">{</span><span class="n">first</span> <span class="o">=</span> <span class="s2">&#34;red&#34;</span><span class="p">,</span> <span class="s2">&#34;blue&#34;</span><span class="p">,</span> <span class="n">third</span> <span class="o">=</span> <span class="s2">&#34;green&#34;</span><span class="p">,</span> <span class="s2">&#34;yellow&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kr">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="kr">in</span> <span class="n">ipairs</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">     <span class="n">print</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>常见的table有 <code>getn</code>、<code>remove</code> 、<code>concat</code>、 <code>insert</code> 等方法，都是看名字就知道其用途的方法。</p>
+<p>元表(metatable)是 Lua 中独有的概念，在实际项目中的使用非常广泛。不夸张地说，在几乎所有的 <code>lua-resty-*</code> 库中，都能看到它的身影。</p>
+<p>元表的表现行为类似于操作符重载，比如我们可以重载 <strong>__add，来计算两个 Lua 数组的并集；或者重载 __tostring，来定义转换为字符串的函数</strong>。</p>
+<p>metatable 有2个函数</p>
+<ul>
+<li>第一个是setmetatable(table, metatable), 用于为一个 table 设置元表；</li>
+<li>第二个是getmetatable(table)，用于获取 table 的元表。</li>
+</ul>
+<p>举个例子，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">version</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">major</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">minor</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">patch</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">version</span> <span class="o">=</span> <span class="n">setmetatable</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__tostring</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">return</span> <span class="n">string.format</span><span class="p">(</span><span class="s2">&#34;%d.%d.%d&#34;</span><span class="p">,</span> <span class="n">t.major</span><span class="p">,</span> <span class="n">t.minor</span><span class="p">,</span> <span class="n">t.patch</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="n">print</span><span class="p">(</span><span class="n">tostring</span><span class="p">(</span><span class="n">version</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先定义了一个 名为 version的 table ，这段代码的目的，是想把 version 中的版本号打印出来。但是，我们并不能直接打印 version，直接打印的话，只会输出这个 table 的地址。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">print<span class="o">(</span>tostring<span class="o">(</span>version<span class="o">))</span>   --output: 1.1.1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>除了<code>__tostring</code> 之外，<strong>还有一个常用的就是 <code>__index</code> 。我们在 table 中查找一个元素时，首先会直接从 table 中查询，如果没有找到，就继续到元表的 <code>__index</code> 中查询。</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">version</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">major</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">minor</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">version</span> <span class="o">=</span> <span class="n">setmetatable</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="n">__index</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">         <span class="kr">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&#34;patch&#34;</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">             <span class="kr">return</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">         <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">     <span class="kr">end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">     <span class="n">__tostring</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">return</span> <span class="n">string.format</span><span class="p">(</span><span class="s2">&#34;%d.%d.%d&#34;</span><span class="p">,</span> <span class="n">t.major</span><span class="p">,</span> <span class="n">t.minor</span><span class="p">,</span> <span class="n">t.patch</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="n">print</span><span class="p">(</span><span class="n">tostring</span><span class="p">(</span><span class="n">version</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这样的话，t.patch 其实获取不到值，那么就会走到 <code>__index</code> 这个函数中，结果就会打印出 1.1.2。</p>
+<p><strong>另一个元方法则是__call。它类似于仿函数，可以让 table 被调用。</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">version</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">major</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">minor</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">patch</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="kr">function</span> <span class="nf">print_version</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">     <span class="n">print</span><span class="p">(</span><span class="n">string.format</span><span class="p">(</span><span class="s2">&#34;%d.%d.%d&#34;</span><span class="p">,</span> <span class="n">t.major</span><span class="p">,</span> <span class="n">t.minor</span><span class="p">,</span> <span class="n">t.patch</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">version</span> <span class="o">=</span> <span class="n">setmetatable</span><span class="p">(</span><span class="n">version</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">     <span class="p">{</span><span class="n">__call</span> <span class="o">=</span> <span class="n">print_version</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">version</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>常见的元表就如上图所示，完整的元表可以参考 <a href="http://lua-users.org/wiki/MetamethodsTutorial" target="_blank" rel="noopener noreffer">文档</a></p>
+<p>以下是 <a href="https://github.com/openresty/lua-resty-mysql/blob/master/lib/resty/mysql.lua" target="_blank" rel="noopener noreffer">lua-resty-mysql</a> 的源码，可以看看官方的一些lua代码的写法, 里面就用了元表来模拟类和方法。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="err">$</span> <span class="n">resty</span> <span class="o">-</span><span class="n">e</span> <span class="s1">&#39;local mysql = require &#34;resty.mysql&#34; -- 先引用 lua-resty 库
+</span></span></span><span class="line"><span class="cl"><span class="s1">local db, err = mysql:new() -- 新建一个类的实例
+</span></span></span><span class="line"><span class="cl"><span class="s1">db:set_timeout(1000) -- 调用类的方法&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>注意: 在这里冒号和点号都是可以的，db:set_timeout(1000) 和 db.set_timeout(db, 1000) 是完全等价的。冒号是 Lua 中的一个语法糖，可以省略掉函数的第一个参数 self。</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">_M</span> <span class="o">=</span> <span class="p">{</span> <span class="n">_VERSION</span> <span class="o">=</span> <span class="s1">&#39;0.21&#39;</span> <span class="p">}</span> <span class="c1">-- 使用 table 模拟类</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">mt</span> <span class="o">=</span> <span class="p">{</span> <span class="n">__index</span> <span class="o">=</span> <span class="n">_M</span> <span class="p">}</span> <span class="c1">-- mt 即 metatable 的缩写，__index 指向类自身</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 类的构造函数</span>
+</span></span><span class="line"><span class="cl"><span class="kr">function</span> <span class="nc">_M</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">     <span class="kd">local</span> <span class="n">sock</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">tcp</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">     <span class="kr">if</span> <span class="ow">not</span> <span class="n">sock</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">         <span class="kr">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="n">err</span>
+</span></span><span class="line"><span class="cl">     <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">     <span class="kr">return</span> <span class="n">setmetatable</span><span class="p">({</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">sock</span> <span class="p">},</span> <span class="n">mt</span><span class="p">)</span> <span class="c1">-- 使用 table 和 metatable 模拟类的实例</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="c1">-- 类的成员函数</span>
+</span></span><span class="line"><span class="cl"> <span class="kr">function</span> <span class="nc">_M</span><span class="p">.</span><span class="nf">set_timeout</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span> <span class="c1">-- 使用 self 参数，获取要操作的类的实例</span>
+</span></span><span class="line"><span class="cl">     <span class="kd">local</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">self.sock</span>
+</span></span><span class="line"><span class="cl">     <span class="kr">if</span> <span class="ow">not</span> <span class="n">sock</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="s2">&#34;not initialized&#34;</span>
+</span></span><span class="line"><span class="cl">     <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span> <span class="n">sock</span><span class="p">:</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>_M</code> 这个 table 模拟了一个类，初始化时，它只有 <code>_VERSION</code> 这一个成员变量，并在随后定义了 <code>_M.set_timeout</code> 等成员函数。在 <code>_M.new(self)</code> 这个构造函数中，我们返回了一个 table，这个 table 的元表就是 mt，而 mt 的 <code>__index</code> 元方法指向了 <code>_M</code>，这样，返回的这个 table 就模拟了类 <code>_M</code> 的实例。</p>
+<h2 id="最小实现">最小实现</h2>
+<p>我们可以先构建一个最间版本的 Nginx 运行状态，这需要3步。1. 创建工作目录。2. 编写简版nginx.conf。3. 启动nginx</p>
+<ul>
+<li>创建工作目录</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir <span class="nb">test</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> <span class="nb">test</span>
+</span></span><span class="line"><span class="cl">mkdir logs/ conf/
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>最简版配置文件，更为丰富的配置指令可以参考 <a href="http://nginx.org/en/docs/ngx_core_module.html" target="_blank" rel="noopener noreffer">ngx_core_module</a>、<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html" target="_blank" rel="noopener noreffer">ngx_http_core_module</a>和<a href="http://nginx.org/en/docs/stream/ngx_stream_core_module.html" target="_blank" rel="noopener noreffer">ngx_stream_core_module</a> 中的介绍。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">events</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">worker_connections</span> <span class="mi">1024</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">http</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">content_by_lua</span> <span class="s">&#39;</span>
+</span></span><span class="line"><span class="cl">                <span class="s">ngx.say(&#34;hello,</span> <span class="s">world&#34;)</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>启动nginx</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nginx -p <span class="nb">test</span> -c conf/nginx.conf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上面是一个最简单的lua代码，在 <code>location /</code> 中有一个 <code>content_by_lua</code> 可以在后面写lua代码，也可以 <code>content_by_lua_file lua/hello.lua;</code> 的形式</p>
+<p>更多的例子可以参考 <a href="https://github.com/openresty/lua-nginx-module/#synopsis" target="_blank" rel="noopener noreffer">这里</a></p>
+<h2 id="nginx-lua-api">Nginx Lua API</h2>
+<p>nginx_lua_module 的 API 主要分为下面几个大类：<code>处理请求和响应</code>、<code>SSL 相关</code>、<code>shared dict</code>、<code>cosocket</code>、<code>处理四层流量</code>、<code>process 和 worker</code>、<code>获取 NGINX 变量和配置</code>、<code>字符串</code>、<code>时间</code>、<code>编解码</code>等通用功能。</p>
+<p>完整可以API可以参考<a href="https://github.com/openresty/lua-nginx-module/#nginx-api-for-lua" target="_blank" rel="noopener noreffer">官方文档</a></p>
+<p>Nginx 中的请求变量可以在lua中获取到。</p>
+<ul>
+<li><code>$scheme</code> 这个内置变量，在 NGINX 中代表协议的名字，是 “http” 或者 “https”；而在 OpenResty 中，你可以通过 ngx.var.scheme 来返回同样的值。</li>
+<li><code>$request_method</code> 代表的是请求的方法，“GET”、“POST” 等；而在 OpenResty 中，你可以通过 <code>ngx.var.request_method</code> 来返回同样的值。</li>
+</ul>
+<p>至于完整的 NGINX 内置变量列表，可以访问 NGINX 的官方文档来获取：</p>
+<p><a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#variables" target="_blank" rel="noopener noreffer">http://nginx.org/en/docs/http/ngx_http_core_module.html#variables</a></p>
+<h2 id="worker-件通信">worker 件通信</h2>
+<p>共享内存字典 shared dict，是你在 Nginx lua 编程中最为重要的数据结构。它不仅支持数据的存放和读取，还支持原子计数和队列操作。基于 shared dict，你可以实现多个 worker 之间的缓存和通信，以及限流限速、流量统计等功能。你可以把 shared dict 当作简单的 Redis 来使用，只不过 shared dict 中的数据不能持久化，所以你存放在其中的数据，一定要考虑到丢失的情况。</p>
+<p><strong>数据共享的几种方式</strong></p>
+<p>**第一种是 Nginx 中的变量。**它可以在 Nginx C 模块之间共享数据，自然的，也可以在 C 模块和 OpenResty 提供的 lua-nginx-module 之间共享数据</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">location</span> <span class="s">/foo</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="kn">set</span> <span class="nv">$my_var</span> <span class="s">&#39;&#39;</span><span class="p">;</span> <span class="c1"># this line is required to create $my_var at config time
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>     <span class="kn">content_by_lua_block</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="kn">ngx.var.my_var</span> <span class="p">=</span> <span class="mi">123</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="kn">...</span>
+</span></span><span class="line"><span class="cl">     <span class="err">}</span>
+</span></span><span class="line"><span class="cl"> <span class="err">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>**第二种是ngx.ctx，可以在同一个请求的不同阶段之间共享数据。**它其实就是一个普通的 Lua 的 table，所以速度很快，还可以存储各种 Lua 的对象。它的生命周期是请求级别的，当一个请求结束的时候，ngx.ctx 也会跟着被销毁掉。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">location</span> <span class="s">/test</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="kn">rewrite_by_lua_block</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="kn">ngx.ctx.host</span> <span class="p">=</span> <span class="s">ngx.var.host</span>
+</span></span><span class="line"><span class="cl">     <span class="err">}</span>
+</span></span><span class="line"><span class="cl">     <span class="s">access_by_lua_block</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">if</span> <span class="s">(ngx.ctx.host</span> <span class="p">==</span> <span class="s">&#39;openresty.org&#39;)</span> <span class="s">then</span>
+</span></span><span class="line"><span class="cl">            <span class="s">ngx.ctx.host</span> <span class="p">=</span> <span class="s">&#39;test.com&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="s">end</span>
+</span></span><span class="line"><span class="cl">     <span class="err">}</span>
+</span></span><span class="line"><span class="cl">     <span class="s">content_by_lua_block</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="kn">ngx.say(ngx.ctx.host)</span>
+</span></span><span class="line"><span class="cl">     <span class="err">}</span>
+</span></span><span class="line"><span class="cl"> <span class="err">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>d第三种用 shared dict 来共享数据，这些数据可以在多个 worker 之间共享。</strong></p>
+<p>这种方法是基于红黑树实现的，性能很好，但也有自己的局限性——你必须事先在 Nginx 的配置文件中，声明共享内存的大小，并且这不能在运行期更改：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">lua_shared_dict dogs 10m;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>shared dict 同样只能缓存字符串类型的数据，不支持复杂的 Lua 数据类型。这也就意味着，当我需要存放 table 等复杂的数据类型时，我将不得不使用 json 或者其他的方法，来序列化和反序列化，这自然会带来不小的性能损耗。</p>
+<p><code>shared dict</code> 同样支持多种api调用，如 <code>set</code>、<code>get</code>、<code>incr</code>、<code>replace</code>等，具体可以参考<a href="https://github.com/openresty/lua-nginx-module#ngxshareddict" target="_blank" rel="noopener noreffer">官方文档</a></p>
+<img src="https://img1.kiosk007.top/static/images/nginx/lua/nginx_share_dict.png" style="height:500px">
+<h1 id="prometheus-监控-nginx">prometheus 监控 Nginx</h1>
+<p>Prometheus是一个开放性的监控解决方案，用户可以非常方便的安装和使用Prometheus并且能够非常方便的对其进行扩展。</p>
+<h2 id="安装-prometheus">安装 prometheus</h2>
+<ul>
+<li><strong>安装 prometheus server</strong></li>
+</ul>
+<p>Prometheus基于Golang编写，编译后的软件包，不依赖于任何的第三方依赖。用户只需要下载对应平台的二进制包，解压并且添加基本的配置即可正常启动Prometheus Server。</p>
+<p>安装的完整教程可以参考：https://www.prometheus.wang/quickstart/install-prometheus-server.html</p>
+<p>Promtheus作为一个时间序列数据库，其采集的数据会以文件的形似存储在本地中，默认的存储路径为data/，因此我们需要先手动创建该目录：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir data
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>用户也可以通过参数<code>--storage.tsdb.path=&quot;data/</code>&ldquo;修改本地数据存储的路径。</p>
+<p>启动prometheus服务，其会默认加载当前路径下的prometheus.yaml文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./prometheus 
+</span></span><span class="line"><span class="cl"><span class="nv">level</span><span class="o">=</span>info <span class="nv">ts</span><span class="o">=</span>2018-10-23T14:55:14.499484Z <span class="nv">caller</span><span class="o">=</span>main.go:554 <span class="nv">msg</span><span class="o">=</span><span class="s2">&#34;Starting TSDB ...&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">level</span><span class="o">=</span>info <span class="nv">ts</span><span class="o">=</span>2018-10-23T14:55:14.499531Z <span class="nv">caller</span><span class="o">=</span>web.go:397 <span class="nv">component</span><span class="o">=</span>web <span class="nv">msg</span><span class="o">=</span><span class="s2">&#34;Start listening for connections&#34;</span> <span class="nv">address</span><span class="o">=</span>0.0.0.0:9090
+</span></span><span class="line"><span class="cl"><span class="nv">level</span><span class="o">=</span>info <span class="nv">ts</span><span class="o">=</span>2018-10-23T14:55:14.507999Z <span class="nv">caller</span><span class="o">=</span>main.go:564 <span class="nv">msg</span><span class="o">=</span><span class="s2">&#34;TSDB started&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">level</span><span class="o">=</span>info <span class="nv">ts</span><span class="o">=</span>2018-10-23T14:55:14.508068Z <span class="nv">caller</span><span class="o">=</span>main.go:624 <span class="nv">msg</span><span class="o">=</span><span class="s2">&#34;Loading configuration file&#34;</span> <span class="nv">filename</span><span class="o">=</span>prometheus.yml
+</span></span><span class="line"><span class="cl"><span class="nv">level</span><span class="o">=</span>info <span class="nv">ts</span><span class="o">=</span>2018-10-23T14:55:14.509509Z <span class="nv">caller</span><span class="o">=</span>main.go:650 <span class="nv">msg</span><span class="o">=</span><span class="s2">&#34;Completed loading of configuration file&#34;</span> <span class="nv">filename</span><span class="o">=</span>prometheus.yml
+</span></span><span class="line"><span class="cl"><span class="nv">level</span><span class="o">=</span>info <span class="nv">ts</span><span class="o">=</span>2018-10-23T14:55:14.509537Z <span class="nv">caller</span><span class="o">=</span>main.go:523 <span class="nv">msg</span><span class="o">=</span><span class="s2">&#34;Server is ready to receive web requests.&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>启动完成后，可以通过http://localhost:9090访问Prometheus的UI界面：</p>
+<img src="https://img1.kiosk007.top/static/images/nginx/lua/nginx_promethues.png">
+<ul>
+<li><strong>安装 Node exporter</strong></li>
+</ul>
+<p>在Prometheus的架构设计中，Prometheus Server并不直接服务监控特定的目标，其主要任务负责数据的收集，存储并且对外提供数据查询支持。因此为了能够能够监控到某些东西，如主机的CPU使用率，我们需要使用到Exporter。Prometheus周期性的从Exporter暴露的HTTP服务地址（通常是/metrics）拉取监控样本数据。</p>
+<p>这里为了能够采集到主机的运行指标如CPU, 内存，磁盘等信息。我们可以使用 <a href="https://github.com/prometheus/node_exporter" target="_blank" rel="noopener noreffer">Node Exporter</a>。</p>
+<p>另外可以参考 <a href="https://devopscube.com/install-configure-prometheus-linux/" target="_blank" rel="noopener noreffer">文章</a> 将prometheus 设置为systemd监管。</p>
+<p>从日志上可以看出 node_exporter 监听在 9100 端口上，默认的 metrics 接口通过 /metrics 端点暴露，我们可以通过访问 <code>http://localhost:9100/metrics</code> 来获取监控指标数据，该 metrics 接口数据就是一个标准的 Prometheus 监控指标格式，我们只需要将该端点配置到 Prometheus 中即可抓取该指标数据。</p>
+<h2 id="监控">监控</h2>
+<ul>
+<li>参考<a href="https://www.jianshu.com/p/fa5f911003c6" target="_blank" rel="noopener noreffer">文章</a></li>
+<li>参考<a href="https://jishuin.proginn.com/p/763bfbd6a391" target="_blank" rel="noopener noreffer">文章</a></li>
+</ul>
+<h3 id="prometheus-四大度量指标">Prometheus 四大度量指标</h3>
+<ol>
+<li>Counter (计数器)</li>
+</ol>
+<ul>
+<li>
+<p>描述：Counter 类型代表一个累积的指标数据，其<strong>单调递增</strong>，只增不减。在应用场景中，像是<strong>请求次数、错误数量</strong>等等，就非常适合用 Counter 来做指标类型，另外 Counter 类型，只有在被采集端重新启动时才会归零。</p>
+</li>
+<li>
+<p>常用方法:</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">方法名</th>
+<th style="text-align:center">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Inc()</td>
+<td style="text-align:center">将计数器递增1</td>
+</tr>
+<tr>
+<td style="text-align:center">Add(float64)</td>
+<td style="text-align:center">将给定添加计数器中,小于0报错</td>
+</tr>
+</tbody>
+</table>
+<ol start="2">
+<li>Gauge (仪表盘)</li>
+</ol>
+<ul>
+<li>
+<p>描述: Gauge 类型代表一个可以任意变化的指标数据，其可增可减。在应用场景中，像是 Go 应用程序运行时的 <strong>Goroutine 的数量</strong>就可以用该类型来表示，在系统中统计 **CPU、Memory **等等时很常见，而在业务场景中，<strong>业务队列的数量</strong> 也可以用 Gauge 来统计，实时观察队列数量，及时发现堆积情况,因为其是浮动的数值，并非固定的，侧重于反馈当前的情况</p>
+</li>
+<li>
+<p>常用方法:</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">方法名</th>
+<th style="text-align:center">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Set(float64)</td>
+<td style="text-align:center">将仪表设置为任意值</td>
+</tr>
+<tr>
+<td style="text-align:center">Inc()</td>
+<td style="text-align:center">将仪表增加 1</td>
+</tr>
+<tr>
+<td style="text-align:center">Dec()</td>
+<td style="text-align:center">将仪表减少 1</td>
+</tr>
+<tr>
+<td style="text-align:center">Add(float64)</td>
+<td style="text-align:center">将给定值添加到仪表，该值如果为负数，那么将导致仪表值减少</td>
+</tr>
+<tr>
+<td style="text-align:center">Sub(float64)</td>
+<td style="text-align:center">从仪表中减去给定值，该值如果为负数，那么将导致仪表值增加</td>
+</tr>
+<tr>
+<td style="text-align:center">SetToCurrentTime()</td>
+<td style="text-align:center">将仪表设置为当前Unix时间（以秒为单位）</td>
+</tr>
+</tbody>
+</table>
+<ol start="3">
+<li>Histogram(累积直方图)</li>
+</ol>
+<ul>
+<li>描述：Histogram 类型将会在一段时间范围内对数据进行采样（通常是请求持续时间或响应大小等等），并将其计入可配置的存储桶（bucket）中，后续可通过指定区间筛选样本，也可以统计样本总数。</li>
+</ul>
+<p>Histogram 类型在应用场景中非常的常用，因为其代表的就是分组区间的统计，而在分布式场景盛行的现在，链路追踪系统是必不可少的，那么针对不同的链路的分析统计就非常的有必要，例如像是对 **RPC、SQL、HTTP、Redis 的 P90、P95、P99 **进行计算统计，并且更进一步的做告警，就能够及时的发现应用链路缓慢，进而发现和减少第三方系统的影响。</p>
+<ul>
+<li>常用方法</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">方法名</th>
+<th style="text-align:center">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Observe(float64)</td>
+<td style="text-align:center">将一个观察值添加到直方图。</td>
+</tr>
+</tbody>
+</table>
+<ol start="4">
+<li>Summary（摘要）</li>
+</ol>
+<ul>
+<li>
+<p>描述：Summary 类型将会在一段时间范围内对数据进行采样，但是与 Histogram 类型不同的是 Summary 类型将会存储分位数（在客户端进行计算），而不像 Histogram 类型，根据所设置的区间情况统计存储。提供三种摘要指标: 样本值的分位数分布情况,所有样本值的大小总和,样本总数</p>
+</li>
+<li>
+<p>常用方法</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">方法名</th>
+<th style="text-align:center">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Observe(float64)</td>
+<td style="text-align:center">将一个观察值添加到直方图。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="使用promql-查询监控">使用PromQL 查询监控</h3>
+<p>PromQL是Prometheus自定义的一套强大的数据查询语言，除了使用监控指标作为查询关键字以为，还内置了大量的函数，帮助用户进一步对时序数据进行处理。
+具体可以参考 <a href="https://prometheus.fuckcloudnative.io/di-san-zhang-prometheus/di-4-jie-cha-xun/basics" target="_blank" rel="noopener noreffer">教程</a></p>
+<p><strong>下面以监控CPU为例</strong></p>
+<p>对于节点我们首先能想到的就是要先对 CPU 进行监控，因为 CPU 是处理任务的核心，根据 CPU 的状态可以分析出当前系统的健康状态。要对节点进行 CPU 监控，需要用到 <code>node_cpu_seconds_total</code> 这个监控指标，在 metrics 接口中该指标内容如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ curl 127.0.0.1:9100/metrics -s |grep -v &#34;#&#34; |grep node_cpu
+</span></span><span class="line"><span class="cl">node_cpu_guest_seconds_total{cpu=&#34;0&#34;,mode=&#34;nice&#34;} 0
+</span></span><span class="line"><span class="cl">node_cpu_guest_seconds_total{cpu=&#34;0&#34;,mode=&#34;user&#34;} 0
+</span></span><span class="line"><span class="cl">node_cpu_guest_seconds_total{cpu=&#34;1&#34;,mode=&#34;nice&#34;} 0
+</span></span><span class="line"><span class="cl">node_cpu_guest_seconds_total{cpu=&#34;1&#34;,mode=&#34;user&#34;} 0
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;idle&#34;} 130304.6
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;iowait&#34;} 17.37
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;irq&#34;} 0
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;nice&#34;} 20.25
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;softirq&#34;} 12.51
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;steal&#34;} 0
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;system&#34;} 585.6
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;user&#34;} 467.62
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;idle&#34;} 130201.93
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;iowait&#34;} 78.33
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;irq&#34;} 0
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;nice&#34;} 18.39
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;softirq&#34;} 12.38
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;steal&#34;} 0
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;system&#34;} 590.54
+</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;user&#34;} 464.42
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从接口中描述可以看出该指标是用来统计 CPU 每种模式下所花费的时间，是一个 Counter 类型的指标，也就是会一直增长，这个数值其实是 CPU 时间片的一个累积值，意思就是从操作系统启动起来 CPU 开始工作，就开始记录自己总共使用的时间，然后保存下来，而且这里的累积的 CPU 使用时间还会分成几个不同的模式。</p>
+<p>接下来我们来对节点的 CPU 进行监控，我们也知道一个一直增长的 CPU 时间对我们意义不大，一般我们更希望监控的是节点的 CPU 使用率。</p>
+<p>要计算 CPU 的使用率，那么就需要搞清楚这个使用率的含义，CPU 使用率是 CPU 除空闲（idle）状态之外的其他所有 CPU 状态的时间总和除以总的 CPU 时间得到的结果，理解了这个概念后就可以写出正确的 promql 查询语句了。</p>
+<p>要计算除空闲状态之外的 CPU 时间总和，更好的方式是不是直接计算空闲状态的 CPU 时间使用率，然后用 1 减掉就是我们想要的结果了，所以首先我们先过滤 idle 模式的指标，在 Prometheus 的 WebUI 中输入 <code>node_cpu_seconds_total{mode=&quot;idle&quot;} </code>进行过滤：</p>
+<img src="https://img1.kiosk007.top/static/images/nginx/lua/prometheus_cpu_idle1.png">
+<p>要计算使用率，肯定就需要知道 <code>idle</code> 模式的 CPU 用了多长时间，然后和总的进行对比，由于这是 <code>Counter</code> 指标，我们可以用 <code>increase</code> 函数来获取变化，使用查询语句 <code>increase(node_cpu_seconds_total{mode=&quot;idle&quot;}[1m])</code>，因为 <code>increase</code> 函数要求输入一个区间向量，所以这里我们取 1 分钟内的数据：</p>
+<img src="https://img1.kiosk007.top/static/images/nginx/lua/prometheus_cpu_idle2.png">
+<p>我们可以看到查询结果中有很多不同 cpu 序号的数据，我们当然需要计算所有 CPU 的时间，所以我们将它们聚合起来，我们要查询的是不同节点的 CPU 使用率，所以就需要根据 instance 标签进行聚合，使用查询语句 <code>sum(increase(node_cpu_seconds_total{mode=&quot;idle&quot;}[1m])) by (instance)</code>：</p>
+<img src="https://img1.kiosk007.top/static/images/nginx/lua/prometheus_cpu_idle3.png">
+<p>这样我们就分别拿到不同节点 1 分钟内的空闲 CPU 使用时间了，然后和总的 CPU （这个时候不需要过滤状态模式）时间进行比较即可，使用查询语句 <code>sum(increase(node_cpu_seconds_total{mode=&quot;idle&quot;}[1m])) by (instance) / sum(increase(node_cpu_seconds_total[1m])) by (instance)</code>：</p>
+<img src="https://img1.kiosk007.top/static/images/nginx/lua/prometheus_cpu_idle4.png">
+<p>然后计算 CPU 使用率就非常简单了，使用 1 减去乘以 100 即可：<code>(1 - sum(increase(node_cpu_seconds_total{mode=&quot;idle&quot;}[1m])) by (instance) / sum(increase(node_cpu_seconds_total[1m])) by (instance) ) * 100</code>。这就是能够想到的最直接的 CPU 使用率查询方式了，当然前面我们学习的 promql 语法中提到过更多的时候我们会去使用 <code>rate</code> 函数，而不是用 <code>increase</code> 函数进行计算，所以最终的 CPU 使用率的查询语句为：<code>(1 - sum(increase(node_cpu_seconds_total{mode=&quot;idle&quot;}[1m])) by (instance) / sum(increase(node_cpu_seconds_total[1m])) by (instance) ) * 100</code></p>
+<img src="https://img1.kiosk007.top/static/images/nginx/lua/prometheus_cpu_idle6.png">
+<p><strong>和腾讯云控制台的数据作对比</strong>, 指标趋势是一致的。</p>
+<img src="https://img1.kiosk007.top/static/images/nginx/lua/prometheus_cpu_idle7.png">
+<ul>
+<li><strong>使用Grafana创建可视化Dashboard</strong></li>
+</ul>
+<p>Prometheus UI提供了快速验证PromQL以及临时可视化支持的能力，而在大多数场景下引入监控系统通常还需要构建可以长期使用的监控数据可视化面板（Dashboard）。这时用户可以考虑使用第三方的可视化工具如Grafana，Grafana是一个开源的可视化平台，并且提供了对Prometheus的完整支持。
+安装 grafana 参考<a href="https://cloud.tencent.com/developer/article/1807679" target="_blank" rel="noopener noreffer">文章</a></p>
+<p>grafana 可以默认支持 prometheus 数据源的接入。访问http://localhost:3000就可以进入到Grafana的界面中，默认情况下使用账户admin/admin进行登录。在Grafana首页中显示默认的使用向导，包括：安装、添加数据源、创建Dashboard、邀请成员、以及安装应用和插件等主要流程。</p>
+<p>按照上面的参考文章，可以完整的配置完成。</p>
+<h2 id="grafana-监控">grafana 监控</h2>
+<p>首先在prometheus 上画好的图就可以在 grafana 上做监控了，我这里将 <code>nginx-lua-prometheus</code> 做了少许改造，可以参考:
+<code>https://github.com/weijiaxiang007/nginx-lua-prometheus</code></p>
+<p>一般的查询语法可以在 grafana 的官方网站上找一些。</p>
+<p><a href="https://grafana.com/grafana/dashboards/2949/revisions" target="_blank" rel="noopener noreffer">https://grafana.com/grafana/dashboards/2949/revisions</a></p>
+<h1 id="nginx-lua-prometheus">nginx-lua-prometheus</h1>
+<p><code>nginx-lua-prometheus</code> 是一个lua写的Nginx监控项目，可以拉取Nginx的相关metrics 生成监控dashboard。</p>
+<p>参考<a href="https://github.com/knyar/nginx-lua-prometheus" target="_blank" rel="noopener noreffer">github</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">git clone http://github.com/knyar/nginx-lua-prometheus
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>快速安装，需要将下面的内容写在 <code>nginx.conf</code> 的 <code>http</code> 块内。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">lua_shared_dict</span> <span class="s">prometheus_metrics</span> <span class="s">10M</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">lua_package_path</span> <span class="s">&#34;/path/to/nginx-lua-prometheus/?.lua</span><span class="p">;</span>;<span class="k">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">init_worker_by_lua_block</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kn">prometheus</span> <span class="p">=</span> <span class="s">require(&#34;prometheus&#34;).init(&#34;prometheus_metrics&#34;)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="s">metric_requests</span> <span class="p">=</span> <span class="s">prometheus:counter(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;nginx_http_requests_total&#34;,</span> <span class="s">&#34;Number</span> <span class="s">of</span> <span class="s">HTTP</span> <span class="s">requests&#34;,</span> <span class="p">{</span><span class="kn">&#34;host&#34;,</span> <span class="s">&#34;status&#34;</span><span class="err">}</span><span class="s">)</span>
+</span></span><span class="line"><span class="cl">  <span class="s">metric_latency</span> <span class="p">=</span> <span class="s">prometheus:histogram(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;nginx_http_request_duration_seconds&#34;,</span> <span class="s">&#34;HTTP</span> <span class="s">request</span> <span class="s">latency&#34;,</span> <span class="p">{</span><span class="kn">&#34;host&#34;})</span>
+</span></span><span class="line"><span class="cl">  <span class="s">metric_connections</span> <span class="p">=</span> <span class="s">prometheus:gauge(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;nginx_http_connections&#34;,</span> <span class="s">&#34;Number</span> <span class="s">of</span> <span class="s">HTTP</span> <span class="s">connections&#34;,</span> <span class="p">{</span><span class="kn">&#34;state&#34;})</span>
+</span></span><span class="line"><span class="cl"><span class="err">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="s">log_by_lua_block</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kn">metric_requests:inc(1,</span> <span class="p">{</span><span class="kn">ngx.var.server_name,</span> <span class="s">ngx.var.status</span><span class="err">}</span><span class="s">)</span>
+</span></span><span class="line"><span class="cl">  <span class="s">metric_latency:observe(tonumber(ngx.var.request_time),</span> <span class="p">{</span><span class="kn">ngx.var.server_name})</span>
+</span></span><span class="line"><span class="cl"><span class="err">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在这个 prometheus 的统计代码中可以看到，在 <code>init_worker_by_lua_block</code> 有统计 HTTP 请求个数的 <code>metric_requests</code>, 和统计时延分布直方图的 <code>metric_latency</code> 和当前的链接数<code>metric_connections</code>。</p>
+<p>总的来说，prometheus 提供了 <code>prometheus:counter</code>、<code>prometheus:histogram</code>、<code>prometheus:gauge</code> 3个方法，分别用于counter（计数）、Gauge (仪表盘)、Histogram(累积直方图)</p>
+<p>在 <code>log_by_lua_block</code> 中有两个函数进行累加和赋值操作。</p>
+<p>接下来我们分析分析它的源码。</p>
+<h2 id="源码分析">源码分析</h2>
+<p>先看看代码的总体结构, 一个可供外部调用的代码应该按照下面的格式。<code>local Prometheus = {}</code> 最后再 <code>return Prometheus</code>。这里的 <code>mt = { __index = Prometheus }</code> 会在后面的 <code>init()</code> 实现类的构造函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">resty_counter_lib</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s2">&#34;prometheus_resty_counter&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">key_index_lib</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s2">&#34;prometheus_keys&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">Prometheus</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">mt</span> <span class="o">=</span> <span class="p">{</span> <span class="n">__index</span> <span class="o">=</span> <span class="n">Prometheus</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">TYPE_COUNTER</span>    <span class="o">=</span> <span class="mh">0x1</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">TYPE_GAUGE</span>      <span class="o">=</span> <span class="mh">0x2</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">TYPE_HISTOGRAM</span>  <span class="o">=</span> <span class="mh">0x4</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">TYPE_LITERAL</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="n">TYPE_COUNTER</span><span class="p">]</span>   <span class="o">=</span> <span class="s2">&#34;counter&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="n">TYPE_GAUGE</span><span class="p">]</span>     <span class="o">=</span> <span class="s2">&#34;gauge&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="n">TYPE_HISTOGRAM</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&#34;histogram&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">return</span> <span class="n">Prometheus</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>再来分析其中的<code>init</code> 方法。这里的 <code>local self = setmetable({}, mt)</code> 将self指向自己本身。<code>第19行</code> 开始设置参数, 这里可以设置的参数有错误metrics 名字和同步间隔。可以 <code>prometheus = require(&quot;prometheus&quot;).init(&quot;prometheus_metrics&quot;,{sync_interval=0.4})</code> 这样的方式调用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kr">function</span> <span class="nc">Prometheus</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="n">dict_name</span><span class="p">,</span> <span class="n">options_or_prefix</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">-- 检查当前正在运行的阶段名称</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="n">ngx.get_phase</span><span class="p">()</span> <span class="o">~=</span> <span class="s1">&#39;init&#39;</span> <span class="ow">and</span> <span class="n">ngx.get_phase</span><span class="p">()</span> <span class="o">~=</span> <span class="s1">&#39;init_worker&#39;</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">error</span><span class="p">(</span><span class="s1">&#39;Prometheus.init can only be called from &#39;</span> <span class="o">..</span>
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;init_by_lua_block or init_worker_by_lua_block&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">-- 类的构造函数、并且判断是否在Nginx配置文件中设置共享内存。</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">local</span> <span class="n">self</span> <span class="o">=</span> <span class="n">setmetatable</span><span class="p">({},</span> <span class="n">mt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dict_name</span> <span class="o">=</span> <span class="n">dict_name</span> <span class="ow">or</span> <span class="s2">&#34;prometheus_metrics&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">self.dict_name</span> <span class="o">=</span> <span class="n">dict_name</span>
+</span></span><span class="line"><span class="cl">  <span class="n">self.dict</span> <span class="o">=</span> <span class="n">ngx.shared</span><span class="p">[</span><span class="n">dict_name</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="n">self.dict</span> <span class="o">==</span> <span class="kc">nil</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">error</span><span class="p">(</span><span class="s2">&#34;Dictionary &#39;&#34;</span> <span class="o">..</span> <span class="n">dict_name</span> <span class="o">..</span> <span class="s2">&#34;&#39; does not seem to exist. &#34;</span> <span class="o">..</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;Please define the dictionary using `lua_shared_dict`.&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">-- 设置参数</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="n">type</span><span class="p">(</span><span class="n">options_or_prefix</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&#34;table&#34;</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">self.prefix</span> <span class="o">=</span> <span class="n">options_or_prefix.prefix</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">self.error_metric_name</span> <span class="o">=</span> <span class="n">options_or_prefix.error_metric_name</span> <span class="ow">or</span>
+</span></span><span class="line"><span class="cl">      <span class="n">DEFAULT_ERROR_METRIC_NAME</span>
+</span></span><span class="line"><span class="cl">    <span class="n">self.sync_interval</span> <span class="o">=</span> <span class="n">options_or_prefix.sync_interval</span> <span class="ow">or</span>
+</span></span><span class="line"><span class="cl">      <span class="n">DEFAULT_SYNC_INTERVAL</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">else</span>
+</span></span><span class="line"><span class="cl">    <span class="n">self.prefix</span> <span class="o">=</span> <span class="n">options_or_prefix</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">self.error_metric_name</span> <span class="o">=</span> <span class="n">DEFAULT_ERROR_METRIC_NAME</span>
+</span></span><span class="line"><span class="cl">    <span class="n">self.sync_interval</span> <span class="o">=</span> <span class="n">DEFAULT_SYNC_INTERVAL</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">self.registry</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">self.key_index</span> <span class="o">=</span> <span class="n">key_index_lib.new</span><span class="p">(</span><span class="n">self.dict</span><span class="p">,</span> <span class="n">KEY_INDEX_PREFIX</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">self.initialized</span> <span class="o">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">-- 注册请求错误个数的 counter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">self</span><span class="p">:</span><span class="n">counter</span><span class="p">(</span><span class="n">self.error_metric_name</span><span class="p">,</span> <span class="s2">&#34;Number of nginx-lua-prometheus errors&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">self.dict</span><span class="p">:</span><span class="n">set</span><span class="p">(</span><span class="n">self.error_metric_name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">local</span> <span class="n">err</span> <span class="o">=</span> <span class="n">self.key_index</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="n">self.error_metric_name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="n">err</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">self</span><span class="p">:</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="n">ngx.get_phase</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;init_worker&#39;</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">self</span><span class="p">:</span><span class="n">init_worker</span><span class="p">(</span><span class="n">self.sync_interval</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">return</span> <span class="n">self</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>接下来只介绍一下 <code>counter()</code> 函数的执行逻辑，其本质是一个工厂函数，实际调用的是 <code>register()</code> 方法。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- Public function to register a counter.</span>
+</span></span><span class="line"><span class="cl"><span class="kr">function</span> <span class="nc">Prometheus</span><span class="p">:</span><span class="nf">counter</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">help</span><span class="p">,</span> <span class="n">label_names</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">return</span> <span class="n">register</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">help</span><span class="p">,</span> <span class="n">label_names</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="n">TYPE_COUNTER</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- register 工厂函数</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="kr">function</span> <span class="nf">register</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">help</span><span class="p">,</span> <span class="n">label_names</span><span class="p">,</span> <span class="n">buckets</span><span class="p">,</span> <span class="n">typ</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="ow">not</span> <span class="n">self.initialized</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.log</span><span class="p">(</span><span class="n">ngx.ERR</span><span class="p">,</span> <span class="s2">&#34;Prometheus module has not been initialized&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">local</span> <span class="n">err</span> <span class="o">=</span> <span class="n">check_metric_and_label_names</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">label_names</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="n">err</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">self</span><span class="p">:</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">local</span> <span class="n">name_maybe_historgram</span> <span class="o">=</span> <span class="n">name</span><span class="p">:</span><span class="n">gsub</span><span class="p">(</span><span class="s2">&#34;_bucket$&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                                    <span class="p">:</span><span class="n">gsub</span><span class="p">(</span><span class="s2">&#34;_count$&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                                    <span class="p">:</span><span class="n">gsub</span><span class="p">(</span><span class="s2">&#34;_sum$&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">-- 判断是否有重复的metric                                  </span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="p">(</span><span class="n">typ</span> <span class="o">~=</span> <span class="n">TYPE_HISTOGRAM</span> <span class="ow">and</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="n">self.registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">or</span> <span class="n">self.registry</span><span class="p">[</span><span class="n">name_maybe_historgram</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">))</span> <span class="ow">or</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="n">typ</span> <span class="o">==</span> <span class="n">TYPE_HISTOGRAM</span> <span class="ow">and</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="n">self.registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">or</span>
+</span></span><span class="line"><span class="cl">      <span class="n">self.registry</span><span class="p">[</span><span class="n">name</span> <span class="o">..</span> <span class="s2">&#34;_count&#34;</span><span class="p">]</span> <span class="ow">or</span>
+</span></span><span class="line"><span class="cl">      <span class="n">self.registry</span><span class="p">[</span><span class="n">name</span> <span class="o">..</span> <span class="s2">&#34;_sum&#34;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">self.registry</span><span class="p">[</span><span class="n">name</span> <span class="o">..</span> <span class="s2">&#34;_bucket&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">))</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">self</span><span class="p">:</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&#34;Duplicate metric &#34;</span> <span class="o">..</span> <span class="n">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">-- 初始化 metrics</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">local</span> <span class="n">metric</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">help</span> <span class="o">=</span> <span class="n">help</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">typ</span> <span class="o">=</span> <span class="n">typ</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">label_names</span> <span class="o">=</span> <span class="n">label_names</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">label_count</span> <span class="o">=</span> <span class="n">label_names</span> <span class="ow">and</span> <span class="o">#</span><span class="n">label_names</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- Lookup is a tree of lua tables that contain label values, with leaf</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- tables containing full metric names. For example, given a metric</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- `http_count` and labels `host` and `status`, it might contain the</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- following values:</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- [&#39;me.com&#39;][&#39;200&#39;][LEAF_KEY] = &#39;http_count{host=&#34;me.com&#34;,status=&#34;200&#34;}&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">lookup</span> <span class="o">=</span> <span class="p">{},</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parent</span> <span class="o">=</span> <span class="n">self</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- Store a reference for logging functions for faster lookup.</span>
+</span></span><span class="line"><span class="cl">    <span class="n">_log_error</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(...)</span> <span class="n">self</span><span class="p">:</span><span class="n">log_error</span><span class="p">(...)</span> <span class="kr">end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">_log_error_kv</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(...)</span> <span class="n">self</span><span class="p">:</span><span class="n">log_error_kv</span><span class="p">(...)</span> <span class="kr">end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">_key_index</span> <span class="o">=</span> <span class="n">self.key_index</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">_dict</span> <span class="o">=</span> <span class="n">self.dict</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">reset</span> <span class="o">=</span> <span class="n">reset</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">-- 将封装方法赋值给 metric </span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="n">typ</span> <span class="o">&lt;</span> <span class="n">TYPE_HISTOGRAM</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="n">TYPE_GAUGE</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">      <span class="n">metric.set</span> <span class="o">=</span> <span class="n">set</span>
+</span></span><span class="line"><span class="cl">      <span class="n">metric.inc</span> <span class="o">=</span> <span class="n">inc_gauge</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">else</span>
+</span></span><span class="line"><span class="cl">      <span class="n">metric.inc</span> <span class="o">=</span> <span class="n">inc_counter</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    <span class="n">metric.del</span> <span class="o">=</span> <span class="n">del</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">else</span>
+</span></span><span class="line"><span class="cl">    <span class="n">metric.observe</span> <span class="o">=</span> <span class="n">observe</span>
+</span></span><span class="line"><span class="cl">    <span class="n">metric.buckets</span> <span class="o">=</span> <span class="n">buckets</span> <span class="ow">or</span> <span class="n">DEFAULT_BUCKETS</span>
+</span></span><span class="line"><span class="cl">    <span class="n">metric.bucket_count</span> <span class="o">=</span> <span class="o">#</span><span class="n">metric.buckets</span>
+</span></span><span class="line"><span class="cl">    <span class="n">metric.bucket_format</span> <span class="o">=</span> <span class="n">construct_bucket_format</span><span class="p">(</span><span class="n">metric.buckets</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">self.registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">return</span> <span class="n">metric</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-12-04</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/nginx-lua-%E5%85%A5%E9%97%A8/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://kiosk007.top/post/nginx-lua-%E5%85%A5%E9%97%A8/" data-title="Nginx Lua 扩展 --（Nginx 监控）"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://kiosk007.top/post/nginx-lua-%E5%85%A5%E9%97%A8/" data-title="Nginx Lua 扩展 --（Nginx 监控）"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="https://kiosk007.top/post/nginx-lua-%E5%85%A5%E9%97%A8/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/nginx/">Nginx</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/go-module-%E6%B1%87%E6%80%BB/" class="prev" rel="prev" title="Go Module 基本使用"><i class="fas fa-angle-left fa-fw"></i>Go Module 基本使用</a>
+            <a href="/post/golang-%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" class="next" rel="next" title="GoLang 静态代码分析工具">GoLang 静态代码分析工具<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.102.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{"valine":{"appId":"XhYn8GEq1Sg7ufJQAVmR4dWN-gzGzoHsz","appKey":"r42k4lqU022wD7IvtwGaQfjN","avatar":"mp","el":"#valine","emojiCDN":"https://fastly.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"en","pageSize":10,"placeholder":"Your comment ...","recordIP":true,"serverURLs":"https://xhyn8geq.lc-cn-n1-shared.com","visitor":true}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

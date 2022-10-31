@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>TLS详解（三） - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:title" content="TLS详解（三）" />
+<meta property="og:description" content="TLS 1.3现已于2018年8月发布。相比与TLS1.2，TLS1.3 在速度和安全性上做出了更大的性能提升，其最大的特点是支持了 Zero Round Trip Time (0-RTT). 在安全性方面，TLS1.3 摒弃了绝大多数不安全的加密套件，只支持几个AEAD的加密认证方式。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://kiosk007.top/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/" /><meta property="og:image" content="https://kiosk007.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-01-16T16:48:00+00:00" />
+<meta property="article:modified_time" content="2021-01-16T16:48:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://kiosk007.top/logo.png"/>
+
+<meta name="twitter:title" content="TLS详解（三）"/>
+<meta name="twitter:description" content="TLS 1.3现已于2018年8月发布。相比与TLS1.2，TLS1.3 在速度和安全性上做出了更大的性能提升，其最大的特点是支持了 Zero Round Trip Time (0-RTT). 在安全性方面，TLS1.3 摒弃了绝大多数不安全的加密套件，只支持几个AEAD的加密认证方式。"/>
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="https://kiosk007.top/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/" /><link rel="prev" href="https://kiosk007.top/post/git-quick-start/" /><link rel="next" href="https://kiosk007.top/post/go-reflect/" /><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "TLS详解（三）",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/kiosk007.top\/post\/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "https:\/\/kiosk007.top\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "tls","wordcount":  1156 ,
+        "url": "https:\/\/kiosk007.top\/post\/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89\/","datePublished": "2021-01-16T16:48:00+00:00","dateModified": "2021-01-16T16:48:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/kiosk007.top\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">TLS详解（三）</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>network</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-16">2021-01-16</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1156 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;6 minutes&nbsp;<span id="/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/" class="leancloud_visitors" data-flag-title="TLS详解（三）">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;views
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#tls13-feature">TLS1.3 Feature</a></li>
+    <li><a href="#the-tls-handshake">The TLS handshake</a>
+      <ul>
+        <li><a href="#font-stylecolor4682b4client-hellofont"><font style="color:#4682B4">Client Hello</font></a></li>
+        <li><a href="#font-stylecolor4682b4server-hellofont"><font style="color:#4682B4">Server Hello</font></a>
+          <ul>
+            <li><a href="#font-stylecolor87ceeb-psk-pre-shared-keyfont"><font style="color:#87CEEB"> PSK (Pre-Shared Key)</font></a></li>
+            <li><a href="#font-stylecolor87ceeb0-rttfont"><font style="color:#87CEEB">0 RTT</font></a></li>
+            <li><a href="#font-stylecolor87ceeb-checkforresumption----gofont"><font style="color:#87CEEB"> checkForResumption &ndash; Go</font></a></li>
+          </ul>
+        </li>
+        <li><a href="#font-stylecolor4682b4-change-cipher-spacefont"><font style="color:#4682B4"> Change Cipher Space</font></a></li>
+        <li><a href="#font-stylecolor4682b4-encryptedextensions-font"><font style="color:#4682B4"> EncryptedExtensions </font></a></li>
+        <li><a href="#font-stylecolor4682b4-certificate--certificate-verify--finished-font"><font style="color:#4682B4"> Certificate &amp;&amp; Certificate Verify &amp;&amp; Finished </font></a></li>
+        <li><a href="#font-stylecolor4682b4-new-session-ticket-font"><font style="color:#4682B4"> New Session Ticket </font></a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>TLS 1.3现已于2018年8月发布。相比与TLS1.2，TLS1.3 在速度和安全性上做出了更大的性能提升，其最大的特点是支持了 Zero Round Trip Time (0-RTT). 在安全性方面，TLS1.3 摒弃了绝大多数不安全的加密套件，只支持几个AEAD的加密认证方式。</p>
+<ul>
+<li><a href="https://kiosk007.top/post/tls%e8%af%a6%e8%a7%a3-%e4%b8%80/" target="_blank" rel="noopener noreffer">TLS 详解（一）</a></li>
+<li><a href="https://kiosk007.top/post/tls%e8%af%a6%e8%a7%a3-%e4%ba%8c/" target="_blank" rel="noopener noreffer">TLS 详解（二）</a></li>
+</ul>
+<h1 id="tls13-feature">TLS1.3 Feature</h1>
+<ul>
+<li><font color="#7B68EE">Speed Benefits of TLS 1.3</font></li>
+</ul>
+<p>TLS1.3 可以使用1RTT建立握手，比1.2版本能节约一个网络来回。</p>
+<img style="height:300px" src="/images/network/TLSDetailAnalysis/tls-1.3-handshake-performance.png" />
+<ul>
+<li><font color="#7B68EE">Improved Security With TLS 1.3</font></li>
+</ul>
+<p>TLS1.3 移除了RC4、DES、MD5 等诸多脆弱不安全的算法，目前仅保持了支持AEAD的ECDH类等算法。</p>
+<ul>
+<li><font color="#7B68EE"> 1.3 Browser Support</font></li>
+</ul>
+<p>从 Chrome65 开始，Google公司就可以支持 <a href="http://www.chromium.org/Home/tls13" target="_blank" rel="noopener noreffer">draft version of TLS 1.3 </a> , 2018年10月的 Chrome70 就完全支持了TLS1.3。同样Firefox63也在同年10月支持了TLS1.3。Microsoft Edge version 76 及 Safari 12.1 on macOS 10.14.4. 也都支持了TLS1.3 。</p>
+<h1 id="the-tls-handshake">The TLS handshake</h1>
+<p>总体握手流程如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">hs</span> <span class="o">*</span><span class="nx">serverHandshakeStateTLS13</span><span class="p">)</span> <span class="nf">handshake</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">c</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">c</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// For an overview of the TLS 1.3 handshake, see RFC 8446, Section 2.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nf">processClientHello</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">err</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nf">checkForResumption</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">err</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nf">pickCertificate</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">err</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">c</span><span class="p">.</span><span class="nx">buffering</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nf">sendServerParameters</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">err</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nf">sendServerCertificate</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">err</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nf">sendServerFinished</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">err</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// Note that at this point we could start sending application data without
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// waiting for the client&#39;s second flight, but the application might not
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// expect the lack of replay protection of the ClientHello parameters.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">flush</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">err</span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nf">readClientCertificate</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>  <span class="k">return</span> <span class="nx">err</span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nf">readClientFinished</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">err</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">atomic</span><span class="p">.</span><span class="nf">StoreUint32</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">handshakeStatus</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="/images/network/TLSDetailAnalysis/tls-1.3.png" />
+<h2 id="font-stylecolor4682b4client-hellofont"><font style="color:#4682B4">Client Hello</font></h2>
+<p>由于TLS1.2已经在互联网上存在了10年。网络中大量的网络中间设备都十分老旧，这些网络设备会识别中间的TLS握手头部，所以TLS1.3的出现如果引入了未知的TLS Version 必然会存在大量的握手失败，为了解决这一点，TLS1.3 的握手头部默认是TLS1.2。</p>
+<img style="height:400px" src="/images/network/TLSDetailAnalysis/tls-1.3-handshake-clienthello.png" />
+<p>如果客户端支持TLS1.3 则在 <strong><font style="color:#483D8B">Client Hello</font></strong> 发出时在Extensions中携带 supported_versions 并标明客户端是支持TLS1.3的，同样为了1RTT快速握手，会将客户端Key_share 发送给服务端。Key_Share是客户端提前生成好的公钥信息。其密钥派生过程依赖于密码套件的 HKDF Extract 和 HKDF Expand 函数以及 Hash函数。</p>
+<p>在密钥交换之前，客户端和服务端使用HKDF生成密钥。（它取代了基于HMAC的伪随机密钥生成函数PRF。</p>
+<p>下面用代码过一遍客户端的Client Hello流程。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">params</span> <span class="nx">ecdheParameters</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">hello</span><span class="p">.</span><span class="nx">supportedVersions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nx">VersionTLS13</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">hello</span><span class="p">.</span><span class="nx">cipherSuites</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">hello</span><span class="p">.</span><span class="nx">cipherSuites</span><span class="p">,</span> <span class="nf">defaultCipherSuitesTLS13</span><span class="p">()</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">curveID</span> <span class="o">:=</span> <span class="nx">config</span><span class="p">.</span><span class="nf">curvePreferences</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nf">curveForCurveID</span><span class="p">(</span><span class="nx">curveID</span><span class="p">);</span> <span class="nx">curveID</span> <span class="o">!=</span> <span class="nx">X25519</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;tls: CurvePreferences includes unsupported curve&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">params</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">generateECDHEParameters</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nf">rand</span><span class="p">(),</span> <span class="nx">curveID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">hello</span><span class="p">.</span><span class="nx">keyShares</span> <span class="p">=</span> <span class="p">[]</span><span class="nx">keyShare</span><span class="p">{{</span><span class="nx">group</span><span class="p">:</span> <span class="nx">curveID</span><span class="p">,</span> <span class="nx">data</span><span class="p">:</span> <span class="nx">params</span><span class="p">.</span><span class="nf">PublicKey</span><span class="p">()}}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里，如果客户端是支持  <font style="color:#483D8B">VersionTLS13</font>, 则在创建 <font style="color:#483D8B"> Client Hello </font> 时,添加TLS1.3支持的秘钥套件，并使用 x25519 曲线和随机数生成 <font style="color:#483D8B"> PublickKey </font>放入 <font style="color:#483D8B"> Client Hello Extension</font> 中的 <font style="color:#483D8B"> KeyShares </font> 中。</p>
+<h2 id="font-stylecolor4682b4server-hellofont"><font style="color:#4682B4">Server Hello</font></h2>
+<p>服务端的TLS Version仍为TLS1.2（实际上后续的TLS版本均为1.2），如果服务端支持TLS1.3，则会在  <font style="color:#483D8B">supported_versions</font> 中的携带TLS1.3，这样后续的会话便均在TLS1.3下通信。</p>
+<img style="height:400px" src="/images/network/TLSDetailAnalysis/tls-1.3-handshake-serverhello.png" />
+<p>服务端会在<font style="color:#483D8B"> Server Hello </font> 中的 <font style="color:#483D8B"> key_share </font> 中携带公钥信息。</p>
+<p>下面是完整的握手过程，BTW <font style="color:red">虽然0RTT是各大博客都吹嘘的TLS1.3亮点，但是0RTT 当前大多数的官方库都还没有实现（Nginx似乎是支持了）</font> ，比如看这里</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">clientHello</span><span class="p">.</span><span class="nx">earlyData</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// See RFC 8446, Section 4.2.10 for the complicated behavior required
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// here. The scenario is that a different server at our address offered
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// to accept early data in the past, which we can&#39;t handle. For now, all
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// 0-RTT enabled session tickets need to expire before a Go server can
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// replace a server or join a pool. That&#39;s the same requirement that
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// applies to mixing or replacing with any TLS 1.2 server.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">c</span><span class="p">.</span><span class="nf">sendAlert</span><span class="p">(</span><span class="nx">alertUnsupportedExtension</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;tls: client sent unexpected early data&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>服务端选择和客户端同样支持的 <font style="color:#483D8B"> CurveID </font>(代码中的 selectedGroup，并且是Client支持的Key Share)。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl">	<span class="nx">params</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">generateECDHEParameters</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nf">rand</span><span class="p">(),</span> <span class="nx">selectedGroup</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">c</span><span class="p">.</span><span class="nf">sendAlert</span><span class="p">(</span><span class="nx">alertInternalError</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">hs</span><span class="p">.</span><span class="nx">hello</span><span class="p">.</span><span class="nx">serverShare</span> <span class="p">=</span> <span class="nx">keyShare</span><span class="p">{</span><span class="nx">group</span><span class="p">:</span> <span class="nx">selectedGroup</span><span class="p">,</span> <span class="nx">data</span><span class="p">:</span> <span class="nx">params</span><span class="p">.</span><span class="nf">PublicKey</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">hs</span><span class="p">.</span><span class="nx">sharedKey</span> <span class="p">=</span> <span class="nx">params</span><span class="p">.</span><span class="nf">SharedKey</span><span class="p">(</span><span class="nx">clientKeyShare</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">sharedKey</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">c</span><span class="p">.</span><span class="nf">sendAlert</span><span class="p">(</span><span class="nx">alertIllegalParameter</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;tls: invalid client key share&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这样以来，客户端和服务端便直接完成了 <font style="color:#483D8B">ECDHE</font> 密钥交换</p>
+<ul>
+<li>客户端生成随机数x，确定了曲线类型如Golang TLS SDK只支持的 <font style="color:#483D8B"> x25519曲线</font> 即可得方程系数a、b，再调用<code>generateECDHEParameters</code> 获得 <font style="color:#483D8B"> PublicKey Q<sub>1</sub> </font>。客户端将 Q<sub>1</sub> 、a、 b、 P 传给服务端。</li>
+<li>服务端生成随机数y，解析客户端传来的曲线和 Key_Share 对，得到曲线类型 <font style="color:#483D8B"> x25519 </font>既得方程系数a、b，再使用 selectedGroup 和 y 调用<code>generateECDHEParameters</code> 生成 <font style="color:#483D8B"> PublicKey Q<sub>2</sub> </font> ,传给客户端</li>
+<li>这时客户端和服务端可以计算出一个公共的值 <font style="color:#483D8B"> <strong>K</strong> </font></li>
+</ul>
+<p>如下图</p>
+<img src="/images/network/TLSDetailAnalysis/ECDHE.png"/>
+<h3 id="font-stylecolor87ceeb-psk-pre-shared-keyfont"><font style="color:#87CEEB"> PSK (Pre-Shared Key)</font></h3>
+<p>这里在接着解析代码之前，先插播一个 TLS1.3 的feature 0RTT是如何实现的。这里介绍一下实现的原理 &ndash; <font style="color:#483D8B"> <strong>PSK</strong> </font></p>
+<p>一旦一次握手完成，server 就能给 client 发送一个与一个独特密钥对应的 PSK 密钥，这个密钥来自初次握手。然后 client 能够使用这个 PSK 密钥在将来的握手中协商相关 PSK 的使用。如果 server 接受它，新连接的安全上下文在密码学上就与初始连接关联在一起，从初次握手中得到的密钥就会用于装载密码状态来替代完整的握手。在 TLS 1.2 以及更低的版本中，这个功能由 &ldquo;session IDs&rdquo; 和 &ldquo;session tickets&rdquo; [RFC5077]来提供。这两个机制在 TLS 1.3 中都被废除了。</p>
+<p>PSK 可以与 (EC)DHE 密钥交换算法一同使用以便使共享密钥具备前向安全，或者 PSK 可以被单独使用，这样是以丢失了应用数据的前向安全为代价。</p>
+<p>下图显示了两次握手，第一次建立了一个 PSK，第二次时使用它：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">          Client                                               Server
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Initial Handshake:
+</span></span><span class="line"><span class="cl">          ClientHello
+</span></span><span class="line"><span class="cl">          + key_share               --------&gt;
+</span></span><span class="line"><span class="cl">                                                          ServerHello
+</span></span><span class="line"><span class="cl">                                                          + key_share
+</span></span><span class="line"><span class="cl">                                                <span class="o">{</span>EncryptedExtensions<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                                                <span class="o">{</span>CertificateRequest*<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                                                       <span class="o">{</span>Certificate*<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                                                 <span class="o">{</span>CertificateVerify*<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                                                           <span class="o">{</span>Finished<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                                    &lt;--------     <span class="o">[</span>Application Data*<span class="o">]</span>
+</span></span><span class="line"><span class="cl">          <span class="o">{</span>Certificate*<span class="o">}</span>
+</span></span><span class="line"><span class="cl">          <span class="o">{</span>CertificateVerify*<span class="o">}</span>
+</span></span><span class="line"><span class="cl">          <span class="o">{</span>Finished<span class="o">}</span>                --------&gt;
+</span></span><span class="line"><span class="cl">                                    &lt;--------      <span class="o">[</span>NewSessionTicket<span class="o">]</span>
+</span></span><span class="line"><span class="cl">          <span class="o">[</span>Application Data<span class="o">]</span>        &lt;-------&gt;      <span class="o">[</span>Application Data<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Subsequent Handshake:
+</span></span><span class="line"><span class="cl">          ClientHello
+</span></span><span class="line"><span class="cl">          + key_share*
+</span></span><span class="line"><span class="cl">          + pre_shared_key          --------&gt;
+</span></span><span class="line"><span class="cl">                                                          ServerHello
+</span></span><span class="line"><span class="cl">                                                     + pre_shared_key
+</span></span><span class="line"><span class="cl">                                                         + key_share*
+</span></span><span class="line"><span class="cl">                                                <span class="o">{</span>EncryptedExtensions<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                                                           <span class="o">{</span>Finished<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                                    &lt;--------     <span class="o">[</span>Application Data*<span class="o">]</span>
+</span></span><span class="line"><span class="cl">          <span class="o">{</span>Finished<span class="o">}</span>                --------&gt;
+</span></span><span class="line"><span class="cl">          <span class="o">[</span>Application Data<span class="o">]</span>        &lt;-------&gt;      <span class="o">[</span>Application Data<span class="o">]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当 server 通过一个 PSK 进行认证时，它不会发送一个 Certificate 或一个 CertificateVerify 消息。当一个 client 通过 PSK 想恢复会话的时候，它也应当提供一个 &ldquo;key_share&rdquo; 给 server，以允许 server 拒绝恢复会话的时候降级到重新回答一个完整的握手流程中。Server 响应 &ldquo;pre_shared_key&rdquo; 扩展，使用 PSK 密钥协商建立连接，同时响应 &ldquo;key_share&rdquo; 扩展来进行 (EC)DHE 密钥建立，由此提供前向安全。</p>
+<p>当 PKS 在带外提供时，PSK 密钥和与 PSK 一起使用的 KDF hash 算法也必须被提供。</p>
+<h3 id="font-stylecolor87ceeb0-rttfont"><font style="color:#87CEEB">0 RTT</font></h3>
+<p>当 client 和 server 共享一个 PSK（从外部获得或通过一个以前的握手获得）时，TLS 1.3 允许 client 在第一个发送出去的消息中携带数据（&ldquo;application data&rdquo;）。Client 使用这个 PSK 来认证 server 并加密 early data 信息，最终实现Application数据的0RTT发送。</p>
+<p>如下图所示，0-RTT 数据在第一个发送的消息中被加入到 1-RTT 握手过程中。握手的其余消息与带 PSK 会话恢复的 1-RTT 握手消息相同。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">         Client                                               Server
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         ClientHello
+</span></span><span class="line"><span class="cl">         + early_data
+</span></span><span class="line"><span class="cl">         + key_share*
+</span></span><span class="line"><span class="cl">         + psk_key_exchange_modes
+</span></span><span class="line"><span class="cl">         + pre_shared_key
+</span></span><span class="line"><span class="cl">         <span class="o">(</span>Application Data*<span class="o">)</span>     --------&gt;
+</span></span><span class="line"><span class="cl">                                                         ServerHello
+</span></span><span class="line"><span class="cl">                                                    + pre_shared_key
+</span></span><span class="line"><span class="cl">                                                        + key_share*
+</span></span><span class="line"><span class="cl">                                               <span class="o">{</span>EncryptedExtensions<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                                                       + early_data*
+</span></span><span class="line"><span class="cl">                                                          <span class="o">{</span>Finished<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                                 &lt;--------       <span class="o">[</span>Application Data*<span class="o">]</span>
+</span></span><span class="line"><span class="cl">         <span class="o">(</span>EndOfEarlyData<span class="o">)</span>
+</span></span><span class="line"><span class="cl">         <span class="o">{</span>Finished<span class="o">}</span>              --------&gt;
+</span></span><span class="line"><span class="cl">         <span class="o">[</span>Application Data<span class="o">]</span>      &lt;-------&gt;        <span class="o">[</span>Application Data<span class="o">]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上图是 0-RTT 的信息流</p>
+<p>0-RTT 数组安全性比其他类型的 TLS 数据要弱一些，特别是：</p>
+<ol>
+<li>0-RTT 的数据是没有前向安全性的，它使用的是被提供的 PSK 中导出的密钥进行加密的。</li>
+<li>在多个连接之间不能保证不存在重放攻击。普通的 TLS 1.3 1-RTT 数据为了防止重放攻击的保护方法是使用 server 下发的随机数，现在 0-RTT 不依赖于 ServerHello 消息，因此保护措施更差。如果数据与 TLS client 认证或与应用协议里一起验证，这一点安全性的考虑尤其重要。这个警告适用于任何使用 early_exporter_master_secret 的情况。</li>
+</ol>
+<p>参考 <strong><a href="https://halfrost.com/tls_1-3_introduction/" target="_blank" rel="noopener noreffer">TLS 1.3 Introduction</a></strong> &ndash; Halfrost&rsquo;s Field | 冰霜之地</p>
+<h3 id="font-stylecolor87ceeb-checkforresumption----gofont"><font style="color:#87CEEB"> checkForResumption &ndash; Go</font></h3>
+<p>上面2个小节其实就是在介绍 <a href="https://golang.org/src/crypto/tls/handshake_server_tls13.go#226" target="_blank" rel="noopener noreffer"><code>checkForResumption()</code></a> 这个函数的作用。</p>
+<p>在Client Hello 包的扩展里如果有 <strong>psk_key_exchange_modes</strong> 和  <strong>pre_shared_key</strong> 就表示客户端想要会话复用，即类似TLS1.2的 <strong>Session Ticket</strong> or <strong>Session Id</strong> 的概念。</p>
+<p>如下所示：</p>
+<img src="/images/network/TLSDetailAnalysis/tls-1.3-psk_key_exchange_modes.png"/>
+<p><font style="color:#483D8B"> <strong>psk_key_exchange_modes</strong></font>是 psk 密钥交互模式选择. 此处的PSK模式为(EC)DHE下的PSK，客户端和服务器必须提供KeyShare, 如果是仅PSK模式，则服务器不需要提供KeyShare。</p>
+<img src="/images/network/TLSDetailAnalysis/tls-1.3-pre_shared_key.png" />
+<p><font style="color:#483D8B"> <strong>pre_shared_key</strong></font> 是预共享密钥认证机制，相当于session ticket再加一些检验的东西.
+Identity中包含的是客户端愿意进行协商的服务器身份列表。PSK binder表示已经构建当前PSK与当前握手之间的绑定。</p>
+<p>下面函数中，服务端会将 <font style="color:#483D8B">identity</font> 解析成 <font style="color:#483D8B">plaintext</font>，<font style="color:#483D8B">plaintext</font>中包含TLS版本、证书、复用秘钥、超时时间 等多个信息，如果unmarshal成功，即可以会话复用，继续向下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">identity</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">clientHello</span><span class="p">.</span><span class="nx">pskIdentities</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="nx">maxClientPSKIdentities</span> <span class="p">{</span> <span class="k">break</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">plaintext</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">decryptTicket</span><span class="p">(</span><span class="nx">identity</span><span class="p">.</span><span class="nx">label</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">plaintext</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">sessionState</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">sessionStateTLS13</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">sessionState</span><span class="p">.</span><span class="nf">unmarshal</span><span class="p">(</span><span class="nx">plaintext</span><span class="p">);</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="nx">createdAt</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Unix</span><span class="p">(</span><span class="nb">int64</span><span class="p">(</span><span class="nx">sessionState</span><span class="p">.</span><span class="nx">createdAt</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nf">time</span><span class="p">().</span><span class="nf">Sub</span><span class="p">(</span><span class="nx">createdAt</span><span class="p">)</span> <span class="p">&gt;</span> <span class="nx">maxSessionTicketLifetime</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// We don&#39;t check the obfuscated ticket age because it&#39;s affected by
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// clock skew and it&#39;s only a freshness signal useful for shrinking the
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// window for replay attacks, which don&#39;t affect us as we don&#39;t do 0-RTT.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">		<span class="nx">pskSuite</span> <span class="o">:=</span> <span class="nf">cipherSuiteTLS13ByID</span><span class="p">(</span><span class="nx">sessionState</span><span class="p">.</span><span class="nx">cipherSuite</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">pskSuite</span> <span class="o">==</span> <span class="kc">nil</span> <span class="o">||</span> <span class="nx">pskSuite</span><span class="p">.</span><span class="nx">hash</span> <span class="o">!=</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">suite</span><span class="p">.</span><span class="nx">hash</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">...</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">psk</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">suite</span><span class="p">.</span><span class="nf">expandLabel</span><span class="p">(</span><span class="nx">sessionState</span><span class="p">.</span><span class="nx">resumptionSecret</span><span class="p">,</span> <span class="s">&#34;resumption&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="kc">nil</span><span class="p">,</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">suite</span><span class="p">.</span><span class="nx">hash</span><span class="p">.</span><span class="nf">Size</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">hs</span><span class="p">.</span><span class="nx">earlySecret</span> <span class="p">=</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">suite</span><span class="p">.</span><span class="nf">extract</span><span class="p">(</span><span class="nx">psk</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">binderKey</span> <span class="o">:=</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">suite</span><span class="p">.</span><span class="nf">deriveSecret</span><span class="p">(</span><span class="nx">hs</span><span class="p">.</span><span class="nx">earlySecret</span><span class="p">,</span> <span class="nx">resumptionBinderLabel</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="o">...</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="font-stylecolor4682b4-change-cipher-spacefont"><font style="color:#4682B4"> Change Cipher Space</font></h2>
+<p>发送一个 <font style="color:#483D8B"><strong>ChangeCipherSpec record</strong></font> 报文，之后的加密方式将会改变。详见 See RFC 8446, Appendix D.4.</p>
+<h2 id="font-stylecolor4682b4-encryptedextensions-font"><font style="color:#4682B4"> EncryptedExtensions </font></h2>
+<p>随后 Server 会发来建立 EncryptedExtensions Server 参数: 对 ClientHello 扩展的响应，不需要确定加密参数，而不是特定于各个证书的加密参数。一般ALPN会在这里添加。</p>
+<h2 id="font-stylecolor4682b4-certificate--certificate-verify--finished-font"><font style="color:#4682B4"> Certificate &amp;&amp; Certificate Verify &amp;&amp; Finished </font></h2>
+<p>最后，Client 和 Server 交换认证消息。TLS 在每次基于证书的认证时使用相同的消息集，(基于 PSK 的认证是密钥交换中的一个副作用)特别是：</p>
+<ul>
+<li>
+<p><font style="color:#483D8B">Certificate</font>: 终端的证书和每个证书的扩展。 服务器如果不通过证书进行身份验证，并且如果服务器没有发送CertificateRequest（由此指示客户端不应该使用证书进行身份验证），客户端将忽略此消息。 请注意，如果使用原始公钥 [RFC7250] 或缓存信息扩展 [RFC7924]，则此消息将不包含证书，而是包含与服务器长期密钥相对应的其他值。</p>
+</li>
+<li>
+<p><font style="color:#483D8B">CertificateVerify</font>: 使用与证书消息中的公钥配对的私钥对整个握手消息进行签名。如果终端没有使用证书进行验证则此消息会被忽略。</p>
+</li>
+<li>
+<p><font style="color:#483D8B">Finished</font>: 对整个握手消息的 MAC(消息认证码)。这个消息提供了密钥确认，将终端身份与交换的密钥绑定在一起，这样在 PSK 模式下也能认证握手。</p>
+</li>
+</ul>
+<p>接收到 Server 的消息之后，Client 会响应它的认证消息，即 Certificate，CertificateVerify (如果需要), 和 Finished。</p>
+<p>这时握手已经完成，client 和 server 会提取出密钥用于记录层交换应用层数据，这些数据需要通过认证的加密来保护。应用层数据不能在 Finished 消息之前发送数据，必须等到记录层开始使用加密密钥之后才可以发送。需要注意的是 server 可以在收到 client 的认证消息之前发送应用数据，任何在这个时间点发送的数据，当然都是在发送给一个未被认证的对端。</p>
+<h2 id="font-stylecolor4682b4-new-session-ticket-font"><font style="color:#4682B4"> New Session Ticket </font></h2>
+<p>实际等同于发送 PSK 数据。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">hs</span> <span class="o">*</span><span class="nx">serverHandshakeStateTLS13</span><span class="p">)</span> <span class="nf">shouldSendSessionTickets</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">c</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">SessionTicketsDisabled</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Don&#39;t send tickets the client wouldn&#39;t use. See RFC 8446, Section 4.2.9.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">pskMode</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">hs</span><span class="p">.</span><span class="nx">clientHello</span><span class="p">.</span><span class="nx">pskModes</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">pskMode</span> <span class="o">==</span> <span class="nx">pskModeDHE</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-01-16</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://kiosk007.top/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/" data-title="TLS详解（三）"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://kiosk007.top/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/" data-title="TLS详解（三）"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="https://kiosk007.top/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/tls/">tls</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/git-quick-start/" class="prev" rel="prev" title="Git Quick Start"><i class="fas fa-angle-left fa-fw"></i>Git Quick Start</a>
+            <a href="/post/go-reflect/" class="next" rel="next" title="Go Reflect ">Go Reflect <i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.102.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{"valine":{"appId":"XhYn8GEq1Sg7ufJQAVmR4dWN-gzGzoHsz","appKey":"r42k4lqU022wD7IvtwGaQfjN","avatar":"mp","el":"#valine","emojiCDN":"https://fastly.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"en","pageSize":10,"placeholder":"Your comment ...","recordIP":true,"serverURLs":"https://xhyn8geq.lc-cn-n1-shared.com","visitor":true}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

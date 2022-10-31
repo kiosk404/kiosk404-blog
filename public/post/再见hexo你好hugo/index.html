@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>再见Hexo，你好Hugo - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:title" content="再见Hexo，你好Hugo" />
+<meta property="og:description" content="最近两年一直在用 hexo 来写博客，第一个认识的 hexo 静态托管类网站记得还是小米运维部的网站 noops.me ，但是时光荏苒，小米的技术博客16年就停更了。hexo 的生态也比较完整，也有很多不错的博客主题，但是这次想着和 hexo 说再见了。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://kiosk007.top/post/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo/" /><meta property="og:image" content="https://kiosk007.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-04-05T11:23:00+00:00" />
+<meta property="article:modified_time" content="2022-04-05T11:23:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://kiosk007.top/logo.png"/>
+
+<meta name="twitter:title" content="再见Hexo，你好Hugo"/>
+<meta name="twitter:description" content="最近两年一直在用 hexo 来写博客，第一个认识的 hexo 静态托管类网站记得还是小米运维部的网站 noops.me ，但是时光荏苒，小米的技术博客16年就停更了。hexo 的生态也比较完整，也有很多不错的博客主题，但是这次想着和 hexo 说再见了。"/>
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="https://kiosk007.top/post/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo/" /><link rel="prev" href="https://kiosk007.top/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" /><link rel="next" href="https://kiosk007.top/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/" /><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "再见Hexo，你好Hugo",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/kiosk007.top\/post\/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "https:\/\/kiosk007.top\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "hugo","wordcount":  931 ,
+        "url": "https:\/\/kiosk007.top\/post\/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo\/","datePublished": "2022-04-05T11:23:00+00:00","dateModified": "2022-04-05T11:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/kiosk007.top\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">再见Hexo，你好Hugo</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/blog/"><i class="far fa-folder fa-fw"></i>blog</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-04-05">2022-04-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;931 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;<span id="/post/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo/" class="leancloud_visitors" data-flag-title="再见Hexo，你好Hugo">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;views
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#再看一眼-hexo">再看一眼 Hexo</a></li>
+    <li><a href="#hugo">Hugo</a></li>
+    <li><a href="#开始迁移">开始迁移</a>
+      <ul>
+        <li><a href="#文章链接">文章链接</a></li>
+        <li><a href="#frontmatter">Frontmatter</a></li>
+      </ul>
+    </li>
+    <li><a href="#主题选择">主题选择</a>
+      <ul>
+        <li><a href="#写一个主题">写一个主题</a></li>
+        <li><a href="#文档阅读">文档阅读</a></li>
+        <li><a href="#搜索">搜索</a></li>
+        <li><a href="#评论系统">评论系统</a></li>
+      </ul>
+    </li>
+    <li><a href="#部署">部署</a>
+      <ul>
+        <li><a href="#github-actions">GitHub Actions</a></li>
+        <li><a href="#准备工作">准备工作</a></li>
+        <li><a href="#配置-github-actions">配置 GitHub Actions</a></li>
+      </ul>
+    </li>
+    <li><a href="#编辑">编辑</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>最近两年一直在用 hexo 来写博客，第一个认识的 hexo 静态托管类网站记得还是小米运维部的网站 noops.me ，但是时光荏苒，小米的技术博客16年就停更了。hexo 的生态也比较完整，也有很多不错的博客主题，但是这次想着和 hexo 说再见了。</p>
+<h1 id="再看一眼-hexo">再看一眼 Hexo</h1>
+<img src="https://img1.kiosk007.top/static/images/bye_hexo/kiosk007.png">
+<p>本次一时兴起想要迁移到 Hugo 主要有以下几个原因吧</p>
+<ul>
+<li><strong>作为一个 Gopher ，怎能在NodeJS这寄人篱下！！！</strong></li>
+<li>Hexo 的其实也换了不少主题了，但实际上没有一个是特别喜欢的。</li>
+<li>Hugo 既可以简洁也可以花里胡哨</li>
+<li>实在是不喜欢也不熟悉 NodeJS</li>
+</ul>
+<h1 id="hugo">Hugo</h1>
+<p>引用一下Hugo官网的描述</p>
+<blockquote>
+<p>The world’s fastest framework for building websites.
+Hugo是一个非常受欢迎的、开源的静态网站生成工具，和Hexo类似。 它速度快，扩展性强。</p>
+</blockquote>
+<p>更多的关于Hugo的介绍，请参考Hugo的官网 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer">https://gohugo.io/</a> 。Hugo 拥有众多优势，当然也有一些缺点。hugo 支持 <a href="https://emojis.github.io/" target="_blank" rel="noopener noreffer">emoji</a> 🤪, Hugo使用Go语言，生成速度更快。但是也有缺点，很多主题默认支持的功能不够全面，不过好在都是可插件拓展的，可以自己随时补充。由于可以看Golang 的源码，所以可以拓展起来，也比hexo好理解。</p>
+<h1 id="开始迁移">开始迁移</h1>
+<p>首先是安装 hugo, 因为我是 ubuntu 系统，所以可以直接使用 apt-get。详细的步骤其实参考<a href="https://gohugo.io/getting-started/quick-start/" target="_blank" rel="noopener noreffer">官网</a>就好。</p>
+<h2 id="文章链接">文章链接</h2>
+<p>对于个人博客的迁移而言，保证文章链接不变是最重要的。在 hexo 中，文件名与链接的对应关系如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">permalink</span><span class="p">:</span><span class="w"> </span><span class="l">blog/:year/:month/:day/:title/</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>对应的 markdown 文件是</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">source/_posts/:year-:month-:day-:title.markdown
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这样的好处是文件按照时间排列，管理方便。</p>
+<p>Hugo 则不同，它默认会用文件中 frontmatter 的 date，而非文件名中的。参考<a href="https://liujiacai.net/blog/2020/12/05/hexo-to-hugo/" target="_blank" rel="noopener noreffer">这篇博客</a>最终在 hugo 添加下面的配置完美解决：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">frontmatter</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">date</span> <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;:filename&#34;</span><span class="p">,</span> <span class="s2">&#34;:default&#34;</span><span class="p">,</span> <span class="s2">&#34;:fileModTime&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">permalinks</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">post</span> <span class="p">=</span> <span class="s2">&#34;/blog/:year/:month/:day/:slug/&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这样 Hugo 就会首先从文件名中解析日期，同时也会解析 slug；失败时再从 frontmatter 中解析，更多用法可参考官方文档 Configure Dates。</p>
+<p>同时，为了避免 <code>hugo new post/year-month-day-slug.org</code> 时标题中带日期，修改<a href="https://gohugo.io/content-management/archetypes/" target="_blank" rel="noopener noreffer">默认模板</a>如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">title: {{ replace  .Name &#34;-&#34; &#34; &#34; | replaceRE &#34;^\\d{4} \\d{2} \\d{2} (.*)&#34; &#34;$1&#34; | title }}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>不过最终还是觉得 hexo 的文章链接模式太丑，换了回来。</p>
+</blockquote>
+<h2 id="frontmatter">Frontmatter</h2>
+<p><a href="https://gohugo.io/content-management/front-matter" target="_blank" rel="noopener noreffer">Frontmatter</a> 定义了每篇文章的属性，比如标题、分类等。这也是在 hexo 迁移到 hugo 时问题最多的地方，根本原因在于 hexo 对 frontmatter 格式较宽松，而 hugo 则比较严格。</p>
+<p>下面一个 hugo 中标准的 frontmatter（除 yaml 外，还可以是 toml/json）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">categories</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="l">Development</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="l">VIM</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">date</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2012-04-06&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l">spf13-vim is a cross platform distribution of vim plugins and resources</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="l">for Vim.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">slug</span><span class="p">:</span><span class="w"> </span><span class="l">spf13-vim-3-0-release-and-new-website</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">tags</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="l">.vimrc</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="l">plugins</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="l">spf13-vim</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="l">vim</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l">spf13-vim 3.0 release and new website</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里的问题是，hexo admin 生成的文章，只有下面的 <code>-----</code> ，而在hugo里要求上下都需要有 <code>-----</code> 包围着。</p>
+<h1 id="主题选择">主题选择</h1>
+<p>开始比较中意的是 <a href="https://github.com/mrmierzejewski/hugo-theme-console/" target="_blank" rel="noopener noreffer">hugo-theme-console</a>。这款主题采用 Linux 终端风格。非常适合极客程序员的风格。</p>
+<img src="https://img1.kiosk007.top/static/images/bye_hexo/preview.png">
+但是其采用的 [terminal css](https://terminalcss.xyz/) 搭配 markdown 着实bug不少，主题的issue也提出了几个，但是看情况其作者也是无能为力，毕竟是引用，对于本来前端就不太熟的我，还是放弃了。
+<p>在摸索 hugo 主题的时候，着实有想法自己重写一套主题，虽然没能最终实现，但是也学会不少关于 hugo 开发的一些事情。这里还是比较有意思的，值得记录一下。</p>
+<h2 id="写一个主题">写一个主题</h2>
+<p>写一个 Hugo 的主题其实并不复杂，比我想象中的要容易得多（之前总是被它繁杂的文档望而却步），当然也得益于 Hugo 这个项目日趋成熟，很多相同的部分、功能，已经内置，在主题模板中只需稍加引入即可。</p>
+<p>首先，Hugo 的命令行工具提供了一个命令来生成主题的脚手架文件。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hugo new theme futu
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>有了这个脚手架之后，首先也是最关键的入口文件是 <code>layouts/_default/baseof.html</code>，在这个文件里可以定义网站的基本组成部分，比如 head，main，footer 等等，下面是我主题里这个文件的内容。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{- partial &#34;head.html&#34; . -}}
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>{{ block &#34;title&#34; . }}{{ .Site.Title }}{{ end }}<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{- partial &#34;header.html&#34; . -}}
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">main</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;container&#34;</span><span class="p">&gt;</span>{{- block &#34;main&#34; . }} {{- end }}<span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    {{- partial &#34;footer.html&#34; . -}} {{- partial &#34;script.html&#34; . -}}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>想必应该很好读懂，<code>{{- partial &quot;head.html&quot; . -}}</code>，两个大括号是 Hugo 的模板语言标记，在里面可以定义变量，调用函数等，这里的 <code>partial</code> 函数会引用 <code>head.html</code> 的内容，并将当前上下文 . 传入，也许你也留意到了内侧括号旁的横线-，那个是用来清除模板周围的空格符号，比如左边的-意味着将左侧模板左侧的空白符号统统清除，详情看<a href="https://gohugo.io/templates/introduction/#whitespace" target="_blank" rel="noopener noreffer">这里</a></p>
+<h2 id="文档阅读">文档阅读</h2>
+<p>hugo 的文档是算比较全面的了，对于主题开发来讲，文档大体分为三大块，分别是</p>
+<ul>
+<li><a href="https://gohugo.io/templates/" target="_blank" rel="noopener noreffer">Templates</a></li>
+<li><a href="https://gohugo.io/functions/" target="_blank" rel="noopener noreffer">Functions</a></li>
+<li><a href="https://gohugo.io/variables/" target="_blank" rel="noopener noreffer">Variables</a></li>
+</ul>
+<p><strong>模板</strong></p>
+<p>可以看到主题的 <code>layout</code> 目录下有很多文件和目录。简单来说，对于<code>主页</code>，<code>文章页</code>，<code>归档页</code>，<code>分类列表页</code>，<code>分类页</code>这些不同种类的页面，都有相应的地方读取模板，如果某个页面有多个地方的模板文件相匹配，则只有优先级高的模板会被使用。其对照关系如下：</p>
+<table>
+<thead>
+<tr>
+<th> <strong>页面</strong>    </th>
+<th style="text-align:center"> <strong>模板地址</strong>        </th>
+<th style="text-align:left"><strong>说明</strong>    </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主页</td>
+<td style="text-align:center">layouts/index.html</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>文章页 (posts 目录下)</td>
+<td style="text-align:center">layouts/posts/single.html</td>
+<td style="text-align:left">在 /posts/ 目录下的普通文章</td>
+</tr>
+<tr>
+<td>其他文章页</td>
+<td style="text-align:center">layouts/_default/single.html</td>
+<td style="text-align:left">如 /about，由 about.md 生成</td>
+</tr>
+<tr>
+<td>  归档页	    </td>
+<td style="text-align:center">layouts/_default/section.html</td>
+<td style="text-align:left">如 /posts/</td>
+</tr>
+<tr>
+<td>分类列表页</td>
+<td style="text-align:center">layouts/_default/terms.html</td>
+<td style="text-align:left">如 /tags/</td>
+</tr>
+<tr>
+<td>  分类页</td>
+<td style="text-align:center">layouts/_default/term.html</td>
+<td style="text-align:left">如 /tags/中文/</td>
+</tr>
+</tbody>
+</table>
+<p>除此之外，hugo 还内置了不少通用的模板，称为 <a href="https://gohugo.io/templates/internal" target="_blank" rel="noopener noreffer">Internal Templates</a> ，比如 disqus，google analytics，可以通过 template 函数引入，比如在合适的地方 <code>{{ template &quot;_internal/disqus.html&quot; . }}</code>，这样在配置文件中定义了 disqusShortname 之后，就可以显示评论了。</p>
+<p><strong>函数</strong></p>
+<p>在 hugo 的模板里经常可以看到一些 <code>range</code> 函数，其就是 hugo 定义的一批函数。比如 <code>{{ with .Site.GetPage &quot;/blog/my-post.md&quot; }}{{ .Title }}{{ end }}</code> 中的<code>.Site.GetPage</code>就是获取一篇位于 <code>/blog/my-post.md</code> 的这篇文章的位置。</p>
+<h2 id="搜索">搜索</h2>
+<p>考虑再三，期初决定使用 <code>even</code> 这个模板，但是这个模板默认也没有搜索功能，于是还需要自己手动添加相关的功能。
+参考网上的一些文章，可以利用<code>algolia</code> 实现站点内的文章搜索。<a href="https://edward852.github.io/post/hugo%E6%B7%BB%E5%8A%A0algolia%E6%90%9C%E7%B4%A2%E6%94%AF%E6%8C%81/#%E7%94%9F%E6%88%90%E7%B4%A2%E5%BC%95%E6%96%87%E4%BB%B6" target="_blank" rel="noopener noreffer">hugo添加algolia搜索支持</a>。 这篇文章讲得挺全的，我看网上的解决方案基本也是参考这篇文章的。</p>
+<p>不过后来换了 <code>loveit</code> 这个主题，由于主题默认支持了搜索，而且搜索做的很棒，我也就默认使用了这个。</p>
+<p>按照上面的博客很快就可以搞定搜索功能，但是主要就是麻烦再自动化这里了。这个先简单介绍一下，详细的在部署那里说。自动上传索引这里很多文章都介绍了 <code>atomic-algolia</code> 这个工具。</p>
+<ul>
+<li>安装 atomic-algolia 包</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm init  // 不懂的就回车好了
+</span></span><span class="line"><span class="cl">npm install atomic-algolia --save
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>修改目录下的 package.json 文件，在 scripts 下添加 &ldquo;algolia&rdquo;: &ldquo;atomic-algolia&rdquo;</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="s2">&#34;scripts&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;test&#34;</span><span class="p">:</span> <span class="s2">&#34;echo \&#34;Error: no test specified\&#34; &amp;&amp; exit 1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;algolia&#34;</span><span class="p">:</span> <span class="s2">&#34;atomic-algolia&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="err">,</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>项目根目录下新建 .env 文件，内容如下：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ALGOLIA_APP_ID=你的Application ID
+</span></span><span class="line"><span class="cl">ALGOLIA_INDEX_NAME=你的索引名字
+</span></span><span class="line"><span class="cl">ALGOLIA_INDEX_FILE=public/algolia.json
+</span></span><span class="line"><span class="cl">ALGOLIA_ADMIN_KEY=你的Admin API Key
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>另外特别注意 <code>ALGOLIA_ADMIN_KEY</code> 可以用来管理你的索引，所以尽量不要提交到公共仓库。
+一般的做法是在你的自动化部署工具中设置环境变量。</p>
+<p>所以最后我们看看如何利用 CI 去跑把。</p>
+<h2 id="评论系统">评论系统</h2>
+<p><code>loveit</code> 自带了很多评论系统足够满足满足大多数人的需求，我选了主题默认的评论系统 <a href="https://github.com/xCss/Valine" target="_blank" rel="noopener noreffer">Valine</a>。
+这个评论系统也是需要注册的。具体过程参考 <a href="https://huangzhongde.cn/post/2020-02-20-hugo-comments-plugin-valine/" target="_blank" rel="noopener noreffer">这篇博客</a> 吧。也写得算挺详细的了。</p>
+<p>不过注意将默认的 serverURLs 替换一下。使用默认的域名会报 403 跨域错误。</p>
+<h1 id="部署">部署</h1>
+<p>Hugo官方提供了多种部署方式，其中主要包含 <a href="https://gohugo.io/hosting-and-deployment/hosting-on-github/" target="_blank" rel="noopener noreffer">Host on GitHub</a> 和 <a href="https://gohugo.io/hosting-and-deployment/deployment-with-rsync/" target="_blank" rel="noopener noreffer">Deployment with Rsync</a> 结合的方式。</p>
+<p>具体实现是直接放弃自己远程主机上的仓库，并使用 GitHub Actions 进行站点的部署。</p>
+<h2 id="github-actions">GitHub Actions</h2>
+<p><a href="https://docs.github.com/cn/actions/quickstart" target="_blank" rel="noopener noreffer">GitHub Actions</a> 是 GitHub 官方提供的一种自动化、定制化的工作流，包括了 CI/CD。关于 CI/CD 的简单理解：</p>
+<ul>
+<li>CI：持续集成（Continuous Integration），使用 Git 向代码仓库推送代码后，后台将会自动进行构建、测试等工作。</li>
+<li>CD：持续交付（Continuous Delivery），推送完成的代码（经过了自动构建、测试等流程），最终部署到生产服务器，供客户直接使用。</li>
+</ul>
+<p>部署 Hugo 博客的步骤为在提交 git 记录时，触发 github actions 将 public 目录下的内容同步至我们的服务器Nginx相关目录。</p>
+<p>关于这个的介绍，可以参考<a href="https://www.ruanyifeng.com/blog/2019/09/getting-started-with-github-actions.html" target="_blank" rel="noopener noreffer">阮一峰的博客</a>
+GitHub Actions 的具体实现是在当前工作目录下创建 .github/workflows/，并在目录中添加 .yml 脚本文件，每个 .yml 文件都代表了一个 workflow。目录结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">- .github
+</span></span><span class="line"><span class="cl">  <span class="p">|</span>- workflows
+</span></span><span class="line"><span class="cl">    <span class="p">|</span>- workflow1.yml
+</span></span><span class="line"><span class="cl">    <span class="p">|</span>- workflow2.yml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="准备工作">准备工作</h2>
+<ul>
+<li>远程主机配置</li>
+</ul>
+<p>部署流程使用 rsync 进行文件的同步工作， rsync 默认是基于 SSH，需要提前在自己的远程主机上安装 rsync，并准备密钥对。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 创建一个用户 </span>
+</span></span><span class="line"><span class="cl">useradd -c <span class="s2">&#34;worker&#34;</span> -m work
+</span></span><span class="line"><span class="cl">su - work
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> .ssh
+</span></span><span class="line"><span class="cl"><span class="c1"># 创建秘钥</span>
+</span></span><span class="line"><span class="cl">ssh-keygen -t ed25519 -C <span class="s2">&#34;xxxx@xxxx.com&#34;</span>
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">cat id_ed25519.pub &gt;&gt; authorized_keys 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>GitHub Secrets 配置</li>
+</ul>
+<p>Secrets 是提供给 action 使用的安全变量机制，Secrets 中定义的变量都会进行加密，但后续可以在 action 中正常使用。</p>
+<p>进入 Hugo 博客仓库，点击 <code>Settings</code>，左侧找到 <code>Secrets</code>，进入 <code>Secrets</code> 配置:</p>
+<img src="https://img1.kiosk007.top/static/images/bye_hexo/github_actions.png">
+<p>如图所示，点击右上角的 <code>New repository secret</code> 创建新变量：这里先创建私钥变量 <code>REMOTE_KEY</code>，在变量 <code>Name</code> 中输入 <code>REMOTE_KEY</code>。从服务器上拷贝私钥文件 <code>rsync</code> 的全部内容到 <code>Value</code> 中，点击 <code>Add secret</code> 保存：</p>
+<p>使用同样的方式创建剩余 Secrets：</p>
+<blockquote>
+<p><code>REMOTE_HOST</code>：远程主机地址。
+<code>REMOTE_PORT</code>：远程主机 SSH 端口，默认为 22 可不配置，若不是 22 必须配置。
+<code>REMOTE_USER</code>：数据同步使用的用户，如本文中使用的 work。
+<code>REMOTE_PATH</code>：远程主机上的目标路径，同步文件将会拷贝到该路径中，如 nginx 配置的静态网站路径。</p>
+</blockquote>
+<h2 id="配置-github-actions">配置 GitHub Actions</h2>
+<p>在仓库目录下创建 <code>.github/workflows</code> 目录，并且在目录中创建 <code>deploy.yml</code> 文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">- .github
+</span></span><span class="line"><span class="cl">  <span class="p">|</span>- workflows
+</span></span><span class="line"><span class="cl">    <span class="p">|</span>- deploy.yml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>内容如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yml" data-lang="yml"><span class="line"><span class="cl"><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">deploy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># push事件</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">push</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># 忽略某些文件和目录，自行定义</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">paths-ignore</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s1">&#39;archetypes/**&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s1">&#39;.gitignore&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s1">&#39;.gitmodules&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s1">&#39;README.md&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="l">master ]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># pull_request事件</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># 忽略某些文件和目录，自行定义</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">paths-ignore</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s1">&#39;archetypes/**&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s1">&#39;.gitignore&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s1">&#39;.gitmodules&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s1">&#39;README.md&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="l">master ]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 支持手动运行</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">workflow_dispatch</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">jobs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># job名称为deploy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">deploy</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># 使用GitHub提供的runner</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-20.04</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 检出代码，包括submodules，保证主题文件正常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Checkout source</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">ref</span><span class="p">:</span><span class="w"> </span><span class="l">master</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">submodules</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">  </span><span class="c"># Fetch Hugo themes (true OR recursive)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">fetch-depth</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">    </span><span class="c"># Fetch all history for .GitInfo and .Lastmod</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 准备Hugo环境</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Setup Hugo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">peaceiris/actions-hugo@v2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">hugo-version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;latest&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="c"># extended: true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># Hugo构建静态站点，默认输出到public目录下    </span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Build</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">hugo --gc --verbose --minify</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 用docker容器上传algolia索引文件</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># - uses: actions/checkout@v2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Run container for atomic-algolia</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">docker run --rm -e ALGOLIA_ADMIN_KEY=${{ secrets.ALGOLIA_ADMIN_KEY }} -e ALGOLIA_INDEX_FILE=/public/index.json -e ALGOLIA_APP_ID=${{ secrets.ALGOLIA_APP_ID }} -e ALGOLIA_INDEX_NAME=${{ secrets.ALGOLIA_INDEX_NAME }} -v $PWD/public:/public registry.cn-shenzhen.aliyuncs.com/lan-k8s/ubuntu:algolia atomic-algolia</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 将public目录下的所有内容同步到远程服务器的nginx站点路径，注意path参数的写法，&#39;public&#39;和&#39;public/&#39;是不同的</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Deploy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">burnett01/rsync-deployments@5.1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">switches</span><span class="p">:</span><span class="w"> </span>-<span class="l">avzr --delete</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">./public/</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">remote_host</span><span class="p">:</span><span class="w"> </span><span class="l">${{ secrets.REMOTE_HOST }}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">remote_port</span><span class="p">:</span><span class="w"> </span><span class="l">${{ secrets.REMOTE_PORT }}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">remote_path</span><span class="p">:</span><span class="w"> </span><span class="l">${{ secrets.REMOTE_PATH }}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">remote_user</span><span class="p">:</span><span class="w"> </span><span class="l">${{ secrets.REMOTE_USER }}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">remote_key</span><span class="p">:</span><span class="w"> </span><span class="l">${{ secrets.REMOTE_KEY }}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>action 的 3 个 step 工作内容分别如下：</p>
+<ol>
+<li>先检出代码到 runner，包括 submodule 下的内容，这是为了保证作为 submodule 的主题目录能正常使用。</li>
+<li><code>actions-hugo@v2</code> 安装准备好 Hugo 的环境，with 表示 Hugo 版本为 latest。</li>
+<li><code>hugo --gc --verbose --minify</code> 构建 Hugo 静态站点，默认输出到 public 目录中。</li>
+<li><code>rsync-deployments@5.1</code> 将 public 目录中所有的内容全部拷贝到服务器指定路径，这里 <code>${{ secrets.XXX }}</code> 引用我们之前创建好的 <code>Secrets</code> 变量。</li>
+</ol>
+<h1 id="编辑">编辑</h1>
+<p>在 hexo 的时代，还可以使用 hexo admin，因为我的图片全部是上传到七牛云图床上的，使用hexo的qiniu插件可以无缝衔接上传过程，但是 hugo 这块的功能就比较弱了。hexo admin 也得转战到 <code>Typora</code> 上。好在 Typora 足够强大，可以自动上传图片，具体可以参考 <a href="https://zhuanlan.zhihu.com/p/340105623" target="_blank" rel="noopener noreffer">这篇文章</a></p>
+<p>参考：</p>
+<ul>
+<li><a href="https://www.liyangjie.cn/posts/hobby/hugo-git-actions/" target="_blank" rel="noopener noreffer">Hugo 部署——Github Actions</a></li>
+<li><a href="https://liangyuanpeng.com/post/auto-build-algolia-index/" target="_blank" rel="noopener noreffer">自动构建algolia索引</a></li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-04-05</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://kiosk007.top/post/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo/" data-title="再见Hexo，你好Hugo"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://kiosk007.top/post/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo/" data-title="再见Hexo，你好Hugo"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="https://kiosk007.top/post/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/hugo/">hugo</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" class="prev" rel="prev" title="Golang 内存逃逸分析"><i class="fas fa-angle-left fa-fw"></i>Golang 内存逃逸分析</a>
+            <a href="/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/" class="next" rel="next" title="了解golang的defer">了解golang的defer<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.102.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{"valine":{"appId":"XhYn8GEq1Sg7ufJQAVmR4dWN-gzGzoHsz","appKey":"r42k4lqU022wD7IvtwGaQfjN","avatar":"mp","el":"#valine","emojiCDN":"https://fastly.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"en","pageSize":10,"placeholder":"Your comment ...","recordIP":true,"serverURLs":"https://xhyn8geq.lc-cn-n1-shared.com","visitor":true}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

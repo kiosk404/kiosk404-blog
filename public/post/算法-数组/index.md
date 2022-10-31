@@ -1,0 +1,642 @@
+# 算法 - (数组、链表)
+
+数组、链表是编程语言中最常见的数据结构，也是最基础的数据结构。以下会以几道 LeetCode 巩固自己的基础
+
+
+<!-- more -->
+# 结构对比
+数组和链表各有各的优势，比如数组的随机插入和删除都是O(n)的，可谓是很低效了。但是数组的查找是是O(1)，直接指定下标即可找到对应的元素。而链表必须遍历，也就是想要查找你一个元素的时间复杂度是 O(n)。所以数组和链表各有各的优势，互相补充。
+
+| 数据结构      |  操作  		 |  时间复杂度  |
+| ------ | ----------- |  ------ |
+| 数组         | prepend 	    |   O(1)     |
+|             | append     	 |   O(1)      |
+|             | lookup       |   O(1)      |
+|             | insert       |   O(n)      |
+|             | delete       |   O(n)      |
+|             | --       |      --   |
+| 链表         | prepend 	    |   O(1)    |
+|             | append     	 |   O(1)      |
+|             | lookup       |   O(n)     |
+|             | insert       |   O(1)     |
+|             | delete       |   O(1)     |
+
+
+# 实现
+
+## 数组
+``` go
+a := []int{1, 1, 2, 2, 2, 3, 4, 5, 5, 5, 6}
+
+var b []int
+b = append(c, 11)
+b = append(b, a...)
+
+
+// make( []Type, size, cap )
+// 其中 Type 是指切片的元素类型，
+// size 指的是为这个类型分配多少个元素，cap 为预分配的元素数量，
+// 这个值设定后不影响 size，只是能提前分配空间，降低多次分配空间造成的性能问题。
+c := make([]int, 2, 10)  
+```
+
+<br/>
+
+## 链表
+
+``` go
+// 定义单链表
+type ListNode struct {     
+	Val 	int
+	Next 	*ListNode
+}
+
+func (ln *ListNode) add(v int) {
+	if ln == nil {
+		ln = &ListNode{Val: v,Next: nil}
+	}
+	for ln.Next != nil {
+		ln = ln.Next
+	}
+	ln.Next = &ListNode{Val: v,Next: nil}
+}
+
+func (ln *ListNode) traverse() {
+	for ln != nil {
+		fmt.Printf("%d ",ln.Val)
+		ln = ln.Next
+	}
+}
+
+```
+
+
+# Leetcode
+## 数组
+### No.1 两数之和 
+
+- 链接：[https://leetcode-cn.com/problems/two-sum/](https://leetcode-cn.com/problems/two-sum/)
+- 思路：将每一个数需要的另一半数存入一个 hash 表中
+
+``` go
+func twoSum(nums []int, target int) []int {
+	tmp := make(map[int]int, len(nums)/2)
+	for i := 0;i < len(nums);i++ {
+		if index, ok := tmp[target-nums[i]]; ok {
+			return []int{index,i}
+		}
+		tmp[nums[i]] = i
+	}
+	return []int{}
+}
+```
+<br/>
+
+### No.5 最长回文子串
+
+- 链接：[https://leetcode.cn/problems/longest-palindromic-substring/](https://leetcode.cn/problems/longest-palindromic-substring/)
+- 思路：这道题就是一个长串里找回文子串，使用中心扩展法。
+
+回文有两种形式， "aba" 和 "aabb" 都是回文的模式。我们对长串的每一个字段都进行一次中心扩展。
+
+```go
+func longestPalindrome(s string) string {
+	if s == "" {
+		return ""
+	}
+	start, end := 0, 0
+	for i := 0; i < len(s); i++ {
+		// aba 模式
+        left1, right1 := expandAroundCenter(s, i, i)
+        // aabb 模式
+		left2, right2 := expandAroundCenter(s, i, i + 1)
+		if right1 - left1 > end - start {
+			start, end = left1, right1
+		}
+		if right2 - left2 > end - start {
+			start, end = left2, right2
+		}
+	}
+	return s[start:end+1]
+}
+
+func expandAroundCenter(s string, left, right int) (int, int) {
+	for ; left >= 0 && right < len(s) && s[left] == s[right]; left, right = left-1 , right+1 { }
+    // 回到for循环最后一个满足条件的左右界限上
+	return left + 1, right - 1
+}
+```
+
+
+
+
+
+<br/>
+
+### No.15 三数之和
+
+- 链接：[https://leetcode.cn/problems/3sum/](https://leetcode.cn/problems/3sum/)
+- 思路：先将数组排序，再2层循环。如[-1,0,1,2,-1,-4 ] 先排序，排序之后 [-4, -1, -1, 0, 1, 2] 数组，再进行一次双重循环，第一次取 -4 ，再对 -4 之后的数组进行一次循环，-4 + 数组头元素 + 数组尾元素 > 0 就证明，数组尾元素过大， < 0 就证明数组头元素太小。逐渐的收拢第二个数组。
+
+```go
+func threeSum(nums []int) [][]int {
+	sort.Ints(nums)
+
+	var resMap map[[3]int]struct{}
+	resMap = make(map[[3]int]struct{})
+
+	for i := 0 ; i < len(nums) - 2; i ++ {
+		a := nums[i]
+		tmp := nums[i+1:]
+		ltmp := len(tmp)
+		for j := 0; j < ltmp -1; j++ {
+			if a + tmp[j] + tmp[ltmp-1] > 0 {  // tmp[ltmp-1] 过大
+ 				ltmp--
+ 				j--
+ 				continue
+			} else if a + tmp[j] + tmp[ltmp-1] < 0 { // tmp[j] 过小
+				continue
+			} else {
+				resMap[[3]int{a, tmp[j], tmp[ltmp-1]}] = struct {}{}
+			}
+		}
+	}
+	var res [][]int
+	for k,_ := range resMap {
+		res = append(res, []int{k[0],k[1],k[2]})
+	}
+
+	return res
+}
+```
+
+<br/>
+
+### No.26 删除排序数组中的重复项
+
+- 链接: [https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/)
+- 思路1：**双指针法** [题解动画](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/solution/26-shan-chu-pai-xu-shu-zu-zhong-de-zhong-fu-xia-89/)
+
+``` go
+func removeDuplicates(nums []int) int {
+	j := 0
+	for i := 0; i < len(nums) - 1; i ++ {
+		if nums[i] != nums[i+1] {
+			j++
+			nums[j] = nums[i+1]
+		}
+	}
+	return j+1
+}
+```
+- 思路2： **旋转数组法** 旋转数组应该是我比较喜欢的一种方式，比较简单，那就是数组翻转2次，可以将首位数转到末尾曲，重复项判断刚好使用这种方式，<font style='color:red'>对于移动数组类的题是比较通吃的一个方法</font>问题就是时间复杂度比较大
+
+  
+
+  <img src='https://img1.kiosk007.top/static/images/leetcode/list_1.jpeg' style="height: 300px; zoom: 150%;"/>
+
+``` go
+func reversal(nums []int) {
+	length := len(nums)
+	for i := 0; length > 1 && i < length/2; i ++ {
+		nums[i],nums[length-1-i] = nums[length-1-i],nums[i]
+	}
+}
+
+func removeDuplicates(nums []int) int {
+	length := len(nums)
+
+	for i := 0; i < length; i ++ {
+		if i + 1 < length && nums[i] == nums[i+1] {
+			reversal(nums[i+1:length])
+			reversal(nums[i+1:length-1])
+			length = length - 1
+			i = i - 1
+		}
+	}
+	return length
+}
+```
+<br/>
+
+### 459. 重复的子字符串
+
+- 链接：[https://leetcode.cn/problems/repeated-substring-pattern/submissions/](https://leetcode.cn/problems/repeated-substring-pattern/submissions/)
+- 思路：先第一重循环，找出子串。子串的头已经有了，就是字符串的第一个元素，所以移动下标找末尾元素即可。再到第二个循环中从子串长度开始循环，遍历完整个字符串。
+
+``` go
+func repeatedSubstringPattern(s string) bool {
+	length := len(s)
+	for i := 1; i * 2 <= length; i++ {  // i为子串长度
+		if length % i == 0 {    // 总长度 % 子串长度 必须为0
+			var flag bool = true
+			for j := i ; j < length ; j ++ {  // 循环一遍，不能为false
+				if s[j] != s[j-i] {  // 子串在父串中可循环
+					flag = false
+					break
+				}
+			}
+			if flag { return flag }
+		}
+	}
+	return false
+}
+
+```
+
+
+
+
+
+<br/>
+
+## 链表
+
+<br/>
+
+### No.21 合并两个链表
+
+- 链接：[https://leetcode-cn.com/problems/merge-two-sorted-lists/](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+- 思路1: [迭代法](https://leetcode-cn.com/problems/merge-two-sorted-lists/solution/he-bing-liang-ge-you-xu-lian-biao-by-leetcode-solu/)
+``` go
+func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
+	tmp := &ListNode{}
+
+	prev := tmp
+	for l1 != nil && l2 != nil {
+		if l1.Val < l2.Val{
+			prev.Next = l1
+			prev = prev.Next
+
+			l1 = l1.Next
+		}else {
+			prev.Next = l2
+			prev = prev.Next
+
+			l2 = l2.Next
+		}
+	}
+
+	if l2 != nil {
+		prev.Next = l2
+	}
+
+	if l1 != nil {
+		prev.Next = l1
+	}
+
+	return tmp.Next
+}
+```
+<br/>
+
+
+
+### No. 22 链表的倒数第k个节点
+
+- 链接：[https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/](https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
+- 思路1：将节点全部保存到列表里，再返回索引，当然这个方法费空间。思路2：快慢指针。即 fast、slow 两个指针，fast 先移动k步，再slow和fast一起移动，当fast遍历结束时，slow就是倒数第k步。
+
+```go
+// 非常low的写法
+func getKthFromEnd(head *ListNode, k int) *ListNode {
+	var rest []*ListNode
+	for node := head; node != nil; node = node.Next {
+		rest = append(rest, node)
+	}
+	if len(rest) >= k {
+		return rest[len(rest) - k]
+	}
+	return nil
+}
+
+// 快慢指针
+func getKthFromEnd(head *ListNode, k int) *ListNode {
+	fast, slow := head, head 
+	for fast != nil && k > 0 {
+		fast = fast.Next
+		k--
+	}
+	for fast != nil {
+		fast = fast.Next
+		slow = slow.Next
+	}
+	return slow 
+}
+```
+
+
+
+
+
+
+
+<br/>
+
+### No.83 删除排序链表重复项
+
+- 链接：[https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
+- 思路1：题解感觉和我差不太多，我的思路是先把重复项移到尾端，然后cur 指针指向重复项的尾端就好了。但不知道为啥 8ms 打败 7.3% 。理论就是 O(N) 啊。
+``` go
+func deleteDuplicates(head *ListNode) *ListNode {
+	if head == nil {
+		return head
+	}
+
+	cur := &ListNode{} 
+	tmp := cur   // 记录链表头
+	for head != nil {
+		for head.Next != nil && head.Val == head.Next.Val {
+			 head = head.Next
+		}
+		cur.Next = head
+		cur = cur.Next
+		head = head.Next
+	}
+	return tmp.Next
+}
+```
+<br/>
+
+### No.141 环形链表
+
+- 链接: [https://leetcode-cn.com/problems/linked-list-cycle/](https://leetcode-cn.com/problems/linked-list-cycle/)
+- 思路1：这道题思路非常简单，就是快慢指针，慢指针每次前进一步，快指针每次前进两步。如果存在环快指针一定会追上慢指针，**问题就是边界条件太多，需要仔细判断。**
+- 思路2：hash表存已有的数据做对比，这个最简单，不演示啦~
+
+``` go
+func hasCycle(head *ListNode) bool {
+    if head == nil {
+		return false
+	}
+	slow := head
+	fast := head.Next
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			return true
+		}
+	}
+
+	return false
+}
+```
+<br/>
+
+### No.160 相交链表
+
+- 链接：[https://leetcode.cn/problems/intersection-of-two-linked-lists/](https://leetcode.cn/problems/intersection-of-two-linked-lists/)
+- 思路：可以直接将所有节点存到 hash 表中。
+
+```go
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+	tmp := make(map[*ListNode]struct{})
+	for headA != nil {
+		tmp[headA] = struct{}{}
+		headA = headA.Next
+	}
+	for headB != nil {
+		if _, ok := tmp[headB]; ok {
+			return headB
+		}
+		headB = headB.Next
+	}
+	return nil 
+}
+```
+
+<br/>
+
+### No.203 移除链表元素
+
+- 链接：[https://leetcode.cn/problems/remove-linked-list-elements/](https://leetcode.cn/problems/remove-linked-list-elements/)
+- 思路：很简单呐，就是双循环，里面那层循环遇到相等的就往后移动
+
+```go
+func removeElements(head *ListNode, val int) *ListNode {
+	if head == nil {
+		return nil 
+	}
+	
+	tmp := &ListNode{}
+	prev := tmp
+	
+	for head != nil {
+		for head != nil && head.Val == val {
+			head = head.Next
+		}
+		prev.Next = head
+		prev = prev.Next
+		if head != nil {
+			head = head.Next
+		}
+	}
+	
+	return tmp.Next
+}
+```
+
+<br/>
+
+### No.206 反转链表
+
+- 链接：[https://leetcode-cn.com/problems/reverse-linked-list/](https://leetcode-cn.com/problems/reverse-linked-list/)
+- 思路1：[双指针](https://leetcode-cn.com/problems/reverse-linked-list/solution/206-fan-zhuan-lian-biao-shuang-zhi-zhen-fa-di-gui-/)  本质还是遍历 head， 上面的`next := head.Next`和下面的`head = next` 就是为了遍历， 中间的三行是 当前head的节点的下一个指向之前，cur即为当前head节点，cur 成为历史 prev
+
+``` go
+func reverseList(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+
+	var prev *ListNode = nil
+	cur := prev
+
+	for head != nil {
+		next := head.Next  // 存下一个
+
+		head.Next = prev // haed 的Next指向 prev
+		cur = head       // cur 就是 head
+		prev = cur		 // cur 成为 prev
+
+		head = next   // head 前进
+	}
+
+	return cur
+}
+```
+
+<br/>
+
+### No.234 回文链表
+
+- 链接：[https://leetcode.cn/problems/palindrome-linked-list/](https://leetcode.cn/problems/palindrome-linked-list/)
+- 思路：这道题很奇怪，就是遍历链表，赋值到数组中，再循环判断。
+
+```go
+func isPalindrome(head *ListNode) bool {
+var vals []int
+	for ; head != nil; head = head.Next {
+		vals = append(vals, head.Val)
+	}
+	n := len(vals)
+	for i, v := range vals[:n/2] {
+		if v != vals[n-1-i] {
+			return false
+		}
+	}
+	return true
+}
+```
+
+<br/>
+
+# 实现一个 LRU 缓存
+
+``` go
+package lru
+
+import (
+	"container/list"
+	"errors"
+)
+
+const (
+	MemoryOverFlow				int = 0
+	MemorySizeError				int = 1
+	NotFoundObject				int = 11
+)
+
+
+var lruErrorName = map[int]string{
+	MemoryOverFlow:      "MemoryOverFlow",
+	MemorySizeError: 	 "MemorySizeError",
+	NotFoundObject: 	 "NotFoundObject",
+}
+
+
+// 记录存储数据的大小
+type Value interface {
+	Len() int64
+}
+
+// 存储的对象
+type entry struct {
+	key 	string
+	value 	Value
+}
+
+type Cache struct {
+	maxBytes int64        // 最大使用内存
+	nBytes 	 int64        // 当前已使用内存
+	ll *list.List         // 链表存储淘汰关系
+	cache  map[string]*list.Element   //节点放到字典中，加速查找
+	OnEvicted  func(key string, value Value)   //某条记录被删除时候的回调函数
+}
+
+func CreateLRUCache(maxByte int64,evicted func(string,Value)) *Cache {
+	return &Cache{
+		maxBytes:  maxByte,
+		nBytes:    0,
+		ll:        new(list.List),
+		cache:     make(map[string]*list.Element),
+		OnEvicted: evicted,
+	}
+}
+
+
+func (c *Cache) Get(key string) (value Value,err error) {
+	if ele, ok := c.cache[key]; ok {
+		c.ll.MoveToFront(ele)
+		return ele.Value.(*entry).value, nil
+	}else {
+		return nil, errors.New(lruErrorName[NotFoundObject])
+	}
+}
+
+func (c *Cache) Add(key string, value Value) error {
+	// 判断是否可以加入(太大会把所有缓存冲掉)
+	if c.isOutOfMaxMemory(value.Len()) {
+		return errors.New(lruErrorName[MemoryOverFlow])   // 内存不足以添加该缓存
+	}
+
+	// 判断缓存中已有该键, 更新
+	if v, ok := c.cache[key]; ok {
+		oldValue := v.Value.(*entry)
+		// 可以加入,将该键移动到队头
+		c.ll.MoveToFront(v)
+		c.cache[oldValue.key] = &list.Element{Value: &entry{key,value}}
+		c.nBytes = c.nBytes - oldValue.value.Len() + value.Len()
+		return nil
+	}
+	// 没有该键,第一次添加
+	ele := c.ll.PushFront(&entry{key, value})
+	c.cache[key] = ele
+	c.nBytes = c.nBytes + value.Len()
+
+	// 若内存不够，需要循环删除掉最老的
+	for c.maxBytes != 0 && c.maxBytes < c.nBytes {
+		if err := c.RemoveOldest(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (c *Cache) RemoveOldest() error {
+	oldest := c.ll.Back()
+	if oldest != nil {
+		oldestEntry := oldest.Value.(*entry)
+		c.ll.Remove(oldest) // 删除链表节点
+		c.nBytes = c.nBytes - oldestEntry.value.Len() // 删除字节长度
+		delete(c.cache, oldestEntry.key)  // 删除字典
+		if c.nBytes < 0 {
+			return errors.New(lruErrorName[MemorySizeError])
+		}
+		if c.OnEvicted != nil {
+			c.OnEvicted(oldestEntry.key, oldestEntry.value)
+		}
+	}
+	return nil
+}
+
+func (c *Cache) Len() int64 {
+	return int64(c.ll.Len())
+}
+
+func (c *Cache) isOutOfMaxMemory(size int64) bool {
+	return size > c.maxBytes
+
+```
+
+
+**测试**
+``` go
+type GeeByte struct {
+	Value []byte
+}
+
+func (g GeeByte) Len() int64 {
+	return int64(len(g.Value))
+}
+
+
+func TestLruCache(t *testing.T) {
+	lruObject := lru.CreateLRUCache(20, func(key string, value lru.Value) {
+		fmt.Printf("%s 被删除了, 释放了 %d 字节的空间\n", key, value.Len())
+	})
+
+	_ = lruObject.Add("key1", GeeByte{[]byte("Hello, Golang")})
+	_ = lruObject.Add("key2", GeeByte{[]byte("Hello, ByteDance")})
+
+	if value, err := lruObject.Get("key2"); err != nil {
+		log.Fatalln(err)
+	}else {
+		fmt.Printf("%s",value)
+	}
+}
+
+```
+

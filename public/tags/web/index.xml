@@ -1,0 +1,22 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>web - Tag - Kiosk&#39;s 个人编程技术分享</title>
+        <link>https://kiosk007.top/tags/web/</link>
+        <description>web - Tag - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 11 Apr 2022 10:15:00 &#43;0000</lastBuildDate><atom:link href="https://kiosk007.top/tags/web/" rel="self" type="application/rss+xml" /><item>
+    <title>实现一个Web服务-(二)</title>
+    <link>https://kiosk007.top/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%BA%8C/</link>
+    <pubDate>Mon, 11 Apr 2022 10:15:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%BA%8C/</guid>
+    <description><![CDATA[<p><a href="https://kiosk007.top/post/%e5%ae%9e%e7%8e%b0%e4%b8%80%e4%b8%aaweb%e6%9c%8d%e5%8a%a1-%e4%b8%80/" target="_blank" rel="noopener noreffer">实现一个Web服务-（一）</a> 从 net/http 基础网络库中实现了一个 Web Server，基本实现了路由匹配、上下文、中间件等特性。除这些基本的功能外，还有一些更高阶的功能。比如优雅关闭、日志等功能。</p>]]></description>
+</item><item>
+    <title>实现一个Web服务-(一)</title>
+    <link>https://kiosk007.top/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/</link>
+    <pubDate>Sat, 09 Apr 2022 10:15:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/</guid>
+    <description><![CDATA[<p>熟悉 Golang 的话就会知道，用官方提供的 net/http 标准库搭建一个 Web Server，是一件非常简单的事。既然 Golang 利用其精简的语法实现了 Web Server，那么是有必要知其然和知其所以然。最近看到很多文章都介绍了如何实现一个 Web ，那么今天做一个总结。</p>]]></description>
+</item></channel>
+</rss>

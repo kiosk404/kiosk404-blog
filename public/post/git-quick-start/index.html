@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Git Quick Start - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:title" content="Git Quick Start" />
+<meta property="og:description" content="只是git入门的简单指南。没什么大不了的 :)" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://kiosk007.top/post/git-quick-start/" /><meta property="og:image" content="https://kiosk007.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-12-19T19:11:00+00:00" />
+<meta property="article:modified_time" content="2020-12-19T19:11:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://kiosk007.top/logo.png"/>
+
+<meta name="twitter:title" content="Git Quick Start"/>
+<meta name="twitter:description" content="只是git入门的简单指南。没什么大不了的 :)"/>
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="https://kiosk007.top/post/git-quick-start/" /><link rel="prev" href="https://kiosk007.top/post/grpc-quick-start/" /><link rel="next" href="https://kiosk007.top/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/" /><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Git Quick Start",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/kiosk007.top\/post\/git-quick-start\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "https:\/\/kiosk007.top\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "git","wordcount":  1299 ,
+        "url": "https:\/\/kiosk007.top\/post\/git-quick-start\/","datePublished": "2020-12-19T19:11:00+00:00","dateModified": "2020-12-19T19:11:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/kiosk007.top\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/git-quick-start/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Git Quick Start</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/git/"><i class="far fa-folder fa-fw"></i>git</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-12-19">2020-12-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1299 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;<span id="/post/git-quick-start/" class="leancloud_visitors" data-flag-title="Git Quick Start">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;views
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#安装-git">安装 git</a></li>
+    <li><a href="#配置">配置</a></li>
+    <li><a href="#使用">使用</a>
+      <ul>
+        <li><a href="#入门操作">入门操作</a></li>
+        <li><a href="#基本工作流">基本工作流</a></li>
+        <li><a href="#git-分支">git 分支</a></li>
+        <li><a href="#git-命令">git 命令</a></li>
+        <li><a href="#git-stash">git stash</a></li>
+      </ul>
+    </li>
+    <li><a href="#commit-规范">commit 规范</a>
+      <ul>
+        <li><a href="#commit-合并">Commit 合并</a></li>
+        <li><a href="#commit-信息修改">Commit 信息修改</a></li>
+      </ul>
+    </li>
+    <li><a href="#git常见使用">git常见使用</a>
+      <ul>
+        <li><a href="#紧急修复-bug">紧急修复 Bug</a></li>
+        <li><a href="#分离头指针">分离头指针</a></li>
+        <li><a href="#git-stash-命令实用指南">git stash 命令实用指南</a></li>
+        <li><a href="#cherry-pick">cherry pick</a></li>
+        <li><a href="#git创建本地分支并关联远程分支">Git创建本地分支并关联远程分支</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>只是git入门的简单指南。没什么大不了的 :)</p>
+<p>Git 是一个开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。Git 与常用的版本控制工具 CVS, Subversion 等不同，它采用了分布式版本库的方式，不必服务器端软件支持。
+<img src='https://img1.kiosk007.top/static/images/git/git.png' style='height:340px' /></p>
+<p>参考: <a href="https://git-scm.com/book/zh/v2" target="_blank" rel="noopener noreffer">https://git-scm.com/book/zh/v2</a></p>
+<h1 id="安装-git">安装 git</h1>
+<p><a href="https://git-scm.com/download/linux" target="_blank" rel="noopener noreffer">安装 Git Linux 版</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ apt-get install git
+</span></span><span class="line"><span class="cl">$ apt-get install gitk
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>gitk 是可以可视化的git客户端工具，更多工具参考 <a href="https://git-scm.com/download/gui/linux" target="_blank" rel="noopener noreffer">git-gui</a> ，如 <a href="https://juejin.cn/post/6844903904451231757" target="_blank" rel="noopener noreffer">Gitkraken (小章鱼)</a>、 <a href="https://magit.vc/manual/magit/Installing-from-the-Git-Repository.html#Installing-from-the-Git-Repository" target="_blank" rel="noopener noreffer">magit</a> 等等</p>
+<h1 id="配置">配置</h1>
+<ul>
+<li><strong>配置 user 信息</strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git config --global user.name  <span class="s2">&#34;your_name&#34;</span>
+</span></span><span class="line"><span class="cl">$ git config --global user.email <span class="s2">&#34;your_name@domain.com&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># --local 只对某个分支有效</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># --global 对当前用户所有仓库有效</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># --system 对系统所有用户有效</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ git config --global core.editor <span class="s2">&#34;vim&#34;</span>    <span class="c1"># git 交互改为vim</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>查看config的配置</strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git config --list
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="使用">使用</h1>
+<p>区域划分</p>
+<ul>
+<li><strong>工作区(Working Area)</strong>：当前工作目录</li>
+<li><strong>暂存区(Staging Area)</strong> ：下次会被提交的部分</li>
+<li><strong>本地仓库(Local Repository)</strong>：本地代码仓库，维护本地已提交的部分</li>
+<li><strong>远程仓库本地镜像(Remote/Origin Repository)</strong>：远程仓库的一份本地副本，用于跟踪远程</li>
+<li><strong>远程仓库(Remote Repository)</strong>：远程代码仓库</li>
+</ul>
+<img src="https://img1.kiosk007.top/static/images/git/git_workfull.png">
+<p>改动操作使得文件处于不同状态，git status可以查看改动的文件所处于的状态</p>
+<ul>
+<li><strong>未跟踪状态(Untracked)</strong>:  尚未被仓库管理的文件，即仓库里没有的文件</li>
+<li><strong>已修改状态(Modified)</strong>：仓库里有，本地修改</li>
+<li><strong>已暂存状态(Staged)</strong>:  仓库里有，本地修改并加入暂存，改动会被提交</li>
+<li><strong>未修改状态(Unmodified)</strong>: 文件提交后由仓库管理，本地无修改</li>
+</ul>
+<h2 id="入门操作">入门操作</h2>
+<ul>
+<li><font color='#EEB422'> 新建仓库 </font></li>
+</ul>
+<p>远程项目不存在时，本地初始化后上传</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> &lt;项目目录&gt;
+</span></span><span class="line"><span class="cl">git init  //初始化，生成.git子目录
+</span></span><span class="line"><span class="cl">git remote add origin &lt;项目git地址&gt;
+</span></span><span class="line"><span class="cl">git add .  //当前目录下所有内容加入暂存区
+</span></span><span class="line"><span class="cl">git commit -m <span class="s2">&#34;Initial commit&#34;</span>
+</span></span><span class="line"><span class="cl">git push -u origin master
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>远程项目已存在时，直接从远程下载</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone &lt;项目git地址&gt;
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> &lt;项目目录&gt;
+</span></span><span class="line"><span class="cl">touch README.md
+</span></span><span class="line"><span class="cl">git add README.md
+</span></span><span class="line"><span class="cl">git commit -m <span class="s2">&#34;add README&#34;</span>  //参数m表示提交信息
+</span></span><span class="line"><span class="cl">git push -u origin master   //参数u表示关联远程分支
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="基本工作流">基本工作流</h2>
+<img src="https://img1.kiosk007.top/static/images/git/git_base_workflow.png">
+<ul>
+<li><font color='#EEB422'> 添加和推送 </font></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">1. 使用如下命令：git add &lt;filename&gt; 或者 git add *
+</span></span><span class="line"><span class="cl">2. 使用如下命令以实际提交改动：git commit -m <span class="s2">&#34;代码提交信息&#34;</span>
+</span></span><span class="line"><span class="cl">3. 现在，你的改动已经提交到了 HEAD，但是还没到你的远端仓库。
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><font color='#EEB422'> 添加和推送 </font></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl">1. 通过git fetch把远程改动拉取到本地
+</span></span><span class="line"><span class="cl">2. 将远程修改与本地融合merge/rebase
+</span></span><span class="line"><span class="cl">- 基于merge: 合并远程和本地改动
+</span></span><span class="line"><span class="cl">  - git pull等价于git fetch+git merge
+</span></span><span class="line"><span class="cl">- 基于rebase: 以远程为基准，将本地修改操作重放
+</span></span><span class="line"><span class="cl">  - git pull --rebase等价于git fetch+git rebase
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="git-分支">git 分支</h2>
+<p>分支是用来将特性开发绝缘开来的。在你创建仓库的时候，master 是“默认的”分支。在其他分支上进行开发，完成后再将它们合并到主分支上。</p>
+<img src='https://img1.kiosk007.top/static/images/git/branches.png' >
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">- 创建一个叫做“feature_x”的分支，并切换过去： git checkout -b feature_x
+</span></span><span class="line"><span class="cl">- 切换回主分支： git checkout master
+</span></span><span class="line"><span class="cl">- 删除分支： git branch -d feature_x
+</span></span><span class="line"><span class="cl">- 将自己的分支推送到远端： git push origin &lt;branch&gt;
+</span></span><span class="line"><span class="cl">- 删除远程分支：git push origin --delete &lt;分支名&gt; 
+</span></span><span class="line"><span class="cl">- 列出本地分支：git branch
+</span></span><span class="line"><span class="cl">- 列出远程分支：git branch --remotes
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="git-命令">git 命令</h2>
+<ul>
+<li><font color='#EEB422'> 删除文件 </font></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">- 本地删除文件，删除动作不加入暂存区，此时提交库内文件不会被删除：rm &lt;文件&gt;
+</span></span><span class="line"><span class="cl">- 本地删除文件，同时把删除动作加入暂存区: git rm，相当于rm &lt;文件&gt;+ git add &lt;文件&gt;
+</span></span><span class="line"><span class="cl">- 希望删除仓库文件，但是本地文件依然保留，成为未跟踪状态：git rm --cached &lt;文件&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><font color='#FF8247'><strong>基本命令</strong></font></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 重命名文件</span>
+</span></span><span class="line"><span class="cl">$ git mv old_filename new_filename
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 删除文件</span>
+</span></span><span class="line"><span class="cl">$ git rm filename
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看工作区的状态</span>
+</span></span><span class="line"><span class="cl">$ git status
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 为软件发布创建标签, 如v1.0.0</span>
+</span></span><span class="line"><span class="cl">$ git tag v1.0.0 1b2e1d63ff
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">##---------- 查看git提交后日志</span>
+</span></span><span class="line"><span class="cl">$ git log
+</span></span><span class="line"><span class="cl">$ git log --oneline     <span class="c1"># 一行显示</span>
+</span></span><span class="line"><span class="cl">$ git log -n <span class="m">4</span>          <span class="c1"># 查看最近的几次</span>
+</span></span><span class="line"><span class="cl">$ git log --all --graph <span class="c1"># 以图形化方式显示所有的提交日志</span>
+</span></span><span class="line"><span class="cl">$ git log --graph --oneline --decorate --all  <span class="c1"># 通过 ASCII 艺术的树形结构来展示所有的分支, 每个分支都标示了他的名字和标签 </span>
+</span></span><span class="line"><span class="cl">$ git log --author<span class="o">=</span>bob  <span class="c1"># 只看某一个人的提交记录</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">##---------- 查看 diff</span>
+</span></span><span class="line"><span class="cl">$ git diff              <span class="c1"># 对比工作区和暂存区的差异</span>
+</span></span><span class="line"><span class="cl">$ git diff --cached  	<span class="c1"># 对比暂存区和HEAD所含文件(commit)的差异</span>
+</span></span><span class="line"><span class="cl">$ git diff -- style.css <span class="c1"># 只查看对某个文件的 diff 差异 (工作区和暂存区)</span>
+</span></span><span class="line"><span class="cl">$ git diff tmp master -- &lt;file&gt; <span class="c1"># 比较 tmp 和 master 分支的文件差异(也可以将branch改成commit)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">##---------- 取消提交</span>
+</span></span><span class="line"><span class="cl">$ git reset HEAD        <span class="c1"># 取消暂存 （取消 git add）</span>
+</span></span><span class="line"><span class="cl">$ git restore --staged &lt;file&gt;  <span class="c1"># 功能同上, 取消暂存 （可以 git status 查看当前的暂存状态）</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ git checkout -- &lt;file&gt;      <span class="c1"># 在工作区的修改撤销到最近一次git add 或 git commit时的内容</span>
+</span></span><span class="line"><span class="cl">$ git reset --hard c04b46549  <span class="c1"># 恢复到历史上的某个 commit (工作区和暂存区都会清空)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><font color='#FF8247'> 版本管理 </font></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看本地分支</span>
+</span></span><span class="line"><span class="cl">$ git branch -av
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 基于某个历史版本创建分支(基于 ac886ae 创建一个tmp分支)</span>
+</span></span><span class="line"><span class="cl">$ git checkout -b tmp ac886ae 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 删除某个分支</span>
+</span></span><span class="line"><span class="cl">$ git checkout -d ac886ae  <span class="c1"># 没有merge的分支不能通过 -d 删除</span>
+</span></span><span class="line"><span class="cl">$ git checkout -D ac886ae
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">###################### commit 相关 ###########################</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 修改最近一次提交的 commit 信息</span>
+</span></span><span class="line"><span class="cl">$ git commit --amend
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 修改前几次提交的 commit 信息</span>
+</span></span><span class="line"><span class="cl">$ git rebase -i ac224ct   <span class="c1"># 交互式操作，ac224ct 是要修改的commit的父commit</span>
+</span></span><span class="line"><span class="cl">将pick改为r  :wq退出，
+</span></span><span class="line"><span class="cl">变更内容     :wq退出
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="git-stash">git stash</h2>
+<p><code>git stash</code> 命令用于暂时保存没有提交的工作。运行该命令后，所有没有commit的代码，都会暂时从工作区移除，回到上次commit时的状态。</p>
+<p>它处于 <code>git reset --hard</code>（完全放弃还修改了一半的代码）与 <code>git commit</code>（提交代码）命令之间，很类似于“暂停”按钮。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 暂时保存没有提交的工作</span>
+</span></span><span class="line"><span class="cl">$ git stash
+</span></span><span class="line"><span class="cl">Saved working directory and index state WIP on workbranch: 56cd5d4 Revert <span class="s2">&#34;update old files&#34;</span>
+</span></span><span class="line"><span class="cl">HEAD is now at 56cd5d4 Revert <span class="s2">&#34;update old files&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 列出所有暂时保存的工作</span>
+</span></span><span class="line"><span class="cl">$ git stash list
+</span></span><span class="line"><span class="cl">stash@<span class="o">{</span>0<span class="o">}</span>: WIP on workbranch: 56cd5d4 Revert <span class="s2">&#34;update old files&#34;</span>
+</span></span><span class="line"><span class="cl">stash@<span class="o">{</span>1<span class="o">}</span>: WIP on project1: 1dd87ea commit <span class="s2">&#34;fix typos and grammar&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 恢复某个暂时保存的工作</span>
+</span></span><span class="line"><span class="cl">$ git stash apply stash@<span class="o">{</span>1<span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 恢复最近一次stash的文件</span>
+</span></span><span class="line"><span class="cl">$ git stash pop
+</span></span><span class="line"><span class="cl"><span class="c1"># 丢弃最近一次stash的文件</span>
+</span></span><span class="line"><span class="cl">$ git stash drop
+</span></span><span class="line"><span class="cl"><span class="c1"># 删除所有的stash</span>
+</span></span><span class="line"><span class="cl">$ git stash clear
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="commit-规范">commit 规范</h1>
+<p>项目开发中，一个好的 Commit Message 至关重要。</p>
+<ul>
+<li>可以使自己或者其他开发人员<strong>清楚知道 commit 变更内容</strong></li>
+<li>快速基于 Commit Message <strong>进行过滤查找</strong>，比如只查找某个版本新增的功能：git log &ndash;oneline &ndash;grep &ldquo;^feat|^fix|^perf&rdquo;</li>
+<li>依据某些类型的 Commit Message <strong>触发构建或者发布流程</strong>，比如当 type 类型为 feat 或者 fix 时才触发 CI</li>
+</ul>
+<br/>
+<p>一个标准的 Commit Message 如下图所示：
+<img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/blog/git_commit.webp"
+        data-srcset="https://img1.kiosk007.top/static/images/blog/git_commit.webp, https://img1.kiosk007.top/static/images/blog/git_commit.webp 1.5x, https://img1.kiosk007.top/static/images/blog/git_commit.webp 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/blog/git_commit.webp"
+        title="git_commit" /></p>
+<p>分别包含三个部分，分别是 <strong>Header</strong>、<strong>Body</strong>、<strong>Footer</strong>，格式如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;type&gt;[optional scope]: &lt;description&gt;
+</span></span><span class="line"><span class="cl">// 空行
+</span></span><span class="line"><span class="cl">[optional body]
+</span></span><span class="line"><span class="cl">// 空行
+</span></span><span class="line"><span class="cl">[optional footer(s)]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>下面是常见的 type 类型以及它们所属的类别：</p>
+<img src="https://img1.kiosk007.top/static/images/blog/git_commit_type.webp" alt="git_commit_type" style="zoom:80%;clear:both;display:block;margin:auto;" />
+<h2 id="commit-合并">Commit 合并</h2>
+<p>合并提交，就是将多个 commit 合并为一个 commit 提交，一般建议将新的commit 合并到主干时，只保留 2～3 个 commit 记录。</p>
+<br/>
+<p><strong>git rebase 命令</strong></p>
+<p>git rebase 最大的作用是可以重写历史。</p>
+<p>通过  <code>git rebase -i &lt;commit ID&gt;</code> 使用 git rebase 命令，-i 表示交互（interactive），该命令会进入到一个交互界面中。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/git_rebase.webp" alt="git_rebase" style="zoom:50%;clear:both;display:block;margin:auto;" />
+<p>这个交互界面会列出 <commit ID> 之前（不包括，越下面越新）的所有 commit 。每个commit 前面有一个操作命令，默认是 pick，我们可以选择不同的 commit，并修改 commit 前面的命令，来对该 commit 执行不同的变更操作。</p>
+<p>git rebase 支持的变更操作如下：</p>
+<img src="https://img1.kiosk007.top/static/images/blog/git_rebase_1.webp" alt="git_rebase_1" style="zoom:50%;clear:both;display:block;margin:auto;" />
+<p>在上面的 7 个命令中，squash 和 fixup 可以用来合并 commit，比如我们只需要将合并的 commit 前面的动词改成 <strong>squash</strong> （或者一个单词 s 简写）即可。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pick 07c5abd Introduce OpenPGP and teach basic usage
+</span></span><span class="line"><span class="cl">s de9b1eb Fix PostChecker::Post#urls
+</span></span><span class="line"><span class="cl">s 3e7ee36 Hey kids, stop all the highlighting
+</span></span><span class="line"><span class="cl">pick fa20af3 git interactive rebase, squash, amend
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="commit-信息修改">Commit 信息修改</h2>
+<p>我们有时候需要能够修改之前某次 commit 的 Commit Message。</p>
+<p>具体来说，我们有两种修改的方法，分别对应两种不同的情况：</p>
+<ol>
+<li>git commit &ndash;amend：修改最近一次 commit 的 message;</li>
+<li>git rebase -i：修改某次 commit 的 message。</li>
+</ol>
+<h1 id="git常见使用">git常见使用</h1>
+<h2 id="紧急修复-bug">紧急修复 Bug</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git stash <span class="c1"># 1. 开发工作只完成了一半，还不想提交，可以临时保存修改至堆栈区</span>
+</span></span><span class="line"><span class="cl">$ git checkout -b hotfix/print-error master <span class="c1"># 2. 从 master 建立 hotfix 分支</span>
+</span></span><span class="line"><span class="cl">$ vi main.go <span class="c1"># 3. 修复 bug，callmainfunction -&gt; call main function</span>
+</span></span><span class="line"><span class="cl">$ git commit -a -m <span class="s1">&#39;fix print message error bug&#39;</span> <span class="c1"># 4. 提交修复</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ git checkout develop <span class="c1"># 5. 切换到 develop 分支</span>
+</span></span><span class="line"><span class="cl">$ git merge --no-ff hotfix/print-error <span class="c1"># 6. 把 hotfix 分支合并到 develop 分支</span>
+</span></span><span class="line"><span class="cl">$ git checkout master <span class="c1"># 7. 切换到 master 分支</span>
+</span></span><span class="line"><span class="cl">$ git merge --no-ff hotfix/print-error <span class="c1"># 8. 把 hotfix 分支合并到 master</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ git tag -a v0.9.1 -m <span class="s2">&#34;fix log bug&#34;</span> <span class="c1"># 9. master 分支打 tag</span>
+</span></span><span class="line"><span class="cl">$ go build -v . <span class="c1"># 10. 编译代码，并将编译好的二进制更新到生产环境</span>
+</span></span><span class="line"><span class="cl">$ git branch -d hotfix/print-error <span class="c1"># 11. 修复好后，删除 hotfix/xxx 分支</span>
+</span></span><span class="line"><span class="cl">$ git checkout feature/print-hello-world <span class="c1"># 12. 切换到开发分支下</span>
+</span></span><span class="line"><span class="cl">$ git merge --no-ff develop <span class="c1"># 13. 因为 develop 有更新，这里最好同步更新下</span>
+</span></span><span class="line"><span class="cl">$ git stash pop <span class="c1"># 14. 恢复到修复前的工作状态</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h2 id="分离头指针">分离头指针</h2>
+<p>通常，我们工作在某一个分支上，比如 master 分支。这个时候 master 指针和 HEAD 指针是一起前进的，每做一次提交，这两个指针就会一起向前挪一步。但是在某种情况下（例如 checkout 了某个具体的 commit），master 指针 和 HEAD 指针这种「绑定」的状态就被打破了，变成了分离头指针状态。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜ git checkout fb7d808
+</span></span><span class="line"><span class="cl">注意：正在切换到 <span class="s1">&#39;fb7d808&#39;</span>。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">您正处于分离头指针状态。您可以查看、做试验性的修改及提交，并且您可以在切换
+</span></span><span class="line"><span class="cl">回一个分支时，丢弃在此状态下所做的提交而不对分支造成影响。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">如果您想要通过创建分支来保留在此状态下所做的提交，您可以通过在 switch 命令
+</span></span><span class="line"><span class="cl">中添加参数 -c 来实现（现在或稍后）。例如：
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  git switch -c &lt;新分支名&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">或者撤销此操作：
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  git switch -
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">通过将配置变量 advice.detachedHead 设置为 <span class="nb">false</span> 来关闭此建议
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">HEAD 目前位于 fb7d808 Learn CSS demo
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>git 在对于这种没有基于 <strong>某个分支branch</strong> 的变更会被清除掉。所以如果想要变更最好跟着分支进行变更。</p>
+<p><strong>所以不要在分离头指针里写代码和并提交</strong></p>
+<p>如果想要提交自己修改的内容，那么就需要按照上方 git 的提示，<code>git switch -c &lt;新分支名&gt;</code> 的方式创建一个新分支来提交代码了。</p>
+<br/>
+<h2 id="git-stash-命令实用指南">git stash 命令实用指南</h2>
+<p>为什么 git stash 很重要，假设Git没有暂存变更命令，当你在有2个分支（A和B）的仓库上工作时，假设这两个分支已经分叉很长时间，并且有不同的头，当你处理A的时候，团队要求修复B分支的一个错误，你迅速将你的修改保存到A分支(但没有提交 commit),并且尝试用 <code>git checkout B</code> 来切到B分支，git 会立即终止这个操作，并报错。“你对以下文件的本地修改会被签出覆盖&hellip; &hellip;请在切换分之前提交你的修改或者将他们暂存起来”</p>
+<p>在这种情况下有几种方法来分支切换。</p>
+<ul>
+<li>在分支A中创建一个提交（git switch -c），提交并推送你的修改，以修复 B 中的错误。然后签出A，并运行 <code>git reset HEAD</code>, 来恢复修改。</li>
+<li>手动保留不被Git 追踪文件中的改动。</li>
+</ul>
+<p>第二种就不说了，一点也不极客。第一种方法虽然看起来很传统，但是不灵活，因为保存未完成工作的修改会被当做一个检查点，而不是一个仍在进行中的补丁。这就是 <code>git stash</code> 的场景。</p>
+<p><code>git stash</code> 将未提交的改动保存在本地，让你可以进行修改，切换分支及其他的操作。然后当你需要的时候，你可以重新应用这些存储的改动。暂存是本地范围的，不会被<code>git push</code> 推送的远端。</p>
+<p>以下是一次 <code>git stash</code> 的操作顺序</p>
+<ol>
+<li>将修改保存到分支A</li>
+<li>运行 <code>git stash</code></li>
+<li>签出分支B</li>
+<li>修正B分支的错误</li>
+<li>提交并推送到远程</li>
+<li>查看分支A</li>
+<li>运行 <code>git stash pop</code> 来取回暂存的改动。</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 现将工作区的内容保存到暂存区</span>
+</span></span><span class="line"><span class="cl">$ git add *
+</span></span><span class="line"><span class="cl"><span class="c1"># 将暂存区的内容 暂时保存</span>
+</span></span><span class="line"><span class="cl">$ git stash   
+</span></span><span class="line"><span class="cl">$ git stash save <span class="s2">&#34;message&#34;</span>   <span class="c1"># 功能同上</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 切到历史版本修复bug ... </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ git stash apply  <span class="c1"># 将临时保存区的内容恢复，但不会删除记录，pop会删除。</span>
+</span></span><span class="line"><span class="cl">$ git stash pop 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h2 id="cherry-pick">cherry pick</h2>
+<p>假设你在一个分支上已经做了很多次提交，但你意识到这个分支是错误的，该怎么办。
+要么切换到正确的分支重复所有的变更。然后重新提交。要么呢就要用到 <code>cherry pick</code> 这个工具。</p>
+<p><code>git cherry-pick</code> 可以将相同的commit提交复制到另一个分支上。就没有必要在不同的分支上做相同的操作。</p>
+<blockquote>
+<p>注意：<code>cherry-pick</code> 出来的提交会在另一个分支中创建带有新hash的提交，</p>
+</blockquote>
+<ul>
+<li>它是如何工作的</li>
+</ul>
+<p>假设有2个分支，<code>toC</code> 和 <code>toB</code>, 现在有个bug在2个版本上都存在。我们在<code>toC</code> 分支上已经修复了这个bug。在 <code>toC</code>分支上运行<code>git log</code>命令，获取这次提交的 hash 值, 简单起见复制 25560 即可</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git log
+</span></span><span class="line"><span class="cl">commit 255604842840febb7e11bbb443013fa584e76219 <span class="o">(</span>HEAD -&gt; master, tag: v1.0.1, origin/master, origin/HEAD<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Author: igolaizola &lt;11333576+igolaizola@users.noreply.github.com&gt;
+</span></span><span class="line"><span class="cl">Date:   Thu Sep <span class="m">26</span> 09:31:17 <span class="m">2019</span> +0200
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后切换到<code>toB</code>分支上，将刚刚的bugfix提交合入。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git checkout toB
+</span></span><span class="line"><span class="cl">$ git cherry-pick <span class="m">25560</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p>如果遇到了 “nothing to commit,working tree clean The previous cherry-pick is now empty,possibly due to conflict resolution” 不要惊慌，按照建议运行 <code>git commit --allow-empty</code> 即可。这个将打开你的编辑器，编辑提交信息即可。</p>
+</li>
+<li>
+<p>如果遇到了合并冲突，解决冲突后，输入 <code>git cherry-pick --continue</code> 恢复。</p>
+</li>
+</ul>
+<p>参考: <a href="https://mp.weixin.qq.com/s/J7sVxIoIVClEirClBQoUtA" target="_blank" rel="noopener noreffer">https://mp.weixin.qq.com/s/J7sVxIoIVClEirClBQoUtA</a>
+参考：https://zhuanlan.zhihu.com/p/156726632</p>
+<br/>
+<h2 id="git创建本地分支并关联远程分支">Git创建本地分支并关联远程分支</h2>
+<p>当我想从远程仓库里拉取一条本地不存在的分支时：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git checkout -b 本地分支名 origin/远程分支名
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果出现以下报错</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fatal: Cannot update paths and switch to branch &#39;dev2&#39; at the same time.
+</span></span><span class="line"><span class="cl">Did you intend to checkout &#39;origin/dev2&#39; which can not be resolved as commit?
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>表示拉取不成功。我们需要先执行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git fetch
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>再执行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git checkout -b 本地分支名 origin/远程分支名
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>修改之后再推送的话，可以执行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git push --set-upstream origin 远程分支名
+</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-12-19</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/git-quick-start/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://kiosk007.top/post/git-quick-start/" data-title="Git Quick Start"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://kiosk007.top/post/git-quick-start/" data-title="Git Quick Start"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="https://kiosk007.top/post/git-quick-start/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/git/">git</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/grpc-quick-start/" class="prev" rel="prev" title="gRPC Quick Start "><i class="fas fa-angle-left fa-fw"></i>gRPC Quick Start </a>
+            <a href="/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/" class="next" rel="next" title="TLS详解（三）">TLS详解（三）<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.102.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{"valine":{"appId":"XhYn8GEq1Sg7ufJQAVmR4dWN-gzGzoHsz","appKey":"r42k4lqU022wD7IvtwGaQfjN","avatar":"mp","el":"#valine","emojiCDN":"https://fastly.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"en","pageSize":10,"placeholder":"Your comment ...","recordIP":true,"serverURLs":"https://xhyn8geq.lc-cn-n1-shared.com","visitor":true}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

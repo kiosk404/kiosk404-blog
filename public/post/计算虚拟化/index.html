@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>计算虚拟化 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:title" content="计算虚拟化" />
+<meta property="og:description" content="在虚拟机怎么做到热迁移提到的两个问题，没想到另一个问题的答案也被我找到了。今天就在计算虚拟化这里回答上篇文章的第一个疑问:
+&ndash; 我的虚机经常CPU使用率不到 5%，它会不会拿着我的资源去偷偷接济同物理机上的其他高负载业务。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://kiosk007.top/post/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/" /><meta property="og:image" content="https://kiosk007.top/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-10-21T11:23:00+00:00" />
+<meta property="article:modified_time" content="2022-10-21T11:23:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://kiosk007.top/logo.png"/>
+
+<meta name="twitter:title" content="计算虚拟化"/>
+<meta name="twitter:description" content="在虚拟机怎么做到热迁移提到的两个问题，没想到另一个问题的答案也被我找到了。今天就在计算虚拟化这里回答上篇文章的第一个疑问:
+&ndash; 我的虚机经常CPU使用率不到 5%，它会不会拿着我的资源去偷偷接济同物理机上的其他高负载业务。"/>
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="https://kiosk007.top/post/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/" /><link rel="prev" href="https://kiosk007.top/post/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/" /><link rel="next" href="https://kiosk007.top/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Fdesign-pattern/" /><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "计算虚拟化",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/kiosk007.top\/post\/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "https:\/\/kiosk007.top\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "openstack","wordcount":  281 ,
+        "url": "https:\/\/kiosk007.top\/post\/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96\/","datePublished": "2022-10-21T11:23:00+00:00","dateModified": "2022-10-21T11:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/kiosk007.top\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">计算虚拟化</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>cloud_computing</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-10-21">2022-10-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;281 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;<span id="/post/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/" class="leancloud_visitors" data-flag-title="计算虚拟化">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;views
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#cpu-虚拟化">CPU 虚拟化</a>
+      <ul>
+        <li><a href="#cpu-虚拟化的具体现实">CPU 虚拟化的具体现实</a></li>
+        <li><a href="#cpu-的-qos">CPU 的 QOS</a></li>
+        <li><a href="#cpu-的预留">CPU 的预留</a></li>
+      </ul>
+    </li>
+    <li><a href="#内存虚拟化">内存虚拟化</a>
+      <ul>
+        <li><a href="#主机内存超分配技术">主机内存超分配技术</a></li>
+        <li><a href="#内存复用技术">内存复用技术</a></li>
+        <li><a href="#内存的-qos">内存的 QOS</a></li>
+      </ul>
+    </li>
+    <li><a href="#io虚拟化">I/O虚拟化</a></li>
+    <li><a href="#网络虚拟化">网络虚拟化</a>
+      <ul>
+        <li><a href="#分布式交换机">分布式交换机</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>在<a href="https://kiosk007.top/post/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/" target="_blank" rel="noopener noreffer">虚拟机怎么做到热迁移</a>提到的两个问题，没想到另一个问题的答案也被我找到了。今天就在计算虚拟化这里回答上篇文章的第一个疑问:</p>
+<p>&ndash; 我的虚机经常CPU使用率不到 5%，它会不会拿着我的资源去偷偷接济同物理机上的其他高负载业务。</p>
+<p>在云计算中的计算虚拟化主要分为了三个部分：1.CPU虚拟化；2.内存虚拟化；3.I/O虚拟化。</p>
+<h1 id="cpu-虚拟化">CPU 虚拟化</h1>
+<p>CPU 虚拟化是指在固定的CPU硬件基础上（CPU个数、核数、线程数等），通过虚拟化技术将物理CPU虚拟出多个，能被 Guest OS 识别并能独立的 <strong>VCPU</strong>。</p>
+<p>物理CPU虚拟化成虚拟的 VCPU，本质上就是对物理CPU进行资源池化，并根据不同的需求场景来分配不同的计算资源。常用的分配方式对 CPU 做 QOS（Quality of Service，服务质量）</p>
+<br/>
+<h2 id="cpu-虚拟化的具体现实">CPU 虚拟化的具体现实</h2>
+<p>将单个物理CPU虚拟化成多个虚拟CPU供虚拟机使用，虚拟CPU分时复用物理CPU，由虚拟机监控器（Virtual Machine Monitor, VMM）对虚拟机CPU分配时间片，并同时对虚拟CPU的状态进行管理。</p>
+<p>CPU 虚拟化有三种实现方式。</p>
+<ul>
+<li>基于全虚拟化的CPU虚拟化</li>
+<li>基于版虚拟化的CPU虚拟化</li>
+<li>基于硬件辅助的CPU虚拟化</li>
+</ul>
+<p>这三种CPU虚拟化技术在之前的 <a href="https://kiosk007.top/post/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/#cpu-%E8%99%9A%E6%8B%9F%E5%8C%96" target="_blank" rel="noopener noreffer">这篇文章</a> 中有提到。除了上述之外，还有 <strong>CPU 虚拟化的优化技术</strong></p>
+<ul>
+<li><strong>HT（Hyper-Threading）超线程</strong></li>
+</ul>
+<p>在每个单位时间内，CPU只能处理一个线程（Thread）。除非有两个核心处理单元，否则要想在单位时间内处理超过一个的线程是不可能的。超线程HT（Hyper-Threading）技术是在单个核心处理单元中集成两个逻辑处理单元，也就是一个实体内核（共享的运算单元），两个逻辑内核（有各自独立的处理器状态），从而可以在单位时间内模拟双内核运作.可以提高40%的性能。</p>
+<ul>
+<li><strong>CPU 绑定技术</strong></li>
+</ul>
+<p>CPU 绑定技术就是利用CPU 亲和性，把一个或多个进程绑定到一个或多个CPU上，可以在线配置，立即生效，有效解决CPU利用率严重不平均的问题。CPU 热添加技术——动态向运行中的系统添加 CPU，并且可以实现业务不中断。</p>
+<ul>
+<li><strong>CPU Nested （嵌套）</strong></li>
+</ul>
+<p>CPU Nested（嵌套）技术在虚拟机上运行虚拟机；可以将物理CPU特性全部传给虚拟机，理论上可以嵌套N多层。</p>
+<ul>
+<li><strong>vSMP（虚拟同步多进程）Virtual Symmetric Mutil-Processing</strong></li>
+</ul>
+<p>通过此功能实现了多个vCPU协同工作。实现方式是通过多个vCPU通过一个总线访问存储器，也被成为一致内存结构体系（UMA）。在存储器接口达到饱和时，扩展性有限（开启vSMP时，一个VM最多可配置 64 个vCPU）</p>
+<ul>
+<li><strong>vNUMA（虚拟非统一内存访问）</strong></li>
+</ul>
+<p>vNUMA（虚拟非统一内存访问）是一种VMware虚拟机（VM）内存访问优化方式，可以消除内存带宽瓶颈。vNUMA（虚拟非统一内存访问）是一种虚拟机内存访问优化方式，可以消除内存带宽瓶颈。每个vCPU 都有自己的存储器，每个处理器也可以访问别的处理器的存储器。如果一个虚拟机有超过8个vCPU，那么vNUMA就会自动启动。</p>
+<br/>
+<h2 id="cpu-的-qos">CPU 的 QOS</h2>
+<ol>
+<li>上限：分配给 VM 的 VCPU 上限。</li>
+<li>份额：如果发生了抢占，则根据份额分配资源</li>
+<li>预留：给核心VM预留资源，保证其业务稳定</li>
+</ol>
+<p>例子：某服务器有1个CPU、1核、24线程（24GHz）分给3台VM。根据 VCPU的计算公式得出 （CPU 个数 x 核数 x 线程数），可以虚拟出来 24 个 vCPU，这里的 24 个 vCPU指的是单台 VM 所能获得最大 vCPU 上限。加入3台VM都是分配8个 vCPU,则没有发生CPU 资源的抢占，那么每个 VM 使用的 CPU 资源都是 8GHz （24/3 平均分配）。假如资源发生了抢占，VM1 - VM3 都分配了 24个 vCPU。可以分配给单台VM所在物理CPU虚拟出来的最大 vCPU 个数，这时真实的物理 CPU 资源则不是根据 vCPU 个数来确定对应的使用资源，而是根据份额来分配资源</p>
+<img src="https://img1.kiosk007.top/static/images/blog/cpu_virtualization_qos.png" alt="cpu_virtualization_qos" style="zoom:37%;clear:both;display:block;margin:auto;" />
+<p>上面 VM1 - VM3 虽然都是被分配到 24个 vCPU 上，但是它们使用的真实物理 CPU 的资源却是不同的。</p>
+<br/>
+<h2 id="cpu-的预留">CPU 的预留</h2>
+<p>如果在上述的 VM 中，某个VM开启了CPU的资源预留，资源预留则代表的是最低的使用资源，如果给 VM1 预留了 8GHz 的CPU资源（在VM1-VM3同时分配24个 vCPU 场景下），即使 VM1不使用，别的 VM 也不能抢占。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/cpu_virtualization_reserve.png" alt="cpu_virtualization_reserve" style="zoom:37%;clear:both;display:block;margin:auto;" />
+<p>如上图，VM1 预留8GHz 的 CPU 资源，的那是按照份额来分他只能使用 4GHz 的CPU 资源，剩下的4GHz 资源要从 VM2 ，VM3 获得资源去抢占。</p>
+<p>根据份额比例VM2要分配给VM1：2/5×4=1.6GHz的CPU资源。</p>
+<p>而VM3则要分给VM1：3/5×4=2.4GHz的CPU资源。</p>
+<p>所以VM2使用了：8-1.6=6.4GHz的CPU资源。</p>
+<p>VM3使用了：12-2.4=9.6GHz的CPU资源。</p>
+<br/>
+<h1 id="内存虚拟化">内存虚拟化</h1>
+<p>CPU和内存是紧密结合的，因而内存虚拟化和CPU虚拟化是一起完成的。KVM 实现客户机内存的方式是利用 mmap 系统调用，在QEMU 主线程的虚拟地址空间中声明一段连续大小的空间用于客户机物理内存的映射。</p>
+<p>VMM 内存虚拟化实现方式有两种：</p>
+<ul>
+<li>软件方式：通过软件实现内存地址的翻译，比如 Shadow page tabe （影子页表）</li>
+<li>硬件实现：基于CPU 的辅助虚拟化功能呢高，比如 AMD 的 NPT 和 Intel 的 EPT 技术。</li>
+</ul>
+<p>在未引入内存虚拟化之前，OS每次使用内存地址的时候，总是从0号地址开始。由于每个物理服务器只运行一个OS，这个OS负责所有的硬件资源分配所以不会引起0号物理内存地址的抢用。而引入虚拟化技术后，物理主机上运行多个Guest OS，多个Guest OS都争抢0号内存地址使用，但是真正的物理内存地址0号只有一个。为了解决这个问题，由VMM虚拟出来多个0号物理地址给每个VM上的Guest OS来使用。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/memory_virtualization.png" alt="memory_virtualization" style="zoom:37%;clear:both;display:block;margin:auto;" />
+<p><strong>VM中保存着由VM映射到VMM虚拟出来的地址空间(VA—PA），而VMM保存着由VMM映射到真实的内存地址（PA—MA）。</strong></p>
+<br/>
+<h2 id="主机内存超分配技术">主机内存超分配技术</h2>
+<p>使用内存超分配技术的好处是可以在主机物理内存容量不变的情况下，使用内存超分配技术来提高VM的密度，或者是在VM密度不变的情况下，通过内存超分配技术来节省内存的成本开销。</p>
+<p>例如：VM1，VM2，VM3都申请了2G内存容量，但是都暂时只用到了1G的真实内存容量。内存超分配技术就是VM使用了多少内存就分配给多少内存，将未用到的内存指向一个“共享内存”。如上图，VM1-VM3共享剩下的未写数据的<strong>零页</strong>1G容量内存。从而达到VM1，VM2，VM3看起来都是2G内存。而实际VM1，VM2，VM3都只有1G的实际内存使用量。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/memory_virtualization_oversold.png" alt="memory_virtualization_oversold" style="zoom:37%;clear:both;display:block;margin:auto;" />
+<p><strong>如果3台VM都实际使用了2G的真实物理内存容量，则就需要分配给真实的2G内存容量，否则会带来内存溢出等风险。</strong></p>
+<p>（内存超分配最高可以达到物理内存大小的50%。）</p>
+<br/>
+<h2 id="内存复用技术">内存复用技术</h2>
+<p><strong>内存复用技术是指在VM内存不够的情况下，合理的通过内存复用技术从而带来更高的性能体验。</strong></p>
+<p>内存复用有三种基本的实现方式：</p>
+<ol>
+<li>
+<p><strong>内存共享+写时复制</strong>：VM之间共享同一物理内存空间，VM对此空间只有读取操作的权限，当VM需要对内存进行写操作时，则开辟另一内存空间，并建立映射关系。</p>
+</li>
+<li>
+<p><strong>内存置换</strong>：虚拟机长时间未访问的内存内容被置换到外存储中，并建立映射，当虚拟机再次访问该内容时再置换到内存中。（通过热点因子计算冷热数据，将冷数据置换到外存中）</p>
+</li>
+<li>
+<p><strong>内存气泡</strong>：底层虚拟化系统（Hypervisor）通过内存气泡，将内存使用率较低的VM的内存，收集起来并释放给内存使用率较高的VM来使用，从而提升内存的利用率。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/memory_virualization_multiplex.webp" alt="memory_virualization_multiplex" style="zoom:150%;" />
+</li>
+</ol>
+<br/>
+<h2 id="内存的-qos">内存的 QOS</h2>
+<p>对不同的需求类型来指定内存的 QOS 策略，从而达到合理的内存资源分配，具体策略如下：</p>
+<ol>
+<li><strong>内存的上限</strong>：内存在VM创建的时候给定的内存容量便形成了 VM 的内存上限。</li>
+<li><strong>内存的份额</strong>：在VM内存发生抢占的时候根据内存分配的份额来分配物理内存的资源</li>
+<li><strong>内存的预留</strong>：内存的预留内存预留指的是将一部分内存资源从资源池里提取出来，给特定的 VM 来使用，即使分配了内存预留的VM世纪使用内存小于给它预留的内存容量，在发生内存抢占的情况下也不会将此预留的内存分配给其他VM使用。</li>
+</ol>
+<p>具体 QOS 策略和CPU一致。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/memory_virtualization_qos.png" alt="memory_virtualization_qos" style="zoom:47%;clear:both;display:block;margin:auto;" />
+<p>如上图，当VM1和VM3都请求使用10G内存空间时，此时则发生了抢占，因为真实的物理内存空间才24G，则根据份额进行内存的分配，即：VM1分配了4G内存空间，VM2分配了8G内存空间，VM3分配了12G内存空间。</p>
+<p>补充关于内存容量的上限：内存上限在VM创建时就已经确定了。上图VM3根据份额分配了12G的内存空间，如果在创建VM时确定了它的内存空间为8G，则即使分配给它12G内存空间，但它仍然只能使用8G内存空间。<strong>内存的空间大小，后期也可以进行调整，但必须将VM离线后才能调整</strong>。</p>
+<br/>
+<h1 id="io虚拟化">I/O虚拟化</h1>
+<p>现实中的外设资源是有限的，为了满足多个客户机操作系统的需求，VMM必须通过I/O虚拟化的方式来复用有限的外设资源。</p>
+<p>VMM/hypervisor提供了两种机制来实现对I/O设备的访问，一种是<strong>透传（passthrough）</strong>，一种是<strong>模拟（emulation）</strong>。</p>
+<br/>
+<ul>
+<li><strong>穿透（passthrough）</strong></li>
+</ul>
+<p>所谓passthrough，就是指guest VM可以透过VMM，直接访问I/O硬件，这样guest VM的I/O操作路径几乎和无虚拟化环境下的I/O路径相同，性能自然是非常高的。</p>
+<p>由于一些 I/O 设备支持 DMA（Direct Memory Access）技术，DMA是直接在设备和物理内存之间传输数据，其传输过程绕过了CPU，对于一个支持DMA技术的设备，需要 IOMMU 技术，来再进行一次映射。</p>
+<p>IOMMU （IO 内存管理单元）查找的页表通常是专门的 I/O page tables。一些硬件也为了加速查找过程有类似 EPT   TLB的 IOTLB（Translation Lookaside Buffer 地址翻译转换缓存） 硬件单元。<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></p>
+<p>其存在热迁移困难的缺点，不是主流的方案。</p>
+<br/>
+<ul>
+<li><strong>模拟（emulation）</strong></li>
+</ul>
+<p>在hypervisor模型中，VMM直接就可以提供各种外设驱动，因此实现对guest VM所访问设备的模拟是很方便的。对于混合模型，设备模拟的方法就要稍微复杂一些。在混合模型中，guest VM访问设备的请求依然是会被VMM“截获”，根据I/O编址类型的不同，截获的方法也不一样。</p>
+<p>对于I/O单独编址的<strong>PMIO</strong>(Port Mapped I/O)，是使用in/out, ins/outs指令来读写的，所以只需要将这几个指令设定为会产生VM exit的敏感指令就可以了。对于和memory统一编址的<strong>MMIO</strong>(Memory Maped I/O)，如果不为其使用的I/O地址设置对应的页表项，那么在访问这些地址的时候势必会产生page fault，这样的I/O访问也可以被VMM成功截获。<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></p>
+<p><strong>virtio</strong> 便是其中的典型代表。Virtio最早由Rusty Russell于2007年在IBM工作期间开发，之后迅速成为KVM等主流虚拟化方案中默认的I/O虚拟化机制。</p>
+<p>在virtio模型中，UOS为驱动数据的交互提供的接口被称为Frontend virtio driver (<strong>FE</strong>)，FE只需要负责建立共享缓冲区，并产生I/O请求即可。SOS中提供的驱动交互接口则被称为Backend virtio driver (<strong>BE</strong>)，BE会接收VMM转发的来自FE的请求，并交给SOS中的设备驱动程序处理。</p>
+<br/>
+<p>华为云的I/O虚拟化底层采用的是前后端驱动方式：VMM截获客户操作系统对设备的请求访问，然后通过软件的方式来模拟真实的设备的效果。</p>
+<br/>
+<h1 id="网络虚拟化">网络虚拟化</h1>
+<p>KVM 网络虚拟化有主要四种模型 隔离模型、路由模型、NAT模型、桥接模型。</p>
+<ul>
+<li>
+<p><strong>隔离模型</strong>：该模型的特点是宿主机上的所有虚拟机之间可以组建网络，但是虚拟机无法与宿主机进行通信，也无法与其他网络的主机或其他宿主机上的虚拟机进行通信；相当于将虚拟机只是连接到一个交换机上，而这个交换机是在宿主机上虚拟出来的，即我们通常所说的网桥设备</p>
+</li>
+<li>
+<p><strong>路由模型</strong>：该模型的特点是在隔离模型的基础上，在宿主机开启了ip路由转发功能，此时的宿主机相当于路由器，完成虚拟机与宿主机的数据报文转发。因此，虚拟机可以宿主机的物理网卡进行通信，但是无法与宿主机之外的主机进行通信，因为宿主机没有对源地址转换，报文可以送到外部主机，但是外部主机无法回应。</p>
+</li>
+<li>
+<p><strong>NAT模型</strong>：该模型的特点是当虚拟机需要与外部进行通信时，需要将源IP地址转换为物理网卡的IP地址，这样外部主机接收到报文后可以正确的将响应报文发送给目标IP地址（宿主机的物理网卡IP地址），因此，实现虚拟机与外部的通信；</p>
+<p>注意：该模型仅仅是实现了源地址转换，实现虚拟机与外部网络的通信，但那是外部网络无法访问虚拟机，如果要实现，则需要在宿主机做目标地址转换。</p>
+</li>
+<li>
+<p><strong>桥接模型</strong>：该模型的特点是通过创建一个虚拟网卡，为该虚拟机网卡分配可以访问外部网络的IP地址；此时的物理网卡相当于一台交换机设备；虚拟机可以分配与外部网络通信的IP地址实现与外部网络的通信；此时，虚拟机相当于宿主机所在的局域网内单独的一台主机，它宿主机的地位是同等的，没有依存关系。</p>
+</li>
+</ul>
+<h2 id="分布式交换机">分布式交换机</h2>
+<p>一般网络虚拟化少不了路由器、网桥、交换机等概念，而虚拟计算集群中的网络通信是通过SDN（软件定义网络）实现的，诸如 Linux Bridge 、OVS（Open VSwitch）等。</p>
+<p>而在云厂商内部由于更复杂的网络需求。一般需要对网络设备进行进一步的集联和分布式开发。</p>
+<ul>
+<li><strong>分布式交换机（Distrubuted Virtual Switch）</strong></li>
+</ul>
+<p><strong>利用分布式虚拟化的技术，可以在实现与物理交换机同样的效果，对经过虚拟化的服务器进行数据的高效率传输与管理。实现逻辑上的业务，功能的整合。并且介于虚拟化服务器技术，DVS可以实现更加统一的管理服务器，保障数据的安全稳定，实现虚拟机的迁移，HA数据容灾等</strong></p>
+<p>当利用服务器虚拟化技术，我们可以在一个服务器上虚拟出多台虚拟机为不同的业务提供数据的服务。此时，将一台物理服务器叫做一个CNA节点。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/distrubuted_virtual_switch.png" alt="distrubuted_virtual_switch" style="zoom:57%;clear:both;display:block;margin:auto;" />
+<p><br/><br/></p>
+<p>参考：</p>
+<ul>
+<li>
+<p><a href="https://www.zhihu.com/column/c_1318677088195964928" target="_blank" rel="noopener noreffer">HCIE-CloudCompute</a></p>
+</li>
+<li>
+<p><a href="https://blog.csdn.net/ccschan/article/details/88095718" target="_blank" rel="noopener noreffer">KVM虚拟化之四种网络模型</a></p>
+</li>
+</ul>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://zhuanlan.zhihu.com/p/69627614" target="_blank" rel="noopener noreffer">https://zhuanlan.zhihu.com/p/69627614</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://zhuanlan.zhihu.com/p/75649223" target="_blank" rel="noopener noreffer">https://zhuanlan.zhihu.com/p/75649223</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-10-21</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://kiosk007.top/post/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/" data-title="计算虚拟化"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://kiosk007.top/post/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/" data-title="计算虚拟化"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="https://kiosk007.top/post/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">openstack</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/" class="prev" rel="prev" title="虚拟机怎么做到热迁移"><i class="fas fa-angle-left fa-fw"></i>虚拟机怎么做到热迁移</a>
+            <a href="/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Fdesign-pattern/" class="next" rel="next" title="设计模式（Design Pattern）">设计模式（Design Pattern）<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.102.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{"valine":{"appId":"XhYn8GEq1Sg7ufJQAVmR4dWN-gzGzoHsz","appKey":"r42k4lqU022wD7IvtwGaQfjN","avatar":"mp","el":"#valine","emojiCDN":"https://fastly.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"en","pageSize":10,"placeholder":"Your comment ...","recordIP":true,"serverURLs":"https://xhyn8geq.lc-cn-n1-shared.com","visitor":true}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

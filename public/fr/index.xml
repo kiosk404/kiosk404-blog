@@ -1,0 +1,10 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Kiosk&#39;s 个人编程技术分享</title>
+        <link>https://kiosk007.top/fr/</link>
+        <description>À propos du thème LoveIt</description>
+        <generator>Hugo -- gohugo.io</generator><language>fr</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+            <atom:link href="https://kiosk007.top/fr/index.xml" rel="self" type="application/rss+xml" />
+        </channel>
+</rss>

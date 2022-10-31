@@ -1,0 +1,38 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>database - Tag - Kiosk&#39;s 个人编程技术分享</title>
+        <link>https://kiosk007.top/tags/database/</link>
+        <description>database - Tag - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 02 Aug 2022 18:20:00 &#43;0000</lastBuildDate><atom:link href="https://kiosk007.top/tags/database/" rel="self" type="application/rss+xml" /><item>
+    <title>一条MySQL查询语句经历了什么--事务</title>
+    <link>https://kiosk007.top/post/what-happened-to-mysql-query-2/</link>
+    <pubDate>Tue, 02 Aug 2022 18:20:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/what-happened-to-mysql-query-2/</guid>
+    <description><![CDATA[<p>上篇文章介绍了MySQL的索引机制，基本上对MySQL如何优化查询速度做了比较充分的了解</p>
+<ul>
+<li><a href="https://kiosk007.top/post/what-happend-to-mysql-query-1" target="_blank" rel="noopener noreffer">一条MySQL查询语句经历了什么&ndash;索引</a></li>
+</ul>
+<p>第二篇文章介绍一下事务，事务不是 MySQL 的原生支持，而是 InnoDB 存储引擎带来的 Feature。旧版本MySQL的默认存储引擎 MyISAM 就不支持事务能力。正因为事物能力，MySQL 的功能越发强大，也是因为事务，MySQL经常存在和索引无关的很多慢查询。</p>]]></description>
+</item><item>
+    <title>一条MySQL查询语句经历了什么--索引</title>
+    <link>https://kiosk007.top/post/what-happened-to-mysql-query-1/</link>
+    <pubDate>Tue, 28 Jun 2022 18:20:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/what-happened-to-mysql-query-1/</guid>
+    <description><![CDATA[<br/>
+<p>MySQL 之前已经接触过非常多了，只是将MySQL当作一个 excel 文档，需要取数据了通过命令获取。 但是实际上 MySQL 内部还是有很多奥秘的，一条语句的执行也有很多有意思的设计逻辑。</p>
+<p>下面对自己学习的MySQL的执行过程做一个学习记录。通过把MySQL 拆解一下，来对MySQL做更深层次的理解。再遇到一些异常或者问题时，可以直戳本质，更为快速定位并解决问题。</p>]]></description>
+</item><item>
+    <title>MySQL 基本入门</title>
+    <link>https://kiosk007.top/post/mysql-start/</link>
+    <pubDate>Sat, 17 Oct 2020 10:44:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/mysql-start/</guid>
+    <description><![CDATA[最近一段时间，需要做一个 信息管理系统，所以涉及到很多 数据库相关的知识，这里就专门恶补一下。之前有用到过 MySQL，但是用法太过基础，没有系统的去学习。这里参照着 《MySQL必知必会》做一些总结。
+另外 MySQL 的一些基本操作，可以参考 : MySQL教程
+主键 在mysql中，主键全称“主键约束”，是一个列或多列的组合，其值能唯一地标识表中的每一行。主键的作用是确定该数据的唯一性。主要用于和其他表的外键进行关联，以及本记录的修改与删除。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 &gt; CREATE TABLE tb_emp ( id INT(11) PRIMARY KEY AUTO_INCREMENT, name VARCHAR(25), salary FLOAT ); Query OK, 0 rows affected Time: 0.047s &gt; DESC tb_emp; +--------+-------------+------+-----+---------+----------------+ | Field | Type | Null | Key | Default | Extra | +--------+-------------+------+-----+---------+----------------+ | id | int | NO | PRI | &lt;null&gt; | auto_increment | | name | varchar(25) | YES | | &lt;null&gt; | | | salary | float | YES | | &lt;null&gt; | | +--------+-------------+------+-----+---------+----------------+ 3 rows in set Time: 0.]]></description>
+</item></channel>
+</rss>

@@ -43,6 +43,7 @@ date: 2022-08-08 23:41:26
   - [什么是 MVCC](/topic/interview/database/#什么是-mvcc)
   - [MySQL的日志 undo log \ redo log \ binlog](/topic/interview/database/#mysql的日志-undo-log--redo-log--binlog)
   - [什么是MySQL的两段式提交](/topic/interview/database/#什么是-mysql-的两段式提交为什么必须要两段式提交)
+  - [MySQL索引为什么会有最左前缀匹配原则](/topic/interview/database/#mysql索引为什么会有最左前缀匹配原则)
 
 <br/>
 
@@ -462,5 +463,11 @@ B+树的非叶子节点不保存具体数据，之保存关键字的索引，而
 其也自己诶点的关键字从小到大有序排列，左边结尾数据都会保存右边节点开始数据的指针，因为叶子节点都是有序排列的，所以B+树对数据的排序支持有着更好的支持。
 
 参考：[https://zhuanlan.zhihu.com/p/27700617](https://zhuanlan.zhihu.com/p/27700617) （里面有图，更助于理解）
+
+<br/>
+
+### MySQL索引为什么会有最左前缀匹配原则
+
+由于联合索引构建存储的方式是根据第一个索引列“单调递增”排序
 
 <br/>

@@ -1,0 +1,38 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>k8s - Tag - Kiosk&#39;s 个人编程技术分享</title>
+        <link>https://kiosk007.top/tags/k8s/</link>
+        <description>k8s - Tag - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 05 Sep 2021 11:37:00 &#43;0000</lastBuildDate><atom:link href="https://kiosk007.top/tags/k8s/" rel="self" type="application/rss+xml" /><item>
+    <title>Nginx Ingress</title>
+    <link>https://kiosk007.top/post/nginx-ingress/</link>
+    <pubDate>Sun, 05 Sep 2021 11:37:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/nginx-ingress/</guid>
+    <description><![CDATA[<p>在K8S的中， Service 暴露给外界的三种方法。其中有一个叫作 LoadBalancer 类型的 Service，它会为你在 Cloud Provider（比如：Google Cloud 或者 OpenStack）里创建一个与该 Service 对应的负载均衡服务。</p>
+<p>但是，由于每个 Service 都要有一个负载均衡服务，所以这个做法实际上既浪费成本又高。作为用户，我其实更希望看到 Kubernetes 为我内置一个全局的负载均衡器。然后，通过我访问的 URL，把请求转发给不同的后端 Service。</p>
+<p><strong>这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。</strong></p>]]></description>
+</item><item>
+    <title>k8s 部署 HTTP3  Nginx </title>
+    <link>https://kiosk007.top/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/</link>
+    <pubDate>Wed, 04 Aug 2021 22:56:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/</guid>
+    <description><![CDATA[<p>在之前的文章中介绍了如何编译<a href="https://kiosk007.top/2021/07/31/%E5%B0%9D%E8%AF%95-Nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8HTTP3/" target="_blank" rel="noopener noreffer">支持HTTP3的Nginx</a> 为了一键将H3 Nginx上云，一劳永逸，本文会记录一下容器化Nginx的过程。</p>]]></description>
+</item><item>
+    <title>ubuntu20.04 部署 Kubernetes (k8s)</title>
+    <link>https://kiosk007.top/post/ubuntu20-04-%E9%83%A8%E7%BD%B2-kubernetes-k8s/</link>
+    <pubDate>Fri, 24 Jul 2020 21:47:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/ubuntu20-04-%E9%83%A8%E7%BD%B2-kubernetes-k8s/</guid>
+    <description><![CDATA[<p>Kubernetes（k8s）是一个免费的开源容器编排工具。它用于部署，扩展和管理基于容器的应用程序。在这篇文章中，这里将演示如何安装Kubernetes集群的Ubuntu 20.04 LTS服务器使用（Focal Fossa）kubeadm。在实验室设置中，我使用了三台Ubuntu 20.04 LTS服务器。</p>]]></description>
+</item><item>
+    <title>docker 容器技术基础</title>
+    <link>https://kiosk007.top/post/docker-%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80/</link>
+    <pubDate>Sat, 11 Jul 2020 00:32:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>https://kiosk007.top/post/docker-%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80/</guid>
+    <description><![CDATA[<p><a href="https://hijiangtao.github.io/2018/04/17/Docker-in-Action/" target="_blank" rel="noopener noreffer">docker</a> 容器是随着PaaS技术的普及随之诞生的，Docker公司推出了docker并通过“容器镜像”解决了容器打包的根本性难题。而容器本身没有价值，有价值的是“容器编排技术”。Docker项目则通过容器技术解决了应用打包的根本性难题。</p>]]></description>
+</item></channel>
+</rss>
