@@ -43,7 +43,12 @@ date: 2022-08-08 23:41:26
   - [什么是 MVCC](/topic/interview/database/#什么是-mvcc)
   - [MySQL的日志 undo log \ redo log \ binlog](/topic/interview/database/#mysql的日志-undo-log--redo-log--binlog)
   - [什么是MySQL的两段式提交](/topic/interview/database/#什么是-mysql-的两段式提交为什么必须要两段式提交)
+  - [MySQL 索引为什么用B+树](/topic/interview/database/#mysql-索引为什么用b树)
   - [MySQL索引为什么会有最左前缀匹配原则](/topic/interview/database/#mysql索引为什么会有最左前缀匹配原则)
+- MySQL 其他类型题目链接 
+  - [MySQL 索引下推](https://juejin.cn/post/7005794550862053412)
+  - [前缀索引\倒序索引](https://time.geekbang.org/column/article/71492)
+  - [幻读](https://time.geekbang.org/column/article/75173)
 
 <br/>
 
@@ -454,15 +459,21 @@ MySQL 的 MVCC 通过版本链，实现多版本，可并发读-写，写-读。
 
 首先二叉树必须是平衡的才有比较高的查询效率，如果不平衡最差会退化成链表。
 
-B树是多叉树又名平衡多路查找树（查找路径不止两个）， 相对平衡二叉树在节点空间的利用率上进行了改进，B树在每个节点保存了更多的数据，减少了树的高度从而提升了查找的性能，使用B树的数据库，一般节点大小是4K，这是考虑到磁盘数据存储是采用块的形式存储，每个块大小为4K，每次对磁盘进行 IO 数据读取时，一个磁盘IO可以读取B树的一个节点。
+B树是多叉树又名平衡多路查找树（查找路径不止两个）， 相对平衡二叉树在节点空间的利用率上进行了改进，B树在每个节点保存了更多的数据，减少了树的高度从而提升了查找的性能，使用B树的数据库，一般节点大小是16K，这是考虑到磁盘数据存储是采用块的形式存储，每个块大小为16K，每次对磁盘进行 IO 数据读取时，一个磁盘IO可以读取B树的一个节点。
 
 B+树是对B树的一个改进。主要是查询的稳定性和数据排序方面更友好。
 
 B+树的非叶子节点不保存具体数据，之保存关键字的索引，而所有的数据最终会保存到叶子节点。
 
-其也自己诶点的关键字从小到大有序排列，左边结尾数据都会保存右边节点开始数据的指针，因为叶子节点都是有序排列的，所以B+树对数据的排序支持有着更好的支持。
+其关键字从小到大有序排列，左边结尾数据都会保存右边节点开始数据的指针，因为叶子节点都是有序排列的，所以B+树对数据的排序支持有着更好的支持。
 
 参考：[https://zhuanlan.zhihu.com/p/27700617](https://zhuanlan.zhihu.com/p/27700617) （里面有图，更助于理解）
+
+- B+树视频理解：[https://www.bilibili.com/video/BV1yB4y1v7Jy/?spm_id_from=pageDriver&vd_source=af544ba5c244ed2765ff78c8d2727eef](https://www.bilibili.com/video/BV1yB4y1v7Jy/?spm_id_from=pageDriver&vd_source=af544ba5c244ed2765ff78c8d2727eef)
+
+- 另外关于树的高度，一般来说一个千万量级数据的B+树树高就3-5 左右。(https://www.cnblogs.com/songpingyi/p/10730156.html)  B+ 树的深度比 AVL、红黑树低，所以对磁盘IO比较友好。
+
+- 树数据结构模拟: [https://www.cs.usfca.edu/~galles/visualization/Algorithms.html](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
 
 <br/>
 
