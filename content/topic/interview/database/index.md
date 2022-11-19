@@ -29,6 +29,9 @@ date: 2022-08-08 23:41:26
     - [Redis 有什么操作会导致其变慢](/topic/interview/database/#redis-有什么操作会导致其变慢)
     - [Redis 在时间序场景的应用](/topic/interview/database/#redis-在时间序场景的应用)
     - [Redis缓存失效](/topic/interview/database/#redis缓存失效)
+    - [Redis大Key问题](/topic/interview/database/#redis大key问题)
+  - [Redis集群](/topic/interview/database/#cluster)
+    - [Redis 集群 slot 如何选择](/topic/interview/database/#slot)
 - [Elasticsearch](/topic/interview/database/#elasticsearch)
   - [什么是倒排索引](/topic/interview/database/#什么是倒排索引)
   - [文档索引步骤顺序](/topic/interview/database/#文档索引步骤顺序)
@@ -262,6 +265,24 @@ ZRANGEBYSCORE task_id:traffic_stream 202208030905 202208030908
 
 <br/>
 
+### redis大key问题
+
+直接参考：[20道redis经典面试题](https://zhuanlan.zhihu.com/p/427496556)
+
+<br/>
+
+## cluster
+
+### slot 
+我们都知道在集群模式下key是需要进行路由的，那就需要有路由策略，Redis Cluster并没有使用一致性hash的方案,而是使用分配slot的方式进行key路由。
+
+其使用 crc16 做hash的方案。
+没有采用 一致性 hash 的主要原因是防止 宕机雪崩。
+
+参考：[Redis 集群为什么不采用一致性hash方案](https://www.jianshu.com/p/3f1c801b22ff)
+
+ 
+<br/>
 
 ## Elasticsearch
 
