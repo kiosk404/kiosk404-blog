@@ -50,3 +50,15 @@ To Be a Gopher !!!
 4. [Golang 详解内存对齐](https://segmentfault.com/a/1190000040528007)
 5. [Mutex：如何解决资源并发访问问题?](https://time.geekbang.org/column/article/294905)
 
+<br/>
+
+- 基础工具包
+
+并发检测
+
+``` bash
+$ go test -race mypkg
+$ go run -race mysrc.go
+$ go build -race mycmd
+$ go install -race mypkg
+```

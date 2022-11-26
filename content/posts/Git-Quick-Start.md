@@ -311,6 +311,70 @@ pick fa20af3 git interactive rebase, squash, amend
 1. git commit --amend：修改最近一次 commit 的 message;
 2. git rebase -i：修改某次 commit 的 message。
 
+<br/>
+
+# 提交冲突解决
+
+## 不同人修改了不同文件的处理
+
+这种最简单，直接 git pull 把源端的修改同步下来。
+
+git pull 不仅会拉下远端分支，还会将源端分支merge进我们的本地分支。
+
+其等于 git fetch github && git merge github/xxxxx
+
+
+
+<br/>
+
+## 不同人修改同文件的不同区域
+
+这时也是 git pull ，这时需要提交一些信息。
+
+git 会自动处理这种情况。
+
+<br/>
+
+## 不同人修改同文件的同一区域
+
+先使用 git pull 将远端内容拉下来。
+
+此时会报错
+
+```git
+From github.com:kiosk404/git_new_feature
+   d651f5..cfa2fca feature/2021 -> github/feature/2021
+Auto-merging index.html
+CONFLICT(content): Merge conflict in index.html
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+这时打开出现冲突的文件，如 index.html。选择如何处理保留情况
+
+```
+<<<<<<<<<<<< HEAD
+
+============
+
+>>>>>>>>>>>> ca234567bac345345555232799453bfacac
+```
+
+使用 git status 检查一下是否完成（肯定完成）
+
+生成一个新的 commit （git commit -am "xxxx"）
+
+> 如果不想合并了可以使用 git merge --abort
+
+最后 git push 
+
+<br/>
+
+## 同时变更了文件名和文件内容如何处理
+
+直接 git pull ，git 会自己识别并合并。并将文件名保持远端一样。
+
+<br/>
+
 
 
 

@@ -100,6 +100,8 @@ Redis 有两个全局 hash 表，当其中一个需要扩容时，将另一个�
 
 zset 是有序字典，自动去重的集合数据类型，其底层的实现为字典（dict）+ 跳表（skiplist）。
 
+[Redis 常见面试题](https://www.bilibili.com/video/BV1kh411x7Jc/?spm_id_from=333.337.search-card.all.click&vd_source=af544ba5c244ed2765ff78c8d2727eef)
+
 <br/>
 
 #### Redis 的 key 过期机制和淘汰原理
