@@ -27,19 +27,56 @@ mathjax: true
 - **接口隔离原则(Interface Segregation Principle, ISP)** : 客户端不应该依赖它不需要的接口。
 - **迪米特法则(Law of Demeter, LoD), 最少知识原则(Principle of Least Knowledge)** : 1. 每个对象应该对其他对象尽可能最少的知道 2. 每个对象应该仅和其朋友通信；不和陌生人通信 3. 仅仅和直接朋友通信
 
+<br/>
+
+设计模式按照类别分为三大类。**创建型模式**、**结构型模式**、**行为型模式**
+
+- **创建型模式**：
+  - :horse: [单例模式](/post/设计模式design-pattern/#单例模式-singleton)：让你能够保证一个类只有一个实例， 并提供一个访问该实例的全局节点。
+  - :fox_face: [工厂模式](/post/设计模式design-pattern/#工厂模式-factory)：让你能创建一系列相关的对象， 而无需指定其具体类。
+  - :sheep: [建造者模式](/post/设计模式design-pattern/#建造者模式builder)：使你能够分步骤创建复杂对象。 该模式允许你使用相同的创建代码生成不同类型和形式的对象。
+  - 🐫 [原型模式](/post/设计模式design-pattern/#原型模式prototype)：让你能够复制已有对象， 而又无需使代码依赖它们所属的类。
+- **结构型模式**：
+  - 🐃 [代理模式](/post/设计模式design-pattern/#代理模式-proxy)：让你能够提供对象的替代品或其占位符。 代理控制着对于原对象的访问， 并允许在将请求提交给对象前后进行一些处理。**(适合对基础库的再封装)**
+  - 🦁[桥接模式](/post/设计模式design-pattern/#桥接模式-bridge)：可将一个大类或一系列紧密相关的类拆分为抽象和实现两个独立的层次结构， 从而能在开发时分别使用。
+  - 🐻 [装饰器模式](/post/设计模式design-pattern/#装饰器模式-decorator)：允许你通过将对象放入包含行为的特殊封装对象中来为原对象绑定新的行为。**(也适合对基础库的二次在封装，加自己的逻辑)**
+  - 🐏 [适配器模式](/post/设计模式design-pattern/#适配器模式-adapter)：让接口不兼容的对象能够相互合作。**(不兼容接口的适配)**
+  - 🐨 [外观模式](/post/设计模式design-pattern/#外观模式-facade)：能为程序库、 框架或其他复杂类提供一个简单的接口。
+  - 🦌[享元模式](/post/设计模式design-pattern/#享元模式-flyweight)：摒弃了在每个对象中保存所有数据的方式， 通过共享多个对象所共有的相同状态， 让你能在有限的内存容量中载入更多对象。**(大量重复对象创建)**
+  - 🐒[组合模式](/post/设计模式design-pattern/#组合模式-composite)：你可以使用它将对象组合成树状结构， 并且能像使用独立对象一样使用它们。**(将属性类似的对象封装进行相同的操作)**
+- **行为型模式**：
+  - 🐄 [观察者模式](/post/设计模式design-pattern/#观察者模式-observe)：允许你定义一种订阅机制， 可在对象事件发生时通知多个 “观察” 该对象的其他对象。**（类似消息队列的 订阅机制）**
+  - 🐪 [模板方法模式](/post/设计模式design-pattern/#模板方法模式-template)：在超类中定义一个算法的框架， 允许子类在不修改结构的情况下重写算法的特定步骤。**(按照模板运行某个固定业务逻辑，如发通知)**
+  - 🦉 [命令模式](/post/设计模式design-pattern/#命令模式-command)：它可将请求转换为一个包含与请求相关的所有信息的独立对象。 该转换让你能根据不同的请求将方法参数化、 延迟请求执行或将其放入队列中， 且能实现可撤销操作。
+  - 🦃[策略模式](/post/设计模式design-pattern/#策略模式-strategy)：能让你定义一系列算法， 并将每种算法分别放入独立的类中， 以使算法的对象能够相互替换。
+  - 🐬[责任链模式](/post/设计模式design-pattern/#职责链条模式chain-of-responsibility)：允许你将请求沿着处理者链进行发送。 收到请求后， 每个处理者均可对请求进行处理， 或将其传递给链上的下个处理者。
+  - 🐌[访问者模式](/post/设计模式design-pattern/#访问者模式-visitor)：将算法与其所作用的对象隔离开来。
+  - 🐛[迭代器模式](/post/设计模式design-pattern/#迭代器模式-iterator)：让你能在不暴露集合底层表现形式 （列表、 栈和树等） 的情况下遍历集合中所有的元素。**（适合明确的栈、队列等数据结构的封装）**
+  - 🐙 [中介者模式](/post/设计模式design-pattern/#中介者模式-meiator)：能让你减少对象之间混乱无序的依赖关系。 该模式会限制对象之间的直接交互， 迫使它们通过一个中介者对象进行合作。**（适合资源调度类场景）**
+  - 🐜 [状态模式](/post/设计模式design-pattern/#状态模式-state)：让你能在一个对象的内部状态变化时改变其行为， 使其看上去就像改变了自身所属的类一样。**(适合状态机调度)**
+  - 🐝 [备忘录模式](/post/设计模式design-pattern/#备忘录-memento)：允许在不暴露对象实现细节的情况下保存和恢复对象之前的状态。**(类似游戏存档)**
+
+<br/>
+
 --------------------
 
 
-# 创建型
+# 创建型模式
 ## 单例模式 (Singleton)
 
+:horse: ：**让你能够保证一个类只有一个实例， 并提供一个访问该实例的全局节点**。
 
-- <font color='#200000'>定义以及使用场景</font>
+------
+
+
+
+
+- <font color='#808080'>定义以及使用场景</font>
 
 1. 确保某一个类只有一个实例，而且向整个系统提供这个实例
 2. 确保某个类有且仅有一个对象的场景，避免产生多个对象消耗过多的资源；或者某种类型的对象应该有且只有一个。（如 Logger 实例、Config 实例等）
 
-- <font color='#200000'>实现单例模式的几个关键点</font>
+- <font color='#808080'>实现单例模式的几个关键点</font>
 
 1. 构造函数不对外开放，一般为private
 2. 通过一个静态方法或者枚举返回单例类对象
@@ -47,7 +84,7 @@ mathjax: true
 4. 确保单例类对象在反序列化时不会重新构建对象
 
 
-- <font color='#200000'>饥汉模式</font>
+- <font color='#808080'>饥汉模式</font>
 
 直接创建好对象，这样不需要判断为空，同时也是线程安全。唯一的缺点是在导入包的同时会创建该对象，并持续占有在内存中。
 
@@ -59,7 +96,7 @@ func GetInstance() *Tool {
 }
 ```
 
-- <font color='#200000'> 懒汉模式 (Lazy Loading) </font>
+- <font color='#808080'> 懒汉模式 (Lazy Loading) </font>
 
 只有需要时才会初始化，在一定程度上节约了资源。如果不加锁的话非线程安全，即在多线程下可能会创建多次对象。**懒汉方式是开源项目中使用最多的**
 
@@ -80,7 +117,7 @@ func GetInstance() *singleton {
 }
 ```
 
-- <font color='#200000'> DCL(双重检查)模式 (推荐) </font>
+- <font color='#808080'> DCL(双重检查)模式 (推荐) </font>
 
 DCL的优点就是资源利用率高，只有第一次执行getInstance才会初始化。
 
@@ -118,12 +155,18 @@ func GetInstance() *Tool {
 	})
     return instance
 }
-``` 
+```
+
+<br/>
 
 
+## 工厂模式 (Factory)
+
+:fox_face: ：**让你能创建一系列相关的对象， 而无需指定其具体类**
+
+-----
 
 
-## 工厂方法模式(Factory method)
 
 - <font color='#808080'> 定义以及使用场景</font>
 
@@ -141,7 +184,7 @@ func GetInstance() *Tool {
 
 假设我们在做一款小型翻译软件，软件可以将德语、英语、日语都翻译成目标中文，并显示在前端。
 
-- <font color='#200000'> 简单工厂模式 </font>
+-  <font color='#808080'>简单工厂模式 </font>
 
 我们会有三个具体的语言翻译结构体，或许以后还有更多，但现在分别是GermanTranslater、EnglishTranslater、JapaneseTranslater，他们都共同实现了一个接口Translator。
 
@@ -240,11 +283,18 @@ func CreateTranslator(lan int) Translator {
 
 --------------------
 
+<br/>
 
 ## 建造者模式(Builder)
 
+:sheep: ：**使你能够分步骤创建复杂对象。 该模式允许你使用相同的创建代码生成不同类型和形式的对象**。
 
-- **定义以及使用场景** 
+-----
+
+
+
+
+- <font color='#808080'>定义以及使用场景</font>
 
 将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。
 
@@ -260,7 +310,7 @@ func CreateTranslator(lan int) Translator {
 > **ConcreteBuilder** 具体的Builder类
 > **Director** 统一组装过程
 
-- **举个例子** 
+- <font color='#808080'>举个例子</font> 
 
 我们需要创建汽车，而汽车有轮胎的个数以及车身的颜色可定制，那么用Builder模式可以这样。
 
@@ -271,10 +321,11 @@ func CreateTranslator(lan int) Translator {
 type Car struct {
 	Wheels 	string
 	Chassis string
+    Logo    string
 }
 
 func (c *Car) Show() {
-	fmt.Println("Builder Complete ...")
+	fmt.Printf("Logo %s Builder Complete ...\n", c.Logo)
 	fmt.Printf("Wheels : %s Chassis: %s \n", c.Wheels, c.Chassis)
 }
 ```
@@ -289,29 +340,43 @@ type Builder interface {
 	BuildChassis()    	// 建造底盘
 	GetResult() interface{}  // 获取建造好的产品
 }
+
+func getCarBuilder(logo string) Builder {
+    if logo == "tesla" {
+        return newTslaCarBuilder()
+    }
+    if logo == "byd" {
+        return newBydCarBuilder()
+    }
+    return nil
+}
 ```
 
-按照Builder规划一个大型项目构造者CarBuilder, 包含如何具体实现Build
+按照Builder规划一个大型项目构造者TeslaCarBuilder, 包含如何具体实现Build
 
 ``` go
 // 定义汽车建造项目 CarBuilder
-type CarBuilder struct {
+type TeslaCarBuilder struct {
 	Car *Car
 }
 
-func (cb *CarBuilder) GetResult() interface{} {
+func NewTeslaCarBuilder() *TeslaCarBuilder {
+	return &TeslaCarBuilder{}
+}
+
+func (cb *TeslaCarBuilder) GetResult() interface{} {
 	return cb.Car
 }
 
-func (cb *CarBuilder) NewProduct() {
-	cb.Car = new(Car)
+func (cb *TeslaCarBuilder) NewProduct() {
+	cb.Car = &Car{Logo: "tesla"}
 }
 
-func (cb *CarBuilder) BuildWheels() {
+func (cb *TeslaCarBuilder) BuildWheels() {
 	cb.Car.Wheels = "米其林轮胎"
 }
 
-func (cb *CarBuilder) BuildChassis() {
+func (cb *TeslaCarBuilder) BuildChassis() {
 	cb.Car.Chassis = "沃尔沃底盘"
 }
 ```
@@ -348,7 +413,7 @@ func main() {
 	// 创建一个指挥者
 	director := new(Director)
 	// 创建建造者
-	builder := new(CarBuilder)
+	builder := getCarBuilder("tesla")
 
 	director.SetBuilder(builder)
 	car := director.CarBuilderImpl()
@@ -358,8 +423,15 @@ func main() {
 
 --------------------
 
+<br/>
 
 ## 原型模式(Prototype)
+
+:camel: ：**让你能够复制已有对象， 而又无需使代码依赖它们所属的类。**
+
+-----
+
+
 
 
 - <font color='#808080'>定义以及使用场景</font>
@@ -375,7 +447,7 @@ func main() {
 3. 一个对象需要提供给其他对象访问，而且各个调用者可能需要修改其值时，可以考虑使用原型模式拷贝多个对象供调用者使用，即保护性拷贝
 
 
-- <font color='#200000'>举个例子</font>
+- <font color='#808080'>举个例子</font>
 
 定义一个原型管理器
 
@@ -458,9 +530,17 @@ func main() {
 
 ----
 
-# 结构型
+<br/>
+
+# 结构型模式
 
 ## 代理模式 (Proxy)
+
+:water_buffalo: ：**让你能够提供对象的替代品或其占位符。 代理控制着对于原对象的访问， 并允许在将请求提交给对象前后进行一些处理。**(适合对基础库的再封装)
+
+-----
+
+
 
 - <font color='#808080'> 定义以及使用场景 </font>
 
@@ -529,12 +609,113 @@ func Test_UserLogin() {
 }
 ```
 
-
 ---------------------
 
+<br/>
 
+代理对象拥有和服务对象相同的接口， 这使得当其被传递给客户端时可与真实对象互换。
+
+**再来一个例子**
+
+Nginx 这样的 Web 服务器可充当应用程序的代理：1. 提供了对应用程序服务器的受控访问权限。2. 可限制速度。3. 可缓存请求。
+
+server.go : 主体
+
+```go
+type server interface {
+	handleRequest(url, method string) (int, string)
+}
+```
+
+
+
+nginx.go : 代理
+
+```go
+type Nginx struct {
+    application       *Application
+    maxAllowedRequest int
+    rateLimiter       map[string]int
+}
+
+func newNginxServer() *Nginx {
+    return &Nginx{
+        application:       &Application{},
+        maxAllowedRequest: 2,
+        rateLimiter:       make(map[string]int),
+    }
+}
+
+func (n *Nginx) handleRequest(url, method string) (int, string) {
+    allowed := n.checkRateLimiting(url)
+    if !allowed {
+        return 403, "Not Allowed"
+    }
+    return n.application.handleRequest(url, method)
+}
+
+func (n *Nginx) checkRateLimiting(url string) bool {
+    if n.rateLimiter[url] == 0 {
+        n.rateLimiter[url] = 1
+    }
+    if n.rateLimiter[url] > n.maxAllowedRequest {
+        return false
+    }
+    n.rateLimiter[url] = n.rateLimiter[url] + 1
+    return true
+}
+```
+
+
+
+application.go ：真实主体
+
+```go
+type Application struct {
+}
+
+func (a *Application) handleRequest(url, method string) (int, string) {
+    if url == "/app/status" && method == "GET" {
+        return 200, "Ok"
+    }
+
+    if url == "/create/user" && method == "POST" {
+        return 201, "User Created"
+    }
+    return 404, "Not Ok"
+}
+```
+
+
+
+main.go : 客户端代码
+
+```go
+func main() {
+
+    nginxServer := newNginxServer()
+    appStatusURL := "/app/status"
+    createuserURL := "/create/user"
+
+    httpCode, body := nginxServer.handleRequest(appStatusURL, "GET")
+    fmt.Printf("\nUrl: %s\nHttpCode: %d\nBody: %s\n", appStatusURL, httpCode, body)
+
+    httpCode, body = nginxServer.handleRequest(appStatusURL, "GET")
+    fmt.Printf("\nUrl: %s\nHttpCode: %d\nBody: %s\n", appStatusURL, httpCode, body)
+}
+```
+
+
+
+<br/>
 
 ## 桥接模式 (Bridge)
+
+:lion: ：**可将一个大类或一系列紧密相关的类拆分为抽象和实现两个独立的层次结构， 从而能在开发时分别使用。**
+
+-----
+
+
 
 - <font color='#808080'> 定义以及使用场景 </font> 
 
@@ -542,10 +723,7 @@ func Test_UserLogin() {
 
 **使用场景**
 
-1. 抽象化（Abstraction）角色：定义抽象类，并包含一个对实现化对象的引用。
-2. 扩展抽象化（Refined Abstraction）角色：是抽象化角色的子类，实现父类中的业务方法，并通过组合关系调用实现化角色中的业务方法。
-3. 实现化（Implementor）角色：定义实现化角色的接口，供扩展抽象化角色调用。
-4. 具体实现化（Concrete Implementor）角色：给出实现化角色接口的具体实现。
+层次结构中的第一层 （通常称为抽象部分） 将包含对第二层 （实现部分） 对象的引用。 抽象部分将能将一些 （有时是绝大部分） 对自己的调用委派给实现部分的对象。 所有的实现部分都有一个通用接口， 因此它们能在抽象部分内部相互替换。
 
 ``` go
 package bridge
@@ -606,15 +784,126 @@ func TestErrorNotification_Notify(t *testing.T) {
 ```
 
 
---------------------
+
+**再举个例子**
+
+假设有两台电脑：一台 Mac 和 一台 Windows。还有两台打印机：爱普生和惠普。这两台电脑和打印机可能会任意组合使用，客户端不应去担心打印机连接至计算机的细节问题。
+
+- 抽象层：代表计算机
+- 实施层：代表打印机
+
+
+
+computer.go ：抽象
+
+```go
+type Computer interface {
+    Print()
+    SetPrinter(Printer)
+}
+
+// Mac 的精确抽象
+type Mac struct {
+    printer Printer
+}
+
+func (m *Mac) Print() {
+    fmt.Println("Print request for mac")
+    m.printer.PrintFile()
+}
+
+func (m *Mac) SetPrinter(p Printer) {
+    m.printer = p
+}
+
+// Windows 的精确抽象
+type Windows struct {
+    printer Printer
+}
+
+func (w *Windows) Print() {
+    fmt.Println("Print request for windows")
+    w.printer.PrintFile()
+}
+
+func (w *Windows) SetPrinter(p Printer) {
+    w.printer = p
+}
+```
+
+
+
+printer.go ：实施
+
+```go
+type Printer interface {
+    PrintFile()
+}
+
+// 爱普生的具体实施
+type Epson struct {
+}
+
+func (p *Epson) PrintFile() {
+    fmt.Println("Printing by a EPSON Printer")
+}
+
+// 惠普的具体实施
+type Hp struct {
+}
+
+func (p *Hp) PrintFile() {
+    fmt.Println("Printing by a HP Printer")
+}
+```
+
+
+
+main.go ：客户端代码
+
+```go
+func main() {
+
+    hpPrinter := &Hp{}
+    epsonPrinter := &Epson{}
+
+    macComputer := &Mac{}
+
+    macComputer.SetPrinter(hpPrinter)
+    macComputer.Print()
+    fmt.Println()
+
+    macComputer.SetPrinter(epsonPrinter)
+    macComputer.Print()
+    fmt.Println()
+
+    winComputer := &Windows{}
+
+    winComputer.SetPrinter(hpPrinter)
+    winComputer.Print()
+    fmt.Println()
+
+    winComputer.SetPrinter(epsonPrinter)
+    winComputer.Print()
+    fmt.Println()
+}
+```
+
+<br/>
+
 
 
 ## 装饰器模式 (Decorator)
 
+:bear: ：**允许你通过将对象放入包含行为的特殊封装对象中来为原对象绑定新的行为。**
+
+----
+
+
+
 - <font color='#808080'>定义以及使用场景</font>
 装饰器（Decorator）模式的定义：指在不改变现有对象结构的情况下，动态地给该对象增加一些职责（即增加其额外功能）的模式，它属于对象结构型模式。
-
-- **使用场景**
+- <font color='#808080'>使用场景</font>
 在软件开发过程中，有时想用一些现存的组件。这些组件可能只是完成了一些核心功能。但在不改变其结构的情况下，可以动态地扩展其功能。所有这些都可以釆用装饰器模式来实现。
 
 ``` go
@@ -660,14 +949,94 @@ func Test_Decorator() {
 }
 ```
 
+**再举个例子：**
 
+由于目标对象和装饰器遵循同一接口， 因此你可用装饰来对对象进行无限次的封装。 结果对象将获得所有封装器叠加而来的行为。
+
+
+
+pizza.go ：零件接口
+
+```go
+type IPizza interface {
+    getPrice() int
+}
+
+// 具体装饰
+type VeggeMania struct {
+}
+
+func (p *VeggeMania) getPrice() int {
+    return 15
+}
+```
+
+
+
+topping.go ：装饰
+
+```go
+// 西红柿酱
+type TomatoTopping struct {
+    pizza IPizza
+}
+
+func (c *TomatoTopping) getPrice() int {
+    pizzaPrice := c.pizza.getPrice()
+    return pizzaPrice + 7
+}
+
+// 奶酪酱
+type CheeseTopping struct {
+    pizza IPizza
+}
+
+func (c *CheeseTopping) getPrice() int {
+    pizzaPrice := c.pizza.getPrice()
+    return pizzaPrice + 10
+}
+```
+
+
+
+main.go ：客户端代码
+
+```go
+func main() {
+
+    pizza := &VeggeMania{}
+
+    //Add cheese topping
+    pizzaWithCheese := &CheeseTopping{
+        pizza: pizza,
+    }
+
+    //Add tomato topping
+    pizzaWithCheeseAndTomato := &TomatoTopping{
+        pizza: pizzaWithCheese,
+    }
+
+    fmt.Printf("Price of veggeMania with tomato and cheese topping is %d\n", pizzaWithCheeseAndTomato.getPrice())
+}
+```
+
+
+
+
+
+<br/>
 
 ## 适配器模式 (Adapter)
 
+:ram: ：**让接口不兼容的对象能够相互合作。**
+
+-----
+
+
+
 - <font color='#808080'>定义以及使用场景</font>
 适配器模式（Adapter）的定义如下：将一个类的接口转换成客户希望的另外一个接口，使得原本由于接口不兼容而不能一起工作的那些类能一起工作。适配器模式分为类结构型模式和对象结构型模式两种，前者类之间的耦合度比后者高，且要求程序员了解现有组件库中的相关组件的内部结构，所以应用相对较少些。
-
-- **使用场景**
+- <font color='#808080'>使用场景</font>
 
 需要开发的具有某种业务功能的组件在现有的组件库中已经存在，但它们与当前系统的接口规范不兼容，如果重新开发这些组件成本又很高，这时用适配器模式能很好地解决这些问题。
 
@@ -735,14 +1104,106 @@ func Test_Adapter(t *testing.T) {
 
 
 
+**再举个例子**
 
-## 门面模式 (Facade)
+我们为 Windows 和 Mac 进行充电，但是 Windows 是 USB 充电，Mac 是 Lightning 充电。但现在只有 lightning 接口，就需要 Windows 适配一下 lightning 接口
+
+
+
+client.go ：客户端代码
+
+```go
+type Client struct {
+}
+
+func (c *Client) InsertLightningConnectorIntoComputer(com Computer) {
+    fmt.Println("Client inserts Lightning connector into computer.")
+    com.InsertIntoLightningPort()
+}
+```
+
+
+
+computer.go ：客户端接口
+
+```go
+type Computer interface {
+    InsertIntoLightningPort()
+}
+```
+
+
+
+mac.go ：Mac 接口实现
+
+```go
+type Mac struct {
+}
+
+func (m *Mac) InsertIntoLightningPort() {
+    fmt.Println("Lightning connector is plugged into mac machine.")
+}
+```
+
+windows.go ：Windows 接口实现
+
+```go
+type Windows struct{}
+
+func (w *Windows) insertIntoUSBPort() {
+    fmt.Println("USB connector is plugged into windows machine.")
+}
+
+// Windows 适配器
+type WindowsAdapter struct {
+    windowMachine *Windows
+}
+
+func (w *WindowsAdapter) InsertIntoLightningPort() {
+    fmt.Println("Adapter converts Lightning signal to USB.")
+    w.windowMachine.insertIntoUSBPort()
+}
+```
+
+main.go
+
+```go
+func main() {
+
+    client := &Client{}
+    mac := &Mac{}
+
+    client.InsertLightningConnectorIntoComputer(mac)
+
+    windowsMachine := &Windows{}
+    windowsMachineAdapter := &WindowsAdapter{
+        windowMachine: windowsMachine,
+    }
+
+    client.InsertLightningConnectorIntoComputer(windowsMachineAdapter)
+}
+```
+
+
+
+<br/>
+
+
+
+
+## 外观模式 (Facade)
+
+:koala: ：**能为程序库、 框架或其他复杂类提供一个简单的接口。**
+
+----
+
+
 
 - <font color='#808080'>定义以及使用场景</font>
 
 外观（Facade）模式又叫作门面模式，是一种通过为多个复杂的子系统提供一个一致的接口，而使这些子系统更加容易被访问的模式。该模式对外有一个统一接口，外部应用程序不用关心内部子系统的具体细节，这样会大大降低应用程序的复杂度，提高了程序的可维护性。
 
-- **使用场景**
+- <font color='#808080'>使用场景</font>
 
 我们都在有意无意的大量使用外观模式。只要是高层模块需要调度多个子系统（2个以上的类对象），我们都会自觉地创建一个新的类封装这些子系统，提供精简的接口，让高层模块可以更加容易地间接调用这些子系统的功能。尤其是现阶段各种第三方SDK、开源类库，很大概率都会使用外观模式。
 
@@ -808,10 +1269,219 @@ func TestUserService_LoginOrRegister(t *testing.T) {
 
 ```
 
+<br/>
+
+**再举个例子**
+
+[https://refactoringguru.cn/design-patterns/facade/go/example#example-0](https://refactoringguru.cn/design-patterns/facade/go/example#example-0)
+
+人们很容易低估使用信用卡订购披萨时幕后工作的复杂程度。 在整个过程中会有不少的子系统发挥作用。 下面是其中的一部分：
+
+- 检查账户
+- 检查安全码
+- 借记/贷记余额
+- 账簿录入
+- 发送消息通知
+
+我们需要将这个复杂的步骤简化，就需要外观模式
 
 
 
-## 享元模式
+walletFacade.go ：外观
+
+```go
+type WalletFacade struct {
+    account      *Account
+    wallet       *Wallet
+    securityCode *SecurityCode
+    notification *Notification
+    ledger       *Ledger
+}
+
+func newWalletFacade(accountID string, code int) *WalletFacade {
+    fmt.Println("Starting create account")
+    walletFacacde := &WalletFacade{
+        account:      newAccount(accountID),
+        securityCode: newSecurityCode(code),
+        wallet:       newWallet(),
+        notification: &Notification{},
+        ledger:       &Ledger{},
+    }
+    fmt.Println("Account created")
+    return walletFacacde
+}
+
+func (w *WalletFacade) addMoneyToWallet(accountID string, securityCode int, amount int) error {
+    fmt.Println("Starting add money to wallet")
+    err := w.account.checkAccount(accountID)
+    if err != nil {
+        return err
+    }
+    err = w.securityCode.checkCode(securityCode)
+    if err != nil {
+        return err
+    }
+    w.wallet.creditBalance(amount)
+    w.notification.sendWalletCreditNotification()
+    w.ledger.makeEntry(accountID, "credit", amount)
+    return nil
+}
+
+func (w *WalletFacade) deductMoneyFromWallet(accountID string, securityCode int, amount int) error {
+    fmt.Println("Starting debit money from wallet")
+    err := w.account.checkAccount(accountID)
+    if err != nil {
+        return err
+    }
+
+    err = w.securityCode.checkCode(securityCode)
+    if err != nil {
+        return err
+    }
+    err = w.wallet.debitBalance(amount)
+    if err != nil {
+        return err
+    }
+    w.notification.sendWalletDebitNotification()
+    w.ledger.makeEntry(accountID, "credit", amount)
+    return nil
+}
+```
+
+account.go ： 复杂子系统的组成部分
+
+```go
+type Account struct {
+    name string
+}
+
+func newAccount(accountName string) *Account {
+    return &Account{
+        name: accountName,
+    }
+}
+
+func (a *Account) checkAccount(accountName string) error {
+    if a.name != accountName {
+        return fmt.Errorf("Account Name is incorrect")
+    }
+    fmt.Println("Account Verified")
+    return nil
+}
+```
+
+securityCode.go ：复杂子系统的组成部分
+
+```go
+type SecurityCode struct {
+    code int
+}
+
+func newSecurityCode(code int) *SecurityCode {
+    return &SecurityCode{
+        code: code,
+    }
+}
+
+func (s *SecurityCode) checkCode(incomingCode int) error {
+    if s.code != incomingCode {
+        return fmt.Errorf("Security Code is incorrect")
+    }
+    fmt.Println("SecurityCode Verified")
+    return nil
+}
+```
+
+wallet.go ：复杂子系统的组成部分
+
+```go
+type Wallet struct {
+    balance int
+}
+
+func newWallet() *Wallet {
+    return &Wallet{
+        balance: 0,
+    }
+}
+
+func (w *Wallet) creditBalance(amount int) {
+    w.balance += amount
+    fmt.Println("Wallet balance added successfully")
+    return
+}
+
+func (w *Wallet) debitBalance(amount int) error {
+    if w.balance < amount {
+        return fmt.Errorf("Balance is not sufficient")
+    }
+    fmt.Println("Wallet balance is Sufficient")
+    w.balance = w.balance - amount
+    return nil
+}
+```
+
+ledger.go ：复杂子系统的组成部分
+
+```go
+type Ledger struct {
+}
+
+func (s *Ledger) makeEntry(accountID, txnType string, amount int) {
+    fmt.Printf("Make ledger entry for accountId %s with txnType %s for amount %d\n", accountID, txnType, amount)
+    return
+}
+```
+
+notification.go ：复杂子系统的组成部分
+
+```go
+type Notification struct {
+}
+
+func (n *Notification) sendWalletCreditNotification() {
+    fmt.Println("Sending wallet credit notification")
+}
+
+func (n *Notification) sendWalletDebitNotification() {
+    fmt.Println("Sending wallet debit notification")
+}
+```
+
+main.go ：客户端代码
+
+```go
+func main() {
+    fmt.Println()
+    walletFacade := newWalletFacade("abc", 1234)
+    fmt.Println()
+
+    err := walletFacade.addMoneyToWallet("abc", 1234, 10)
+    if err != nil {
+        log.Fatalf("Error: %s\n", err.Error())
+    }
+
+    fmt.Println()
+    err = walletFacade.deductMoneyFromWallet("abc", 1234, 5)
+    if err != nil {
+        log.Fatalf("Error: %s\n", err.Error())
+    }
+}
+```
+
+
+
+
+
+
+
+<br/>
+
+
+
+## 享元模式 (Flyweight)
+
+:deer:：**摒弃了在每个对象中保存所有数据的方式， 通过共享多个对象所共有的相同状态， 让你能在有限的内存容量中载入更多对象。**
 
 
 - <font color='#808080'>定义以及使用场景</font>
@@ -820,7 +1490,7 @@ func TestUserService_LoginOrRegister(t *testing.T) {
 
 享元模式的主要优点是：相同对象只要保存一份，这降低了系统中对象的数量，从而降低了系统中细粒度对象给内存带来的压力。
 
-- **使用场景**
+- <font color='#808080'>使用场景</font>
 
 在面向对象程序设计过程中，有时会面临要创建大量相同或相似对象实例的问题。创建那么多的对象将会耗费很多的系统资源，它是系统性能提高的一个瓶颈。
 
@@ -898,20 +1568,132 @@ func TestNewChessBoard(t *testing.T) {
 
 	assert.Equal(t, board1.chessPieces[1].Unit, board2.chessPieces[1].Unit)
 	assert.Equal(t, board1.chessPieces[2].Unit, board2.chessPieces[2].Unit)
+
+```
+
+
+
+<br/>
+
+## 组合模式 (Composite)
+
+:monkey: ：**你可以使用它将对象组合成树状结构， 并且能像使用独立对象一样使用它们。**
+
+------
+
+
+
+- <font color='#808080'> 定义以及使用场景 </font>
+
+对于绝大多数需要生成树状结构的问题来说， 组合都是非常受欢迎的解决方案。 组合最主要的功能是在整个树状结构上递归调用方法并对结果进行汇总。
+
+- <font color='#808080'>使用场景</font>
+
+需要对 对象和其子对象同时进行一些操作时。
+
+
+
+**举个例子**
+
+[https://refactoringguru.cn/design-patterns/composite/go/example#example-0](https://refactoringguru.cn/design-patterns/composite/go/example#example-0)
+
+这里用一个操作系统文件系统的例子来理解组合模式，文件系统中有两种类型的对象：文件和文件夹。在某些情形下，文件和文件夹应被视为相同的对象。这就是组合模式发挥作用的时候了。
+
+想象一下，当需要在文件系统中搜索关键字，而这个搜索操作需要同时作用于文件和文件夹上。对文件而言，只会查看文件的内容，对于文件夹而言则会在其内部的文件中查找关键字。
+
+
+
+file.go  ：组件接口
+
+```go
+type File struct {
+    name string
+}
+
+func (f *File) search(keyword string) {
+	fmt.Printf("Searching for keyword %s in file %s\n", keyword, f.name)
+}
+
+func (f *File) getName() string {
+    return f.name
+}
+```
+
+folder.go ：组合
+
+```go
+type Folder struct {
+    components []Component
+    name       string
+}
+
+func (f *Folder) search(keyword string) {
+    fmt.Printf("Serching recursively for keyword %s in folder %s\n", keyword, f.name)
+    for _, composite := range f.components {
+        composite.search(keyword)
+    }
+}
+
+func (f *Folder) add(c Component) {
+    f.components = append(f.components, c)
+}
+```
+
+component.go ：叶子
+
+```go
+type Component interface {
+    search(string)
+}
+```
+
+main.go ：客户端代码
+
+```go
+func main() {
+    file1 := &File{name: "File1"}
+    file2 := &File{name: "File2"}
+    file3 := &File{name: "File3"}
+
+    folder1 := &Folder{
+        name: "Folder1",
+    }
+
+    folder1.add(file1)
+
+    folder2 := &Folder{
+        name: "Folder2",
+    }
+    folder2.add(file2)
+    folder2.add(file3)
+    folder2.add(folder1)
+
+    folder2.search("rose")
 }
 ```
 
 
 
+<br/>
 
-# 行为型
+
+
+
+# 行为型模式
+
+
 
 ## 观察者模式 (Observe)
 
+:cow2: ：**允许你定义一种订阅机制， 可在对象事件发生时通知多个 “观察” 该对象的其他对象。**（类似消息队列的 订阅机制）
+
+-----
+
+
+
 - <font color='#808080'> 定义以及使用场景 </font>
 观察者（Observer）模式的定义：指多个对象间存在一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都得到通知并被自动更新。这种模式有时又称作发布-订阅模式、模型-视图模式，它是对象行为型模式。
-
-- **使用场景**
+- <font color='#808080'>使用场景</font>
 
 例如，Excel 中的数据与折线图、饼状图、柱状图之间的关系；MVC 模式中的模型与视图的关系；事件模型中的事件源与事件处理者。所有这些，如果用观察者模式来实现就非常方便。
 
@@ -982,13 +1764,23 @@ func TestNewChessBoard(t *testing.T) {
 }
 ```
 
-## 模板方法模式 (Template Method)
+<br/>
+
+
+
+## 模板方法模式 (Template)
+
+:dromedary_camel: ：**在超类中定义一个算法的框架， 允许子类在不修改结构的情况下重写算法的特定步骤。**
+
+----
+
+
 
 - <font color='#808080'> 定义以及使用场景 </font>
 
 模板方法（Template Method）模式的定义如下：定义一个操作中的算法骨架，而将算法的一些步骤延迟到子类中，使得子类可以不改变该算法结构的情况下重定义该算法的某些特定步骤。它是一种类行为型模式。
 
-**使用场景**
+- <font color='#808080'>使用场景</font>
 
 例如，一个人每天会起床、吃饭、做事、睡觉等，其中“做事”的内容每天可能不同。我们把这些规定了流程或格式的实例定义成模板，允许使用者根据自己的需求去更新它，例如，简历模板、论文模板、Word 中模板文件等。
 
@@ -1060,16 +1852,144 @@ func Test_sms_Send(t *testing.T) {
 	err := tel.Send("test", 1239999)
 	assert.NoError(t, err)
 }
-``` 
+```
+
+<br/>
+
+**再举个例子**
+
+让我们来考虑一个一次性密码功能 （OTP） 的例子。 将 OTP 传递给用户的方式多种多样 （短信、 邮件等）。 但无论是短信还是邮件， 整个 OTP 流程都是相同的：
+
+1. 生成随机的 n 位数字
+2. 在缓存中保存这组数字，以便进行后续的验证。
+3. 准备内容
+4. 发送通知
+
+后续引入的任何新 OTP 类型都很有可能需要进行相同的上述步骤。因此正适合考虑使用模板模式
+
+opt.go ：模板方法
+
+```go
+type IOtp interface {
+    genRandomOTP(int) string
+    saveOTPCache(string)
+    getMessage(string) string
+    sendNotification(string) error
+}
+
+type Otp struct {
+    iOtp IOtp
+}
+
+func (o *Otp) genAndSendOTP(otpLength int) error {
+    otp := o.iOtp.genRandomOTP(otpLength)
+    o.iOtp.saveOTPCache(otp)
+    message := o.iOtp.getMessage(otp)
+    err := o.iOtp.sendNotification(message)
+    if err != nil {
+        return err
+    }
+    return nil
+}
+```
+
+sms.go ：具体实施
+
+```go
+type Sms struct {
+    Otp
+}
+
+func (s *Sms) genRandomOTP(len int) string {
+    randomOTP := "1234"
+    fmt.Printf("SMS: generating random otp %s\n", randomOTP)
+    return randomOTP
+}
+
+func (s *Sms) saveOTPCache(otp string) {
+    fmt.Printf("SMS: saving otp: %s to cache\n", otp)
+}
+
+func (s *Sms) getMessage(otp string) string {
+    return "SMS OTP for login is " + otp
+}
+
+func (s *Sms) sendNotification(message string) error {
+    fmt.Printf("SMS: sending sms: %s\n", message)
+    return nil
+}
+```
+
+email.go ：具体实施
+
+````go
+type Email struct {
+    Otp
+}
+
+func (s *Email) genRandomOTP(len int) string {
+    randomOTP := "1234"
+    fmt.Printf("EMAIL: generating random otp %s\n", randomOTP)
+    return randomOTP
+}
+
+func (s *Email) saveOTPCache(otp string) {
+    fmt.Printf("EMAIL: saving otp: %s to cache\n", otp)
+}
+
+func (s *Email) getMessage(otp string) string {
+    return "EMAIL OTP for login is " + otp
+}
+
+func (s *Email) sendNotification(message string) error {
+    fmt.Printf("EMAIL: sending email: %s\n", message)
+    return nil
+}
+````
+
+main.go
+
+```go
+func main() {
+    smsOTP := &Sms{}
+    o := Otp{
+        iOtp: smsOTP,
+    }
+    o.genAndSendOTP(4)
+
+    fmt.Println("")
+    emailOTP := &Email{}
+    o = Otp{
+        iOtp: emailOTP,
+    }
+    o.genAndSendOTP(4)
+
+}
+```
+
+
+
+
+
+<br/>
+
 
 
 ## 命令模式 (Command)
+
+:owl: ：**它可将请求转换为一个包含与请求相关的所有信息的独立对象。 该转换让你能根据不同的请求将方法参数化、 延迟请求执行或将其放入队列中， 且能实现可撤销操作。**
+
+
+
+-----
+
+
 
 - <font color='#808080'> 定义以及使用场景 </font>
 
 它可将请求或简单操作转换为一个对象。此类转换让你能够延迟进行或远程执行请求， 还可将其放入队列中。
 
-**使用场景**
+- <font color='#808080'>使用场景</font>
 
 1. 需要抽象出待执行的行动，然后以参数的形式提供出来——类似于过程设计中的回调机制，而命令模式正是回调机制的一个面向对象的代替品。
 2. 在不同的时刻指定、排列和执行请求，一个命令对象可以有与初始请求无关的生存期
@@ -1152,13 +2072,23 @@ func main() {
 
 ```
 
+<br/>
+
+
+
 ## 策略模式 (Strategy)
+
+:turkey: ：**能让你定义一系列算法， 并将每种算法分别放入独立的类中， 以使算法的对象能够相互替换。**
+
+-----
+
+
 
 - <font color='#808080'>定义以及使用场景</font>
 
 策略模式（Strategy Pattern）定义一组算法，将每个算法都封装起来，并且使它们之间可以互换。
 
-**使用场景**
+- <font color='#808080'>使用场景</font>
 
 在项目开发中，我们经常要根据不同的场景，采取不同的措施，也就是不同的策略。比如，假设我们需要对 a、b 这两个整数进行计算，根据条件的不同，需要执行不同的计算方式。我们可以把所有的操作都封装在同一个函数中，然后通过 if ... else ... 的形式来调用不同的计算方式，这种方式称之为硬编码。
 
@@ -1221,14 +2151,157 @@ func TestStrategy(t *testing.T) {
 }
 ```
 
+<br/>
+
+**再举个例子**
+
+[https://refactoringguru.cn/design-patterns/strategy/go/example#example-0](https://refactoringguru.cn/design-patterns/strategy/go/example#example-0)
+
+思考一下构建内存缓存的情形。 由于处在内存中， 故其大小会存在限制。 在达到其上限后， 一些条目就必须被移除以留出空间。 此类操作可通过多种算法进行实现。 一些流行的算法有：
+
+- 最少最近使用(LRU)
+- 先进先出(FIFO)
+- 最小使用(LFU)
+
+问题是在于我们如何将这类缓存类与算法解耦，可创建一系列算法，每个算法都有自己的类，这些类中哦你的每一个都遵守相同的接口，使得算法可以互换。
+
+
+
+evictionAlgo.go ：策略接口
+
+```go
+type EvictionAlgo interface {
+    evict(c *Cache)
+}
+```
+
+fifo.go ：具体策略
+
+```go
+type Fifo struct {
+}
+
+func (l *Fifo) evict(c *Cache) {
+    fmt.Println("Evicting by fifo strtegy")
+}
+```
+
+lru.go ：具体策略
+
+```go
+type Lru struct {
+}
+
+func (l *Lru) evict(c *Cache) {
+    fmt.Println("Evicting by lru strtegy")
+}
+```
+
+lfu.go ：具体策略
+
+```go
+type Lfu struct {
+}
+
+func (l *Lfu) evict(c *Cache) {
+    fmt.Println("Evicting by lfu strtegy")
+}
+```
+
+cache.go ：背景
+
+```go
+package main
+
+type Cache struct {
+    storage      map[string]string
+    evictionAlgo EvictionAlgo
+    capacity     int
+    maxCapacity  int
+}
+
+func initCache(e EvictionAlgo) *Cache {
+    storage := make(map[string]string)
+    return &Cache{
+        storage:      storage,
+        evictionAlgo: e,
+        capacity:     0,
+        maxCapacity:  2,
+    }
+}
+
+func (c *Cache) setEvictionAlgo(e EvictionAlgo) {
+    c.evictionAlgo = e
+}
+
+func (c *Cache) add(key, value string) {
+    if c.capacity == c.maxCapacity {
+        c.evict()
+    }
+    c.capacity++
+    c.storage[key] = value
+}
+
+func (c *Cache) get(key string) {
+    delete(c.storage, key)
+}
+
+func (c *Cache) evict() {
+    c.evictionAlgo.evict(c)
+    c.capacity--
+}
+```
+
+main.go 客户端
+
+````go
+func main() {
+    lfu := &Lfu{}
+    cache := initCache(lfu)
+
+    cache.add("a", "1")
+    cache.add("b", "2")
+
+    cache.add("c", "3")
+
+    lru := &Lru{}
+    cache.setEvictionAlgo(lru)
+
+    cache.add("d", "4")
+
+    fifo := &Fifo{}
+    cache.setEvictionAlgo(fifo)
+
+    cache.add("e", "5")
+
+}
+````
+
+
+
+
+
+<br/>
+
+
+
+
+
 ## 职责链条模式（Chain of Responsibility）
+
+:dolphin: ：**允许你将请求沿着处理者链进行发送。 收到请求后， 每个处理者均可对请求进行处理， 或将其传递给链上的下个处理者。**
+
+
+
+-----
+
+
 
 - <font color='#808080'>定义以及使用场景</font>
 
 为了避免请求发送者与多个请求处理者耦合在一起，于是将所有请求的处理者通过前一对象记住其下一个对象的引用而连成一条链；当有请求发生时，可将请求沿着这条链传递，直到有对象处理它为止。
 
-
-**使用场景**
+- <font color='#808080'>使用场景</font>
 
 如总线网中数据报传送，每台计算机根据目标地址是否同自己的地址相同来决定是否接收；还有异常处理中，处理程序根据异常的类型决定自己是否处理该异常；还有 Struts2 的拦截器、JSP 和 Servlet 的 Filter 等，所有这些，都可以考虑使用责任链模式来实现。
 
@@ -1290,19 +2363,180 @@ func TestSensitiveWordFilterChain_Filter(t *testing.T) {
 
 	chain.AddFilter(&PoliticalWordFilter{})
 	assert.Equal(t, true, chain.Filter("test"))
+	chain.
+}
+```
+
+<br/>
+
+**再举个例子**
+
+[https://refactoringguru.cn/design-patterns/chain-of-responsibility/go/example#example-0](https://refactoringguru.cn/design-patterns/chain-of-responsibility/go/example#example-0)
+
+这个例子其实差不多， (*只不过封装更高级一些* )，哈哈。这是一个医院应用的责任链模式的例子，医院会有多个部门，如：前台、医生、药方、收银。
+
+病人来访时， 他们首先都会去前台， 然后是看医生、 取药， 最后结账。 也就是说， 病人需要通过一条部门链， 每个部门都在完成其职能后将病人进一步沿着链条输送。
+
+此模式适用于有多个候选选项处理相同请求的情形， 适用于不希望客户端选择接收者 （因为多个对象都可处理请求） 的情形， 还适用于想将客户端同接收者解耦时。 客户端只需要链中的首个元素即可。
+
+department.go ：处理者接口
+
+```go
+type Department interface {
+    execute(*Patient)
+    setNext(Department)
+}
+```
+
+reception.go ：具体处理者（前台）
+
+```go
+type Reception struct {
+    next Department
+}
+
+func (r *Reception) execute(p *Patient) {
+    if p.registrationDone {
+        fmt.Println("Patient registration already done")
+        r.next.execute(p)
+        return
+    }
+    fmt.Println("Reception registering patient")
+    p.registrationDone = true
+    r.next.execute(p)
+}
+
+func (r *Reception) setNext(next Department) {
+    r.next = next
+}
+```
+
+doctor.go ：具体处理者（医生）
+
+```go
+type Doctor struct {
+    next Department
+}
+
+func (d *Doctor) execute(p *Patient) {
+    if p.doctorCheckUpDone {
+        fmt.Println("Doctor checkup already done")
+        d.next.execute(p)
+        return
+    }
+    fmt.Println("Doctor checking patient")
+    p.doctorCheckUpDone = true
+    d.next.execute(p)
+}
+
+func (d *Doctor) setNext(next Department) {
+    d.next = next
+}
+```
+
+medical.go ：具体处理者（药房）
+
+``` go
+type Medical struct {
+    next Department
+}
+
+func (m *Medical) execute(p *Patient) {
+    if p.medicineDone {
+        fmt.Println("Medicine already given to patient")
+        m.next.execute(p)
+        return
+    }
+    fmt.Println("Medical giving medicine to patient")
+    p.medicineDone = true
+    m.next.execute(p)
+}
+
+func (m *Medical) setNext(next Department) {
+    m.next = next
+}
+```
+
+cashier.go ：具体处理者(收银)
+
+```go
+type Cashier struct {
+    next Department
+}
+
+func (c *Cashier) execute(p *Patient) {
+    if p.paymentDone {
+        fmt.Println("Payment Done")
+    }
+    fmt.Println("Cashier getting money from patient patient")
+}
+
+func (c *Cashier) setNext(next Department) {
+    c.next = next
+}
+```
+
+patient.go ：病人
+
+```
+type Patient struct {
+    name              string
+    registrationDone  bool
+    doctorCheckUpDone bool
+    medicineDone      bool
+    paymentDone       bool
+}
+```
+
+main.go 
+
+```go
+func main() {
+
+    cashier := &Cashier{}
+
+    //Set next for medical department
+    medical := &Medical{}
+    medical.setNext(cashier)
+
+    //Set next for doctor department
+    doctor := &Doctor{}
+    doctor.setNext(medical)
+
+    //Set next for reception department
+    reception := &Reception{}
+    reception.setNext(doctor)
+
+    patient := &Patient{name: "abc"}
+    //Patient visiting
+    reception.execute(patient)
 }
 ```
 
 
 
 
+
+
+
+<br/>
+
+
 ## 访问者模式 (Visitor)
+
+:snail: ：**将算法与其所作用的对象隔离开来。**
+
+
+
+-----
+
+
 
 - <font color='#808080'> 定义以及使用场景 </font>
 
 由于没有函数重载，所以我们并不知道传递过来的对象是什么类型，这个时候只能采用类型断言的方式来对不同的类型做不同的操作，但是正式由于没有函数重载，所以其实完全可以不用访问者模式直接传入参数。
 
-**使用场景**
+- <font color='#808080'>使用场景</font>
 
 访问者模式一共有五种角色：
 
@@ -1435,15 +2669,173 @@ func TestCompressor_Visit(t *testing.T) {
 }
 ```
 
+<br/>
 
-## 迭代器模式(Iterator)
+**再举个例子**
+
+假设你是一个代码库的维护者，代码库中包含不同形状结构体，如：
+
+- 方形
+- 圆形
+- 三角形
+
+上述每个形状结构体都实现了通用形状接口。但是需求太多，有的要计算形状面积，有的要计算形状中心。但是原始对象的代码不好再不停追加新的计算逻辑，只能重新单独实现计算逻辑
+
+
+
+shape.go ：元件
+
+```go
+type Shape interface {
+    getType() string
+    accept(Visitor)
+}
+```
+
+square.go ：具体元件（方形）
+
+```go
+type Square struct {
+    side int
+}
+
+func (s *Square) accept(v Visitor) {
+    v.visitForSquare(s)
+}
+
+func (s *Square) getType() string {
+    return "Square"
+}
+```
+
+circle.go ：具体元件（圆形）
+
+```go
+type Circle struct {
+    radius int
+}
+
+func (c *Circle) accept(v Visitor) {
+    v.visitForCircle(c)
+}
+
+func (c *Circle) getType() string {
+    return "Circle"
+}
+```
+
+rectangle.go ：具体元件（长方形）
+
+```go
+type Rectangle struct {
+    l int
+    b int
+}
+
+func (t *Rectangle) accept(v Visitor) {
+    v.visitForrectangle(t)
+}
+
+func (t *Rectangle) getType() string {
+    return "rectangle"
+}
+```
+
+visitor.go ：访问者
+
+```go
+type Visitor interface {
+    visitForSquare(*Square)
+    visitForCircle(*Circle)
+    visitForrectangle(*Rectangle)
+}
+```
+
+areaCalculator.go ：具体访问者
+
+```go
+type AreaCalculator struct {
+    area int
+}
+
+func (a *AreaCalculator) visitForSquare(s *Square) {
+    // Calculate area for square.
+    // Then assign in to the area instance variable.
+    fmt.Println("Calculating area for square")
+}
+
+func (a *AreaCalculator) visitForCircle(s *Circle) {
+    fmt.Println("Calculating area for circle")
+}
+func (a *AreaCalculator) visitForrectangle(s *Rectangle) {
+    fmt.Println("Calculating area for rectangle")
+}
+```
+
+middleCoordinates.go ：具体访问者
+
+```go
+type MiddleCoordinates struct {
+    x int
+    y int
+}
+
+func (a *MiddleCoordinates) visitForSquare(s *Square) {
+    // Calculate middle point coordinates for square.
+    // Then assign in to the x and y instance variable.
+    fmt.Println("Calculating middle point coordinates for square")
+}
+
+func (a *MiddleCoordinates) visitForCircle(c *Circle) {
+    fmt.Println("Calculating middle point coordinates for circle")
+}
+func (a *MiddleCoordinates) visitForrectangle(t *Rectangle) {
+    fmt.Println("Calculating middle point coordinates for rectangle")
+}
+```
+
+main.go 
+
+```go
+func main() {
+    square := &Square{side: 2}
+    circle := &Circle{radius: 3}
+    rectangle := &Rectangle{l: 2, b: 3}
+
+    areaCalculator := &AreaCalculator{}
+
+    square.accept(areaCalculator)
+    circle.accept(areaCalculator)
+    rectangle.accept(areaCalculator)
+
+    fmt.Println()
+    middleCoordinates := &MiddleCoordinates{}
+    square.accept(middleCoordinates)
+    circle.accept(middleCoordinates)
+    rectangle.accept(middleCoordinates)
+}
+```
+
+
+
+<br/>
+
+
+
+## 迭代器模式 (Iterator)
+
+:bug: ：**让你能在不暴露集合底层表现形式 （列表、 栈和树等） 的情况下遍历集合中所有的元素。**（适合明确的栈、队列等数据结构的封装）
+
+----
+
+
 
 - <font color='#808080'> 定义以及使用场景 </font>
 
 为了避免请求发送者与多个请求处理者耦合在一起，于是将所有请求的处理者通过前一对象记住其下一个对象的引用而连成一条链；当有请求发生时，可将请求沿着这条链传递，直到有对象处理它为止。
 
 
-- **使用场景**
+- <font color='#808080'>使用场景</font>
 
 它在客户访问类与聚合类之间插入一个迭代器，这分离了聚合对象与其遍历行为，对客户也隐藏了其内部细节，且满足“单一职责原则”和“开闭原则”，如 Java 中的 Collection、List、Set、Map 等都包含了迭代器。
 
@@ -1507,6 +2899,573 @@ func TestArrayInt_Iterator(t *testing.T) {
 
 ```
 
+<br/>
+
+## 中介者模式 (Meiator)
+
+:octopus: ：**能让你减少对象之间混乱无序的依赖关系。 该模式会限制对象之间的直接交互， 迫使它们通过一个中介者对象进行合作。**（适合资源调度类场景）
+
+----
+
+- <font color='#808080'>定义以及使用场景</font>
+
+对象之间存在大量的关联关系，势必会导致系统结构变得复杂。若一个对象改变，还要跟踪与其相关的对象，跟着一起改变。
+中介者模式提供了一个中介类，该类通常处理不同类之间的通信，并且支持松耦合，使代码易于维护。
+
+
+
+- <font color='#808080'>使用场景</font>
+
+中介者模式解决了多个类相互耦合，导致系统复杂度升高的问题。通常
+
+1. 用于机场调度系统。
+
+2. MVC框架，其中C(控制器)就是M(模型)和V(视图)的中介者。
+
+**举个例子**
+
+中介者模式的一个绝佳例子就是火车站交通系统。 两列火车互相之间从来不会就站台的空闲状态进行通信。  `station­Manager`车站经理可充当中介者， 让平台仅可由一列入场火车使用， 而将其他火车放入队列中等待。 离场火车会向车站发送通知， 便于队列中的下一列火车进站。
+
+train.go ：组件
+
+``` go
+type Train interface {
+    arrive()   // 到站
+    depart()   // 离站
+    permitArrival()  //允许进站 
+}
+```
+
+passengerTrain.go ：具体组件(客运列车)
+
+``` go
+type PassengerTrain struct {
+    mediator Mediator
+}
+
+func (g *PassengerTrain) arrive() {
+    if !g.mediator.canArrive(g) {
+        fmt.Println("PassengerTrain: Arrival blocked, waiting")
+        return
+    }
+    fmt.Println("PassengerTrain: Arrived")
+}
+
+func (g *PassengerTrain) depart() {
+    fmt.Println("PassengerTrain: Leaving")
+    g.mediator.notifyAboutDeparture()
+}
+
+func (g *PassengerTrain) permitArrival() {
+    fmt.Println("PassengerTrain: Arrival permitted, arriving")
+    g.arrive()
+}
+
+```
+
+freightTrain.go ：具体组件(货运列车)
+
+```go
+type FreightTrain struct {
+    mediator Mediator
+}
+
+func (g *FreightTrain) arrive() {
+    if !g.mediator.canArrive(g) {
+        fmt.Println("FreightTrain: Arrival blocked, waiting")
+        return
+    }
+    fmt.Println("FreightTrain: Arrived")
+}
+
+func (g *FreightTrain) depart() {
+    fmt.Println("FreightTrain: Leaving")
+    g.mediator.notifyAboutDeparture()
+}
+
+func (g *FreightTrain) permitArrival() {
+    fmt.Println("FreightTrain: Arrival permitted")
+    g.arrive()
+}
+```
+
+mediator.go ：中介者
+
+```go
+type Mediator interface {
+    canArrive(Train) bool
+    notifyAboutDeparture()
+}
+
+// 具体中介者
+type StationManager struct {
+    isPlatformFree bool
+    trainQueue     []Train
+}
+
+func newStationManger() *StationManager {
+    return &StationManager{
+        isPlatformFree: true,
+    }
+}
+
+func (s *StationManager) canArrive(t Train) bool {
+    if s.isPlatformFree {
+        s.isPlatformFree = false
+        return true
+    }
+    s.trainQueue = append(s.trainQueue, t)
+    return false
+}
+
+func (s *StationManager) notifyAboutDeparture() {
+    if !s.isPlatformFree {
+        s.isPlatformFree = true
+    }
+    if len(s.trainQueue) > 0 {
+        firstTrainInQueue := s.trainQueue[0]
+        s.trainQueue = s.trainQueue[1:]
+        firstTrainInQueue.permitArrival()
+    }
+}
+```
+
+main.go 
+
+```go
+func main() {
+    stationManager := newStationManger()
+
+    passengerTrain := &PassengerTrain{
+        mediator: stationManager,
+    }
+    freightTrain := &FreightTrain{
+        mediator: stationManager,
+    }
+
+    passengerTrain.arrive()
+    freightTrain.arrive()
+    passengerTrain.depart()
+}
+```
+
+
+
+
+
+
+
+<br/>
+
+## 状态模式 (State)
+
+:ant: ：**让你能在一个对象的内部状态变化时改变其行为， 使其看上去就像改变了自身所属的类一样。**
+
+----
+
+- <font color='#808080'>定义以及使用场景</font>
+
+状态模式使用的相对较少，主要是因为会引入大量的状态类，导致代码比较难维护。但是合适的场景使用状态模式，可以把复杂的判断逻辑简化。
+
+- <font color='#808080'>使用场景</font>
+
+有需要维护状态的场景。该模式将与状态相关的行为抽取到独立的状态类中， 让原对象将工作委派给这些类的实例， 而不是自行进行处理。
+
+**举个例子**：
+
+[https://refactoringguru.cn/design-patterns/state/go/example#example-0](https://refactoringguru.cn/design-patterns/state/go/example#example-0)
+
+让我们在一台自动售货机上使用状态设计模式。 为简单起见， 让我们假设自动售货机仅会销售一种类型的商品。 同时， 依然为了简单起见， 我们假设自动售货机可处于 4 种不同的状态中：
+
+- 有商品 （has­Item）
+- 无商品 （no­Item）
+- 商品已请求 （item­Requested）
+- 收到纸币 （has­Money）
+
+同时， 自动售货机也会有不同的操作。 再一次的， 为了简单起见， 我们假设其只会执行 4 种操作：
+
+- 选择商品
+- 添加商品
+- 插入纸币
+- 提供商品
+
+当对象可以处于许多不同的状态中时应使用状态设计模式， 同时根据传入请求的不同， 对象需要变更其当前状态。
+
+在我们的例子中， 自动售货机可以有多种不同的状态， 同时会在这些状态之间持续不断地互相转换。 我们假设自动售货机处于 `商品已请求`状态中。 在 “插入纸币” 的操作发生后， 机器将自动转换至 `收到纸币`状态。
+
+根据其当前状态， 机器可就相同请求采取不同的行为。 例如， 如果用户想要购买一件商品， 机器将在 `有商品`状态时继续操作， 而在 `无商品`状态时拒绝操作。
+
+vendingMachine.go: 背景
+
+``` go
+type VendingMachine struct {
+    hasItem       State
+    itemRequested State
+    hasMoney      State
+    noItem        State
+
+    currentState State
+
+    itemCount int
+    itemPrice int
+}
+
+func newVendingMachine(itemCount, itemPrice int) *VendingMachine {
+    v := &VendingMachine{
+        itemCount: itemCount,
+        itemPrice: itemPrice,
+    }
+    hasItemState := &HasItemState{
+        vendingMachine: v,
+    }
+    itemRequestedState := &ItemRequestedState{
+        vendingMachine: v,
+    }
+    hasMoneyState := &HasMoneyState{
+        vendingMachine: v,
+    }
+    noItemState := &NoItemState{
+        vendingMachine: v,
+    }
+
+    v.setState(hasItemState)
+    v.hasItem = hasItemState
+    v.itemRequested = itemRequestedState
+    v.hasMoney = hasMoneyState
+    v.noItem = noItemState
+    return v
+}
+
+func (v *VendingMachine) requestItem() error {
+    return v.currentState.requestItem()
+}
+
+func (v *VendingMachine) addItem(count int) error {
+    return v.currentState.addItem(count)
+}
+
+func (v *VendingMachine) insertMoney(money int) error {
+    return v.currentState.insertMoney(money)
+}
+
+func (v *VendingMachine) dispenseItem() error {
+    return v.currentState.dispenseItem()
+}
+
+func (v *VendingMachine) setState(s State) {
+    v.currentState = s
+}
+
+func (v *VendingMachine) incrementItemCount(count int) {
+    fmt.Printf("Adding %d items\n", count)
+    v.itemCount = v.itemCount + count
+}
+```
+
+state.go ：状态接口
+
+``` go
+type State interface {
+    addItem(int) error
+    requestItem() error
+    insertMoney(money int) error
+    dispenseItem() error
+}
+```
+
+noltemState.go：具体状态
+
+```go
+type NoItemState struct {
+    vendingMachine *VendingMachine
+}
+
+func (i *NoItemState) requestItem() error {
+    return fmt.Errorf("Item out of stock")
+}
+
+func (i *NoItemState) addItem(count int) error {
+    i.vendingMachine.incrementItemCount(count)
+    i.vendingMachine.setState(i.vendingMachine.hasItem)
+    return nil
+}
+
+func (i *NoItemState) insertMoney(money int) error {
+    return fmt.Errorf("Item out of stock")
+}
+func (i *NoItemState) dispenseItem() error {
+    return fmt.Errorf("Item out of stock")
+}
+```
+
+hashItemState.go ：具体状态
+
+```go
+type HasItemState struct {
+    vendingMachine *VendingMachine
+}
+
+func (i *HasItemState) requestItem() error {
+    if i.vendingMachine.itemCount == 0 {
+        i.vendingMachine.setState(i.vendingMachine.noItem)
+        return fmt.Errorf("No item present")
+    }
+    fmt.Printf("Item requestd\n")
+    i.vendingMachine.setState(i.vendingMachine.itemRequested)
+    return nil
+}
+
+func (i *HasItemState) addItem(count int) error {
+    fmt.Printf("%d items added\n", count)
+    i.vendingMachine.incrementItemCount(count)
+    return nil
+}
+
+func (i *HasItemState) insertMoney(money int) error {
+    return fmt.Errorf("Please select item first")
+}
+func (i *HasItemState) dispenseItem() error {
+    return fmt.Errorf("Please select item first")
+}
+```
+
+itemRequestedState.go ：具体状态
+
+``` go
+type ItemRequestedState struct {
+    vendingMachine *VendingMachine
+}
+
+func (i *ItemRequestedState) requestItem() error {
+    return fmt.Errorf("Item already requested")
+}
+
+func (i *ItemRequestedState) addItem(count int) error {
+    return fmt.Errorf("Item Dispense in progress")
+}
+
+func (i *ItemRequestedState) insertMoney(money int) error {
+    if money < i.vendingMachine.itemPrice {
+        return fmt.Errorf("Inserted money is less. Please insert %d", i.vendingMachine.itemPrice)
+    }
+    fmt.Println("Money entered is ok")
+    i.vendingMachine.setState(i.vendingMachine.hasMoney)
+    return nil
+}
+func (i *ItemRequestedState) dispenseItem() error {
+    return fmt.Errorf("Please insert money first")
+}
+```
+
+hasMoneyState.go ：具体状态
+
+```go
+type HasMoneyState struct {
+    vendingMachine *VendingMachine
+}
+
+func (i *HasMoneyState) requestItem() error {
+    return fmt.Errorf("Item dispense in progress")
+}
+
+func (i *HasMoneyState) addItem(count int) error {
+    return fmt.Errorf("Item dispense in progress")
+}
+
+func (i *HasMoneyState) insertMoney(money int) error {
+    return fmt.Errorf("Item out of stock")
+}
+func (i *HasMoneyState) dispenseItem() error {
+    fmt.Println("Dispensing Item")
+    i.vendingMachine.itemCount = i.vendingMachine.itemCount - 1
+    if i.vendingMachine.itemCount == 0 {
+        i.vendingMachine.setState(i.vendingMachine.noItem)
+    } else {
+        i.vendingMachine.setState(i.vendingMachine.hasItem)
+    }
+    return nil
+}
+```
+
+main.go 客户端代码
+
+```go
+func main() {
+    vendingMachine := newVendingMachine(1, 10)
+
+    err := vendingMachine.requestItem()
+    if err != nil {
+        log.Fatalf(err.Error())
+    }
+
+    err = vendingMachine.insertMoney(10)
+    if err != nil {
+        log.Fatalf(err.Error())
+    }
+
+    err = vendingMachine.dispenseItem()
+    if err != nil {
+        log.Fatalf(err.Error())
+    }
+
+    fmt.Println()
+
+    err = vendingMachine.addItem(2)
+    if err != nil {
+        log.Fatalf(err.Error())
+    }
+
+    fmt.Println()
+
+    err = vendingMachine.requestItem()
+    if err != nil {
+        log.Fatalf(err.Error())
+    }
+
+    err = vendingMachine.insertMoney(10)
+    if err != nil {
+        log.Fatalf(err.Error())
+    }
+
+    err = vendingMachine.dispenseItem()
+    if err != nil {
+        log.Fatalf(err.Error())
+    }
+}
+```
+
+
+
+
+
+<br/>
+
+## 备忘录 (Memento)
+
+:honeybee: ：**允许在不暴露对象实现细节的情况下保存和恢复对象之前的状态。**(类似游戏存档)
+
+----
+
+- <font color='#808080'>定义以及使用场景</font>
+
+这种模式允许我们保存对象在某些关键节点时的必要信息，以便于在适当的时候可以将之恢复到之前的状态。通常它可以用来帮助设计撤销/恢复操作。
+
+- <font color='#808080'>使用场景</font>
+
+下面是备忘录设计模式的主要角色：
+
+- Originator（发起者）：Originator是当前的基础对象，它会将自己的状态保存进备忘录
+- Memento（备忘录） ： 存储着Originator的状态的对象
+- Caretaker（管理人）：Caretaker是保存着多条备忘录的对象，并维护着备忘录的索引，在需要的时候会返回相应的备忘录
+
+Originator有两个方法： `savememento()` 和 `restorememento()`。
+
+- savememento(): Originator通过这个方法将其状态保存进一个备忘录对象
+- restorememento()： 这个方法将备忘录对象作为输入信息。Originator会通过传进来的备忘录信息执行重建。
+
+
+
+**举个例子**：
+
+备忘录模式让我们可以保存对象状态的快照。 你可使用这些快照来将对象恢复到之前的状态。 这在需要在对象上实现撤销-重做操作时非常实用。
+
+originaator.go ：原发器
+
+``` go
+type Originator struct {
+    state string
+}
+
+func (e *Originator) createMemento() *Memento {
+    return &Memento{state: e.state}
+}
+
+func (e *Originator) restoreMemento(m *Memento) {
+    e.state = m.getSavedState()
+}
+
+func (e *Originator) setState(state string) {
+    e.state = state
+}
+
+func (e *Originator) getState() string {
+    return e.state
+}
+```
+
+memento.go ：备忘录
+
+```go
+type Memento struct {
+    state string
+}
+
+func (m *Memento) getSavedState() string {
+    return m.state
+}
+```
+
+caretaker.go ：负责人
+
+``` go
+type Caretaker struct {
+    mementoArray []*Memento
+}
+
+func (c *Caretaker) addMemento(m *Memento) {
+    c.mementoArray = append(c.mementoArray, m)
+}
+
+func (c *Caretaker) getMemento(index int) *Memento {
+    return c.mementoArray[index]
+}
+```
+
+main.go ：客户端代码
+
+```go
+func main() {
+
+    caretaker := &Caretaker{
+        mementoArray: make([]*Memento, 0),
+    }
+
+    originator := &Originator{
+        state: "A",
+    }
+
+    fmt.Printf("Originator Current State: %s\n", originator.getState())
+    caretaker.addMemento(originator.createMemento())
+
+    originator.setState("B")
+    fmt.Printf("Originator Current State: %s\n", originator.getState())
+    caretaker.addMemento(originator.createMemento())
+
+    originator.setState("C")
+    fmt.Printf("Originator Current State: %s\n", originator.getState())
+    caretaker.addMemento(originator.createMemento())
+
+    originator.restoreMemento(caretaker.getMemento(1))
+    fmt.Printf("Restored to State: %s\n", originator.getState())
+
+    originator.restoreMemento(caretaker.getMemento(0))
+    fmt.Printf("Restored to State: %s\n", originator.getState())
+
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+<br/>
+
 
 
 # 其他
@@ -1518,7 +3477,7 @@ func TestArrayInt_Iterator(t *testing.T) {
 
 对一数据需要经过顺序的多个过滤器函数处理。
 
-- **使用场景**
+- <font color='#808080'>使用场景</font>
 
 1. 多个对象可以处理同一请求，其架构适用于 解析，过滤，处理，返回这样的架构，如数据分析。
 2. 在请求处理者不明确的情况下向多个对象中的一个提交一个请求需要动态指定一组对象处理请求
@@ -1677,7 +3636,7 @@ func main() {
 // 执行结果：
 // 6
 
-``` 
+```
 
 
 
@@ -1891,3 +3850,6 @@ ERR:
 
 
 
+参考：
+
+- [Refactoring guru](https://refactoringguru.cn/design-patterns/go)
