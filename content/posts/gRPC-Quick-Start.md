@@ -156,8 +156,8 @@ func NewPersonMessage() *pb.PersonMessage {
 		Height: 177,
 		Weight: 140,
 		Gender: pb.PersonMessage_MALE,
-		PhoneNumbers: []string{"15667026708","17610660213"},
-		Email: "weijiaxiang007@foxmail.com",
+		PhoneNumbers: []string{"15660018902","17610010111"},
+		Email: "kiosk007@foxmail.com",
 	}
 }
 ```
