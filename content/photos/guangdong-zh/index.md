@@ -17,4 +17,4 @@ type = "gallery"
 
 {{< figure link="https://img1.kiosk007.top/static/images/gallery/20230508-003534.jpg" caption="深圳湾">}}
 
-ShenZhen is the youngest city of China. Though it has a history of 7,000 years, its true development didn't start until 1980 when China start its refom and openging policy, so I believe most of of the Chinese will recognize it as the youngest city.
+[ShenZhen](https://www.chinahighlights.com/shenzhen/) is the youngest city of China. Though it has a history of 7,000 years, its true development didn't start until 1980 when China start its refom and openging policy, so I believe most of of the Chinese will recognize it as the youngest city.
