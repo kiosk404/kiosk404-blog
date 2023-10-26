@@ -78,8 +78,8 @@ libFiles:
   # mapbox-gl@1.10.1 https://docs.mapbox.com/mapbox-gl-js
   # mapboxGLCSS: mapbox-gl@1.10.1/dist/mapbox-gl.min.css
   # mapboxGLJS: mapbox-gl@1.10.1/dist/mapbox-gl.min.js
-  mapboxGLCSS: mapbox-gl/2.14.1/mapbox-gl.min.css
-  mapboxGLJS: mapbox-gl/2.14.1/mapbox-gl.min.js
+  mapboxGLCSS:  mapbox-gl/2.0.1/mapbox-gl.css
+  mapboxGLJS:  mapbox-gl/2.0.1/mapbox-gl.js
   # aplayer@1.10.1 https://github.com/MoePlayer/APlayer
   # aplayerCSS: aplayer@1.10.1/dist/APlayer.min.css
   # aplayerJS: aplayer@1.10.1/dist/APlayer.min.js
