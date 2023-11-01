@@ -41,10 +41,3 @@ Keep learning, not too good, not too bad。
 Yes, it's me, **kiosk** .
 {{< /style >}}
 
-# Mail
-
-- weijiaxiang007@foxmail.com
-
-# Other
-
-- https://github.com/kiosk404
