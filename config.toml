@@ -670,7 +670,7 @@ enableEmoji = true
       # Valine comment config (https://github.com/xCss/Valine)
       # Valine 评论系统设置 (https://github.com/xCss/Valine)
       [params.page.comment.valine]
-        enable = true
+        enable = false
         appId = "XhYn8GEq1Sg7ufJQAVmR4dWN-gzGzoHsz"
         appKey = "r42k4lqU022wD7IvtwGaQfjN"
         placeholder = ""
