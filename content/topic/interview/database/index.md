@@ -99,6 +99,7 @@ Redis 有两个全局 hash 表，当其中一个需要扩容时，将另一个�
 #### zset 的底层实现
 
 zset 是有序字典，自动去重的集合数据类型，其底层的实现为字典（dict）+ 跳表（skiplist）。
+> 在 Redis 7.0 中，压缩列表数据结构已经废弃了，交由 listpack 数据结构来实现了。
 
 [Redis 常见面试题](https://www.bilibili.com/video/BV1kh411x7Jc/?spm_id_from=333.337.search-card.all.click&vd_source=af544ba5c244ed2765ff78c8d2727eef)
 
