@@ -19,6 +19,7 @@ date: 2022-06-08 23:41:26
   - [interface{}变量和nil做比较](/topic/interview/golang/#interface{}变量和nil做比较)
   - [go中 import/const/var/init/main 的执行顺序](/topic/interview/golang/#go中-importconstvarinitmain-的执行顺序)
   - [defer的执行顺序](/topic/interview/golang/#defer的执行顺序)
+  - [什么是 go 的内存逃逸](/topic/interview/golang/#什么是go的内存逃逸)
 - [medium](/topic/interview/golang/#medium)
   - [Golang 的内存管理](/topic/interview/golang/#golang-的内存管理)
     - [Go 是如何分配内存的](/topic/interview/golang/#go-是如何分配内存的)
@@ -41,6 +42,7 @@ date: 2022-06-08 23:41:26
     - [Mutex是悲观锁还是乐观锁](/topic/interview/golang/#mutex-是悲观锁还是乐观锁)
     - [RWMutex(读写锁)适用于什么场景](/topic/interview/golang/#rwmutex读写锁适用于什么场景)
   - [channel](/topic/interview/golang/#channel)
+    - [channel 的内部实现是怎么样的?](/topic/interview/golang/#channel-的内部实现是怎么样的)
     - [读一个已关闭的channel会怎样、没初始化的channel写会怎样](/topic/interview/golang/#读一个已关闭的channel会怎样没初始化的channel写会怎样)
     - [已关闭的channel写数据会怎样，如何判断一个channel已关闭](/topic/interview/golang/#已关闭的channel写数据会怎样如何判断一个channel已关闭)
     - [select case 中有2个case 读channel，其中一个关闭，读数据会怎样](/topic/interview/golang/#select-case-中有2个case-读channel其中一个关闭读数据会怎样)
@@ -49,6 +51,9 @@ date: 2022-06-08 23:41:26
     - [golang中的context有什么用](/topic/interview/golang/#golang中的context有什么用)
     - [context.Background的意义](/topic/interview/golang/#contextbackground-的意义)
     - [WithCancel() 和 WithTimeout() 可以通知多个goroutine, 如何实现的](/topic/interview/golang/#withcancel-和-withtimeout-可以通知多个goroutine-如何实现的)
+  - [map](/topic/interview/golang/#map)
+    - [map 为什么是不安全的？](/topic/interview/golang/#map-为什么是不安全的)
+
 ## sample
 
 ### new 和 make 的区别？
@@ -138,6 +143,12 @@ import > const > var > init > main
 
 详见: [了解defer的执行顺序](https://kiosk007.top/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/)
 
+<br/>
+
+### 什么是go的内存逃逸
+在传统的编程语言里，会根据程序员指定的方式来决定变量内存分配是在栈还是堆上，比如声明的变量是值类型，则会分配到栈上，或者 new 一个对象则会分配到堆上。
+
+在 Go 里变量的内存分配方式则是由编译器来决定的。如果变量在作用域（比如函数范围）之外，还会被引用的话，那么称之为发生了逃逸行为，此时将会把对象放到堆上，即使声明为值类型；如果没有发生逃逸行为的话，则会被分配到栈上，即使 new 了一个对象。
 
 <br/>
 
@@ -147,28 +158,56 @@ import > const > var > init > main
 
 #### Go 是如何分配内存的
 
-内存空间包含两个重要的区域：栈（stack）和堆（heap），Go 语言的内存分配由标准库自动完成。
+Go 的内存分配借鉴了 Google 的 TCMalloc 分配算法，其核心思想是 **内存池 + 多级对象管理**。内存池主要是预先分配内存，减少向系统申请的频率；多级对象有：mheap、mspan、arenas、mcentral、mcache。
+<br/>
 
-**小内存分配**：当变量需要小于 32 KiB 内存时，Go 语言会从名为 `mcache` 的本地缓存中为小于 32 KiB 的需求申请内存，该缓存处理内存块大小为 32 KiB 的可分配内存的链表，名为 `mspan`
-
-**大内存分配**：Go直接分配大内存到堆上
-
-详见：[https://zhuanlan.zhihu.com/p/352133292](https://zhuanlan.zhihu.com/p/352133292)
+**大内存的分配**: 当要分配大于 32K 的对象时，从 mheap 分配。
+**中等内存的分配**: 当要分配的对象小于等于 32K 大于 16B 时，从 P 上的 mcache 分配，如果 mcache 没有内存，则从 mcentral 获取，如果 mcentral 也没有，则向 mheap 申请，如果 mheap 也没有，则从操作系统申请内存。
+**小内存的分配**:当要分配的对象小于等于 16B 时，从 mcache 上的微型分配器上分配。
 
 <br/>
 
-`malloc()` 是 C 标准库提供的内存分配函数，对应到系统调用上有两种具体的实现，即 `brk()` 和 `mmap()` 
+类比下来，所有的内存分配相关库包括操作系统本身都是类似的逻辑。
+比如 Linux 操作系统的内存分配有2个非常有名的算法 **Buddy System** 和 **Slab 调度器** 。
+<br/>
 
-- 对于小内存而言，直接 brk() 来分配，也就是通过堆顶的位置来分配内存，内存释放后不会立即归还
-- 对于大内存而言，mmap() 来分配。
+**Buddy System**：
+>Buddy System 是 Linux 内核中用于内存管理的一种算法，主要用于管理物理内存。它将内存分割成大小为 2 的幂次方的块，例如 1KB, 2KB, 4KB 等。当应用程序请求内存时，Buddy System 会找到第一个大于或等于请求大小的内存块，并将其分割成更小的块来满足请求。这种分割过程是递归的，直到找到合适的内存块。当内存被释放时，Buddy System 会尝试将相邻的空闲内存块合并，以减少内存碎片。
+<br/>
 
-这两种系统调用发生后，其实并没有发生真正的内存分配，只有在首次访问时才通过缺页异常来分配。
+**Slab Allocator**：
+>Slab Allocator 是 Linux 内核中用于管理内核内存的机制。它主要用于分配和释放内核对象，如进程描述符、文件对象等。Slab Allocator 将内存分为多个缓存（slab cache），每个缓存用于特定类型的内核对象。当内核需要分配一个对象时，它会从相应的缓存中获取内存。当对象不再需要时，内存会被返回到缓存中，而不是直接释放回物理内存。这样可以减少内存碎片，提高内存分配和释放的效率。
+<br/>
 
-整体来说，Linux 使用 **伙伴系统(buddy system)** 来管理分配内存，通过相邻页合并来减少内存碎片化。**slab 调度器** 来管理小内存，增加缓存。
+**Buddy System 和 Slab Allocator 的关系**：
+>Buddy System 和 Slab Allocator 都是 Linux 内核中的内存管理机制，但它们的作用域和目标不同。Buddy System 主要用于管理物理内存，而 Slab Allocator 专注于内核内存的管理。在某些情况下，Slab Allocator 可能会使用 Buddy System 来分配和释放物理内存。例如，当 Slab Allocator 需要更多的内存来扩展缓存时，它可能会通过 Buddy System 来请求物理内存。同样，当 Slab Allocator 释放内存时，它可能会将内存返回给 Buddy System，以便重新分配给其他用途。
+<br/>
+
+总的来说，Buddy System 和 Slab Allocator 都是 Linux 内核中重要的内存管理机制，它们相互协作，共同确保内存的有效利用和管理。
+
+<br/>
+
+**TCMalloc**（Thread-Caching Malloc）是一个由 Google 开发的内存分配器，旨在提高多线程程序中的内存分配性能。它的工作原理和与 Buddy System 和 Slab Allocator 的关联如下：
+<br/>
+
+**TCMalloc 的工作原理**：
+>线程缓存：TCMalloc 为每个线程提供一个小的缓存区域，用于存储该线程分配的内存块。这样可以减少锁的争用，因为每个线程可以独立地从自己的缓存中分配和释放内存。
+>中央缓存：当线程缓存中的内存块用尽时，TCMalloc 会从中央缓存中请求更多的内存块。中央缓存是一个全局的内存池，用于存储不同大小的内存块。
+>页面分配：当中央缓存中的内存也不足时，TCMalloc 会直接从操作系统请求更多的内存页面。这通常涉及到与操作系统的内存管理机制（如 Buddy System）交互。
+<br/>
+
+**与 Buddy System 的关联**：
+>TCMalloc 在请求大量内存时，可能会与操作系统的物理内存管理机制（Buddy System）交互。操作系统通过 Buddy System 分配物理内存页面给 TCMalloc，然后 TCMalloc 将这些页面划分为更小的内存块，并将其存储在中央缓存中。
+<br/>
+
+**与 Slab Allocator 的关联**：
+>TCMalloc 主要用于用户空间的内存分配，而 Slab Allocator 是内核空间的内存分配机制。尽管两者在内存分配上有不同的应用场景，但它们都可以从操作系统的物理内存管理机制中受益。
+>在某些情况下，如果 TCMalloc 需要为内核对象分配内存，它可能会间接地与 Slab Allocator 交互。例如，当 TCMalloc 需要扩展其中央缓存时，它可能会请求内核分配更多的物理内存，而内核可能会使用 Slab Allocator 来满足这一请求。
+
+总的来说，TCMalloc 是一个高效的用户空间内存分配器，它通过减少锁的使用和优化内存块的分配和释放来提高性能。虽然 TCMalloc 主要与用户空间的内存分配相关，但它在需要时也会与操作系统的物理内存管理机制（如 Buddy System）以及内核空间的内存分配机制（如 Slab Allocator）交互。
 
 
-
-详见：[内存分配与回收](https://kiosk007.top/post/%E6%93%8D%E7%BA%B5%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E4%B8%8E%E5%9B%9E%E6%94%B6)
+详见：[内存分配与回收](https://kiosk007.top/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E4%B8%8E%E5%9B%9E%E6%94%B6)
 
 <br/>
 
@@ -279,7 +318,7 @@ M 线程会有两种状态，自旋 和 非自旋。
 
 <br/>
 
-### 若干个 goroute ，其中一个 panic ，会发生什么，defer 可以捕获子 goroute 的panic 吗？
+### 若干个 goroute ，其中一个 panic ，会发生什么，defer 可以捕获子 goroute 的 panic 吗？
 
 全部崩溃，不能！
 
@@ -367,9 +406,7 @@ sema 信号量的作用：
 <br/>
 
 ### Mutex 是悲观锁还是乐观锁
-
 golang 的 Mutex锁是一个悲观锁。每次去操作数据之前都会上锁，操作结束后解锁。
-
 
 
 乐观锁在GO中的实现具体应该是 CAS。比较并交换(compare and swap, CAS)，是原子操作的一种，可用于在多线程编程中实现不被打断的数据交换操作。
@@ -412,15 +449,23 @@ func CompareAndSwapUint32(addr *uint32, old, new uint32) (swapped bool)
 
 ## channel 
 
+### channel 的内部实现是怎么样的？
+
+Go 语言的 channel 实现是通过 runtime.hchan 结构体，利用互斥锁、环形缓冲区和等待队列来同步 goroutines 间的通信，并保证线程安全和数据的先进先出。
+
+[深入 Go 并发原语 — Channel 底层实现](https://halfrost.com/go_channel/)
+
+<br/>
+
 ### 读一个已关闭的channel会怎样、没初始化的channel写会怎样？
 
-读到空值，崩溃
+已关闭的 channel 读到空值，没初始化的 channel 会崩溃
 
 <br/>
 
 ### 已关闭的channel写数据会怎样？如何判断一个channel已关闭？
 
-崩溃，if _, ok := <- ch  的形式
+向已关闭的channel写数据会崩溃，可以通过 `if _, ok := <- ch`  的方式判断channel没有关闭
 
 <br/>
 
@@ -456,3 +501,33 @@ channel的方式。
 close 单项接收管道,返回空结构体, 使select监听的ctx.Done()返回空结构体, 取消阻塞, 结束多个协程, 返回自定义的结果。
 
 <br/>
+
+## map
+
+### map 为什么是不安全的？
+map 在扩缩容时，需要进行数据迁移，迁移的过程并没有采用锁机制防止并发操作，而是会对某个标识位标记为 1，表示此时正在迁移数据。如果有其他 goroutine 对 map 也进行写操作，当它检测到标识位为 1 时，将会直接 panic。
+
+如果并发读 Map 是不会有panic的，或者 Map的Value是指针且修改是并发安全的（如 value 是 &atomic.Value{} ），那么也不会 panic 。
+如下：
+``` go
+func main() {
+	a := make(map[string]*atomic.Value)
+	a["a"] = &atomic.Value{}
+	go func() {
+		for i := 0; i < 100; i++ {
+			a["a"].Store(i)
+		}
+	}()
+	go func() {
+		for i := 0; i < 100; i++ {
+			fmt.Println(a["a"])
+		}
+	}()
+
+	time.Sleep(2 * time.Second)
+}
+```
+但是要是 map key 对应 value 要并发变化的则会panic.
+
+如果我们想要并发安全的 map，则需要使用 sync.map。
+[gomap怎么并发访问](https://kiosk007.top/post/gomap%E6%80%8E%E4%B9%88%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE/)
