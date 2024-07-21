@@ -1,0 +1,85 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Programming - Category - Kiosk&#39;s 个人编程技术分享</title>
+        <link>http://localhost:1313/categories/programming/</link>
+        <description>Programming - Category - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 08 Jul 2023 11:06:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/categories/programming/" rel="self" type="application/rss+xml" /><item>
+    <title>Golang Map怎么并发访问</title>
+    <link>http://localhost:1313/post/gomap%E6%80%8E%E4%B9%88%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE/</link>
+    <pubDate>Sat, 08 Jul 2023 11:06:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/gomap%E6%80%8E%E4%B9%88%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE/</guid>
+    <description><![CDATA[Map 是每门编程语言的最基础的数据结构，这种数据结构的实现就是 key-value之间的映射关系，每个key都有一个唯一的索引值，通过索引值可以很快的找到对应的值。
+Map 也是程序中最常见的数据结构，我们的项目中有大量的数据需要加载到内存中，而且需要高频访问，无疑 map 就是最好的选择，但是众所周知，Map是不支持并发访问的。
+如下：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 func main() { var m = make(map[string]int,10) // 初始化一个map go func() { for { m[&#34;abc&#34;] = 1 //设置key } }() go func() { for { _ = m[&#34;def&#34;] //访问这个map } }() select {} } 虽然这段代码的不同goroutine 是各自在操作不同的元素，但是运行时检测到同时对 map 对象有并发访问，就会直接 panic。
+如何实现一个线程安全的 map 类型 最简单的方式必然是加锁访问这里不再赘述了。
+虽然使用 互斥锁 或 读写锁 可以提供线程安全的 map，但是在大量并发读写的情况下，会出现非常激烈的锁竞争。]]></description>
+</item><item>
+    <title>Golang的内存分配</title>
+    <link>http://localhost:1313/post/golang%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/</link>
+    <pubDate>Wed, 23 Nov 2022 11:06:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/golang%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/</guid>
+    <description><![CDATA[<p>程序中的数据和变量都会被分配到程序所在的虚拟内存当中，而内存空间包含两个重要区域：栈区（Stack）和堆区（Heap）。</p>]]></description>
+</item><item>
+    <title>Golang的Map长啥样</title>
+    <link>http://localhost:1313/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/</link>
+    <pubDate>Sat, 12 Nov 2022 11:06:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/</guid>
+    <description><![CDATA[<p>Map 是每个编程语言必备的数据结构，就连 lua 这种胶水语言都支持其功能，map 的底层是一个 HashTable，Go 语言的map使用十分简易，但其内部实现不是简单的一个 HashTable。</p>]]></description>
+</item><item>
+    <title>Go可以无限go下去吗</title>
+    <link>http://localhost:1313/post/go%E5%8F%AF%E4%BB%A5%E6%97%A0%E9%99%90go%E5%90%97/</link>
+    <pubDate>Sat, 06 Aug 2022 23:57:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/go%E5%8F%AF%E4%BB%A5%E6%97%A0%E9%99%90go%E5%90%97/</guid>
+    <description><![CDATA[<p>前一段时间看到知乎上的一个问题，<a href="https://www.zhihu.com/question/302981392" target="_blank" rel="noopener noreffer">Golang 开发需要协程池吗？</a> 看了知乎上大佬上的一些回答，大部分人的回答都是不需要，不过这里我也想表达一下自己的看法。</p>]]></description>
+</item><item>
+    <title>实现一个Web服务-(二)</title>
+    <link>http://localhost:1313/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%BA%8C/</link>
+    <pubDate>Mon, 11 Apr 2022 10:15:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%BA%8C/</guid>
+    <description><![CDATA[<p><a href="https://kiosk007.top/post/%e5%ae%9e%e7%8e%b0%e4%b8%80%e4%b8%aaweb%e6%9c%8d%e5%8a%a1-%e4%b8%80/" target="_blank" rel="noopener noreffer">实现一个Web服务-（一）</a> 从 net/http 基础网络库中实现了一个 Web Server，基本实现了路由匹配、上下文、中间件等特性。除这些基本的功能外，还有一些更高阶的功能。比如优雅关闭、日志等功能。</p>]]></description>
+</item><item>
+    <title>实现一个Web服务-(一)</title>
+    <link>http://localhost:1313/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/</link>
+    <pubDate>Sat, 09 Apr 2022 10:15:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/</guid>
+    <description><![CDATA[<p>熟悉 Golang 的话就会知道，用官方提供的 net/http 标准库搭建一个 Web Server，是一件非常简单的事。既然 Golang 利用其精简的语法实现了 Web Server，那么是有必要知其然和知其所以然。最近看到很多文章都介绍了如何实现一个 Web ，那么今天做一个总结。</p>]]></description>
+</item><item>
+    <title>了解golang的defer</title>
+    <link>http://localhost:1313/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/</link>
+    <pubDate>Thu, 07 Apr 2022 11:10:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/</guid>
+    <description><![CDATA[<p>golang 中有一个关键字 <code>defer</code> ，golang 的 defer 语句用于延迟调用。defer 会在当前函数返回之前执行 defer 注册的函数。</p>
+<p>在 defer 语句所在的函数退出之前调用。defer 可以代替其它语言中 try…catch… 语句，也可以用来处理释放资源等收尾操作，比如关闭文件句柄、关闭数据库连接等。defer 还能用于 panic 的 recovery。</p>]]></description>
+</item><item>
+    <title>Golang 内存逃逸分析</title>
+    <link>http://localhost:1313/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/</link>
+    <pubDate>Sat, 02 Apr 2022 11:10:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/</guid>
+    <description><![CDATA[<p>最近总是碰到有人讨论内存逃逸的问题，而且上升到装逼必备的地步，是时候了解一下什么叫内存逃逸了，于是在网上查了一下相关的资料。</p>]]></description>
+</item><item>
+    <title>Golang GMP模型</title>
+    <link>http://localhost:1313/post/golang-gmp/</link>
+    <pubDate>Sat, 02 Apr 2022 11:06:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/golang-gmp/</guid>
+    <description><![CDATA[<p>介绍 GMP 的文章有很多了，大家应该也粗浅的知道什么G（goroutine）M（Machine）P（Processsor）。相较于 Java 这样的编程语言，我们经常听到一个线程池的概念。线程池就是提前创建若干个线程，如果有任务需要处理，线程池里的线程就会处理任务，处理完之后线程并不会被销毁，而是等待下一个任务。由于创建和销毁线程都是消耗系统资源的，所以当你想要频繁的创建和销毁线程的时候就可以考虑使用线程池来提升系统的性能。</p>]]></description>
+</item><item>
+    <title>Golang GC</title>
+    <link>http://localhost:1313/post/golang-gc/</link>
+    <pubDate>Thu, 31 Mar 2022 00:34:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/golang-gc/</guid>
+    <description><![CDATA[<p>所有的编程语言都有内存的管理办法，这里面分两大类；一类是编程语言提供了手动管理内存的方式，开发者必须自行对内存进行申请和释放，虽然手动管理相对精准，但是编程麻烦且稍有不慎会造成内存泄露和指针乱踩的后果。另一类是由编程语言提供了垃圾收集机制，开发者不需要手动管理内存，这为开发者提供了很大的便利。</p>
+<p>但是，垃圾回收的工作机制并不是完美的。</p>]]></description>
+</item></channel>
+</rss>

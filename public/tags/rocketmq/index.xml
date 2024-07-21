@@ -1,0 +1,15 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Rocketmq - Tag - Kiosk&#39;s 个人编程技术分享</title>
+        <link>http://localhost:1313/tags/rocketmq/</link>
+        <description>Rocketmq - Tag - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 04 Apr 2023 11:23:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/rocketmq/" rel="self" type="application/rss+xml" /><item>
+    <title>消息队列基础</title>
+    <link>http://localhost:1313/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/</link>
+    <pubDate>Tue, 04 Apr 2023 11:23:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/</guid>
+    <description><![CDATA[<p>随着业务的快速发展，各层业务之间调用关系越来越复杂，对系统的可用性以及扩展性要求也越来越高。消息队列作为分布式架构中的重要一环，提供了消息传递和消息排队的模型，被应用在<strong>系统解耦、异步处理、流量削峰</strong> 等多个场景，有着举足轻重的地位。</p>]]></description>
+</item></channel>
+</rss>

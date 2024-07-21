@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>一条MySQL查询语句经历了什么--事务 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/what-happened-to-mysql-query-2/">
+  <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
+  <meta property="og:title" content="一条MySQL查询语句经历了什么--事务">
+  <meta property="og:description" content="上篇文章介绍了MySQL的索引机制，基本上对MySQL如何优化查询速度做了比较充分的了解
+一条MySQL查询语句经历了什么–索引 第二篇文章介绍一下事务，事务不是 MySQL 的原生支持，而是 InnoDB 存储引擎带来的 Feature。旧版本MySQL的默认存储引擎 MyISAM 就不支持事务能力。正因为事物能力，MySQL 的功能越发强大，也是因为事务，MySQL经常存在和索引无关的很多慢查询。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-08-02T18:20:00+00:00">
+    <meta property="article:modified_time" content="2022-08-02T18:20:00+00:00">
+    <meta property="article:tag" content="Database">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="一条MySQL查询语句经历了什么--事务">
+  <meta name="twitter:description" content="上篇文章介绍了MySQL的索引机制，基本上对MySQL如何优化查询速度做了比较充分的了解
+一条MySQL查询语句经历了什么–索引 第二篇文章介绍一下事务，事务不是 MySQL 的原生支持，而是 InnoDB 存储引擎带来的 Feature。旧版本MySQL的默认存储引擎 MyISAM 就不支持事务能力。正因为事物能力，MySQL 的功能越发强大，也是因为事务，MySQL经常存在和索引无关的很多慢查询。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/what-happened-to-mysql-query-2/" /><link rel="prev" href="http://localhost:1313/post/ebpf%E8%B6%85%E4%B9%8E%E4%BD%A0%E6%83%B3%E8%B1%A1/" /><link rel="next" href="http://localhost:1313/post/go%E5%8F%AF%E4%BB%A5%E6%97%A0%E9%99%90go%E5%90%97/" /><link rel="stylesheet" href="https://cdn.staticfile.org//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.scss"><link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "一条MySQL查询语句经历了什么--事务",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/what-happened-to-mysql-query-2\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "database","wordcount":  376 ,
+        "url": "http:\/\/localhost:1313\/post\/what-happened-to-mysql-query-2\/","datePublished": "2022-08-02T18:20:00+00:00","dateModified": "2022-08-02T18:20:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/what-happened-to-mysql-query-2/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">一条MySQL查询语句经历了什么--事务</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/mysql/"><i class="far fa-folder fa-fw"></i>Mysql</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-08-02">2022-08-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;376 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#事务是什么">事务是什么？</a></li>
+    <li><a href="#隔离性">隔离性</a></li>
+    <li><a href="#事务隔离的实现">事务隔离的实现</a>
+      <ul>
+        <li><a href="#mvcc">MVCC</a></li>
+        <li><a href="#undo-log">undo log</a></li>
+        <li><a href="#undo-log-的作用">undo log 的作用</a></li>
+      </ul>
+    </li>
+    <li><a href="#事务带来的性能问题">事务带来的性能问题</a>
+      <ul>
+        <li><a href="#性能杀手-行锁">性能杀手-行锁</a></li>
+        <li><a href="#事务隔离-幻读问题">事务隔离-幻读问题</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>上篇文章介绍了MySQL的索引机制，基本上对MySQL如何优化查询速度做了比较充分的了解</p>
+<ul>
+<li><a href="https://kiosk007.top/post/what-happend-to-mysql-query-1" target="_blank" rel="noopener noreffer">一条MySQL查询语句经历了什么&ndash;索引</a></li>
+</ul>
+<p>第二篇文章介绍一下事务，事务不是 MySQL 的原生支持，而是 InnoDB 存储引擎带来的 Feature。旧版本MySQL的默认存储引擎 MyISAM 就不支持事务能力。正因为事物能力，MySQL 的功能越发强大，也是因为事务，MySQL经常存在和索引无关的很多慢查询。</p>
+<p>一般提到事务，最常见的例子就是银行卡转帐了。比如A给B转了100元，那必然是 A 账户扣100元和B账户加100元同时完成，不能存在B的钱已经加上了，但是A的钱还没有扣除的问题。</p>
+<p>这就引出了事务这个概念。</p>
+<br/>
+<h1 id="事务是什么">事务是什么？</h1>
+<p>事务就是要保证一组数据库操作，要么全部成功，要么全部失败。在 MySQL 中，事务支持是在引擎层实现的，但并不是所有引擎都支持事务。</p>
+<p>事务的几个特点 ACID（Atomicity、Consistency、Isolation、Durability）即原子性、一致性、隔离性、持久性。</p>
+<br/>
+<h1 id="隔离性">隔离性</h1>
+<p>当数据库上有个事务同时执行的时候，就可能出现脏读（dirty read）、不可重复读（non-repeatable read）、幻读（phantom read）的问题，为了解决这些问题，就有了隔离级别的问题。</p>
+<p>在说隔离级别之前，首先需要知道，隔离等级越高，执行效率就会越低。因此很多时候，需要找到的一个平衡点。SQL 标准的事务隔离级别有：<strong>读未提交</strong>（<em>read uncommitted</em>）、<strong>读提交</strong>（<em>read committed</em>）、<strong>可重复读</strong>（repeatable read）和<strong>串行化</strong>（serializable）。</p>
+<br/>
+<ul>
+<li>读未提交：一个事务还没提交时，它做的变更就能被别的事务看到</li>
+<li>读提交：一个事务提交之后，它做的变更才会被其他事务看到</li>
+<li>可重复读：一个事务执行过程中看到的数据，总是跟这个事务在启动时看到的数据是一致的。当然在可重复读隔离级别下，未提交变更对其他事务也是不可见的。</li>
+<li>串行化：对于同一行记录，“写”会加“写锁”，“读”会加“读锁”。当出现读写锁冲突时，后访问的事务必须等待前一个事务执行完成，才能继续执行。</li>
+</ul>
+<br/>
+<p>在实现上，数据库里面会创建一个视图，访问的时候以视图的逻辑结果为准。</p>
+<p>在“可重复读”隔离级别下，这个视图是在事务启动时创建的，整个事务存在期间都用这个视图。</p>
+<p>在“读提交”隔离级别下，这个视图是在每个SQL语句开始执行的时候创建的。</p>
+<p>在“读未提交”隔离级别下直接返回记录上的最新值，没有视图的概念</p>
+<p>在“串行化”隔离级别下直接用加锁的方式来避免并行访问。</p>
+<p>MySQL 下可以使用如下命令可以看到当前 MySQL设置的事务隔离级别：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">MySQL</span><span class="w"> </span><span class="n">debian</span><span class="o">-</span><span class="n">sys</span><span class="o">-</span><span class="n">maint</span><span class="o">@</span><span class="p">(</span><span class="n">none</span><span class="p">):(</span><span class="n">none</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">variables</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="s1">&#39;transaction_isolation&#39;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+-----------------------+-----------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">Variable_name</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="n">Value</span><span class="w">           </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+-----------------------+-----------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">transaction_isolation</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">REPEATABLE</span><span class="o">-</span><span class="k">READ</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+-----------------------+-----------------+</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h1 id="事务隔离的实现">事务隔离的实现</h1>
+<p>先看下面的这个例子</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">t</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">k</span><span class="o">`</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w"> </span><span class="kp">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="nf">t</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="k">values</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<img src="https://img1.kiosk007.top/static/images/blog/mysql9.png" alt="mysql9" style="zoom:30%;clear:both;display:block;margin:auto;" />
+<p>这里需要注意：begin/start transaction 命令并不是事务的起点，如果需要立马启动一个事务，可以使用 <em>start transaction with consistent snapshot</em> 命令。事务C没有显式地调用 begin/commit ，指令，表示这个 <em>update</em> 语句本身就是一个事务，语句完成的时候会自动提交。</p>
+<br/>
+<p>先说答案，事务A查询到的k的值是1，而事务B查询到的值是3。</p>
+<p>为了理解这个现象，这里有两个“视图”的概念。</p>
+<ul>
+<li>一个是 view。他是用一个查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。</li>
+<li>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC （Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</li>
+</ul>
+<br/>
+<h2 id="mvcc">MVCC</h2>
+<p>在可重复读隔离级别下，事务在启动的时候拍了一个快照（这个快照是基于整库的）。InnoDB 里面的每个事务有一个唯一的事务ID，叫作 transaction id。它是在事务开始的时候想 InnoDB 的事务系统申请的，按照申请顺序严格递增。</p>
+<p>而每行数据也都是有多个版本的，每次事务更新数据的时候，都会生成一个新的数据版本，并把 transaction id 赋值给这个数据版本的事务ID，记为 row trx_id 。同时，旧的数据版本要保留，并且在新数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本（row），每个版本有自己的 row trx_id。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/mysql10.png" alt="mysql10" style="zoom:40%;clear:both;display:block;margin:auto;" />
+<p>图中的 3个虚线箭头即为 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 时，则根据 V4 依次执行U3、U2 算出来。</p>
+<br/>
+<p>按照可重复读的定义，一个事务启动的时候，能够看到所有已经提交的事务结果，但之后，这个事务执行期间，其他事务的更新对它不可见。</p>
+<p>在实现上，InnoDB 为每个事务构造了一个数组，用来保存这个事务的启动的瞬间，当前正在“活跃”的所有事务ID。“活跃”指的就是，启动了但还没有提交。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/mysql11.png" alt="mysql11" style="zoom:40%;clear:both;display:block;margin:auto;" />
+<p>这样，对于当前事务启动瞬间来说，一个数据版本的 row trx_id ，有以下几种可能：</p>
+<ol>
+<li>如果落在绿色部分，表示这个版本是已提交的事务或者是当前事务自己生成的，这个数据是可见的。</li>
+<li>如果是落在红色部分，表示这个版本是由将来启动的事务生成的，不可见</li>
+<li>如果是落在黄色部分，那就包括两种情况
+<ol>
+<li>若row trx_id 在数组中，表示这个版本是由还没有提交的事务生成，不可见</li>
+<li>若row trx_id 不在数组中，表示这个版本是已经提交了的事务生成，可见。</li>
+</ol>
+</li>
+</ol>
+<br/>
+<h2 id="undo-log">undo log</h2>
+<p>在 MySQL 中，我们知道事务在执行过程中，如果发生了崩溃是可以提供回滚机制的。</p>
+<p>实际上每条记录在更新的时候都会同时记录一条回滚操作。记录上的最新值，通过回滚操作，都可以的得到前一个状态的值。</p>
+<p>undo log 是 MySQL 中比较重要的事务日志之一，undo log 就是用来撤销回退的日志，在事务没提交之前。MySQL 会先记录更新前的数据到 undo log 日志文件中，当事务回滚或者数据库崩溃时，可以利用undo log 来进行回退。</p>
+<br/>
+<h2 id="undo-log-的作用">undo log 的作用</h2>
+<ol>
+<li><strong>提供回滚操作</strong></li>
+</ol>
+<p>在一条数据更新操作的时候，不仅会记录 redo log ，还会记录 undo log，如果因为某些原因导致事务回滚，那么这个时候MySQL就要执行回滚操作（rollback）操作，利用 undo log 将数据恢复到事务开始之前的状态</p>
+<ol start="2">
+<li><strong>提供多版本控制 MVCC</strong></li>
+</ol>
+<p>MVCC，即多版本控制，在 MySQL 数据库 InnoDB 存储引擎中，用 undo log 实现多版本并发控制（MVCC），当读取的某一行数据被其他事务锁定时，他可以从 undo log 中分析出该行记录之前的数据版本是怎样的。从而让用户能够读取当前事务操作之前的数据（快照读）</p>
+<blockquote>
+<p>快照读：SQL读取的数据是快照版本，也就是历史版本，不用加锁，普通的 SELECT 就是快照读</p>
+<p>当前读：读取最新的版本，通过锁机制来保证读取的数据无法通过其他事务进行修改 LOCK IN SHARE MODE 就是当前读。</p>
+</blockquote>
+<br/>
+<p>长事务意味着系统里面会存在很老的事务视图。由于这些事务随时可能访问数据库里面的任何数据，所以这个事务在提交之前，数据库里面它可能用到的回滚记录都必须保留，这就导致非常占空间。</p>
+<br/>
+<h1 id="事务带来的性能问题">事务带来的性能问题</h1>
+<h2 id="性能杀手-行锁">性能杀手-行锁</h2>
+<p>行锁是针对数据表中行记录的锁。这很好理解，比如事务A更新了一行，这时事务B也需要更新同一行，这时必须等待事务A的操作完成之后才能进行更新。</p>
+<p><strong>在 InnoDB 事务中，行锁是在需要的时候才加上，但并不是不需要就立刻释放，而是要等待事务结束时才释放。</strong></p>
+<p>过多的事务会造成 MySQL 压力陡增，这里的原因涉及一个概念 “<strong>死锁和死锁检测</strong>”</p>
+<p>当并发系统中的不同线程出现循环资源依赖时，涉及的线程都在等待别的线程释放资源时，就会导致这几个线程都进入无限等待的状态。这就是死锁。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/mysql8.png" alt="mysql8" style="zoom:50%;clear:both;display:block;margin:auto;" />
+<p>上面这个情况，事务A在等待事务B释放 id = 2 的行锁，而事务B在等待事务 A 释放 id = 1 的行锁，事务A和事务B在互相等待对方释放资源，从而陷入了死锁状态。一般出现死锁后有两种策略：</p>
+<br/>
+<ul>
+<li>一种是，直接进入等待，直到超时，超时时间可以设置。</li>
+<li>另一种策略是，发起死锁检测，发现死锁后，主动回滚死锁链条上的某一条事务，让其他事务得以继续执行。可以通过参数设置开启</li>
+</ul>
+<br/>
+<p>正常情况下，我们采用的是第二种策略，即：主动的死锁检测。而且参数 innodb_deadlock_detect 的默认值本身也是 on。</p>
+<p>但是这也是成本比较高的操作，每个新来的被堵住的线程，都要判断会不会由于自己的加入导致了死锁。这是一个 O(n) 的操作，假设有 1000 个并发线程要同时更新同一行，那么死锁检测操作就是 100 万这个量级的。虽然最终检测的结果是没有死锁，但是期间需要消耗大量CPU。一般解决这个问题的办法就是控制并发度，比如同一行最多只能有10个线程在更新。或者设计相关的中间件，在进入引擎之前排队。这样在 InnoDB 内部就不会有大量的死锁检测工作了。</p>
+<br/>
+<h2 id="事务隔离-幻读问题">事务隔离-幻读问题</h2>
+<p>先构造这样一个场景。表结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">t</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">c</span><span class="o">`</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">d</span><span class="o">`</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">KEY</span><span class="w"> </span><span class="o">`</span><span class="n">c</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">c</span><span class="o">`</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w"> </span><span class="kp">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">values</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">),(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">),(</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">),(</span><span class="mi">25</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">25</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><img src="https://img1.kiosk007.top/static/images/blog/mysql13.png" alt="mysql13" style="zoom:34%;clear:both;display:block;margin:auto;" />
+<p>上图中，Session A 执行了三次查询，分别是Q1、Q2、Q3，三次的语句相同并且使用了 for update 关键字，表示使用当前读，对d=5的行加上了写锁。这里看到 Q3 里读到了id=1这一行的现象，这就是“幻读”，也就是说，幻读指的是一个事务在前后两次查询同一个范围的时候，后一次查询看到了前一次查询没有看到的行。</p>
+<p>这里需要对 “幻读” 做一个说明：</p>
+<ol>
+<li>在可重复读隔离级别下，普通查询是快照读，是不会看到别的事务插入的数据，因此，幻读只在“当前读”下才会出现。</li>
+<li>上面 session B 的修改结果，被 session A 之后的 select 语句用 “当前读” 看到，不能成为幻读，幻读仅指“新插入的行”。</li>
+</ol>
+<p>因为三个查询都是加了 for update,都是当前读，而当前读的规则就是读到所有已经提交记录的最新值。这和事务的可见性规则并不矛盾。</p>
+<br/>
+<p><strong>那么幻读有什么问题呢?</strong></p>
+<p><strong>首先是语义上</strong></p>
+<p>session A 在 T1 时刻就声明了，“需要把所有 d = 5 的行锁住，不准别的事务进行读写操作”，而事实上，d = 5 的数据多了一行出来。语义被破坏了。并且多出来的（1,1,5）还是可以被随意操作的。比如这行数据其实还能再被改成（1,2,5）甚至是以前的（0,0,0）被改成了（0,0,5），但是id=0也是不受锁控制的。</p>
+<p><strong>其次是数据一致性的问题</strong></p>
+<p>锁是保证一致性的，这个一致性不止是数据库内部的数据状态的一致性，还有数据和日志在逻辑上的一致性。</p>
+<p>我们给整个表的所有记录加上锁，但是阻止不了新插入的记录的变更。</p>
+<br/>
+<p><strong>那么幻读如何解决呢?</strong></p>
+<p>由于行锁只能锁住行，新插入的记录这个动作，要更新的是记录之间的间隙，所以为了解决幻读问题，InnoDB 只好引入新的锁，也就是间隙锁（Gap Lock）</p>
+<p>比如开头插入6个初始记录，这就产生了 7 个间隙。这样就确保了无法插入新的记录，也就是说不仅给行加了行锁，还在间隙上加了间隙锁。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/mysql14.png" alt="mysql14" style="zoom:34%;clear:both;display:block;margin:auto;"  />
+<p>间隙锁 和 行锁 合称为 next-key lock。所以 <em>select * from t for update</em> 可以将整个表的所有记录锁起来。</p>
+<br/>
+<p>需要注意的是，间隙锁是只有在可重复读隔离级别下才会生效。间隙锁的引入虽然解决了幻读问题，但是也增加了锁分析的复杂度。</p>
+<p>由于忽略了间隙锁，在可重复读的隔离级别下，一条查询语句可能在开发人员不经意间成了整个系统死锁的最终元凶！</p>
+<br/>
+<ul>
+<li>参考：<a href="https://blog.csdn.net/Weixiaohuai/article/details/117867353#:~:text=undo%20log%E6%98%AFmysql%E4%B8%AD%E6%AF%94%E8%BE%83%E9%87%8D%E8%A6%81%E7%9A%84%E4%BA%8B%E5%8A%A1%E6%97%A5%E5%BF%97%E4%B9%8B%E4%B8%80%EF%BC%8C%E9%A1%BE%E5%90%8D%E6%80%9D%E4%B9%89%EF%BC%8Cundo%20log%E6%98%AF%E4%B8%80%E7%A7%8D%E7%94%A8%E4%BA%8E%E6%92%A4%E9%94%80%E5%9B%9E%E9%80%80%E7%9A%84%E6%97%A5%E5%BF%97%EF%BC%8C%E5%9C%A8%E4%BA%8B%E5%8A%A1%E6%B2%A1%E6%8F%90%E4%BA%A4%E4%B9%8B%E5%89%8D%EF%BC%8CMySQL%E4%BC%9A%E5%85%88%E8%AE%B0%E5%BD%95%E6%9B%B4%E6%96%B0%E5%89%8D%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%B0%20undo%20log%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E9%87%8C%E9%9D%A2%EF%BC%8C%E5%BD%93%20%E4%BA%8B%E5%8A%A1%E5%9B%9E%E6%BB%9A%20%E6%97%B6%E6%88%96%E8%80%85%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B4%A9%E6%BA%83%E6%97%B6%EF%BC%8C%E5%8F%AF%E4%BB%A5%E5%88%A9%E7%94%A8,undo%20log%E6%9D%A5%E8%BF%9B%E8%A1%8C%E5%9B%9E%E9%80%80%E3%80%82%20%E4%BA%8C%E3%80%81undo%20log%E7%9A%84%E4%BD%9C%E7%94%A8%20%E5%9C%A8MySQL%E4%B8%AD%EF%BC%8Cundo%20log%E6%97%A5%E5%BF%97%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%BB%E8%A6%81%E6%9C%89%E4%B8%A4%E4%B8%AA%EF%BC%9A%201%E3%80%81%E6%8F%90%E4%BE%9B%E5%9B%9E%E6%BB%9A%E6%93%8D%E4%BD%9C%E3%80%90undo%20log%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%8E%9F%E5%AD%90%E6%80%A7%E3%80%91" target="_blank" rel="noopener noreffer">MySQL回滚日志（undo log）总结</a></li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-08-02</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/what-happened-to-mysql-query-2/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/what-happened-to-mysql-query-2/" data-title="一条MySQL查询语句经历了什么--事务"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/what-happened-to-mysql-query-2/" data-title="一条MySQL查询语句经历了什么--事务"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/what-happened-to-mysql-query-2/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/database/">Database</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/ebpf%E8%B6%85%E4%B9%8E%E4%BD%A0%E6%83%B3%E8%B1%A1/" class="prev" rel="prev" title="eBPF超乎你想象"><i class="fas fa-angle-left fa-fw"></i>eBPF超乎你想象</a>
+            <a href="/post/go%E5%8F%AF%E4%BB%A5%E6%97%A0%E9%99%90go%E5%90%97/" class="next" rel="next" title="Go可以无限go下去吗">Go可以无限go下去吗<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.129.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.org/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

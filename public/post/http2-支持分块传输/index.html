@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>HTTP2 下的 Transfer-Encoding: chunked - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/">
+  <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
+  <meta property="og:title" content="HTTP2 下的 Transfer-Encoding: chunked">
+  <meta property="og:description" content="在 HTTP 中传输数据有一个 chunked 的方式, 又称“分块传输”。在响应报文里用头字段Transfer-Encoding: chunked 来表示。意思是报文里的 body 部分不是一次性发过来的，而是分成了许多的块（chunk）逐个发送。而 HTTP2.0 协议作为 HTTP协议的升级，自然是对chunked模式做支持？不然！
+HTTP2 是没有 chunked 的！">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-02-28T18:20:00+00:00">
+    <meta property="article:modified_time" content="2022-02-28T18:20:00+00:00">
+    <meta property="article:tag" content="Network">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="HTTP2 下的 Transfer-Encoding: chunked">
+  <meta name="twitter:description" content="在 HTTP 中传输数据有一个 chunked 的方式, 又称“分块传输”。在响应报文里用头字段Transfer-Encoding: chunked 来表示。意思是报文里的 body 部分不是一次性发过来的，而是分成了许多的块（chunk）逐个发送。而 HTTP2.0 协议作为 HTTP协议的升级，自然是对chunked模式做支持？不然！
+HTTP2 是没有 chunked 的！">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/" /><link rel="prev" href="http://localhost:1313/post/http-2-0-header-compression/" /><link rel="next" href="http://localhost:1313/post/golang-%E7%9A%84%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90/" /><link rel="stylesheet" href="https://cdn.staticfile.org//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.scss"><link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "HTTP2 下的 Transfer-Encoding: chunked",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "network","wordcount":  322 ,
+        "url": "http:\/\/localhost:1313\/post\/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93\/","datePublished": "2022-02-28T18:20:00+00:00","dateModified": "2022-02-28T18:20:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">HTTP2 下的 Transfer-Encoding: chunked</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-02-28">2022-02-28</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;322 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#chunked-的编码规则">chunked 的编码规则</a></li>
+    <li><a href="#http2-下的分块传输">HTTP2 下的分块传输</a></li>
+    <li><a href="#使用-http2-发送-chunked">使用 HTTP2 发送 chunked</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>在 <span style="color:#FF7F50"> HTTP </span> 中传输数据有一个 <span style="color:#FF7F50">chunked</span> 的方式, 又称“分块传输”。在响应报文里用头字段<span style="color:#FF7F50">Transfer-Encoding: chunked</span> 来表示。意思是报文里的 body 部分不是一次性发过来的，而是分成了许多的块（<span style="color:#FF7F50">chunk</span>）逐个发送。而 <span style="color:#FF7F50">HTTP2.0</span> 协议作为 <span style="color:#FF7F50">HTTP</span>协议的升级，自然是对<span style="color:#FF7F50">chunked</span>模式做支持？不然！</p>
+<p><strong>HTTP2 是没有 chunked 的！</strong></p>
+<p>分块传输也可以用于“流式数据”，例如由数据库动态生成的表单页面，这种情况下 <span style="color:#FF7F50">body</span> 数据的长度是未知的，无法在头字段“<span style="color:#FF7F50">Content-Length</span>”里给出确切的长度，所以也只能用 <span style="color:#FF7F50">chunked</span> 方式分块发送。</p>
+<h1 id="chunked-的编码规则">chunked 的编码规则</h1>
+<ul>
+<li>每个分块包含两个部分，长度头和数据块；</li>
+<li>长度头是以 CRLF（回车换行，即\r\n）结尾的一行明文，用 16 进制数字表示长度；</li>
+<li>数据块紧跟在长度头后，最后也用 CRLF 结尾，但数据不包含 CRLF；</li>
+<li>最后用一个长度为 0 的块表示结束，即“0\r\n\r\n”</li>
+</ul>
+<img src="https://img1.kiosk007.top/static/images/network/HTTP2/http2_chunked.webp">
+<h1 id="http2-下的分块传输">HTTP2 下的分块传输</h1>
+<p>先说结论，<span style="color:#FF7F50">HTTP2</span> 是不支持 <span style="color:#FF7F50">HTTP1</span> 语义下的 <span style="color:#FF7F50">chunked</span> 模式的。因为H2的 <span style="color:#FF7F50">Data</span> 帧是纯天然的Chunked模式。</p>
+<p>这也是最容易出bug的地方，一些实现不完全的HTTP2开源库经常在这里出问题。因为我们线上都是客户端请求基本都是 <span style="color:#FF7F50">chunked </span>模式，升级到 HTTP2 之后，经常访问一些三方链接访问卡死，最终 <span style="color:#FF7F50">debug</span> 后的原因发现出在服务端对 <span style="color:#FF7F50">HTTP2 chunked </span> 的支持上。</p>
+<p>最常见的反向代理实现 <span style="color:#FF7F50">Nginx</span> 就是最容易有这种 <span style="color:#FF7F50">bug</span>的，很多企业维护的<span style="color:#FF7F50">Nginx</span>经常不更新，而低版本的<span style="color:#FF7F50">Nginx</span>在<span style="color:#FF7F50">HTTP2</span>上的这个<span style="color:#FF7F50">bug</span>就被我们遇到过。</p>
+<p>具体现象是，客户端使用<span style="color:#FF7F50">chunked</span>模式上传，但是服务端开启了 <span style="color:#FF7F50">HTTP2</span>，自然客户端也就升级到 <span style="color:#FF7F50">HTTP2</span> 。但是请求总是卡主，服务端无响应。最终定位到如果 <span style="color:#FF7F50">DATA</span>帧不携带内容，只携带一个 <span style="color:#FF7F50">End Stream</span> 标志，服务端无法识别流式传输结束。我拿 <code>www.bing.com</code> 做了对比，其他网站都是正常的。</p>
+<img src="https://img1.kiosk007.top/static/images/network/HTTP2/http2_chunked_bug.png">
+<p>其实 <a href="https://datatracker.ietf.org/doc/html/rfc7540#section-8.1" style="color:#556B2F"> RFC 7540 </a> 早有规定，HTTP2 的传输是不支持 <span style="color:#FF7F50">Transfer-Encoding: chunked</span> 的。</p>
+<img src="https://img1.kiosk007.top/static/images/network/HTTP2/http2_chunked_rfc.png">
+<p>一般的网络库(如 <span style="color:#FF7F50">Cronet</span>、<span style="color:#FF7F50">OKHTTP</span> )底层都给我们做了兼容，如果上层使用 <span style="color:#FF7F50"> chunked </span> 模式传输，而实际使用的是 HTTP2 ,网络库会帮我们自动隐藏掉 <span style="color:#FF7F50">Transfer-Encoding: chunked</span> 这个 <span style="color:#FF7F50"> Header </span> 。</p>
+<h1 id="使用-http2-发送-chunked">使用 HTTP2 发送 chunked</h1>
+<p>这里我们以 Golang 的 HTTP2 官方的客户端库做一个测试.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">rd</span><span class="p">,</span> <span class="nx">wr</span> <span class="o">:=</span> <span class="nx">io</span><span class="p">.</span><span class="nf">Pipe</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">u</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">url</span><span class="p">.</span><span class="nf">Parse</span><span class="p">(</span><span class="s">&#34;https://httpbin.org/post&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">req</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Method</span><span class="p">:</span>           <span class="s">&#34;POST&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ProtoMajor</span><span class="p">:</span>       <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ProtoMinor</span><span class="p">:</span>       <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">URL</span><span class="p">:</span>              <span class="nx">u</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">TransferEncoding</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;chunked&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Body</span><span class="p">:</span>             <span class="nx">rd</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Header</span><span class="p">:</span>           <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="kt">string</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">req</span><span class="p">.</span><span class="nx">Header</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;Content-Type&#34;</span><span class="p">,</span> <span class="s">&#34;application/x-protobuf&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">client</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">transport</span> <span class="o">*</span><span class="nx">http2</span><span class="p">.</span><span class="nx">Transport</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">sslkeylogfile</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">OpenFile</span><span class="p">(</span><span class="s">&#34;/tmp/sslkey.log&#34;</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nx">O_WRONLY</span><span class="p">|</span><span class="nx">os</span><span class="p">.</span><span class="nx">O_CREATE</span><span class="p">|</span><span class="nx">os</span><span class="p">.</span><span class="nx">O_APPEND</span><span class="p">,</span> <span class="mo">0666</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">sslkeylogfile</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">transport</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">http2</span><span class="p">.</span><span class="nx">Transport</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">config</span> <span class="o">*</span><span class="nx">tls</span><span class="p">.</span><span class="nx">Config</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">tls</span><span class="p">.</span><span class="nx">Config</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">InsecureSkipVerify</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">KeyLogWriter</span><span class="p">:</span>       <span class="nx">sslkeylogfile</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">transport</span><span class="p">.</span><span class="nx">TLSClientConfig</span> <span class="p">=</span> <span class="nx">config</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">client</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span><span class="p">{</span><span class="nx">Transport</span><span class="p">:</span> <span class="nx">transport</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">buf</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">str</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">100000</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">str</span> <span class="o">+=</span> <span class="s">&#34;0&#34;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nx">f</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">NewReader</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">n</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">f</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">buf</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="nx">n</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">break</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">wr</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">buf</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">wr</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="p">}()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="kc">nil</span> <span class="o">!=</span> <span class="nx">err</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;error =&gt;&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">Body</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">body</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadAll</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="kc">nil</span> <span class="o">!=</span> <span class="nx">err</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;error =&gt;&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">body</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过导入 <span style="color:#FF7F50">SSLKEYLOG</span> 从 <span style="color:#FF7F50">Wireshark</span> 抓包可以看到，每个 <span style="color:#FF7F50">Data Frame</span> 大小为 8000 。</p>
+<img src="https://img1.kiosk007.top/static/images/network/HTTP2/http2_chunked_wireshark.png"></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-02-28</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/" data-title="HTTP2 下的 Transfer-Encoding: chunked"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/" data-title="HTTP2 下的 Transfer-Encoding: chunked"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/network/">Network</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/http-2-0-header-compression/" class="prev" rel="prev" title="HTTP/2.0 Header Compression"><i class="fas fa-angle-left fa-fw"></i>HTTP/2.0 Header Compression</a>
+            <a href="/post/golang-%E7%9A%84%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90/" class="next" rel="next" title="Golang 的内存对齐">Golang 的内存对齐<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.129.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.org/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

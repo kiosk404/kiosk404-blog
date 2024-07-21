@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Devops - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/topic/interview/devops/">
+  <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
+  <meta property="og:title" content="Devops">
+  <meta property="og:description" content="DevOps is the union of people, process, and technology to continually provide value to customers.
+Devops
+进程、线程、协程 CPU 性能分析工具 Linux启动顺序 Docker
+Docker是什么 Devops 进程、线程、协程 进程（Process） 进程是具有一定独立功能的程序在一定数据集上的运行活动，进程是系统中进行资源分配和调度的独立单元。每个进程都有自己独立的内存空间，不同的进程通过进程间通信进行通信。由于进程比较重，占用独立内存，上下文进程之间的切换开销（栈、寄存器、虚拟内存、文件句柄等）比较大，但是比较稳定和安全。 线程（Thread） 线程是进程的一个实体，是CPU调度和分派的基本单位。它是一个比进程更小的基本单元，可以独立运行。线程本身基本上不拥有系统资源，只有少数运行中必不可少的资源（如程序计数器、一组寄存器和堆栈），但它可以与属于同一进程的其他线程共享该进程拥有的所有资源过程。线程间通信主要是通过共享内存，上下文切换速度快，资源开销少，但相对于进程来说不够稳定，容易丢失数据。 协程（Coroutine） 协程是用户态的轻量级线程，协程的调度完全由用户控制。协程有自己的寄存器上下文和堆栈。当协程调度切换时，将寄存器上下文和堆栈保存到其他地方。切换回来时，恢复之前保存的寄存器上下文和堆栈。直接操作栈基本不会有内核切换开销，可以不加锁访问全局变量，所以上下文切换非常快。 CPU 性能分析工具 top、mpstat、pidstat、uptime、vmstate
+关注点：
+上下文切换（cs context switch）：过多的上下文切换会导致 CPU时间消耗在寄存器、内存栈以及虚拟内存等数据的保存和恢复上，从而缩短真正运行的时间。
+自愿上下文切换：进程无法获取到所需要的资源导致的上下文切换。比如 I/O 、内存等系统资源不足 非自愿上下文切换：进程因为时间片到时原因，被系统强制调度。 就绪队列长度（r runing or runnable）：是正在运行和等待 CPU 的进程数。
+不可中断睡眠状态的进程数（b Blocked）：处于不可中断睡眠状态的进程数。
+Linux 启动顺序 针对不同的架构，引导的方式有所差异。x86支持UEFI（Unified Extensible Firmware Interface）和BIOS方式启动，AArch64仅支持UEFI方式启动。 统一的可扩展固件接口UEFI是一种全新类型的接口标准，用于开机自检、引导操作系统的启动，是传统BIOS的一种替代方案
+第一阶段：硬件引导启动 Power ON 加电自检：主要检查外围设备CPU、内存等 BIOS POST初始化硬件： 加载MBR到内存阶段：BIOS 读取并执行启动设备的MBR中的Bootloader 第二阶段：GRUB2启动引导阶段 解析grub的配置文件 /boot 分区下 /boot/grub/grub.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="topic">
+    <meta property="article:published_time" content="2022-06-08T23:41:26+00:00">
+    <meta property="article:modified_time" content="2022-06-08T23:41:26+00:00">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="Devops">
+  <meta name="twitter:description" content="DevOps is the union of people, process, and technology to continually provide value to customers.
+Devops
+进程、线程、协程 CPU 性能分析工具 Linux启动顺序 Docker
+Docker是什么 Devops 进程、线程、协程 进程（Process） 进程是具有一定独立功能的程序在一定数据集上的运行活动，进程是系统中进行资源分配和调度的独立单元。每个进程都有自己独立的内存空间，不同的进程通过进程间通信进行通信。由于进程比较重，占用独立内存，上下文进程之间的切换开销（栈、寄存器、虚拟内存、文件句柄等）比较大，但是比较稳定和安全。 线程（Thread） 线程是进程的一个实体，是CPU调度和分派的基本单位。它是一个比进程更小的基本单元，可以独立运行。线程本身基本上不拥有系统资源，只有少数运行中必不可少的资源（如程序计数器、一组寄存器和堆栈），但它可以与属于同一进程的其他线程共享该进程拥有的所有资源过程。线程间通信主要是通过共享内存，上下文切换速度快，资源开销少，但相对于进程来说不够稳定，容易丢失数据。 协程（Coroutine） 协程是用户态的轻量级线程，协程的调度完全由用户控制。协程有自己的寄存器上下文和堆栈。当协程调度切换时，将寄存器上下文和堆栈保存到其他地方。切换回来时，恢复之前保存的寄存器上下文和堆栈。直接操作栈基本不会有内核切换开销，可以不加锁访问全局变量，所以上下文切换非常快。 CPU 性能分析工具 top、mpstat、pidstat、uptime、vmstate
+关注点：
+上下文切换（cs context switch）：过多的上下文切换会导致 CPU时间消耗在寄存器、内存栈以及虚拟内存等数据的保存和恢复上，从而缩短真正运行的时间。
+自愿上下文切换：进程无法获取到所需要的资源导致的上下文切换。比如 I/O 、内存等系统资源不足 非自愿上下文切换：进程因为时间片到时原因，被系统强制调度。 就绪队列长度（r runing or runnable）：是正在运行和等待 CPU 的进程数。
+不可中断睡眠状态的进程数（b Blocked）：处于不可中断睡眠状态的进程数。
+Linux 启动顺序 针对不同的架构，引导的方式有所差异。x86支持UEFI（Unified Extensible Firmware Interface）和BIOS方式启动，AArch64仅支持UEFI方式启动。 统一的可扩展固件接口UEFI是一种全新类型的接口标准，用于开机自检、引导操作系统的启动，是传统BIOS的一种替代方案
+第一阶段：硬件引导启动 Power ON 加电自检：主要检查外围设备CPU、内存等 BIOS POST初始化硬件： 加载MBR到内存阶段：BIOS 读取并执行启动设备的MBR中的Bootloader 第二阶段：GRUB2启动引导阶段 解析grub的配置文件 /boot 分区下 /boot/grub/grub.">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/topic/interview/devops/" /><link rel="prev" href="http://localhost:1313/topic/interview/golang/" /><link rel="next" href="http://localhost:1313/topic/interview/database/" /><link rel="stylesheet" href="https://cdn.staticfile.org//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.scss"><link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Devops",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/topic\/interview\/devops\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "gallery","wordcount":  109 ,
+        "url": "http:\/\/localhost:1313\/topic\/interview\/devops\/","datePublished": "2022-06-08T23:41:26+00:00","dateModified": "2022-06-08T23:41:26+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk007"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/topic/interview/devops/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="page single special"><h1 class="single-title animated pulse faster">Devops</h1><h2 class="single-subtitle">A compound of development (Dev) and operations (Ops)</h2><div class="content" id="content"><blockquote>
+<p>DevOps is the union of people, process, and technology to continually provide value to customers.</p>
+</blockquote>
+<ul>
+<li>
+<p><a href="/topic/interview/devops/#devops" rel="">Devops</a></p>
+<ul>
+<li><a href="/topic/interview/devops/#%e8%bf%9b%e7%a8%8b%e7%ba%bf%e7%a8%8b%e5%8d%8f%e7%a8%8b" rel="">进程、线程、协程</a></li>
+<li><a href="/topic/interview/devops/#cpu-%e6%80%a7%e8%83%bd%e5%88%86%e6%9e%90%e5%b7%a5%e5%85%b7" rel="">CPU 性能分析工具</a></li>
+<li><a href="/topic/interview/devops/#linux-%e5%90%af%e5%8a%a8%e9%a1%ba%e5%ba%8f" rel="">Linux启动顺序</a></li>
+</ul>
+</li>
+<li>
+<p><a href="/topic/interview/devops/#docker" rel="">Docker</a></p>
+<ul>
+<li><a href="/topic/interview/devops/#docker-%E6%98%AF%E4%BB%80%E4%B9%88" rel="">Docker是什么</a></li>
+</ul>
+</li>
+</ul>
+<br/>
+<br/>
+<h2 id="devops">Devops</h2>
+<h3 id="进程线程协程">进程、线程、协程</h3>
+<ul>
+<li>进程（Process）
+<ul>
+<li>进程是具有一定独立功能的程序在一定数据集上的运行活动，进程是系统中进行资源分配和调度的独立单元。每个进程都有自己独立的内存空间，不同的进程通过进程间通信进行通信。由于进程比较重，占用独立内存，上下文进程之间的切换开销（栈、寄存器、虚拟内存、文件句柄等）比较大，但是比较稳定和安全。</li>
+</ul>
+</li>
+<li>线程（Thread）
+<ul>
+<li>线程是进程的一个实体，是CPU调度和分派的基本单位。它是一个比进程更小的基本单元，可以独立运行。线程本身基本上不拥有系统资源，只有少数运行中必不可少的资源（如程序计数器、一组寄存器和堆栈），但它可以与属于同一进程的其他线程共享该进程拥有的所有资源过程。线程间通信主要是通过共享内存，上下文切换速度快，资源开销少，但相对于进程来说不够稳定，容易丢失数据。</li>
+</ul>
+</li>
+<li>协程（Coroutine）
+<ul>
+<li>协程是用户态的轻量级线程，协程的调度完全由用户控制。协程有自己的寄存器上下文和堆栈。当协程调度切换时，将寄存器上下文和堆栈保存到其他地方。切换回来时，恢复之前保存的寄存器上下文和堆栈。直接操作栈基本不会有内核切换开销，可以不加锁访问全局变量，所以上下文切换非常快。</li>
+</ul>
+</li>
+</ul>
+<h3 id="cpu-性能分析工具">CPU 性能分析工具</h3>
+<p><code>top</code>、<code>mpstat</code>、<code>pidstat</code>、<code>uptime</code>、<code>vmstate</code></p>
+<p>关注点：</p>
+<ul>
+<li>
+<p>上下文切换（cs context switch）：过多的上下文切换会导致 CPU时间消耗在寄存器、内存栈以及虚拟内存等数据的保存和恢复上，从而缩短真正运行的时间。</p>
+<ul>
+<li><strong>自愿上下文切换</strong>：进程无法获取到所需要的资源导致的上下文切换。比如 I/O 、内存等系统资源不足</li>
+<li><strong>非自愿上下文切换</strong>：进程因为时间片到时原因，被系统强制调度。</li>
+</ul>
+</li>
+<li>
+<p>就绪队列长度（r runing or runnable）：是正在运行和等待 CPU 的进程数。</p>
+</li>
+<li>
+<p>不可中断睡眠状态的进程数（b Blocked）：处于不可中断睡眠状态的进程数。</p>
+</li>
+</ul>
+<br/>
+<h3 id="linux-启动顺序">Linux 启动顺序</h3>
+<blockquote>
+<p>针对不同的架构，引导的方式有所差异。x86支持UEFI（Unified Extensible Firmware Interface）和BIOS方式启动，AArch64仅支持UEFI方式启动。
+统一的可扩展固件接口UEFI是一种全新类型的接口标准，用于开机自检、引导操作系统的启动，是传统BIOS的一种替代方案</p>
+</blockquote>
+<ul>
+<li><strong>第一阶段：硬件引导启动</strong></li>
+</ul>
+<ol>
+<li>Power ON 加电自检：主要检查外围设备CPU、内存等</li>
+<li>BIOS POST初始化硬件：</li>
+<li>加载MBR到内存阶段：BIOS 读取并执行启动设备的MBR中的Bootloader</li>
+</ol>
+<ul>
+<li><strong>第二阶段：GRUB2启动引导阶段</strong></li>
+</ul>
+<ol>
+<li>解析grub的配置文件 /boot 分区下 /boot/grub/grub.conf, 显示操作系统启动菜单。</li>
+<li>加载内存镜像到内存</li>
+<li>通过 /boot/initrd 开头文件建立虚拟 DAM DISK 虚拟文件系统，转交给内核</li>
+</ol>
+<ul>
+<li><strong>第三阶段：内核引导阶段</strong></li>
+</ul>
+<ol>
+<li>加载解压内核：执行核心的程序，为了让内核足够小，硬件驱动并没有放在内核文件里面</li>
+<li>内核初始化：启动systemd程序，先执行initrd.target, 挂载 /etc/fstab 文件中的文件系统。</li>
+<li>从 initramfs 根文件系统切换到磁盘的根目录</li>
+</ol>
+<ul>
+<li><strong>第四阶段：systemd初始化阶段</strong></li>
+</ul>
+<ol>
+<li>systemd 执行默认target配置</li>
+</ol>
+<br/>
+<h2 id="docker">Docker</h2>
+<h3 id="docker-是什么">Docker 是什么</h3>
+<p>Docker本身所用到的隔离技术也并不是什么黑科技，都是把已有的功能翻出来拼装了一下而已。<strong>容器的本质是一个“单进程”模型，本质是一个特殊的进程而已</strong></p>
+<p>Docker 容器技术是由 Namespace、Cgroups、rootfs 三种技术构建出</p>
+<ul>
+<li><strong>Namespace</strong> : Linux很早版本就实现的一个系统调用，他可以实现新创建一个进程的时候，为这个进程创建一个沙盒，有挂载点、UTS（主机名）、共享内存、进程号、网络、用户 几种</li>
+<li><strong>Cgroups</strong>：用来限制资源使用的一种技术</li>
+<li><strong>rootfs</strong>：挂载在容器根目录上，用来给容器进程提供隔离后执行环境的文件系统就是 rootfs（根文件系统），其利用了 Union File System 的能力，将多个目录挂载到同一个目录之上。</li>
+</ul>
+</div></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.129.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.org/lightgallery/2.7.1/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.org/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/lightgallery/2.7.1/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/lightgallery/2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/lightgallery/2.7.1/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

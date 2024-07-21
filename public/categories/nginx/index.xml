@@ -1,0 +1,37 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Nginx - Category - Kiosk&#39;s 个人编程技术分享</title>
+        <link>http://localhost:1313/categories/nginx/</link>
+        <description>Nginx - Category - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 04 Dec 2021 10:16:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/categories/nginx/" rel="self" type="application/rss+xml" /><item>
+    <title>Nginx Lua 扩展 --（Nginx 监控）</title>
+    <link>http://localhost:1313/post/nginx-lua-%E5%85%A5%E9%97%A8/</link>
+    <pubDate>Sat, 04 Dec 2021 10:16:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/nginx-lua-%E5%85%A5%E9%97%A8/</guid>
+    <description><![CDATA[<p>上周我从腾讯云买了一台服务器，开始将本站解析到腾讯云上，至此本站彻底支持了HTTP3访问。不过也需要对Nginx进行一定程度的封装。一个最佳的选择是使用 <code>lua-nginx-module</code> 来扩展Nginx的能力，比如我想对请求进行一些访问统计，将数据发送到 open-falcon 或者 Prometheus 上。</p>
+<p><a href="https://github.com/openresty/lua-nginx-module" target="_blank" rel="noopener noreffer">lua-nginx-module</a> 是一个实现使用lua语言直接控制Nginx内HTTP请求的一个Nginx module。这个组合很强大，提供了动态语言的强悍性能和生产力。</p>]]></description>
+</item><item>
+    <title>k8s 部署 HTTP3  Nginx </title>
+    <link>http://localhost:1313/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/</link>
+    <pubDate>Wed, 04 Aug 2021 22:56:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/</guid>
+    <description><![CDATA[<p>在之前的文章中介绍了如何编译<a href="https://kiosk007.top/2021/07/31/%E5%B0%9D%E8%AF%95-Nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8HTTP3/" target="_blank" rel="noopener noreffer">支持HTTP3的Nginx</a> 为了一键将H3 Nginx上云，一劳永逸，本文会记录一下容器化Nginx的过程。</p>]]></description>
+</item><item>
+    <title>基于Nginx的实时音频直播服务</title>
+    <link>http://localhost:1313/post/%E5%9F%BA%E4%BA%8Enginx%E5%AE%9E%E7%8E%B0%E7%9A%84rtmp%E6%9C%8D%E5%8A%A1/</link>
+    <pubDate>Mon, 16 Nov 2020 23:02:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E5%9F%BA%E4%BA%8Enginx%E5%AE%9E%E7%8E%B0%E7%9A%84rtmp%E6%9C%8D%E5%8A%A1/</guid>
+    <description><![CDATA[<p>最近在百度云上下了一些学习视频（别想歪..），苦于一台笔记本不方便同时跟着操作变播放，那么既然都有笔记本了，何不搭建一个视频播放服务呢？笔记本使用Nginx搭建一个视频服务器，iPad上使用播放器（Aplayer），不仅是播放还可以直播，这不正契合了当前的高热话题“实时音视频直播技术”么，最近也找了一部分资料，趁着直播的热度在这里总结一下。</p>]]></description>
+</item><item>
+    <title>自建 Nginx 部署</title>
+    <link>http://localhost:1313/post/%E8%87%AA%E5%BB%BA-nginx-%E7%AB%99%E7%82%B9%E9%83%A8%E7%BD%B2/</link>
+    <pubDate>Sat, 18 Apr 2020 20:51:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E8%87%AA%E5%BB%BA-nginx-%E7%AB%99%E7%82%B9%E9%83%A8%E7%BD%B2/</guid>
+    <description><![CDATA[<p>这段时间搭建自己的 <a href="http://nginx.org/" target="_blank" rel="noopener noreffer">Nginx</a> 服务器，顺便总结回顾了一些运维相关的知识点，详细介绍了如何搭建一个企业级的高性能 Nginx 服务器。</p>]]></description>
+</item></channel>
+</rss>

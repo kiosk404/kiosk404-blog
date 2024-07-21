@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>一条MySQL查询语句经历了什么--索引 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/what-happened-to-mysql-query-1/">
+  <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
+  <meta property="og:title" content="一条MySQL查询语句经历了什么--索引">
+  <meta property="og:description" content=" MySQL 之前已经接触过非常多了，只是将MySQL当作一个 excel 文档，需要取数据了通过命令获取。 但是实际上 MySQL 内部还是有很多奥秘的，一条语句的执行也有很多有意思的设计逻辑。
+下面对自己学习的MySQL的执行过程做一个学习记录。通过把MySQL 拆解一下，来对MySQL做更深层次的理解。再遇到一些异常或者问题时，可以直戳本质，更为快速定位并解决问题。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-06-28T18:20:00+00:00">
+    <meta property="article:modified_time" content="2022-06-28T18:20:00+00:00">
+    <meta property="article:tag" content="Database">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="一条MySQL查询语句经历了什么--索引">
+  <meta name="twitter:description" content=" MySQL 之前已经接触过非常多了，只是将MySQL当作一个 excel 文档，需要取数据了通过命令获取。 但是实际上 MySQL 内部还是有很多奥秘的，一条语句的执行也有很多有意思的设计逻辑。
+下面对自己学习的MySQL的执行过程做一个学习记录。通过把MySQL 拆解一下，来对MySQL做更深层次的理解。再遇到一些异常或者问题时，可以直戳本质，更为快速定位并解决问题。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/what-happened-to-mysql-query-1/" /><link rel="prev" href="http://localhost:1313/post/elasticsearch/" /><link rel="next" href="http://localhost:1313/post/ebpf%E8%B6%85%E4%B9%8E%E4%BD%A0%E6%83%B3%E8%B1%A1/" /><link rel="stylesheet" href="https://cdn.staticfile.org//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.scss"><link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "一条MySQL查询语句经历了什么--索引",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/what-happened-to-mysql-query-1\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "database","wordcount":  863 ,
+        "url": "http:\/\/localhost:1313\/post\/what-happened-to-mysql-query-1\/","datePublished": "2022-06-28T18:20:00+00:00","dateModified": "2022-06-28T18:20:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/what-happened-to-mysql-query-1/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">一条MySQL查询语句经历了什么--索引</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/mysql/"><i class="far fa-folder fa-fw"></i>Mysql</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-06-28">2022-06-28</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;863 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是索引">什么是索引</a></li>
+    <li><a href="#innodb-索引模型">InnoDB 索引模型</a></li>
+    <li><a href="#索引维护">索引维护</a>
+      <ul>
+        <li><a href="#主键索引应该怎么选">主键索引应该怎么选？</a></li>
+        <li><a href="#为什么要重建索引">为什么要重建索引？</a></li>
+      </ul>
+    </li>
+    <li><a href="#索引优化">索引优化</a>
+      <ul>
+        <li><a href="#覆盖索引">覆盖索引</a></li>
+        <li><a href="#最左前缀原则">最左前缀原则</a></li>
+        <li><a href="#索引下推">索引下推</a></li>
+        <li><a href="#磁盘io顺序访问">磁盘IO顺序访问</a></li>
+        <li><a href="#前缀索引">前缀索引</a></li>
+      </ul>
+    </li>
+    <li><a href="#索引选择原理">索引选择原理</a>
+      <ul>
+        <li><a href="#扫描行数如何判断">扫描行数如何判断</a></li>
+        <li><a href="#排序对索引选择的影响">排序对索引选择的影响</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><br/>
+<p>MySQL 之前已经接触过非常多了，只是将MySQL当作一个 excel 文档，需要取数据了通过命令获取。 但是实际上 MySQL 内部还是有很多奥秘的，一条语句的执行也有很多有意思的设计逻辑。</p>
+<p>下面对自己学习的MySQL的执行过程做一个学习记录。通过把MySQL 拆解一下，来对MySQL做更深层次的理解。再遇到一些异常或者问题时，可以直戳本质，更为快速定位并解决问题。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/mysql2.png" alt="mysql2" style="zoom:34%;clear:both;display:block;margin:auto;" />
+<p>大体来说，MySQL 可以分为 Server 层和存储引擎层。</p>
+<p>Server 层包括 连接器、查询缓存、分析器、优化器、执行器等，涵盖了 MySQL 大多数核心服务功能，以及所有的内置函数，所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、试图等等。</p>
+<p>存储引擎负责的是数据的存储和提取，其架构是插件式的，支持 InnoDB、MyISAM、Memory 等多个存储引擎，最常用的存储引擎就是 InnoDB 。</p>
+<blockquote>
+<p>由于查询缓存的失效比较频繁，弊端多多，MySQL 8.0 版本直接将查询缓存的整块功能删掉了。</p>
+</blockquote>
+<br/>
+<h1 id="什么是索引">什么是索引</h1>
+<p>提到索引肯定不会陌生，一般我们遇到查询慢的时候，第一反应就是加索引了吗？<strong>索引就像是书的目录一样，快速找到想要的内容。</strong></p>
+<p>索引其本质就是快速找到自己想要数据入口的方式，常见的索引的数据结构有 <strong>哈希表</strong>、<strong>有序数组</strong>和<strong>搜索树</strong>。</p>
+<blockquote>
+<p>MySQL 的索引是 B+ 树实现的</p>
+</blockquote>
+<ul>
+<li><strong>哈希表</strong></li>
+</ul>
+<p>哈希表是一种以 键-值 存储的数据结构。哈希表的思路很简单，把值放到数组中。Key 是哈希函数算出确定的位置，Value 就是数组的下标Index。</p>
+<p>但哈希的方式有个明显的缺陷，当我需要的查询语句如下时。</p>
+<p><em>SELECT * FROM table WHERE number &gt; 10 and number &lt; 100</em></p>
+<p>这就需要全表扫描了。所以 <strong>哈希表这种结构只适用于等值查询的场景</strong>。</p>
+<ul>
+<li><strong>有序数组</strong></li>
+</ul>
+<p>有序数组解决等值查询和范围查询都很优秀。但问题就是有序数组不适合内容的频繁更新，如中间插入一个记录时必须挪动后面的全部记录，<strong>所以有序数组只适合静态存储引擎</strong></p>
+<ul>
+<li><strong>二叉搜索树</strong></li>
+</ul>
+<p>二叉搜索树的特点是左子树小于父节点，而右子树大于父节点。其查询复杂度是 O(log(N)) ，且其更新的时间复杂度也是 O(log(N)) 。</p>
+<p>实际上，因为索引大多时候是保存在磁盘上，而N叉树由于在读写上的性能优点，以及适配磁盘的访问模式，是最广泛被应用的数据库引擎。</p>
+<br/>
+<p>在 MySQL 中，索引是在存储引擎层实现的，所以并没有统一的索引标准，即不同的存储引擎的索引工作方式并不一样，其底层实现也不一样。而当前最受欢迎的 InnoDB 所使用的是 B+ 树。</p>
+<br/>
+<h1 id="innodb-索引模型">InnoDB 索引模型</h1>
+<p>在 InnoDB 中，表是根据主键顺序以索引的形式存放的，这种存储方式的表称为索引组织表。InnoDB 使用的是 B+ 树索引模型，所以数据都是存储在 B+ 树中的。</p>
+<p><strong>每个索引在InnoDB中都是对应一个 B+ 树</strong></p>
+<p>一个简单的例子，假设有一个主键列为 id 的表和字段 k，并且 k 上有索引。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="nf">T</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">id</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">k</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="no">null</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">name</span><span class="w"> </span><span class="kt">varchar</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">index</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="p">))</span><span class="kp">engine</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果我们插入了 6 组数据 （1,100）、（2,200）、（3,300）、（4,400）、（5,500）、（6,600）</p>
+<p>其本质是建立了两个索引，如下图</p>
+<img src="https://img1.kiosk007.top/static/images/blog/mysql3.png" alt="mysql3" style="zoom:30%;clear:both;display:block;margin:auto;" />
+<p>上图本质上是个 B+ 树，只不过这里被我画成了数组方便理解。可以看出根据叶子节点的内容，索引类型分为主键索引和普通索引。</p>
+<ul>
+<li>
+<p>主键索引的叶子节点存的是正行数据记录（Record）。在 InnoDB 中，主键索引也被称为<strong>聚簇索引</strong>（clustered index）</p>
+</li>
+<li>
+<p>非主键索引的叶子节点存的是主键的值。在 InnoDB 中，非主键索引被称为<strong>二级索引</strong>（secondary index）</p>
+</li>
+</ul>
+<p>基于主键索引的查找是最直接的，所以主键查询最快，效率最高。</p>
+<p>比如 <em>SELECT * FROM T WHERE ID=1</em> ，即主键查询的方式，只需要搜索 ID 这棵 B+ 树</p>
+<p>而 <em>SELECT * FROM T WHERE k=100</em> ，是先通过搜索K的索引树，找到k=100时的主键是1，再到 ID 索引树搜索一次，这个过程称为<strong>回表</strong>。</p>
+<p>也就是说，基于非主键索引的查询需要多扫描一颗索引树。</p>
+<br/>
+<h1 id="索引维护">索引维护</h1>
+<p>索引的维护这里我们讨论几个问题。</p>
+<h2 id="主键索引应该怎么选">主键索引应该怎么选？</h2>
+<p>先说答案：最好是自增ID</p>
+<ol>
+<li>如果业务逻辑的字段做主键，不能保证有序插入，自增ID可以有效保证递增插入效率。每次插入一条新记录，都是追加操作，不涉及挪动其他记录，也不会触发叶子节点的分裂。</li>
+<li>从存储空间的角度讲，二级索引存放的是主键索引，如果用身份证号这种数据当作主键索引，那么二级索引需要多出很多空间来存放18位的身份证号。而长整型（bigint）也就8个字节。<strong>主键长度越小，二级索引的叶子节点就越小，二级索引所占的空间也就越小</strong></li>
+</ol>
+<br/>
+<h2 id="为什么要重建索引">为什么要重建索引？</h2>
+<p>直接说答案：索引可能因为删除或者页分裂等原因导致数据页有空洞，B+ 树高度虚高。</p>
+<p>重建索引的过程会创建一个新的索引，把数据顺序插入，这样的页面利用率最高，也就是索引更紧凑、更省空间。</p>
+<p><strong>但是</strong>！！ 重建主键索引是不合理的，无论是删除主键还是创建主键，都会将整个表重建。</p>
+<br/>
+<h1 id="索引优化">索引优化</h1>
+<p>用好索引可以让查询速度成倍数的提高性能，用不好则劳民伤财。</p>
+<h2 id="覆盖索引">覆盖索引</h2>
+<p>还是上面那张表 T （id 为主键索引，k为二级索引），我们执行语句 <em>SELECT ID FROM T WHERE k BETWEEN 300 AND 500</em> ，这时因为要查找的就是 ID 的值，而ID的值已经在 K 的索引树上了，可以直接提供查询结果，不需要回表。这种情况称之为覆盖索引。</p>
+<p>举个例子&#x1f330;：</p>
+<p>假设现在设计了一个市民信息登记表</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">tuser</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">id_card</span><span class="o">`</span><span class="w"> </span><span class="kt">varchar</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">name</span><span class="o">`</span><span class="w"> </span><span class="kt">varchar</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">age</span><span class="o">`</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">ismale</span><span class="o">`</span><span class="w"> </span><span class="kt">tinyint</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">KEY</span><span class="w"> </span><span class="o">`</span><span class="n">id_card</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">id_card</span><span class="o">`</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">KEY</span><span class="w"> </span><span class="o">`</span><span class="n">name_age</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">name</span><span class="o">`</span><span class="p">,</span><span class="o">`</span><span class="n">age</span><span class="o">`</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">KEY</span><span class="w"> </span><span class="o">`</span><span class="n">id_card_name</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">id_card</span><span class="o">`</span><span class="p">,</span><span class="o">`</span><span class="n">name</span><span class="o">`</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w"> </span><span class="kp">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们需要根据身份证号查询市民信息的需求，我们在身份证号上建立了一个索引。</p>
+<p>如果我们现在的高频需求是根据 身份证号查姓名，那么建立一个 （身份证号、姓名）的联合索引是十分有必要的。这个高频请求可以用到覆盖索引，不再需要回表查整行记录，减少语句的执行时间。</p>
+<br/>
+<h2 id="最左前缀原则">最左前缀原则</h2>
+<p>还是上面市民信息登记表这个例子。</p>
+<p>如 B+ 树索引这种结构，可以利用索引的 “最左前缀” 来定位记录。</p>
+<p>假设（name，age） 这个联合索引</p>
+<img src="https://img1.kiosk007.top/static/images/blog/mysql4.png" alt="mysql4" style="zoom:38%;clear:both;display:block;margin:auto;" />
+<p>索引在 B+ 树里其实也是按照索引定义出现的字段顺序排序的。那么在查找名字为“张三”的人时，就可以快速定位到 id4 。然后向后遍历得到所有需要的结果。</p>
+<p>即便SQL语句是 &ldquo;<em>WHERE NAME LIKE &lsquo;张%&rsquo;</em>&rdquo; ，也可以利用到最左前缀的优化。</p>
+<p><strong>所以在建立联合索引的时候</strong>，<strong>需要合理安排索引内字段的顺序</strong>。</p>
+<p>同理。因为支持了最左前缀，当已经有了 （a,b）这个联合索引后，一般就不需要再单独给 a 建立索引了。因此就可以通过调整顺序，少维护一个索引。</p>
+<p>如果只有 b 的查询，那么是无法使用 （a,b）这个联合索引的，这时可以再维护一个 （b）的普通索引。</p>
+<br/>
+<h2 id="索引下推">索引下推</h2>
+<p>假设这样一个查询语句</p>
+<p><code>SELECT \* FROM tuser WHERE name LIKE '张%' AND age=23 AND ismale=1</code></p>
+<p>这里知道了前缀索引的匹配规则，找到了 ID3。但是在 MySQL 5.6 之前，只能从 ID3 开始一个一个回表。到主键上再找到具体的行数。再对比字段值。</p>
+<p>如下图所示，这里故意去掉了 age 的值因为 InnoDB不会去看 age 的值。只是按顺序把“name”第一个字是“张”的记录一条条取出来再回表。因此，需要回表4次。</p>
+<figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/mysql6.png" title="https://img1.kiosk007.top/static/images/blog/mysql6.png" data-thumbnail="https://img1.kiosk007.top/static/images/blog/mysql6.png" data-sub-html="<h2>无索引下推(MySQL5.6 以下版本)</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/mysql6.png"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/mysql6.png, https://img1.kiosk007.top/static/images/blog/mysql6.png 1.5x, https://img1.kiosk007.top/static/images/blog/mysql6.png 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/mysql6.png" />
+    </a><figcaption class="image-caption"><code>无索引下推</code>(MySQL5.6 以下版本)</figcaption>
+    </figure>
+<br/>
+<p>MySQL5.6 之后引入的索引下推优化（index condition pushdown），可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
+<p>如下图所示，InnoDB在（name,age）索引内部就判断了 age 是否等于 23。对于不等于的就直接跳过了，减少了3次回表。</p>
+<figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/mysql7.png" title="https://img1.kiosk007.top/static/images/blog/mysql7.png" data-thumbnail="https://img1.kiosk007.top/static/images/blog/mysql7.png" data-sub-html="<h2>索引下推(MySQL5.6 以上版本)</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/mysql7.png"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/mysql7.png, https://img1.kiosk007.top/static/images/blog/mysql7.png 1.5x, https://img1.kiosk007.top/static/images/blog/mysql7.png 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/mysql7.png" />
+    </a><figcaption class="image-caption"><code>索引下推</code>(MySQL5.6 以上版本)</figcaption>
+    </figure>
+<br/>
+<h2 id="磁盘io顺序访问">磁盘IO顺序访问</h2>
+<p>这个看似和索引优化没有关系，其实是有关联的，索引建立的好，就可以利用磁盘IO顺序访问的特性，加速数据删改等相关操作。没错这里指的是索引对数据的删改的影响。</p>
+<p>为什么数据删改的性能还和索引有关系呢？</p>
+<p>先引入一个概念：<strong>change buffer</strong>。</p>
+<p>当需要更新一个数据页时，如果数据页在内存中，就直接更新。如果数据页还没有在内存中的话，在不影响数据一致性的前提下，InnoDB会将更新操作缓存在 change buffer 中，在下次查询访问这个数据时，将内存页读入内存，然后执行 change buffer 中与这个页相关的操作。</p>
+<p><font color="#7E7C7E">需要说明的是，虽然名字叫作 change buffer ，实际上它是可以持久化的数据，也就是 change buffer 在内存中有拷贝，也会被写入到磁盘。</font></p>
+<br/>
+<p>将 change buffer 中的操作应用到原始数据页，得到新结果的过程叫做 merge，除了访问这个数据页会触发 merge 外，系统有后台线程会定期 merge。数据库正常关闭（shutdown）的过程，也会执行 merge 操作。</p>
+<p>显然。如果能够将跟新语句先记录到 change buffer 上，就可以减少磁盘读。尤其是机械磁盘，减少了随机读磁盘的 IO 消耗。具体可参考<a href="https://zhuanlan.zhihu.com/p/145977472" target="_blank" rel="noopener noreffer">知乎-机械磁盘的随机IO慢的超乎想象</a></p>
+<blockquote>
+<p>这里说个题外话，InnoDB 使用 B+树当索引，而不是其他树的原因是因为B+树的节点更大，IO起来会让磁盘工作的更舒服一些。</p>
+</blockquote>
+<p>好了，现在可以说为什么索引选择会影响 数据更新了：</p>
+<p>对于 <a href="https://www.yiibai.com/mysql/unique.html" target="_blank" rel="noopener noreffer">唯一索引</a> 来说，所有的更新操作都需要先判断这个操作是否违反了唯一性约束。比如，要插入 （4,400）这样一个记录，就要先判断表中是否已经存在 k=4 的记录，而这必须将数据页读入内存才能判断。但是已经读入内存，那更新内存会更快，就没必要用 change buffer 了。</p>
+<br/>
+<p>这就是如果索引选择是 唯一索引 和 普通索引的区别。一条常规的更新语句。如果这个要修改的目标页不在内存中，此时，InnoDB 的处理流程如下：</p>
+<ul>
+<li>对于唯一索引来说，需要将数据页读入内存，判断到没有冲突，插入这个值，语句执行结束。</li>
+<li>对于普通索引来说，则是将更新记录在 change buffer 中，语句执行结束。</li>
+</ul>
+<p>对于写多读少的业务来说，页面在写完以后被马上访问到的概率较小，此时的 change buffer 的使用效果最好。这种业务模型常见的是帐单类、日志类的数据存储。</p>
+<p>对于更新完毕立马就会做查询的业务。那么即使满足了条件，将更新先记录到 change buffer 中，但是之后由于立马又要访问这个数据页，立即出发 merge 过程。这样的随机访问 IO 的次数不会减少，反而会增加了 change buffer 的维护代价。所以对于这种业务来说，change buffer 是无意义的。</p>
+<blockquote>
+<p>唯一索引和普通索引查询能力上没有差别，考虑到更新性能，优先选普通索引。</p>
+</blockquote>
+<br/>
+<h2 id="前缀索引">前缀索引</h2>
+<p>这里的前缀索引不再是优化查询速度或者更新速度了，而是优化存储的空间。</p>
+<p>没错，索引是可以只对一个字段的部分来加索引的。如邮箱地址，如果尾坠都一样的话，我们只需要对名字部分加索引。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">SUser</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="nf">index1</span><span class="p">(</span><span class="n">email</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="err">或</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">SUser</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="nf">index2</span><span class="p">(</span><span class="nf">email</span><span class="p">(</span><span class="mi">6</span><span class="p">));</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>第二条语句就是只对前6个字符添加索引。</p>
+<p>但是我们知道索引的区分度越高，意味着重复的键值越少，索引的效果就越好，回表次数也会降低，那么使用前缀肯定会损失部分区分度。比如我们定的是前6个字符，但是 &ldquo;zhangsan&rdquo; 和 &ldquo;zhangsanfeng&rdquo; 的前留个字符都是 &ldquo;zhansa&rdquo; 这就区分度不够了。可以使用下面的语句统计一下前缀长度和可能损失的区分度。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nf">count</span><span class="p">(</span><span class="k">distinct</span><span class="w"> </span><span class="k">left</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="err">）</span><span class="k">as</span><span class="w"> </span><span class="n">L4</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nf">count</span><span class="p">(</span><span class="k">distinct</span><span class="w"> </span><span class="k">left</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="err">）</span><span class="k">as</span><span class="w"> </span><span class="n">L5</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nf">count</span><span class="p">(</span><span class="k">distinct</span><span class="w"> </span><span class="k">left</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span><span class="err">）</span><span class="k">as</span><span class="w"> </span><span class="n">L6</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nf">count</span><span class="p">(</span><span class="k">distinct</span><span class="w"> </span><span class="k">left</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span><span class="err">）</span><span class="k">as</span><span class="w"> </span><span class="n">L7</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">from</span><span class="w"> </span><span class="n">SUser</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h1 id="索引选择原理">索引选择原理</h1>
+<p>在 MySQL 中选择索引是优化器的工作，我们在查询前会有优化器根据 SQL 语句选择一个最佳的索引进行扫描，用最小的代价去执行语句，<strong>但是MySQL 也有选错索引的时候</strong>。</p>
+<p>优化器选择索引的主要原则是扫描行数越少，意味着访问磁盘数据的次数越少，消耗CPU的资源越少。当然还会结合是否使用临时表、是否排序等因素进行综合判断。</p>
+<br/>
+<h2 id="扫描行数如何判断">扫描行数如何判断</h2>
+<p>MySQL 在真正开始执行之前，并不能精确地知道满足该条件的记录有多少个，而只能根据统计信息来估算记录数。</p>
+<p>而这个统计信息就是索引的“<strong>区分度</strong>”，显然，一个索引上不同的值越多，那么这个索引的区分度就越好，说明不需要来回的回表。而一个索引上不同值的个数，成为“基数”(cardinality)。也就是这个基数越大，索引的区分度越好。</p>
+<p>那么，<strong>基数是怎样来的呢?</strong> MySQL 采取了采样统计的方法。InnoDB 默认选择 N 个数据页，得到一个平均值，然后乘以这个索引的页面数，就得到了这个索引的基数。</p>
+<p>以下面的表为例</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="c1">-- 新建一个 t 表
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">t</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="no">NULL</span><span class="w"> </span><span class="kp">AUTO_INCREMENT</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">a</span><span class="o">`</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">`</span><span class="n">b</span><span class="o">`</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">KEY</span><span class="w"> </span><span class="o">`</span><span class="n">a</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">a</span><span class="o">`</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">KEY</span><span class="w"> </span><span class="o">`</span><span class="n">b</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">b</span><span class="o">`</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w"> </span><span class="kp">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- 存储过程，插入10w条数据
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">delimiter</span><span class="w"> </span><span class="p">;;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">create</span><span class="w"> </span><span class="k">procedure</span><span class="w"> </span><span class="nf">idata</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">begin</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">declare</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="kt">int</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kt">set</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">while</span><span class="p">(</span><span class="n">i</span><span class="o">&lt;=</span><span class="mi">100000</span><span class="p">)</span><span class="n">do</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">values</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">set</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">end</span><span class="w"> </span><span class="k">while</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">end</span><span class="p">;;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">delimiter</span><span class="w"> </span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">call</span><span class="w"> </span><span class="nf">idata</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>按理，a 和 b 两个索引的基数都是 10W，但是我们执行 show index 发现，2个索引的基数不仅都不是10w，而且 a 和 b 索引的个数还不相等（分别是 92956 和 92735）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="o">+-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="k">Table</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Non_unique</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Key_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Seq_in_index</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Column_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Collation</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Cardinality</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Sub_part</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Packed</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="no">Null</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Index_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Comment</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Index_comment</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Visible</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Expression</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">t</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">A</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mi">94472</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">BTREE</span><span class="w">      </span><span class="o">|</span><span class="w">         </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="n">YES</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w">     </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">t</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="n">A</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mi">92956</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">YES</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">BTREE</span><span class="w">      </span><span class="o">|</span><span class="w">         </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="n">YES</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w">     </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">t</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">b</span><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">b</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="n">A</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mi">92735</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">YES</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">BTREE</span><span class="w">      </span><span class="o">|</span><span class="w">         </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="n">YES</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w">     </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这正是上面提到的基数采样统计，但是数据表是会持续更新的，索引统计信息也不会一直固定不变，当变更的行数超过 1/M 的时候，就会触发一次索引的统计。</p>
+<blockquote>
+<p>M 和 N 是 MySQL 内置的，比如持久化存储时，这时的 N 是20，M是10</p>
+</blockquote>
+<br/>
+<h2 id="排序对索引选择的影响">排序对索引选择的影响</h2>
+<p>上面说到，除了扫描行数以外，还有其他的一些影响优化器索引选择的因素。这里就需要说到排序了。</p>
+<p>以一个栗子 &#x1f330; 来说明。</p>
+<p>还是上面的那张表。此时我们输入下面这条查询语句。</p>
+<p><code>SELECT * FROM t WHERE (a BETWEEN 1 AND 1000) AND (b bewteen 50000 and 100000) ORDER BY b LIMIT 1</code></p>
+<p>我们从筛选条件上来看，肯定是查不到符合条件的记录了。</p>
+<ul>
+<li>如果选 a 索引，那么需要扫描 1000 行，回表到主键再拿b字段来过滤（需要1000行）</li>
+<li>如果选 b 索引，那么需要扫描 50000行，回表到主键，再那a字段过滤（需要扫描 50000行）</li>
+</ul>
+<p>显然索引 a 更划算。但是我们通过 EXPLAIN 命令来看看。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="o">&gt;</span><span class="w"> </span><span class="n">mysql</span><span class="w"> </span><span class="k">explain</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="k">between</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="k">between</span><span class="w"> </span><span class="mi">50000</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="mi">100000</span><span class="p">)</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">limit</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+----+-------------+-------+------------+-------+---------------+-----+---------+--------+-------+----------+------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">type</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ref</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">rows</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">                              </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+----+-------------+-------+------------+-------+---------------+-----+---------+--------+-------+----------+------------------------------------+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">t</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="n">b</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="mi">5</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="no">null</span><span class="o">&gt;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">47236</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="mi">06</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="k">condition</span><span class="p">;</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+----+-------------+-------+------------+-------+---------------+-----+---------+--------+-------+----------+------------------------------------+</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>MySQL 竟然选择了 b 索引。这是因为优化器认为使用索引b可以避免排序（b本身是索引，已经是有序的了，如果选择索引b的话，就不需要再做一次 order by b 排序了，直接遍历即可），所以即使扫描行数多，但是MySQL认为也是值得的。</p>
+<p><strong>如何使MySQL正确使用索引呢?</strong></p>
+<ol>
+<li>可以强制选择一个索引</li>
+</ol>
+<p><code>SELECT * FROM t FORCE INDEX(a) WHERE a BETWEEN 1000 AND 2000</code></p>
+<ol start="2">
+<li>如果是扫描行不准确的话，则可以重新计算索引</li>
+</ol>
+<p><code>ANALYZE TABLE t</code></p>
+<ol start="3">
+<li>修改SQL语句，引导MySQL使用我们期望的索引。</li>
+</ol>
+<p>如上面的例子， <em>ORDER BY b LIMIT 1</em> 改成 <em>ORDER BY b,a LIMIT 1</em> ，这里的语意是一致的，但是这意味着两个索引都需要排序，因此扫描行成了影响决策的主要条件，于是优化器选了只需要扫描行数少的a。</p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-06-28</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/what-happened-to-mysql-query-1/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/what-happened-to-mysql-query-1/" data-title="一条MySQL查询语句经历了什么--索引"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/what-happened-to-mysql-query-1/" data-title="一条MySQL查询语句经历了什么--索引"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/what-happened-to-mysql-query-1/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/database/">Database</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/elasticsearch/" class="prev" rel="prev" title="elasticsearch 原理及入门"><i class="fas fa-angle-left fa-fw"></i>elasticsearch 原理及入门</a>
+            <a href="/post/ebpf%E8%B6%85%E4%B9%8E%E4%BD%A0%E6%83%B3%E8%B1%A1/" class="next" rel="next" title="eBPF超乎你想象">eBPF超乎你想象<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.129.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.org/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

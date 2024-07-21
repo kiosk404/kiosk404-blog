@@ -1,0 +1,15 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Iam - Tag - Kiosk&#39;s 个人编程技术分享</title>
+        <link>http://localhost:1313/tags/iam/</link>
+        <description>Iam - Tag - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 10 Nov 2022 20:51:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/iam/" rel="self" type="application/rss+xml" /><item>
+    <title>如何进行访问认证？</title>
+    <link>http://localhost:1313/post/%E5%A6%82%E4%BD%95%E8%AE%BF%E9%97%AE%E8%AE%A4%E8%AF%81/</link>
+    <pubDate>Thu, 10 Nov 2022 20:51:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E5%A6%82%E4%BD%95%E8%AE%BF%E9%97%AE%E8%AE%A4%E8%AF%81/</guid>
+    <description><![CDATA[<p>最近有个Web项目需要对接公司的权限认证系统来保证应用的数据安全隔离。于是对访问认证来了兴趣，这里进行一次统一的梳理。</p>]]></description>
+</item></channel>
+</rss>

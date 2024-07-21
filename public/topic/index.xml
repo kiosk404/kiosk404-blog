@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Topic on Kiosk&#39;s 个人编程技术分享</title>
+    <link>http://localhost:1313/topic/</link>
+    <description>Recent content in Topic on Kiosk&#39;s 个人编程技术分享</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+    <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster>
+    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <lastBuildDate>Wed, 08 Jun 2022 23:41:26 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/topic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>eBPF</title>
+      <link>http://localhost:1313/topic/ebpf/</link>
+      <pubDate>Wed, 08 Jun 2022 23:41:26 +0000</pubDate><author>weijiaxiang007@foxmail.com (kiosk007)</author>
+      <guid>http://localhost:1313/topic/ebpf/</guid>
+      <description>eBPF Linux 内核一直是实现监控/可观测性、网络和安全功能的理想地方。 不过很多情况下这并非易事，因为这些工作需要修改内核源码或加载内核模块， 最终实现形式是在已有的层层抽象之上叠加新的抽象。 eBPF 是一项革命性技术，它能在内核中运行沙箱程序（sandbox programs）， 而无需修改内核源码或者加载内核模块。 将 Linux 内核变成可编程之后，就能基于现有的（而非增加新的）抽象层来打造更加智能、 功能更加丰富的基础设施软件，而不会增加系统的复杂度，也不会牺牲执行效率和安全性。 官网：eBPF.io 项目列表：eBPF 相关文章链接： 性能：&#xA;使用BPF将Go网络程序的吞吐提升8倍 观测：&#xA;如何用eBPF分析Golang应用 使用ebpf跟踪rpcx微服务 Challenges of BPF Tracing Go [译]使用 bcc/BPF 分析 go 程序 eBPF tracing in Go 视频资料：</description>
+    </item>
+    <item>
+      <title>Golang</title>
+      <link>http://localhost:1313/topic/golang/</link>
+      <pubDate>Wed, 08 Jun 2022 23:41:26 +0000</pubDate><author>weijiaxiang007@foxmail.com (kiosk007)</author>
+      <guid>http://localhost:1313/topic/golang/</guid>
+      <description> golang 不说其他的，来做一个牛逼的 Gopher 吧。&amp;#x1f3c4;&#xA;官网：golang&#xA;GoLang Language： Uber开源的Go语言开发规范 超全总结：Go语言如何操作文件 GoLang 实用小技巧 Go实用小技巧 开源项目: 推荐几个可以写到简历上的Go方向优质开源项目（需花点心思研究） https://landscape.cncf.io/ Go语言如何在测试发现goroutine泄漏 基础： 详解Go内联优化 详解Go语言中的内存逃逸 Go语言中结构体打Tag是什么意思？ Golang 详解内存对齐 Mutex：如何解决资源并发访问问题? 基础工具包 并发检测&#xA;1 2 3 4 $ go test -race mypkg $ go run -race mysrc.go $ go build -race mycmd $ go install -race mypkg </description>
+    </item>
+  </channel>
+</rss>

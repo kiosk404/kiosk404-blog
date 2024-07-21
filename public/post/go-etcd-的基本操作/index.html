@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>etcd 的基本入门 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/">
+  <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
+  <meta property="og:title" content="etcd 的基本入门">
+  <meta property="og:description" content="etcd 是一个强一致性的分布式键值存储系统，可以提供可靠的分布式集群的数据访问方式。
+etcd is a strongly consistent, distributed key-value store that provides a reliable way to store data that needs to be accessed by a distributed system or cluster of machines.
+refer: https://etcd.io/">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-05-30T21:01:00+00:00">
+    <meta property="article:modified_time" content="2020-05-30T21:01:00+00:00">
+    <meta property="article:tag" content="Etcd">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="etcd 的基本入门">
+  <meta name="twitter:description" content="etcd 是一个强一致性的分布式键值存储系统，可以提供可靠的分布式集群的数据访问方式。
+etcd is a strongly consistent, distributed key-value store that provides a reliable way to store data that needs to be accessed by a distributed system or cluster of machines.
+refer: https://etcd.io/">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" /><link rel="prev" href="http://localhost:1313/post/vmtrafficshark-%E8%87%AA%E5%88%B6%E5%BC%B1%E7%BD%91%E6%A8%A1%E6%8B%9F%E5%99%A8/" /><link rel="next" href="http://localhost:1313/post/%E6%80%A7%E8%83%BD%E5%A4%A7%E6%9D%80%E5%99%A8epoll/" /><link rel="stylesheet" href="https://cdn.staticfile.org//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.scss"><link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "etcd 的基本入门",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "etcd","wordcount":  1550 ,
+        "url": "http:\/\/localhost:1313\/post\/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C\/","datePublished": "2020-05-30T21:01:00+00:00","dateModified": "2020-05-30T21:01:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">etcd 的基本入门</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-05-30">2020-05-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1550 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#etcd简介">etcd简介</a></li>
+    <li><a href="#核心特性">核心特性</a></li>
+    <li><a href="#交互协议">交互协议</a></li>
+    <li><a href="#etcd-功能">etcd 功能</a></li>
+    <li><a href="#安装部署">安装部署</a></li>
+    <li><a href="#golang-操作-etcd">golang 操作 etcd</a>
+      <ul>
+        <li><a href="#连接">连接</a></li>
+        <li><a href="#简单操作-getputdel">简单操作 GET，PUT，DEL</a></li>
+        <li><a href="#lease-租期">Lease 租期</a></li>
+        <li><a href="#watch-监听">Watch 监听</a></li>
+        <li><a href="#operation">Operation</a></li>
+        <li><a href="#txn">Txn</a></li>
+      </ul>
+    </li>
+    <li><a href="#分布式锁">分布式锁</a>
+      <ul>
+        <li><a href="#实现思路">实现思路</a></li>
+        <li><a href="#源码分析">源码分析</a>
+          <ul>
+            <li><a href="#lock">Lock</a></li>
+            <li><a href="#waitdeletes">waitDeletes</a></li>
+            <li><a href="#unlock">UnLock</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p><strong>etcd</strong> 是一个强一致性的分布式键值存储系统，可以提供可靠的分布式集群的数据访问方式。</p>
+<p>etcd is a strongly consistent, distributed key-value store that provides a reliable way to store data that needs to be accessed by a distributed system or cluster of machines.</p>
+<p>refer: <a href="https://etcd.io/" target="_blank" rel="noopener noreffer">https://etcd.io/</a></p>
+<hr>
+<img src="https://img1.kiosk007.top/static/images/etcd/etcd.png" style="zoom:67%; margin: auto; clear: both;display: block;" />
+<h1 id="etcd简介">etcd简介</h1>
+<p>etcd 诞生于 CoreOS 公司，它最初是用于解决集群管理系统中 OS 升级的<strong>分布式并发控制</strong>、<strong>服务发现</strong>、<strong>集群状态存储</strong> 以及 <strong>配置文件的存储与分发</strong>等问题。基于此，etcd 被设计为提供高可用、强一致的小型 keyvalue 数据存储服务。</p>
+<p>项目当前隶属于 CNCF 基金会，被 AWS、Google、Microsoft、Alibaba 等大型互联网公司广泛使用。</p>
+<h1 id="核心特性">核心特性</h1>
+<ul>
+<li>数据存储在集群中的高可用K-V存储</li>
+<li>允许应用实时监听存储中的K-V的变化</li>
+<li>能够容忍单点故障，能够应对网络分区</li>
+</ul>
+<blockquote>
+<p>分布式的容灾策略是基于 <a href="https://www.cnblogs.com/ECJTUACM-873284962/p/7215942.html" target="_blank" rel="noopener noreffer">鸽巢理论</a> ，假设一个班级有60人，我将一个秘密告诉31人，那么随便在这个班级挑出30人来，肯定至少有一个人指导这个秘密。</p>
+</blockquote>
+<p><strong>etcd与Raft的关系</strong></p>
+<p>Raft是强一致性的集群日志同步算法，etcd是一个分布式KV存储，etcd利用raft算法在集群中同步key-value 。etcd集群需要2N+1个节点。</p>
+<img src="https://img1.kiosk007.top/static/images/etcd/raft_a_consensus_algorithm_for_replicated_logs_1440-21.jpg" />
+日志一旦由 leader节点 复制到了大多数 follower节点 即可完成提交。
+上图可以看到7个节点的集群，log index 为9 的数据已经同步给 a,c,d 所以index 9 属于整个集群，index为11 的几个数据leader 不认，所以这个数据不属于集群。
+<blockquote>
+<p><code>Raft 可以保证，给客户端承诺过的请求一定是不会丢失的</code>
+<code>各个节点的数据一定是最终一致的</code></p>
+</blockquote>
+<p><a href="http://thesecretlivesofdata.com/raft/" target="_blank" rel="noopener noreffer">raft 算法英文动画演示</a></p>
+<h1 id="交互协议">交互协议</h1>
+<ul>
+<li>HTTP 基于JSON请求，例如 curl，简单通用。</li>
+<li>SDK 内置GRPC协议，性能高效</li>
+</ul>
+<h1 id="etcd-功能">etcd 功能</h1>
+<p>refer： <a href="https://etcd.io/docs/v3.4.0/demo/" target="_blank" rel="noopener noreffer">etcd 文档演示</a></p>
+<ul>
+<li>
+<p>put、get、del 操作
+   数据库普通的增加，查找，删除操作，如果想要更新，依旧使用put。</p>
+</li>
+<li>
+<p>watch 监听</p>
+<p>支持监听某一key的变化，有变化即产生回调，另外还支持查找key 的历史版本。</p>
+</li>
+<li>
+<p>lease 租约</p>
+</li>
+</ul>
+<p>  申请定时器，举例：申请一个TTL为10s的租约 lease，当 put 一个 key 时，携带该租约，当TTL到期时，key也会被删除，一个 lease id 可以关联多个key，也就是租约到期，多个key 可以被删除，想要防止被删除，可以用keepalive定期续租。</p>
+<ul>
+<li>txn 事物、loack 分布式锁
+  etcd 支持将多个请求包装到一个事务中，或者添加一个分布式锁。</li>
+</ul>
+<h1 id="安装部署">安装部署</h1>
+<ul>
+<li>安装etcd</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  wget https://github.com/etcd-io/etcd/releases/download/v3.4.9/etcd-v3.4.9-linux-amd64.tar.gz
+</span></span><span class="line"><span class="cl">➜  tar -xf etcd-v3.4.9-linux-amd64.tar.gz
+</span></span><span class="line"><span class="cl">➜  <span class="nb">cd</span> etcd-v3.4.9-linux-amd64/
+</span></span><span class="line"><span class="cl">➜  sudo cp etcd /usr/local/sbin/
+</span></span><span class="line"><span class="cl">➜  sudo cp etcdctl /usr/local/sbin/
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>设置集群信息</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">TOKEN</span><span class="o">=</span>token-01
+</span></span><span class="line"><span class="cl"><span class="nv">CLUSTER_STATE</span><span class="o">=</span>new
+</span></span><span class="line"><span class="cl"><span class="nv">NAME_1</span><span class="o">=</span>machine-1
+</span></span><span class="line"><span class="cl"><span class="nv">NAME_2</span><span class="o">=</span>machine-2
+</span></span><span class="line"><span class="cl"><span class="nv">NAME_3</span><span class="o">=</span>machine-3
+</span></span><span class="line"><span class="cl"><span class="nv">HOST_1</span><span class="o">=</span>127.0.0.1
+</span></span><span class="line"><span class="cl"><span class="nv">HOST_2</span><span class="o">=</span>127.0.0.1
+</span></span><span class="line"><span class="cl"><span class="nv">HOST_3</span><span class="o">=</span>127.0.0.1
+</span></span><span class="line"><span class="cl"><span class="nv">CLUSTER</span><span class="o">=</span><span class="si">${</span><span class="nv">NAME_1</span><span class="si">}</span><span class="o">=</span>http://<span class="si">${</span><span class="nv">HOST_1</span><span class="si">}</span>:2381,<span class="si">${</span><span class="nv">NAME_2</span><span class="si">}</span><span class="o">=</span>http://<span class="si">${</span><span class="nv">HOST_2</span><span class="si">}</span>:2382,<span class="si">${</span><span class="nv">NAME_3</span><span class="si">}</span><span class="o">=</span>http://<span class="si">${</span><span class="nv">HOST_3</span><span class="si">}</span>:2383
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>启动集群</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># For machine 1</span>
+</span></span><span class="line"><span class="cl"><span class="nv">THIS_NAME</span><span class="o">=</span><span class="si">${</span><span class="nv">NAME_1</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">THIS_IP</span><span class="o">=</span><span class="si">${</span><span class="nv">HOST_1</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">etcd --data-dir<span class="o">=</span>data.etcd1 --name <span class="si">${</span><span class="nv">THIS_NAME</span><span class="si">}</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--initial-advertise-peer-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2381 --listen-peer-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2381 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--advertise-client-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2371 --listen-client-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2371 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--initial-cluster <span class="si">${</span><span class="nv">CLUSTER</span><span class="si">}</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--initial-cluster-state <span class="si">${</span><span class="nv">CLUSTER_STATE</span><span class="si">}</span> --initial-cluster-token <span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># For machine 2</span>
+</span></span><span class="line"><span class="cl"><span class="nv">THIS_NAME</span><span class="o">=</span><span class="si">${</span><span class="nv">NAME_2</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">THIS_IP</span><span class="o">=</span><span class="si">${</span><span class="nv">HOST_2</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">etcd --data-dir<span class="o">=</span>data.etcd2 --name <span class="si">${</span><span class="nv">THIS_NAME</span><span class="si">}</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--initial-advertise-peer-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2382 --listen-peer-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2382 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--advertise-client-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2372 --listen-client-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2372 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--initial-cluster <span class="si">${</span><span class="nv">CLUSTER</span><span class="si">}</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--initial-cluster-state <span class="si">${</span><span class="nv">CLUSTER_STATE</span><span class="si">}</span> --initial-cluster-token <span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># For machine 3</span>
+</span></span><span class="line"><span class="cl"><span class="nv">THIS_NAME</span><span class="o">=</span><span class="si">${</span><span class="nv">NAME_3</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">THIS_IP</span><span class="o">=</span><span class="si">${</span><span class="nv">HOST_3</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">etcd --data-dir<span class="o">=</span>data.etcd3 --name <span class="si">${</span><span class="nv">THIS_NAME</span><span class="si">}</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--initial-advertise-peer-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2383 --listen-peer-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2383 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--advertise-client-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2373 --listen-client-urls http://<span class="si">${</span><span class="nv">THIS_IP</span><span class="si">}</span>:2373 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--initial-cluster <span class="si">${</span><span class="nv">CLUSTER</span><span class="si">}</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	--initial-cluster-state <span class="si">${</span><span class="nv">CLUSTER_STATE</span><span class="si">}</span> --initial-cluster-token <span class="si">${</span><span class="nv">TOKEN</span><span class="si">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>使用etcdctl 连接到etcd</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">ETCDCTL_API</span><span class="o">=</span><span class="m">3</span>
+</span></span><span class="line"><span class="cl"><span class="nv">HOST_1</span><span class="o">=</span>127.0.0.1
+</span></span><span class="line"><span class="cl"><span class="nv">HOST_2</span><span class="o">=</span>127.0.0.1
+</span></span><span class="line"><span class="cl"><span class="nv">HOST_3</span><span class="o">=</span>127.0.0.1
+</span></span><span class="line"><span class="cl"><span class="nv">ENDPOINTS</span><span class="o">=</span><span class="nv">$HOST_1</span>:2371,<span class="nv">$HOST_2</span>:2372,<span class="nv">$HOST_3</span>:2373
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">etcdctl --endpoints<span class="o">=</span><span class="nv">$ENDPOINTS</span> member list
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>尝试添加一个key</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  etcdctl --endpoints<span class="o">=</span><span class="nv">$ENDPOINTS</span> put <span class="s2">&#34;key&#34;</span> <span class="s2">&#34;hello&#34;</span>
+</span></span><span class="line"><span class="cl">OK
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="golang-操作-etcd">golang 操作 etcd</h1>
+<p>github 官方示例代码：https://github.com/etcd-io/etcd/tree/master/clientv3</p>
+<p>使用前先安装</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">go get go.etcd.io/etcd/clientv3
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>解决Golang1.14 etcd/clientv3报错：etcd undefined: resolver.BuildOption</p>
+<p>refer: <a href="https://blog.csdn.net/qq_43442524/article/details/104997539" target="_blank" rel="noopener noreffer">https://blog.csdn.net/qq_43442524/article/details/104997539</a></p>
+<h2 id="连接">连接</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">client</span> <span class="o">*</span><span class="nx">clientv3</span><span class="p">.</span><span class="nx">Client</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Conn</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">cli</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientv3</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">clientv3</span><span class="p">.</span><span class="nx">Config</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Endpoints</span><span class="p">:</span>   <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;localhost:2371&#34;</span><span class="p">,</span> <span class="s">&#34;localhost:2372&#34;</span><span class="p">,</span> <span class="s">&#34;localhost:2373&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">DialTimeout</span><span class="p">:</span> <span class="mi">5</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// handle error!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">cli</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">client</span> <span class="p">=</span> <span class="nx">cli</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="简单操作-getputdel">简单操作 GET，PUT，DEL</h2>
+<p>refer：<a href="https://godoc.org/go.etcd.io/etcd/clientv3" target="_blank" rel="noopener noreffer">https://godoc.org/go.etcd.io/etcd/clientv3</a></p>
+<p>etcd的操作强大在可以添加 <code>WithOption</code> 比如 <code>WithPrevKV()</code> 获取前一个Key 和 <code>WithPrefix()</code> 遍历</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">EtcdApi</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">KV</span> <span class="nx">clientv3</span><span class="p">.</span><span class="nx">KV</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="nx">EtcdApi</span><span class="p">)</span> <span class="nf">PutKey</span><span class="p">(</span><span class="nx">key</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">value</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ctx</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithTimeout</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// clientv3.WithPrevKV() 获取到删KV之前的值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">putResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">KV</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="nx">key</span><span class="p">,</span><span class="nx">value</span><span class="p">,</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">WithPrevKV</span><span class="p">());</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">putResp</span><span class="p">.</span><span class="nx">PrevKv</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;PrevValue: &#34;</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">putResp</span><span class="p">.</span><span class="nx">PrevKv</span><span class="p">.</span><span class="nx">Value</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="nx">EtcdApi</span><span class="p">)</span> <span class="nf">GetKey</span><span class="p">(</span><span class="nx">key</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">value</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ctx</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithTimeout</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 可以遍历目录
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">getResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">KV</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="nx">key</span><span class="p">,</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">WithPrefix</span><span class="p">());</span><span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%s&#34;</span><span class="p">,</span> <span class="nx">getResp</span><span class="p">.</span><span class="nx">Kvs</span><span class="p">),</span><span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="nx">EtcdApi</span><span class="p">)</span> <span class="nf">DelKey</span><span class="p">(</span><span class="nx">key</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">value</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ctx</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithTimeout</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">delResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">KV</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="nx">key</span><span class="p">,</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">WithPrevKV</span><span class="p">());</span><span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">value</span><span class="p">,</span><span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%s&#34;</span><span class="p">,</span><span class="nx">delResp</span><span class="p">.</span><span class="nx">PrevKvs</span><span class="p">),</span><span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="lease-租期">Lease 租期</h2>
+<ul>
+<li>创建租约</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="nx">EtcdApi</span><span class="p">)</span> <span class="nf">GrantLease</span><span class="p">()</span> <span class="p">(</span><span class="nx">lease</span> <span class="nx">clientv3</span><span class="p">.</span><span class="nx">Lease</span><span class="p">,</span> <span class="nx">leaseId</span> <span class="nx">clientv3</span><span class="p">.</span><span class="nx">LeaseID</span><span class="p">,</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">leaseGrantResp</span> <span class="o">*</span><span class="nx">clientv3</span><span class="p">.</span><span class="nx">LeaseGrantResponse</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="nx">lease</span> <span class="p">=</span> <span class="nx">clientv3</span><span class="p">.</span><span class="nf">NewLease</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">Client</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 申请一个10s的租约
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">leaseGrantResp</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">lease</span><span class="p">.</span><span class="nf">Grant</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">Ctx</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> 
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">leaseId</span> <span class="p">=</span> <span class="nx">leaseGrantResp</span><span class="p">.</span><span class="nx">ID</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Put 一个KV, 关联租约，从而实现10s自动过期
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">putResp</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">KV</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">Ctx</span><span class="p">,</span><span class="s">&#34;/key1/lease&#34;</span><span class="p">,</span><span class="s">&#34;v1&#34;</span><span class="p">,</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">WithLease</span><span class="p">(</span><span class="nx">leaseId</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> 
+</span></span><span class="line"><span class="cl">	<span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">putResp</span><span class="p">.</span><span class="nx">Header</span><span class="p">.</span><span class="nx">Revision</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> 
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>续租</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">EtcdApi</span><span class="p">)</span> <span class="nf">KeepAlive</span><span class="p">(</span><span class="nx">leaseId</span> <span class="nx">clientv3</span><span class="p">.</span><span class="nx">LeaseID</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 自动续期
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kd">var</span> <span class="nx">keepResp</span> <span class="o">*</span><span class="nx">clientv3</span><span class="p">.</span><span class="nx">LeaseKeepAliveResponse</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">keepRespChan</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">Lease</span><span class="p">.</span><span class="nf">KeepAlive</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">leaseId</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="s">&#34;ERROR :&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">select</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">case</span> <span class="nx">keepResp</span> <span class="p">=</span> <span class="o">&lt;-</span> <span class="nx">keepRespChan</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="nx">keepRespChan</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">					<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;租约实效&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">					<span class="k">goto</span> <span class="nx">END</span>
+</span></span><span class="line"><span class="cl">				<span class="p">}</span><span class="k">else</span> <span class="p">{</span> <span class="c1">// 每秒续租一次
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;续租&#34;</span><span class="p">,</span> <span class="nx">keepResp</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">END</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Return&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="watch-监听">Watch 监听</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">EtcdApi</span><span class="p">)</span> <span class="nf">Watch</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 创建一个watcher
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">e</span><span class="p">.</span><span class="nx">Watcher</span> <span class="p">=</span> <span class="nx">clientv3</span><span class="p">.</span><span class="nf">Watcher</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">Client</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 30 s 后取消监听
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">ctx</span><span class="p">,</span> <span class="nx">cancelFunc</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithCancel</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">time</span><span class="p">.</span><span class="nf">AfterFunc</span><span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">cancelFunc</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 启动监听
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">watchRespChan</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">Watcher</span><span class="p">.</span><span class="nf">Watch</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="s">&#34;/key1/watcher&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 处理kv变化事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">watchResp</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">watchRespChan</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="nx">_</span><span class="p">,</span><span class="nx">event</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">watchResp</span><span class="p">.</span><span class="nx">Events</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">switch</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Type</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">case</span> <span class="nx">mvccpb</span><span class="p">.</span><span class="nx">PUT</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34; 修改为： &#34;</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Kv</span><span class="p">.</span><span class="nx">Value</span><span class="p">),</span> <span class="s">&#34;Revision: &#34;</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Kv</span><span class="p">.</span><span class="nx">CreateRevision</span> <span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Kv</span><span class="p">.</span><span class="nx">ModRevision</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="k">case</span> <span class="nx">mvccpb</span><span class="p">.</span><span class="nx">DELETE</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34; 删除： Revision: &#34;</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Kv</span><span class="p">.</span><span class="nx">ModRevision</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="operation">Operation</h2>
+<p>可以将上面提到的 <code>Get</code>、<code>Put</code>、<code>Delete</code>等操作抽象成一个Operation。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="nx">EtcdApi</span><span class="p">)</span> <span class="nf">Op</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 创建一个OP：operation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">putOp</span> <span class="o">:=</span> <span class="nx">clientv3</span><span class="p">.</span><span class="nf">OpPut</span><span class="p">(</span><span class="s">&#34;/key1/op&#34;</span><span class="p">,</span><span class="s">&#34;value_op&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 执行OP
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">opResp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">KV</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">Ctx</span><span class="p">,</span><span class="nx">putOp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;写入Revision： &#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">opResp</span><span class="p">.</span><span class="nf">Put</span><span class="p">().</span><span class="nx">Header</span><span class="p">.</span><span class="nx">Revision</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="txn">Txn</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// 处理业务
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">EtcdApi</span><span class="p">)</span> <span class="nf">DoTxn</span><span class="p">(</span><span class="nx">leaseId</span> <span class="nx">clientv3</span><span class="p">.</span><span class="nx">LeaseID</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 创建事物
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">txn</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">KV</span><span class="p">.</span><span class="nf">Txn</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">Ctx</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="c1">// 定义事物
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">txn</span><span class="p">.</span><span class="nf">If</span><span class="p">(</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">Compare</span><span class="p">(</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">CreateRevision</span><span class="p">(</span><span class="s">&#34;/key1/lease&#34;</span><span class="p">),</span><span class="s">&#34;=&#34;</span><span class="p">,</span><span class="s">&#34;0&#34;</span><span class="p">)).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">Then</span><span class="p">(</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">OpPut</span><span class="p">(</span><span class="s">&#34;/key1/lease&#34;</span><span class="p">,</span><span class="s">&#34;value1&#34;</span><span class="p">,</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">WithLease</span><span class="p">(</span><span class="nx">leaseId</span><span class="p">))).</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">Else</span><span class="p">(</span><span class="nx">clientv3</span><span class="p">.</span><span class="nf">OpGet</span><span class="p">(</span><span class="s">&#34;/key1/lease&#34;</span><span class="p">))</span>  <span class="c1">//抢锁失败
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	
+</span></span><span class="line"><span class="cl">	<span class="nx">txnResp</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">txn</span><span class="p">.</span><span class="nf">Commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="c1">// 是否抢到锁
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="p">!</span><span class="nx">txnResp</span><span class="p">.</span><span class="nx">Succeeded</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;抢锁失败,锁被占用：&#34;</span> <span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">txnResp</span><span class="p">.</span><span class="nx">Responses</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">GetResponseRange</span><span class="p">().</span><span class="nx">Kvs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">Value</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h1 id="分布式锁">分布式锁</h1>
+<p>etcd分布式锁并不是etcd server对外提供一个功能api，而是基于etcd的各种特性（lease、watch、mvcc等）集成的一个工具。</p>
+<h2 id="实现思路">实现思路</h2>
+<p>etcd的几种特殊的机制都可以作为分布式锁的基础。etcd的键值对可以作为锁的本体，锁的创建与删除对应键值对的创建与删除。etcd的分布式一致性以及高可用可以保证锁的高可用性。</p>
+<ul>
+<li>
+<p><strong>prefix</strong>：由于etcd支持前缀查找，可以将锁设置成“锁名称”+“唯一id”的格式，保证锁的对称性，即每个客户端只操作自己持有的锁。</p>
+</li>
+<li>
+<p><strong>lease</strong>：租约机制可以为锁做一个保活操作，在创建锁的时候绑定租约，并定期进行续约，如果获得锁期间客户端意外宕机，则持有的锁会被自动删除，避免了死锁的产生。</p>
+</li>
+<li>
+<p><strong>Revision</strong>：etcd内部维护了一个全局的Revision值，并会随着事务的递增而递增。可以用Revision值的大小来决定获取锁的先后顺序，在上锁的时候已经决定了获取锁先后顺序，后续有客户端释放锁也不会产生惊群效应。</p>
+</li>
+<li>
+<p><strong>watch</strong>：watch机制可以用于监听锁的删除事件，不必使用忙轮询的方式查看是否释放了锁，更加高效。同时，在watch时候可以通过Revision来进行监听，只需要监听距离自己最近而且比自己小的一个Revision就可以做到锁的实时获取。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/etcd_distribute_lock.png" alt="etcd_distribute_lock" style="zoom: 40%; clear: both; margin: auto; display: block;" />
+</li>
+</ul>
+<br/>
+<h2 id="源码分析">源码分析</h2>
+<p>在 etcd v3版本的客户端中已经有了分布式锁的实现。</p>
+<p>实例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//初始化etcd客户端
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">cli</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">clientv3</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">clientv3</span><span class="p">.</span><span class="nx">Config</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Endpoints</span><span class="p">:</span>   <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;127.0.0.1:23790&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">DialTimeout</span><span class="p">:</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//创建一个session，并根据业务情况设置锁的ttl
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">s</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">concurrency</span><span class="p">.</span><span class="nf">NewSession</span><span class="p">(</span><span class="nx">cli</span><span class="p">,</span> <span class="nx">concurrency</span><span class="p">.</span><span class="nf">WithTTL</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">s</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//初始化一个锁的实例，并进行加锁解锁操作。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">mu</span> <span class="o">:=</span> <span class="nx">concurrency</span><span class="p">.</span><span class="nf">NewMutex</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span> <span class="s">&#34;mutex-kiosk&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">mu</span><span class="p">.</span><span class="nf">Lock</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">());</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="s">&#34;m lock err: &#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//do something
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">mu</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">());</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="s">&#34;m unlock err: &#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在调用 NewSession 方法时候实际上是初始化了一个用户指定行为的租约（行为可以是指定ttl或者复用其他的 lease 等），并进行异步的 keepalive。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Mutex</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span> <span class="o">*</span><span class="nx">Session</span>   <span class="c1">//保存的租约相关的信息
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pfx</span>   <span class="kt">string</span> <span class="c1">//锁的名称，key的前缀
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">myKey</span> <span class="kt">string</span> <span class="c1">//锁完整的key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">myRev</span> <span class="kt">int64</span>  <span class="c1">//自己的版本号
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">hdr</span>   <span class="o">*</span><span class="nx">pb</span><span class="p">.</span><span class="nx">ResponseHeader</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewMutex</span><span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Session</span><span class="p">,</span> <span class="nx">pfx</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">Mutex</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">Mutex</span><span class="p">{</span><span class="nx">s</span><span class="p">,</span> <span class="nx">pfx</span> <span class="o">+</span> <span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="kc">nil</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>NewMutex实际上创建了一个锁的数据结构，该结构可以保存一些锁的信息，入参的“mutex-kiosk”只是一个key的前缀，还有后续要创建的完整key，revision等信息。</p>
+<br/>
+<h3 id="lock">Lock</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">Mutex</span><span class="p">)</span> <span class="nf">Lock</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//首先尝试获取锁
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nf">tryAcquire</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="o">......</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">Mutex</span><span class="p">)</span> <span class="nf">tryAcquire</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v3</span><span class="p">.</span><span class="nx">TxnResponse</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">s</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">s</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">client</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nf">Client</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//完整key是前缀名称加租约ID，由于不同进程生成的不同租约，所以锁互不相同
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">m</span><span class="p">.</span><span class="nx">myKey</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%s%x&#34;</span><span class="p">,</span> <span class="nx">m</span><span class="p">.</span><span class="nx">pfx</span><span class="p">,</span> <span class="nx">s</span><span class="p">.</span><span class="nf">Lease</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//cmp通过比较createRevision是否为0判断当前的key是不是第一次创建
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">cmp</span> <span class="o">:=</span> <span class="nx">v3</span><span class="p">.</span><span class="nf">Compare</span><span class="p">(</span><span class="nx">v3</span><span class="p">.</span><span class="nf">CreateRevision</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">myKey</span><span class="p">),</span> <span class="s">&#34;=&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">//put会把key绑定上租约并存储
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">put</span> <span class="o">:=</span> <span class="nx">v3</span><span class="p">.</span><span class="nf">OpPut</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">myKey</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">v3</span><span class="p">.</span><span class="nf">WithLease</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nf">Lease</span><span class="p">()))</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">//get会获取当前key的值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">get</span> <span class="o">:=</span> <span class="nx">v3</span><span class="p">.</span><span class="nf">OpGet</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">myKey</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">//getOwner是通过前缀来范围查找，WithFirstCreate()筛选出当前存在的最小revision对应的值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">getOwner</span> <span class="o">:=</span> <span class="nx">v3</span><span class="p">.</span><span class="nf">OpGet</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">pfx</span><span class="p">,</span> <span class="nx">v3</span><span class="p">.</span><span class="nf">WithFirstCreate</span><span class="p">()</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Txn</span><span class="p">(</span><span class="nx">ctx</span><span class="p">).</span><span class="nf">If</span><span class="p">(</span><span class="nx">cmp</span><span class="p">).</span><span class="nf">Then</span><span class="p">(</span><span class="nx">put</span><span class="p">,</span> <span class="nx">getOwner</span><span class="p">).</span><span class="nf">Else</span><span class="p">(</span><span class="nx">get</span><span class="p">,</span> <span class="nx">getOwner</span><span class="p">).</span><span class="nf">Commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//将该事务的revision赋值到锁的myRev字段
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">m</span><span class="p">.</span><span class="nx">myRev</span> <span class="p">=</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">Header</span><span class="p">.</span><span class="nx">Revision</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">!</span><span class="nx">resp</span><span class="p">.</span><span class="nx">Succeeded</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">m</span><span class="p">.</span><span class="nx">myRev</span> <span class="p">=</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">Responses</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">GetResponseRange</span><span class="p">().</span><span class="nx">Kvs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">CreateRevision</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">resp</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>在获取锁时，先通过事务操作来尝试加锁。如果key是第一次创建，则将 key 绑定租约存储，否则获取key的详细信息。getOwner 通过前缀来进行查找最小 revision ，目的是获取当前锁的持有者，如果最小 Revision 的key释放了锁，则该key会被删除，所以最小revision的key就是当前锁的持有者。</p>
+<p>再回到主函数，目前 etcd 中存了锁相关的信息，后面会通过比较 Revision 来判断自己获得了锁还是需要等待锁，如果自己的 Revision 和 ownerKey 的 Revsion相同，说明自己就是锁的持有者。</p>
+<br/>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">Mutex</span><span class="p">)</span> <span class="nf">Lock</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nf">tryAcquire</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">//ownerKey就是当前持有锁的值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">ownerKey</span> <span class="o">:=</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">Responses</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nf">GetResponseRange</span><span class="p">().</span><span class="nx">Kvs</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//如果ownerKey的长度为0或者持有者的Revision与自己的Revision相同，说明自己持有锁，可以直接返回，并对共享资源进行操作
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">ownerKey</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">ownerKey</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">CreateRevision</span> <span class="o">==</span> <span class="nx">m</span><span class="p">.</span><span class="nx">myRev</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">m</span><span class="p">.</span><span class="nx">hdr</span> <span class="p">=</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">Header</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="o">......</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//等待锁的释放
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">client</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nf">Client</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">_</span><span class="p">,</span> <span class="nx">werr</span> <span class="o">:=</span> <span class="nf">waitDeletes</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">client</span><span class="p">,</span> <span class="nx">m</span><span class="p">.</span><span class="nx">pfx</span><span class="p">,</span> <span class="nx">m</span><span class="p">.</span><span class="nx">myRev</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">werr</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">m</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">(</span><span class="nx">client</span><span class="p">.</span><span class="nf">Ctx</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">werr</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//确保session没有过期
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">gresp</span><span class="p">,</span> <span class="nx">werr</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">m</span><span class="p">.</span><span class="nx">myKey</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">werr</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">m</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">(</span><span class="nx">client</span><span class="p">.</span><span class="nf">Ctx</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">werr</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">gresp</span><span class="p">.</span><span class="nx">Kvs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">ErrSessionExpired</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">m</span><span class="p">.</span><span class="nx">hdr</span> <span class="p">=</span> <span class="nx">gresp</span><span class="p">.</span><span class="nx">Header</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">nil</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h3 id="waitdeletes">waitDeletes</h3>
+<p>如果没有获得到锁，就需要等待前面的锁释放，这里主要使用到 watch 机制。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">waitDeletes</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">client</span> <span class="o">*</span><span class="nx">v3</span><span class="p">.</span><span class="nx">Client</span><span class="p">,</span> <span class="nx">pfx</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">maxCreateRev</span> <span class="kt">int64</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">pb</span><span class="p">.</span><span class="nx">ResponseHeader</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//getOpts会通过两个Option函数获取小于传入的maxCreateRev的Revision的key集合且找出集合中最大的Revison对应的key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//主要是用于获取前一个上锁的key，进而可以watch该key的删除事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">getOpts</span> <span class="o">:=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">v3</span><span class="p">.</span><span class="nf">WithLastCreate</span><span class="p">(),</span> <span class="nx">v3</span><span class="p">.</span><span class="nf">WithMaxCreateRev</span><span class="p">(</span><span class="nx">maxCreateRev</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//get通过getOpts的动作来获取键值对
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">pfx</span><span class="p">,</span> <span class="nx">getOpts</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//如果长度是0，说明key不存在，代表被删除，前面的锁已经被释放了，可以直接返回
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">Kvs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">Header</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">lastKey</span> <span class="o">:=</span> <span class="nb">string</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">Kvs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">Key</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//否则通过watch监听上一个锁的删除事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">waitDelete</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">client</span><span class="p">,</span> <span class="nx">lastKey</span><span class="p">,</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">Header</span><span class="p">.</span><span class="nx">Revision</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">waitDelete</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">client</span> <span class="o">*</span><span class="nx">v3</span><span class="p">.</span><span class="nx">Client</span><span class="p">,</span> <span class="nx">key</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">rev</span> <span class="kt">int64</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">cctx</span><span class="p">,</span> <span class="nx">cancel</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithCancel</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nf">cancel</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">wr</span> <span class="nx">v3</span><span class="p">.</span><span class="nx">WatchResponse</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//通过Revsion来watch key，也就是前一个锁
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">wch</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Watch</span><span class="p">(</span><span class="nx">cctx</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">v3</span><span class="p">.</span><span class="nf">WithRev</span><span class="p">(</span><span class="nx">rev</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">wr</span> <span class="p">=</span> <span class="k">range</span> <span class="nx">wch</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">ev</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">wr</span><span class="p">.</span><span class="nx">Events</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">             <span class="c1">//监听Delete事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">if</span> <span class="nx">ev</span><span class="p">.</span><span class="nx">Type</span> <span class="o">==</span> <span class="nx">mvccpb</span><span class="p">.</span><span class="nx">DELETE</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">wr</span><span class="p">.</span><span class="nf">Err</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nf">Err</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;lost watcher waiting for delete&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>waitDeletes 正常返回后该进程会获取到锁，进入操作共享资源。</p>
+<br/>
+<h3 id="unlock">UnLock</h3>
+<p>解锁操作会直接删除对应的 kv,这会触发下一个锁的获取</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">Mutex</span><span class="p">)</span> <span class="nf">Unlock</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">client</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">s</span><span class="p">.</span><span class="nf">Client</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">m</span><span class="p">.</span><span class="nx">myKey</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">m</span><span class="p">.</span><span class="nx">myKey</span> <span class="p">=</span> <span class="s">&#34;\x00&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">m</span><span class="p">.</span><span class="nx">myRev</span> <span class="p">=</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>源码链接：<a href="https://github.com/etcd-io/etcd/blob/v3.5.1/client/v3/concurrency/mutex.go" target="_blank" rel="noopener noreffer">https://github.com/etcd-io/etcd/blob/v3.5.1/client/v3/concurrency/mutex.go</a></p>
+<br/>
+<p>详见：<a href="https://juejin.cn/post/7062900835038003208" target="_blank" rel="noopener noreffer">https://juejin.cn/post/7062900835038003208</a></p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-05-30</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" data-title="etcd 的基本入门"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" data-title="etcd 的基本入门"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/etcd/">Etcd</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/vmtrafficshark-%E8%87%AA%E5%88%B6%E5%BC%B1%E7%BD%91%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="prev" rel="prev" title="VMTrafficShark 自制弱网模拟器"><i class="fas fa-angle-left fa-fw"></i>VMTrafficShark 自制弱网模拟器</a>
+            <a href="/post/%E6%80%A7%E8%83%BD%E5%A4%A7%E6%9D%80%E5%99%A8epoll/" class="next" rel="next" title="性能大杀器epoll">性能大杀器epoll<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.129.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.org/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,0 +1,106 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Linux - Category - Kiosk&#39;s 个人编程技术分享</title>
+        <link>http://localhost:1313/categories/linux/</link>
+        <description>Linux - Category - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 31 Jul 2022 16:30:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/categories/linux/" rel="self" type="application/rss+xml" /><item>
+    <title>eBPF超乎你想象</title>
+    <link>http://localhost:1313/post/ebpf%E8%B6%85%E4%B9%8E%E4%BD%A0%E6%83%B3%E8%B1%A1/</link>
+    <pubDate>Sun, 31 Jul 2022 16:30:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/ebpf%E8%B6%85%E4%B9%8E%E4%BD%A0%E6%83%B3%E8%B1%A1/</guid>
+    <description><![CDATA[eBPF 是什么？ eBPF：过去 50 年操作系统最大的变革！！！
+在过去，如果想让应用程序处理网络数据包是不可能的，因为应用程序运行在Linux的用户空间，它是不能直接访问主机的网络缓冲区，这里由内核管理和保护。内核保证了进程隔离，进程只能通过系统调用（syscall）来获取自己的网络数据包信息。
+1992 年的 USENIX 会议上，The BSD Packet Filter: A New Architecture for User-level Packet Capture ，第一次提到 BSD Packet Filter （简称BPF）这个概念，这篇论文带来了一个革命性技术。正如其名称他是包过滤相关的技术，其基本原理是用户态定义 BPF 字节码来定义过滤表达式，然后传递给内核，再由虚拟机解释运行。
+有了 BPF 之后，应用程序不再需要 syscall，数据包不需要在内核空间和用户空间之间来回交互传递。而是我们将代码直接交给内核，让内核自己执行，这样就可以让代码全速运行，效率更高。
+我们使用的 tcpdump 主要通过 libpcap 实现，而libpcap 就是基于 eBPF 。执行下面的命令，导出 tcpdump 所灌入内核的 BPF 程序。如下的 tcpdump 命令，可以直接过滤出IP地址包含 1.1.1.1 和 2.2.2.2 的数据包。
+1 2 3 4 5 6 7 8 tcpdump -d &#39;ip src 1.1.1.1 or ip src 2.2.2.2&#39; (000) ldh [12] # 找到以太网类型字段 (001) jeq #0x800 jt 2 jf 6 # 判断是否为以太网 (002) ld [26] # 判断IP头部 (003) jeq #0x1010101 jt 5 jf 4 (004) jeq #0x2020202 jt 5 jf 6 (005) ret #262144 (006) ret #0 1 2 3 4 5 6 7 8 9 // Filter BPF Code static struct sock_filter bpfcode[8] = { { 0x28, 0, 0, 0x0000000c }, // (000) ldh [12] xxxx }; sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); bind(sock, (struct sockaddr *) &amp;addr, sizeof(addr)); setsockopt(sock, SOL_SOCKET, SO_ATTACH_FILTER, &amp;bpf, sizeof(bpf)); Linux 利用 socketopt 中的 SO_ATTACH_FILTER、SO_DETACH_FILTER 来执行系统调用，具体可参考 socket manual page。]]></description>
+</item><item>
+    <title>使用eBPF观测HTTP2</title>
+    <link>http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/</link>
+    <pubDate>Sat, 04 Jun 2022 16:30:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/</guid>
+    <description><![CDATA[<p>在当今充满微服务的世界中，对服务之间的消息传输的可观察性和理解变得越来越重要。</p>
+<p>其中一些微服务的传输协议比较复杂，如HTTP/2 协议为了降低头部内容的重复传输，使用表头压缩算法 HPACK，虽然HPACK有助于提升 HTTP/2 的传输效率，但也使得跟踪变得复杂。不过，通过使用 eBPF uprobes,可以在 Header 被压缩之前对其进行跟踪。</p>
+<p>
+   <div class="post-img-view">
+      <a data-fancybox="gallery" href="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png">
+         
+      </a>
+   </div>
+
+
+</p>]]></description>
+</item><item>
+    <title>使用eBPF跟踪 SSL/TLS 连接</title>
+    <link>http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/</link>
+    <pubDate>Sun, 15 May 2022 16:30:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/</guid>
+    <description><![CDATA[前面的文章介绍了 eBPF 的入门知识，这篇算是一个实战吧，使用 eBPF 来跟踪 TLS加密连接。TLS 是目前互联网上的一个标准工具了，可用于加密的通信。本文尝试使用 eBPF 技术将加密的密文还原为明文。当然这并不意味着TLS不再安全，想干坏事的人可以在中间代理服务器、网关设备上偷听。因为eBPF 所实现的追踪明文一定是要建立在真正去做ssl 明文转密文写入操作的。
+关于eBPF基础知识请查看
+认识eBPF
+如何使用eBPF进行追踪
+简介 BPF 可用于对内核函数、用户态函数进行插桩进而实现观测的需求。当然一个有趣的应用就是跟踪网络流量。虽然TLS 流量通过网卡时是密文的，但是我们可以利用 eBPF在加密前进行跟踪。eBPF 的事件追踪并不局限于 kprobes，uprobes也可以用来追踪应用程序代码到达某个指令时触发 BPF 程序。
+TLS Tracing (openssl) 通过上图，我们可以知道TLS库的数据读写是 SSL_write 和 SSL_read 函数。跟踪这些调用就可以在加密之前或者解密之后的流量。
+查询跟踪函数 其实上面的图已经说明了我们要追踪的函数是 SSL_write 和 SSL_read ，但是这里也聊一下这两个函数是如何查找的吧。一般来说，我们可以使用 readelf 命令。输出的结果，排除一些明显和加密过程相关的函数之外，映入眼帘的便是 SSL_read
+1 2 3 4 $ readelf -Ws /usr/lib/x86_64-linux-gnu/libssl.so |grep -i &#39;ssl_read&#39; 658: 0000000000032ce0 126 FUNC GLOBAL DEFAULT 15 SSL_read@@OPENSSL_3.0.0 762: 0000000000038cf0 414 FUNC GLOBAL DEFAULT 15 SSL_read_early_data@@OPENSSL_3.0.0 811: 0000000000032d60 25 FUNC GLOBAL DEFAULT 15 SSL_read_ex@@OPENSSL_3.]]></description>
+</item><item>
+    <title>如何使用eBPF进行追踪</title>
+    <link>http://localhost:1313/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA/</link>
+    <pubDate>Tue, 10 May 2022 16:30:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA/</guid>
+    <description><![CDATA[<p>eBPF 我们知道了程序的工作原理和编程接口以及事件触发机制。那么我们就可以开始 eBPF 程序的开发和执行过程了。</p>
+<p>跟踪类 eBPF 程序主要包含 内核插桩 （BPF_PROG_TYPE_KPROBE）、跟踪点（BPF_PROG_TYPE_TRACEPONT）以及性能事件（BPF_TYPE_PERF_EVENT）等类型的程序，而每类的 eBPF 程序又可以挂载到不同的内核函数、内核跟踪点或者性能事件上。当这些内核函数、内核跟踪点或者性能事件被调用的时候，挂载到其上的 eBPF 程序就会自动执行。</p>]]></description>
+</item><item>
+    <title>认识eBPF</title>
+    <link>http://localhost:1313/post/%E8%AE%A4%E8%AF%86ebpf/</link>
+    <pubDate>Sat, 30 Apr 2022 16:30:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E8%AE%A4%E8%AF%86ebpf/</guid>
+    <description><![CDATA[<p>eBPF  是从 BPF（Berkeley Packet Filter）技术扩展而来，最初就是为了实现快速包过滤而实现的一门技术，因为可以直接在内核中执行，避免了向用户态复制每一个数据包，从而极大提升了包过滤的性能。后来由于这个思路非常受到欢迎，在各个场景都需要内核态的快速开发，使得BPF不再限于网络栈，而是内核的一个顶级子系统。即成了现在的 eBPF 。</p>
+<p>
+   <div class="post-img-view">
+      <a data-fancybox="gallery" href="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png">
+         
+      </a>
+   </div>
+
+
+</p>]]></description>
+</item><item>
+    <title>操作系统知识汇总</title>
+    <link>http://localhost:1313/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/</link>
+    <pubDate>Sat, 05 Feb 2022 08:50:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/</guid>
+    <description><![CDATA[<p>最常见的指标有可能是最容易遗漏和忽视的，以前面试的过程中经常被问到一些问题定位排查的运维问题，但是一些经常耳熟能详的名词被深究问下去就不知所以了。
+比如：1. 系统负载如何查看？系统负载高的原因都有可能是哪些？ 什么是系统负载？ 2. swap 是什么？为什么kubernetes建议禁用 swap 等。</p>
+<p>下面做一些总结</p>]]></description>
+</item><item>
+    <title>systemd 基本概念</title>
+    <link>http://localhost:1313/post/systemd-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</link>
+    <pubDate>Sun, 20 Sep 2020 23:29:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/systemd-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</guid>
+    <description><![CDATA[<p>systemd 是 PID 为1的一个程序，负责初始化系统。所有的程序不是systemd直接启动就是由systemd的子系统启动。systemd是内核直接启动，所以信号9(KILL)对systemd也无效。</p>
+<p>systemd 使用Linux控制组跟踪进程，维护安装和自动挂载点，并实现基于事务性依赖关系的详尽服务控制逻辑。其他部分包括日志记录守护程序，用于控制基本系统配置的实用程序，例如主机名，日期，区域设置，维护已登录用户和正在运行的容器和虚拟机的列表，系统帐户，运行时目录和设置，以及用于管理简单网络的守护程序配置，网络时间同步，日志转发和名称解析。</p>]]></description>
+</item><item>
+    <title>Android 信任自签名证书</title>
+    <link>http://localhost:1313/post/android-%E4%BF%A1%E4%BB%BB%E8%87%AA%E7%AD%BE%E5%90%8D%E8%AF%81%E4%B9%A6/</link>
+    <pubDate>Wed, 22 Jul 2020 23:23:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/android-%E4%BF%A1%E4%BB%BB%E8%87%AA%E7%AD%BE%E5%90%8D%E8%AF%81%E4%B9%A6/</guid>
+    <description><![CDATA[<p>在之前的文章 <a href="https://kiosk007.top/2020/05/30/VMTrafficShark-%E8%87%AA%E5%88%B6%E5%BC%B1%E7%BD%91%E6%A8%A1%E6%8B%9F%E5%99%A8/" target="_blank" rel="noopener noreffer">VMTrafficShark 自制弱网模拟器</a> 中介绍了如何搭建一个弱网模拟器，并且进行弱网模拟，中间人，劫持重放测试等等。对了这里一般的测试设备是Android手机，那么这篇文章介绍一下Android 手机应该如何支持自签名证书。</p>]]></description>
+</item><item>
+    <title>理解协程</title>
+    <link>http://localhost:1313/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/</link>
+    <pubDate>Sat, 18 Jul 2020 16:30:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/</guid>
+    <description><![CDATA[<p><strong>协程</strong> 在如今在高并发场景下最容易提到的一个技术，协程即能暂停执行以在之后恢复的函数。。下面是关于 <a href="https://en.cppreference.com/w/cpp/language/coroutines" target="_blank" rel="noopener noreffer">GCC11 编辑器</a> 对协程的介绍 （ A coroutine is a function that can suspend execution to be resumed later. Coroutines are stackless: they suspend execution by returning to the caller and the data that is required to resume execution is stored separately from the stack. ）</p>]]></description>
+</item></channel>
+</rss>

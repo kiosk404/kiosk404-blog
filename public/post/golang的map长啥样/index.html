@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Golang的Map长啥样 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/">
+  <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
+  <meta property="og:title" content="Golang的Map长啥样">
+  <meta property="og:description" content="Map 是每个编程语言必备的数据结构，就连 lua 这种胶水语言都支持其功能，map 的底层是一个 HashTable，Go 语言的map使用十分简易，但其内部实现不是简单的一个 HashTable。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-11-12T11:06:00+00:00">
+    <meta property="article:modified_time" content="2022-11-12T11:06:00+00:00">
+    <meta property="article:tag" content="Golang">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="Golang的Map长啥样">
+  <meta name="twitter:description" content="Map 是每个编程语言必备的数据结构，就连 lua 这种胶水语言都支持其功能，map 的底层是一个 HashTable，Go 语言的map使用十分简易，但其内部实现不是简单的一个 HashTable。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/" /><link rel="prev" href="http://localhost:1313/post/%E5%A6%82%E4%BD%95%E8%AE%BF%E9%97%AE%E8%AE%A4%E8%AF%81/" /><link rel="next" href="http://localhost:1313/post/golang%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/" /><link rel="stylesheet" href="https://cdn.staticfile.org//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.scss"><link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Golang的Map长啥样",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "golang","wordcount":  944 ,
+        "url": "http:\/\/localhost:1313\/post\/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7\/","datePublished": "2022-11-12T11:06:00+00:00","dateModified": "2022-11-12T11:06:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Golang的Map长啥样</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-11-12">2022-11-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;944 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#键值存储">键值存储</a>
+      <ul>
+        <li><a href="#哈希映射">哈希映射</a></li>
+        <li><a href="#哈希冲突">哈希冲突</a></li>
+        <li><a href="#渐进式迁移">渐进式迁移</a></li>
+      </ul>
+    </li>
+    <li><a href="#map-的底层结构">Map 的底层结构</a>
+      <ul>
+        <li><a href="#hmap">Hmap</a></li>
+        <li><a href="#bmap">bmap</a></li>
+        <li><a href="#负载因子">负载因子</a></li>
+      </ul>
+    </li>
+    <li><a href="#总体结构">总体结构</a></li>
+    <li><a href="#go-map-的查找">Go Map 的查找</a>
+      <ul>
+        <li><a href="#map-遍历为什么是无序的">map 遍历为什么是无序的？</a></li>
+      </ul>
+    </li>
+    <li><a href="#go-map-的扩容">Go Map 的扩容</a>
+      <ul>
+        <li><a href="#扩容规则">扩容规则</a></li>
+      </ul>
+    </li>
+    <li><a href="#go-map-的缩容">Go Map 的缩容</a>
+      <ul>
+        <li><a href="#为什么不支持缩容">为什么不支持缩容？</a></li>
+        <li><a href="#那怎么怎么避免内存泄漏呢">那怎么怎么避免内存泄漏呢？</a></li>
+      </ul>
+    </li>
+    <li><a href="#go-map-的遍历">Go Map 的遍历</a></li>
+    <li><a href="#参考">参考：</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>Map 是每个编程语言必备的数据结构，就连 lua 这种胶水语言都支持其功能，map 的底层是一个 HashTable，Go 语言的map使用十分简易，但其内部实现不是简单的一个 HashTable。</p>
+<h1 id="键值存储">键值存储</h1>
+<p>提到键值存储，理所应当的就想到了哈希表，哈希表通常会有一堆的桶（Buckets）来存储键值对信息。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/go_map1.png" alt="go_map1" style="zoom:50%;" />
+<h2 id="哈希映射">哈希映射</h2>
+<p>键值对会被映射到桶里，那么这个桶怎么选择呢？先通过哈希函数（Hash function）将key处理一下，得到一个Hash值。在用这个 Hash 值在 <code>m</code>个桶里选择一个，桶的编号区间 0 到 <code>m-1</code> 。目前有两种方式比较常用</p>
+<ul>
+<li><strong>取模法</strong></li>
+</ul>
+<p>将 hash 值取模， <code>hash % m </code>，这样 键值对就会映射到一个桶里。</p>
+<ul>
+<li><strong>与运算法</strong></li>
+</ul>
+<p><code>hash &amp; (m-1)</code> ，这里为了防止出现空桶情况，<code>m</code> 必须是2的整数次幂。这样 <code>m</code> 的二进制表示一定只有一位为1，而 <code>m - 1</code> 的二进制一定是低于1的位数均为1。</p>
+<p>比如 <code>m=4</code> ，二进制表达式为 00000100，比如 <code>m-1</code> 的二进制表达式为 00000011</p>
+<br/>
+<h2 id="哈希冲突">哈希冲突</h2>
+<p>但是这里有个问题。当多个hash值映射到同一个 bucket 里怎么办？最常用的方法是 哈希拉链法，比如桶指向一个链表，当多个值映射到一个桶时，就追加到链表（还可以使用其他数据结构）尾部。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/go_map2.png" alt="go_map2" style="zoom:80%;clear:both;margin:auto;display:block;" />
+<p>虽然有 哈希拉链法 这样的解决冲突的手段，但是适时地扩充 bucket 的个数也是十分必要的，当键值对过多时就需要扩充哈希桶，而 count / m  的比值就是作为是否要扩充的判断依据。这个比值就是 <strong>负载因子 (Load Factor)</strong></p>
+<br/>
+<h2 id="渐进式迁移">渐进式迁移</h2>
+<p>当迁移发生时，并不是直接将旧表中的内容直接迁移至新表中，而是渐进式的方式。一个指针指向新表，一个指针指向旧表。再记录迁移进度。</p>
+<p>当哈希表在读写操作时，如果检测到当前处于扩容阶段，就完成一部分的键值对迁移任务。直到所有的键值对迁移到新桶，旧桶不再使用才算完成所有的迁移任务。</p>
+<p>这样可以避免一次完全迁移导致的性能抖动。</p>
+<br/>
+<h1 id="map-的底层结构">Map 的底层结构</h1>
+<p>Go map 在语言底层是通过如下结构体来表征的，其位置在<a href="https://link.zhihu.com/?target=https%3A//github.com/golang/go/blob/0bb6115dd6246c047335a75ce4b01a07c291befd/src/cmd/compile/internal/types/type.go%23L217" target="_blank" rel="noopener noreffer">go/src/cmd/compile/internal/types/type.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Map contains Type fields specific to maps.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">Map</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Key</span>  <span class="o">*</span><span class="nx">Type</span> <span class="c1">// Key type
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">Elem</span> <span class="o">*</span><span class="nx">Type</span> <span class="c1">// Val (elem) type
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Bucket</span> <span class="o">*</span><span class="nx">Type</span> <span class="c1">// internal struct type representing a hash bucket
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">Hmap</span>   <span class="o">*</span><span class="nx">Type</span> <span class="c1">// internal struct type representing the Hmap (map header object)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">Hiter</span>  <span class="o">*</span><span class="nx">Type</span> <span class="c1">// internal struct type representing hash iterator state
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>前两个字段分别为 key  value，由于 go map 支持多种数据类型,，go 会在编译期推断其具体的数据类型。如 <code>map[string]int</code></p>
+<p>Bucket 是 Hash 桶，Hmap 是底层使用的 HashTable 的元信息，比如当前哈希表中含有的元素数据，桶指针等，Hiter 是用于遍历 go map 的数据结构。</p>
+<br/>
+<h2 id="hmap">Hmap</h2>
+<p>hmap 本质是一个指针，其指向一个 Hmap 的结构体。其具体的数据结构位于<a href="https://github.com/golang/go/blob/go1.16.2/src/runtime/map.go#L149" target="_blank" rel="noopener noreffer">src/runtime/map.go</a>，hmap 结构体描述了 Go Map 的关键信息。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// $GOROOT/src/runtime/map.go
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">hmap</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">count</span>     <span class="kt">int</span>     <span class="c1">// 代表哈希表中的元素个数，调用 len(map) 时，返回的就是该字段值。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">flags</span>     <span class="kt">uint8</span>   <span class="c1">// 状态标志（是否处于正在写入的状态等）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">B</span>         <span class="kt">uint8</span>   <span class="c1">// buckets 的对数。如果 B = 5，则 buckets 数组的长度 = 2^B = 32，意味着有 32 个桶。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">noverflow</span> <span class="kt">uint16</span>  <span class="c1">// 溢出桶的数量
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">hash0</span>     <span class="kt">uint32</span>  <span class="c1">// 生成 hash 的随机数种子
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 指向 buckets 数组的指针，数组大小为 2^B，如果元素个数为 0，它为 nil。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// buckets 数组中每个元素都是 bmap 结构
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">buckets</span>    <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 如果发生扩容，oldbuckets 是指向老的 buckets 数组的指针，
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 老的 buckets 数组大小是新的 buckets 的 1/2，
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 非扩容状态下，它为 nil。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">oldbuckets</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">nevacuate</span>  <span class="kt">uintptr</span>        <span class="c1">// 表示扩容进度，小于此地址的 buckets 代表已搬迁完成。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="nx">extra</span> <span class="o">*</span><span class="nx">mapextra</span> <span class="c1">// 存储一些额外信息。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>count：键值对数目</li>
+<li>flag：用于标识当前map的状态，如正在被遍历，被写入</li>
+<li>B：桶的多少次幂（Golang 使用的是与运算方法）</li>
+<li>noverflow：溢出桶的数目（这个后面会说到）</li>
+<li>buckets：用于记录桶的位置</li>
+<li>oldbuckets：用于记录扩容阶段旧桶的位置</li>
+<li>nevacuate：用于记录将迁移的旧桶编号</li>
+</ul>
+<br/>
+<h2 id="bmap">bmap</h2>
+<p>bmap 是哈希桶的结构，每个 bmap 底层都采用链表的结构，也就是我们常说的桶，一个 bmap 里面最多装 8 个key，这些 key 之所以会落入到同一个桶，是因为它们经过哈希计算后，哈希结果的低 8 位是相同的，在桶内，又会根据 Key 计算出 hash 的高 8 位来决定 key 到底落入桶的哪个位置，也就是 tophash 字段存储了 key 哈希值高 8 位。</p>
+<br/>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// $GOROOT/src/runtime/map.go
+</span></span></span><span class="line"><span class="cl"><span class="c1">// A bucket for a Go map.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">bmap</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 长度为 8 的数组
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 用来快速定位 key 是否在这个 bmap 中
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 一个桶最多有8个槽位，如果key计算出来的tophash值在tophash数组中，则代表该 key 在这个桶中
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">tophash</span> <span class="p">[</span><span class="nx">bucketCnt</span><span class="p">]</span><span class="kt">uint8</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>此外， tophash 还会存储一些状态值，用于表明当前桶单元的状态，这些状态值都是小于minTopHash 。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// $GOROOT/src/runtime/map.go
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">emptyRest</span>      <span class="p">=</span> <span class="mi">0</span> <span class="c1">// 表明此桶单元为空，且更高索引的单元也是空
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">emptyOne</span>       <span class="p">=</span> <span class="mi">1</span> <span class="c1">// 表明此桶单元为空
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">evacuatedX</span>     <span class="p">=</span> <span class="mi">2</span> <span class="c1">// 用于表示扩容迁移到新桶前半段区间
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">evacuatedY</span>     <span class="p">=</span> <span class="mi">3</span> <span class="c1">// 用于表示扩容迁移到新桶后半段区间
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">evacuatedEmpty</span> <span class="p">=</span> <span class="mi">4</span> <span class="c1">// 用于表示此单元已迁移
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">minTopHash</span>     <span class="p">=</span> <span class="mi">5</span> <span class="c1">// key 的 tophash 值与桶状态值分割线值，小于此值的一定代表着桶单元的状态，大于此值的一定是 key 对应的 tophash 值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// tophash calculates the tophash value for hash.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">tophash</span><span class="p">(</span><span class="nx">hash</span> <span class="kt">uintptr</span><span class="p">)</span> <span class="kt">uint8</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">top</span> <span class="o">:=</span> <span class="nb">uint8</span><span class="p">(</span><span class="nx">hash</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="nx">goarch</span><span class="p">.</span><span class="nx">PtrSize</span><span class="o">*</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">8</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">top</span> <span class="p">&lt;</span> <span class="nx">minTopHash</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">top</span> <span class="o">+=</span> <span class="nx">minTopHash</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">top</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>在实际运行的时候，由于 go map 的key和value可以是多种类型，因此哈希桶的数据类型也会随着 key 和 elem 数据类型的不同而不同，具体的数据类型是在编译期确定，所以其 bmap 在 go 的源码中没有被显示的定义出来，其具体的函数是在 <a href="https://github.com/golang/go/blob/go1.16.2/src/cmd/compile/internal/gc/reflect.go#L82" target="_blank" rel="noopener noreffer">src/cmd/compile/internal/gc/reflect.go</a> (go1.17 以前的版本)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">bmap</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">topbits</span>  <span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">keys</span>     <span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="nx">keytype</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">elems</span>    <span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="nx">elemtype</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">overflow</span> <span class="kt">uintptr</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>一个哈希桶可以存放8个元素。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/go_map3.png" alt="go_map3" style="zoom:50%;clear:both;margin:auto;display:block;" />
+<p>bmap 的 topbits 是哈希值的高8位。</p>
+<p>为了让内存排列的更紧密，key 全部放在一起，value 全部放在一起。</p>
+<p>keys 存放的全是键值对中的键，而elems中存放的全是键值对中的值。</p>
+<p>最后的 overflow *bmap 指向一个溢出桶。</p>
+<p><strong>溢出桶</strong></p>
+<p>当一个 bmap 存放满之后，overflow 会指向一个溢出桶，溢出桶和bmap常规桶一样。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/go_map4.png" alt="go_map4" style="zoom:50%;clear:both;margin:auto;display:block;" />
+<br/>
+<h2 id="负载因子">负载因子</h2>
+<blockquote>
+<p>负载因子（load factor），用于衡量当前哈希表中空间的占用率的核心指标。主要目的是为了<strong>平衡 bucket 的存储空间大小</strong> 和 <strong>查找元素时的性能高低</strong> 。</p>
+</blockquote>
+<p>Go1.17 之前其 默认的负载因子是 6.5 ，这是 Go 官方经过测试得出的数字，一起来看看官方的这份测试报告。</p>
+<p>报告中共包含 4 个核心指标，如下所示：</p>
+<table>
+<thead>
+<tr>
+<th>loadFactor</th>
+<th>%overflow</th>
+<th>bytes/entry</th>
+<th>hitprobe</th>
+<th>missprobe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.00</td>
+<td>2.13</td>
+<td>20.77</td>
+<td>3.00</td>
+<td>4.00</td>
+</tr>
+<tr>
+<td>4.50</td>
+<td>4.05</td>
+<td>17.77</td>
+<td>3.25</td>
+<td>4.50</td>
+</tr>
+<tr>
+<td>5.00</td>
+<td>6.85</td>
+<td>14.77</td>
+<td>3.50</td>
+<td>5.00</td>
+</tr>
+<tr>
+<td>5.50</td>
+<td>10.55</td>
+<td>12.94</td>
+<td>3.75</td>
+<td>5.50</td>
+</tr>
+<tr>
+<td>6.00</td>
+<td>15.27</td>
+<td>11.67</td>
+<td>4.00</td>
+<td>6.00</td>
+</tr>
+<tr>
+<td>6.50</td>
+<td>20.90</td>
+<td>10.79</td>
+<td>4.25</td>
+<td>6.50</td>
+</tr>
+<tr>
+<td>7.00</td>
+<td>27.14</td>
+<td>10.15</td>
+<td>4.50</td>
+<td>7.00</td>
+</tr>
+<tr>
+<td>7.50</td>
+<td>34.03</td>
+<td>9.73</td>
+<td>4.75</td>
+<td>7.50</td>
+</tr>
+<tr>
+<td>8.00</td>
+<td>41.10</td>
+<td>9.40</td>
+<td>5.00</td>
+<td>8.00</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>loadFactor：装载因子</li>
+<li>%overflow：溢出率，有溢出 bucket 的百分比</li>
+<li>bytes/entry：平均没对 key/value 的开销字节数</li>
+<li>hitprobe：查找一个存在的 key 时，要查找的平均个数</li>
+<li>missprobe：查找一个不存在的 key 时，要查找的平均个数</li>
+</ul>
+<br/>
+<p><strong>装载因子越大，填入的元素越多，空间利用率就越高，但发生哈希冲突的几率就会变大。反之，装载因子越小，填入的元素越少，冲突的几率越小，但空间的浪费也会变多很多，而且还会提高扩容操作的次数。</strong></p>
+<br/>
+<p>也是根据这份测试结果，Go 官方取了一个相对适中的值，把 Go 中的 map 的负载因子硬编码为 6.5 。</p>
+<p>这就意味着，Go1.17 以前的版本，<strong>当 map 存储的元素个数大于或等于（6.5 * 桶个数）时，就会触发扩容行为。</strong></p>
+<br/>
+<p>Go1.18 ~ Go1.20 以后的逻辑有改变，map 的负载因子根据哈希表的性能动态调整。这里就不具体做介绍了</p>
+<h1 id="总体结构">总体结构</h1>
+<p>回到 Hmap。我们知道了实际的 KV 键值对是存在bmap中，而bmap不够时是会进行溢出，新的数据存放到溢出桶中。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/golang-map.drawio.png" alt="go_map6" style="clear:both;margin:auto;display:block;zoom:50%" />
+<br/>
+<p>hmap 结构相当于 go map 的头, 它存储了哈希桶的内存地址, 哈希桶之间在内存中紧密连续存储, 彼此之间没有额外的 gap, 每个哈希桶最多存放 8 个 k/v 对, 冲突次数超过 8 时会存放到溢出桶中, 哈希桶可以跟随多个溢出桶, 呈现一种链式结构, 当 HashTable 的装载因子超过阈值(6.5) 后会触发哈希的扩容, 避免效率下降。</p>
+<br/>
+<h1 id="go-map-的查找">Go Map 的查找</h1>
+<p>当要根据 key 从 map 中查询对应的elem时。在go中有两种写法</p>
+<p>方法一是 s := hashMap[key]</p>
+<p>方法二是 s, ok := hashMap[key]</p>
+<p>第一种方法在没有 key 时会返回零值，第二种方法中的 ok 在不存在 key 时会返回 false。其分别对应 mapaccess1 函数 和  mapaccess2 函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// returns key, if not find, returns nil
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">mapaccess1</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">maptype</span><span class="p">,</span> <span class="nx">h</span> <span class="o">*</span><span class="nx">hmap</span><span class="p">,</span> <span class="nx">key</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">)</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// returns key and exist. if not find, returns nil, false
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">mapaccess2</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">maptype</span><span class="p">,</span> <span class="nx">h</span> <span class="o">*</span><span class="nx">hmap</span><span class="p">,</span> <span class="nx">key</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">)</span> <span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="kt">bool</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// returns both key and value. if not find, returns nil, nil
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">mapaccessK</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">maptype</span><span class="p">,</span> <span class="nx">h</span> <span class="o">*</span><span class="nx">hmap</span><span class="p">,</span> <span class="nx">key</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">)</span> <span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>给定一个 key 可以通过下面的操作找到它是否存在。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/go_map7.webp" alt="go_map7" style="clear:both;margin:auto;display:block;zoom:70%" />
+<br/>
+<h2 id="map-遍历为什么是无序的">map 遍历为什么是无序的？</h2>
+<ul>
+<li>map 在遍历时，并不是从固定的 0 号 bucket 开始遍历，每次遍历，都会从一个随机值序号的 bucket , 再从其中的 cell 开始遍历。</li>
+<li>map 在遍历时，是按需遍历 bucket ，同时按需遍历 bucket 中和其 overflow bucket 中的 cell 。但在map 扩容后，会发生 key 的迁移，这就造成落在一个 bucket 中的 key ，随着迁移后，可能落到了其他 bucket 中，从这个角度看，只要扩容了，遍历 map 就不再有序了。</li>
+</ul>
+<h1 id="go-map-的扩容">Go Map 的扩容</h1>
+<p>随着想 HashTable 中插入的元素越来越多，哈希桶的 cell 逐渐被填满，溢出桶的数量也越来越多，此时哈希冲突发生的频率也越来越高，HashTable的性能将不断下降。为了解决这个问题，此时需要对HashTable 进行扩容，而判断是否需要扩容就需要看装载因子 LoadFactor。</p>
+<p>$$LoadFactor := \frac{Element.Length}{HashTable.Length}$$</p>
+<p>其中 HashTable 的长度为 $\verb!2^B!$ (不包含溢出桶)，其 LoadFactor 是 6.5 。超过这个数就会触发<strong>翻倍扩容</strong>。</p>
+<p>分配的新桶是旧桶的2倍。如果旧桶选择是旧桶一个槽位，那么新桶会被分流到新桶的 2个槽位置。</p>
+<p>如果LoadFactor没有超标，但是使用的溢出桶较多，就会触发<strong>等量扩容</strong>。如果常规桶小于  $\verb!2^15!$ ，而使用的溢出桶超过这个值，那么就会触发等量扩容，等量扩容应对的场景是出现了大量删除的 key 。</p>
+<br/>
+<h2 id="扩容规则">扩容规则</h2>
+<p>map 的扩容时使用的是<strong>渐进式扩容</strong>。</p>
+<p>由于 map 扩容需要将原有的 key/value 重新搬到新的内存地址，一次性搬运大量的 key-value 时势必会造成比较大的延迟，因此 Go map 的扩容是渐进式的，原有的 Key 并不会一次性搬迁完毕，每次最多只会搬迁 2 个 bucket，只有在插入或删除、修改 key 的时候，都会尝试进行搬迁 bucket 的工作，先检查 oldbuckets 是否搬迁完毕，具体来说就是检查 oldbuckets 是否为 nil</p>
+<br/>
+<h1 id="go-map-的缩容">Go Map 的缩容</h1>
+<p>在 Go 底层源码 src/runtime/map.go 中，扩缩容的处理方法是 grow 为前缀的方法来处理的。</p>
+<p>是否进行缩容的条件是 溢出桶（noverflow）的数量 &gt;= 32768 (1&laquo;15) 。</p>
+<p>而缩容本质上是等效扩容。</p>
+<p>由此可以得出结论：map 的<strong>扩缩容的主要区别在于 hmap.B 的容量大小改变</strong>。而缩容由于 hmap.B 压根没变，内存空间的占用也是没有变化的。</p>
+<br/>
+<p><font color='red'>这种方式其实是存在运行隐患的</font> &#x1f62b;，也就是<strong>导致在删除元素时，并不会释放内存，使得分配的总内存不断增加</strong>。如果一个不小心，拿 map 来做大 key/value 的存储，也不注意管理，很容易就内存爆了。</p>
+<p>也就是 Go 语言的 map 目前实现的是 ”伪缩容“，仅针对溢出桶过多的情况。若是触发缩容，hash 数组的占用的内存大小不变。</p>
+<h2 id="为什么不支持缩容">为什么不支持缩容？</h2>
+<p>下述内容会主要基于如下两个 issues 和 proposal 来分析：</p>
+<ol>
+<li>《<a href="https://github.com/golang/go/issues/20135" target="_blank" rel="noopener noreffer">runtime: shrink map as elements are deleted</a>》</li>
+<li>《<a href="https://github.com/golang/go/issues/45328" target="_blank" rel="noopener noreffer">proposal: runtime: add way to clear and reuse a map’s working storage</a>》</li>
+</ol>
+<p>目前 map 的缩容处理起来比较棘手，最早的 issues 是 2016 年提出的，也有人提过一些提案，但都因为种种原因被拒绝了。</p>
+<p>简单来讲，就是没有找到一个很好的方法实现，存在明确的实现成本问题，没法很方便的 ”告诉“ Go 运行时，我要：</p>
+<ol>
+<li>记得保留存储空间，我要立即重用 map。</li>
+<li>赶紧释放存储空间，map 从现在开始会小很多。</li>
+</ol>
+<p>抽象来看症结是：<strong>需要保证增长结果在下一个开始之前完成</strong>，此处的增长指的是 ”从小到大，从一个大小到相同大小，从大到小“ 的复杂过程。</p>
+<br/>
+<h2 id="那怎么怎么避免内存泄漏呢">那怎么怎么避免内存泄漏呢？</h2>
+<ul>
+<li>
+<p>如果删除的元素是值类型，如int，float，bool，string以及数组和struct，map的内存不会自动释放</p>
+</li>
+<li>
+<p>如果删除的元素是引用类型，如指针，slice，map，chan等，map的内存会自动释放，但释放的内存是子元素应用类型的内存占用</p>
+</li>
+<li>
+<p>将map设置为nil后，内存被回收</p>
+</li>
+</ul>
+<h1 id="go-map-的遍历">Go Map 的遍历</h1>
+<p>go map 的遍历本来是一件简单的事情，外层循环遍历所有的 Bucket，中层循环横向遍历所有的溢出桶，内层循环遍历 Bucket中的所有 k/v ，若没有扩容逻辑的话，确实这样即可，但是由于存在扩容逻辑，使得map遍历复杂性变得复杂。</p>
+<p>由于 map 扩容逻辑的存在, map 的遍历是无序的。</p>
+<p>而实际上即便我们在代码中硬编码一个固定的 map，没有做任何更改，仍然是不一样的结果，这是因为，go 设置了随机遍历起点，不仅起始 Bucket 是随机的, 对于 Bucket 中的起始 cell 也是随机的(这样做似乎是为了规避程序员故意使用这个 map 的顺序?), map 在迭代过程中, 需要检查 map 的状态, 如果 map 当前正处于扩容状态, 则需要检查遍历到的 Bucket, 若 Bucket 尚未搬迁, 则需要去该 Bucket 对应的 oldBucket 里遍历元素, 并且这里要注意因为 oldBucket 中的元素可能会分流到两个新 Bucket 中, 因此在遍历时只会取出会分流到当前 Bucket 的元素, 否则元素会被遍历两次。</p>
+<br/>
+<br/>
+<h1 id="参考">参考：</h1>
+<div class="bilibili"><iframe src="//player.bilibili.com/player.html?bvid=BV1Sp4y1U7dJ&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe></div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-11-12</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/" data-title="Golang的Map长啥样"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/" data-title="Golang的Map长啥样"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/golang/">Golang</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/%E5%A6%82%E4%BD%95%E8%AE%BF%E9%97%AE%E8%AE%A4%E8%AF%81/" class="prev" rel="prev" title="如何进行访问认证？"><i class="fas fa-angle-left fa-fw"></i>如何进行访问认证？</a>
+            <a href="/post/golang%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/" class="next" rel="next" title="Golang的内存分配">Golang的内存分配<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.129.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.org/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>算法笔记-稳定匹配算法（Gale-Shapley） - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/">
+  <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
+  <meta property="og:title" content="算法笔记-稳定匹配算法（Gale-Shapley）">
+  <meta property="og:description" content="最近工作中遇到一个场景，需要将两种资源做匹配分发，希望动态的做到最佳分配的状态，而且分配的结果需要稳定，刚好了解到这类的算法，特此记录一下。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-10-31T22:53:00+00:00">
+    <meta property="article:modified_time" content="2023-10-31T22:53:00+00:00">
+    <meta property="article:tag" content="Algorithm">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="算法笔记-稳定匹配算法（Gale-Shapley）">
+  <meta name="twitter:description" content="最近工作中遇到一个场景，需要将两种资源做匹配分发，希望动态的做到最佳分配的状态，而且分配的结果需要稳定，刚好了解到这类的算法，特此记录一下。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/" /><link rel="prev" href="http://localhost:1313/post/10%E6%9C%88%E5%8E%BB%E6%96%B0%E7%96%86%E5%90%A7/" /><link rel="next" href="http://localhost:1313/post/kube-schedule%E5%AE%9E%E7%8E%B0/" /><link rel="stylesheet" href="https://cdn.staticfile.org//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.scss"><link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "算法笔记-稳定匹配算法（Gale-Shapley）",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "algorithm","wordcount":  866 ,
+        "url": "http:\/\/localhost:1313\/post\/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95\/","datePublished": "2023-10-31T22:53:00+00:00","dateModified": "2023-10-31T22:53:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">算法笔记-稳定匹配算法（Gale-Shapley）</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/algorithm/"><i class="far fa-folder fa-fw"></i>Algorithm</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2023-10-31">2023-10-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;866 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#问题起源">问题起源</a></li>
+    <li><a href="#stable-matching">Stable Matching</a></li>
+    <li><a href="#gale-shapley-algorithm">Gale-Shapley Algorithm</a></li>
+    <li><a href="#分析">分析</a></li>
+    <li><a href="#证明">证明</a>
+      <ul>
+        <li><a href="#termination">Termination</a></li>
+        <li><a href="#perfection">Perfection</a></li>
+        <li><a href="#stability">Stability</a></li>
+      </ul>
+    </li>
+    <li><a href="#拓展">拓展</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>最近工作中遇到一个场景，需要将两种资源做匹配分发，希望动态的做到最佳分配的状态，而且分配的结果需要稳定，刚好了解到这类的算法，特此记录一下。</p>
+<h1 id="问题起源">问题起源</h1>
+<p>盖尔-沙普利算法（Gale-Shapley） 简称 “GS 算法”，是 1962 年，经济学家 David Gale 和 Lloyd Shapley 为了寻找一个稳定的匹配而设计出的市场机制。这类问题就可以成为稳定匹配问题。一个经典的例子就是 男女找对象。</p>
+<h1 id="stable-matching">Stable Matching</h1>
+<p>假设有一家交友公司，现在有 100 位男生&#x1f466; 和 100 位女生 &#x1f467; 需要找对象，所有的男生和女生都需要对异性进行好感度排序 &#x1f49e;，且必须所有人都匹配到，不能有落单的情况，而且不能重复匹配的情况，我们需要最后所有的男生或女生都能得到 <strong>Happy</strong> 并且 <strong>Stable</strong> 的对象。</p>
+<br/>
+<figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-1.png" title="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-1.png" data-thumbnail="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-1.png" data-sub-html="<h2>Stable Matching -1</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-1.png"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-1.png, https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-1.png 1.5x, https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-1.png 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-1.png" />
+    </a><figcaption class="image-caption">Stable Matching -1</figcaption>
+    </figure>
+<br/>
+<p>现在假设 有 X、Y 和 Z 男生 与 A、B 和 C 女生。他们心目中的对象排序如上图所示。下面就应该进行 Stable Matching 了，目标是配对完成之后，每个人都是尽可能  Happy 且 Stable 的。</p>
+<h1 id="gale-shapley-algorithm">Gale-Shapley Algorithm</h1>
+<p>寻找稳定匹配问题采用的方法是 Gale-Shapley 算法，这个算法的演算机制简单的说，每次迭代中，男生向女生求婚，而女生有权利拒绝或者接受，但是女生当下的接受或拒绝不是代表最终的结果(deferred decision making)，这整个算法的演算过程中有三个阶段</p>
+<ul>
+<li>Free （自由之身）</li>
+<li>Engaged（订婚状态，此时可以悔婚回到 Free）</li>
+<li>Married（最终的结果，在最后所有人都会同时进入到这个阶段）</li>
+</ul>
+<p>当所有人都进入到 engaged 这个阶段时，就会停下来，此时就是最后的结果，就不会再有异动了，最后再将所有人的状态切换为 married。</p>
+<blockquote>
+<p><strong>伪代码如下</strong></p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Gale-Shapley
+</span></span><span class="line"><span class="cl">initialize each person to be free
+</span></span><span class="line"><span class="cl">while (some man m is free and hasn&#39;t proposed to every woman) do
+</span></span><span class="line"><span class="cl">    w = highest ranked woman in m&#39;s list to whom m has not yet proposed
+</span></span><span class="line"><span class="cl">    if (w is free) then
+</span></span><span class="line"><span class="cl">       (m, w) become engaged
+</span></span><span class="line"><span class="cl">    else if (w prefers m to her fiance m&#39;) then
+</span></span><span class="line"><span class="cl">       (m, w) become engaged
+</span></span><span class="line"><span class="cl">       m&#39; become free
+</span></span><span class="line"><span class="cl">return the set S of engaged pairs
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Golang 实现版本</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Person</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">name</span>        <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">preferences</span> <span class="p">[]</span><span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">partner</span>     <span class="o">*</span><span class="nx">Person</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">index</span>       <span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 选择更加心仪的男生
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">woman</span> <span class="o">*</span><span class="nx">Person</span><span class="p">)</span> <span class="nf">prefers</span><span class="p">(</span><span class="nx">man</span> <span class="o">*</span><span class="nx">Person</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>    
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">name</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">woman</span><span class="p">.</span><span class="nx">preferences</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">name</span> <span class="o">==</span> <span class="nx">man</span><span class="p">.</span><span class="nx">name</span> <span class="p">{</span>  <span class="c1">// 遍历到该男生同意该男生的求婚
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">return</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">name</span> <span class="o">==</span> <span class="nx">woman</span><span class="p">.</span><span class="nx">partner</span><span class="p">.</span><span class="nx">name</span> <span class="p">{</span>  <span class="c1">// 当前心仪列表中的男生已经是自己的伴侣，不再考虑新来男生的求婚
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">return</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">GaleShapley</span><span class="p">(</span><span class="nx">men</span><span class="p">,</span> <span class="nx">women</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Person</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">initiallyFreeMen</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="o">*</span><span class="nx">Person</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">men</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="nb">copy</span><span class="p">(</span><span class="nx">initiallyFreeMen</span><span class="p">,</span> <span class="nx">men</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nb">len</span><span class="p">(</span><span class="nx">initiallyFreeMen</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">currentMan</span> <span class="o">:=</span> <span class="nx">initiallyFreeMen</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">currentWomanName</span> <span class="o">:=</span> <span class="nx">currentMan</span><span class="p">.</span><span class="nx">preferences</span><span class="p">[</span><span class="nx">currentMan</span><span class="p">.</span><span class="nx">index</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">currentWoman</span> <span class="o">:=</span> <span class="nf">findPersonByName</span><span class="p">(</span><span class="nx">women</span><span class="p">,</span> <span class="nx">currentWomanName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 严格代码需要判断 currentWoman 是否为 nil
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">currentWoman</span><span class="p">.</span><span class="nx">partner</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">currentMan</span><span class="p">.</span><span class="nx">partner</span> <span class="p">=</span> <span class="nx">currentWoman</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">currentWoman</span><span class="p">.</span><span class="nx">partner</span> <span class="p">=</span> <span class="nx">currentMan</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">initiallyFreeMen</span> <span class="p">=</span> <span class="nf">removePerson</span><span class="p">(</span><span class="nx">initiallyFreeMen</span><span class="p">,</span> <span class="nx">currentMan</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">currentWoman</span><span class="p">.</span><span class="nf">prefers</span><span class="p">(</span><span class="nx">currentMan</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">initiallyFreeMen</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">initiallyFreeMen</span><span class="p">,</span> <span class="nx">currentWoman</span><span class="p">.</span><span class="nx">partner</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">currentMan</span><span class="p">.</span><span class="nx">partner</span> <span class="p">=</span> <span class="nx">currentWoman</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">currentWoman</span><span class="p">.</span><span class="nx">partner</span> <span class="p">=</span> <span class="nx">currentMan</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">initiallyFreeMen</span> <span class="p">=</span> <span class="nf">removePerson</span><span class="p">(</span><span class="nx">initiallyFreeMen</span><span class="p">,</span> <span class="nx">currentMan</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">currentMan</span><span class="p">.</span><span class="nx">index</span><span class="o">++</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">removePerson</span><span class="p">(</span><span class="nx">people</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Person</span><span class="p">,</span> <span class="nx">person</span> <span class="o">*</span><span class="nx">Person</span><span class="p">)</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Person</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">index</span> <span class="o">:=</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">p</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">people</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">p</span> <span class="o">==</span> <span class="nx">person</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">index</span> <span class="p">=</span> <span class="nx">i</span>
+</span></span><span class="line"><span class="cl">			<span class="k">break</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">people</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">append</span><span class="p">(</span><span class="nx">people</span><span class="p">[:</span><span class="nx">index</span><span class="p">],</span> <span class="nx">people</span><span class="p">[</span><span class="nx">index</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">findPersonByName</span><span class="p">(</span><span class="nx">people</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Person</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">Person</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">person</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">people</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">person</span><span class="p">.</span><span class="nx">name</span> <span class="o">==</span> <span class="nx">name</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">person</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主要执行逻辑</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 男生： Xavier、Yancey、Zeus
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// 女生： Amy、Bertha、Clare
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// 创建人员列表
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">xavier</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Person</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">name</span><span class="p">:</span>        <span class="s">&#34;Xavier&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">preferences</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;Amy&#34;</span><span class="p">,</span> <span class="s">&#34;Bertha&#34;</span><span class="p">,</span> <span class="s">&#34;Clare&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">partner</span><span class="p">:</span>     <span class="kc">nil</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">index</span><span class="p">:</span>       <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">yancey</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Person</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">name</span><span class="p">:</span>        <span class="s">&#34;Yancey&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">preferences</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;Bertha&#34;</span><span class="p">,</span> <span class="s">&#34;Amy&#34;</span><span class="p">,</span> <span class="s">&#34;Clare&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">partner</span><span class="p">:</span>     <span class="kc">nil</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">index</span><span class="p">:</span>       <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">zeus</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Person</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">name</span><span class="p">:</span>        <span class="s">&#34;Zeus&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">preferences</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;Amy&#34;</span><span class="p">,</span> <span class="s">&#34;Bertha&#34;</span><span class="p">,</span> <span class="s">&#34;Clare&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">partner</span><span class="p">:</span>     <span class="kc">nil</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">index</span><span class="p">:</span>       <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">amy</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Person</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">name</span><span class="p">:</span>        <span class="s">&#34;Amy&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">preferences</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;Yancey&#34;</span><span class="p">,</span> <span class="s">&#34;Xavier&#34;</span><span class="p">,</span> <span class="s">&#34;Zeus&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">partner</span><span class="p">:</span>     <span class="kc">nil</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">index</span><span class="p">:</span>       <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">bertha</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Person</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">name</span><span class="p">:</span>        <span class="s">&#34;Bertha&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">preferences</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;Xavier&#34;</span><span class="p">,</span> <span class="s">&#34;Yancey&#34;</span><span class="p">,</span> <span class="s">&#34;Zeus&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">partner</span><span class="p">:</span>     <span class="kc">nil</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">index</span><span class="p">:</span>       <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">clare</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Person</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">name</span><span class="p">:</span>        <span class="s">&#34;Clare&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">preferences</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;Xavier&#34;</span><span class="p">,</span> <span class="s">&#34;Yancey&#34;</span><span class="p">,</span> <span class="s">&#34;Zeus&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">partner</span><span class="p">:</span>     <span class="kc">nil</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">index</span><span class="p">:</span>       <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">men</span> <span class="o">:=</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Person</span><span class="p">{</span><span class="nx">xavier</span><span class="p">,</span> <span class="nx">yancey</span><span class="p">,</span> <span class="nx">zeus</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">women</span> <span class="o">:=</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Person</span><span class="p">{</span><span class="nx">amy</span><span class="p">,</span> <span class="nx">bertha</span><span class="p">,</span> <span class="nx">clare</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 运行Gale-Shapley算法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nf">GaleShapley</span><span class="p">(</span><span class="nx">men</span><span class="p">,</span> <span class="nx">women</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 打印配对结果
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">man</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">men</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%s -- %s\n&#34;</span><span class="p">,</span> <span class="nx">man</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">man</span><span class="p">.</span><span class="nx">partner</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>运行结果如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Xavier -- Amy
+</span></span><span class="line"><span class="cl">Yancey -- Bertha
+</span></span><span class="line"><span class="cl">Zeus -- Clare
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>我们来看看这段 procedure 的流程，首先初始化所有人都为自由身（free 的状态）。接着开始进行迭代，迭代的终止条件为没有自由身的男生，也就是每位男生都找到了一个对象，迭代中找到一位为 free 的男生，并从他的喜好排序中找到最高位还没有被追求过的女生。如果女生是 free 状态，则直接答应求婚（状态变为 engaged），因为女生是可以反悔的，所以先同意这次求婚没有太大的损失，但如果这位女生已经是 engaged 的状态，就会将她的未婚夫与这位求婚的男士做对比，若她接受这位向她求婚的男生，就将他们配为新的一对，将其未婚夫变为 free 的状态，直到所有男生都不是 free 的状态，结束迭代。</p>
+<br/>
+<h1 id="分析">分析</h1>
+<p>这个 procedure 是以男生为主动，女生可以选择答应或者拒绝，以这样的角度来说，对于男生是比较有优势的，对于女生来说她只能等着被人追求，是属于比较悲观的一方，这个 procedure 在 1962 年被创造出来时是为了解决大学生选择专业的一个制度。</p>
+<br/>
+<h1 id="证明">证明</h1>
+<p>这个过程是否有成为算法的条件，下面会证明</p>
+<ul>
+<li>Termination（终止条件）：至少在 $n^2$ 之后停止迭代</li>
+<li>Perfection（完美性）：每个人最终都有配对的对象</li>
+<li>Stability（稳定性）：由于是双方自己选择的结果，所以是最终稳定的</li>
+</ul>
+<br/>
+<p>这个过程还有几个上面提到的特性：</p>
+<ul>
+<li>Male-optimal and female-pessimal：男生为最佳结果，女生属于被东悲观的结果。</li>
+<li>All executions yield the same matching：在相同的input 条件下，每次迭代的结果都会相同。</li>
+</ul>
+<p>通常证明都是通过 “反证法” 或者 “数学归纳法” 来证明是否足以符合条件，接下来是通过反证法来证明各种条件。</p>
+<br/>
+<h2 id="termination">Termination</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Gale-Shapley</span>
+</span></span><span class="line"><span class="cl">initialize each person to be free
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="o">(</span>some man m is free and hasn<span class="s1">&#39;t proposed to every woman) do
+</span></span></span><span class="line"><span class="cl"><span class="s1">    w = highest ranked woman in m&#39;</span>s list to whom m has not yet proposed
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span>w is free<span class="o">)</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">       <span class="o">(</span>m, w<span class="o">)</span> become engaged
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="k">if</span> <span class="o">(</span>w prefers m to her fiance m<span class="s1">&#39;) then
+</span></span></span><span class="line"><span class="cl"><span class="s1">       (m, w) become engaged
+</span></span></span><span class="line"><span class="cl"><span class="s1">       m&#39;</span> become free
+</span></span><span class="line"><span class="cl"><span class="k">return</span> the <span class="nb">set</span> S of engaged pairs
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从上面的第 4 行可以看到，每次迭代都会有一个男生向女生求婚，并且一定会产生一组匹配，因为只要女生是 free  的，她就一定会先同意，就算她已经处于订婚状态，如果她反悔当前配对数量也是保持不变，只是对象换了，所以最终在 $n^2$ 之后一定会停止迭代。</p>
+<br/>
+<p>可以发现，男生都是从最喜欢的女生开始选择，而女生可能通常是反方向且被动的与求婚者订婚，可能自己喜欢的男生被其他女生劫胡了。</p>
+<figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-4.png" title="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-4.png" data-thumbnail="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-4.png" data-sub-html="<h2>Stable Matching -2</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-4.png"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-4.png, https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-4.png 1.5x, https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-4.png 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/nycu-algorithm-1-4.png" />
+    </a><figcaption class="image-caption">Stable Matching -2</figcaption>
+    </figure>
+<br/>
+<h2 id="perfection">Perfection</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Gale-Shapley</span>
+</span></span><span class="line"><span class="cl">initialize each person to be free
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="o">(</span>some man m is free and hasn<span class="s1">&#39;t proposed to every woman) do
+</span></span></span><span class="line"><span class="cl"><span class="s1">    w = highest ranked woman in m&#39;</span>s list to whom m has not yet proposed
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span>w is free<span class="o">)</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">       <span class="o">(</span>m, w<span class="o">)</span> become engaged
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="k">if</span> <span class="o">(</span>w prefers m to her fiance m<span class="s1">&#39;) then
+</span></span></span><span class="line"><span class="cl"><span class="s1">       (m, w) become engaged
+</span></span></span><span class="line"><span class="cl"><span class="s1">       m&#39;</span> become free
+</span></span><span class="line"><span class="cl"><span class="k">return</span> the <span class="nb">set</span> S of engaged pairs
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从第三行来看，若最终有一个男生没有找到对象，那么循环将一直持续下去，只有所有的男生都找到对象，这个循环才会结束。</p>
+<br/>
+<h2 id="stability">Stability</h2>
+<p>Stable matching 的最后结果是唯一的，因为只要不改变男女互相喜欢的 ranking 顺序，就不会得到不同的结果，即便改变了男生表白的顺序。</p>
+<br/>
+<p>比如上面的运行结果是 <code>Xavier &lt;-&gt; Amy</code> 、<code>Yancey &lt;-&gt; Bertha</code>、<code>Zeus &lt;-&gt; Clare</code> 这三个匹配结果。</p>
+<p>现在我们打乱他们的求婚顺序，让 Zeus 先求婚再是 Yancey，最后才是 Xavier 。接下来看看结果</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Zeus -- Clare
+</span></span><span class="line"><span class="cl">Yancey -- Bertha
+</span></span><span class="line"><span class="cl">Xavier -- Amy
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到运行结果没有变化。</p>
+<h1 id="拓展">拓展</h1>
+<p>现在有了这个匹配算法，可以做什么事呢？比如 CDN 调度，资源分配就可以利用这个算法，比如将各地区的流量分配至各地区的节点，节点可以承接流量。而且为了 95 水位的稳定，还需要一个省的流量不要经常变动。这就需要稳定匹配算法了。</p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2023-10-31</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/" data-title="算法笔记-稳定匹配算法（Gale-Shapley）"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/" data-title="算法笔记-稳定匹配算法（Gale-Shapley）"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/algorithm/">Algorithm</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/10%E6%9C%88%E5%8E%BB%E6%96%B0%E7%96%86%E5%90%A7/" class="prev" rel="prev" title="10月去新疆吧"><i class="fas fa-angle-left fa-fw"></i>10月去新疆吧</a>
+            <a href="/post/kube-schedule%E5%AE%9E%E7%8E%B0/" class="next" rel="next" title="kube-schedule 调度实现">kube-schedule 调度实现<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.129.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.org/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.org/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
