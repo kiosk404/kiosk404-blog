@@ -39,7 +39,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","wordcount":  3617 ,
+                        }],"genre": "posts","wordcount":  3796 ,
         "url": "http:\/\/localhost:1313\/post\/%E7%AE%97%E6%B3%95-%E6%95%B0%E7%BB%84\/","datePublished": "2020-09-26T10:58:00+00:00","dateModified": "2020-09-26T10:58:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -121,8 +121,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">算法 - (数组、链表)</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/algorithm/"><i class="far fa-folder fa-fw"></i>Algorithm</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-09-26">2020-09-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;3617 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;17 minutes&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-09-26">2020-09-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;3796 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;18 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>Contents</span>
@@ -147,8 +147,10 @@
             <li><a href="#no11-盛最多水的容器">No.11 盛最多水的容器</a></li>
             <li><a href="#no15-三数之和">No.15 三数之和</a></li>
             <li><a href="#no26-删除排序数组中的重复项">No.26 删除排序数组中的重复项</a></li>
+            <li><a href="#no27-移除元素">No.27 移除元素</a></li>
             <li><a href="#no29-顺时针打印矩阵">No.29 顺时针打印矩阵</a></li>
             <li><a href="#no209-长度最小的子数组">No.209 长度最小的子数组</a></li>
+            <li><a href="#415-字符串相加">415. 字符串相加</a></li>
             <li><a href="#no459-重复的子字符串">No.459 重复的子字符串</a></li>
             <li><a href="#674-最长连续递增序列">674. 最长连续递增序列</a></li>
           </ul>
@@ -821,6 +823,46 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><br/>
+<h3 id="no27-移除元素">No.27 移除元素</h3>
+<ul>
+<li>链接：https://leetcode.cn/problems/remove-element/description/</li>
+<li>思路：考虑2层循环，第二层循环直到找到不需要的移除的元素</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">removeElement</span><span class="p">(</span><span class="nx">nums</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">val</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">index</span> <span class="o">:=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nums</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="nx">i</span><span class="p">;</span> <span class="nx">j</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nums</span><span class="p">);</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="o">!=</span> <span class="nx">val</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">nums</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="p">=</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">index</span><span class="o">++</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">i</span> <span class="p">=</span> <span class="nx">j</span>        <span class="c1">// 将第一层循环的下标移动至不需要移除的地方
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="k">break</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">index</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
 <h3 id="no29-顺时针打印矩阵">No.29 顺时针打印矩阵</h3>
 <ul>
 <li>链接：<a href="https://leetcode.cn/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/description/" target="_blank" rel="noopener noreffer">https://leetcode.cn/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/description/</a></li>
@@ -1103,6 +1145,52 @@
 </span></span><span class="line"><span class="cl">		<span class="nx">all</span> <span class="o">+=</span> <span class="nx">v</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">all</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h3 id="415-字符串相加">415. 字符串相加</h3>
+<ul>
+<li>链接：https://leetcode.cn/problems/add-strings/</li>
+<li>采用末尾向前递进的方式</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">addStrings</span><span class="p">(</span><span class="nx">num1</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">num2</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">add</span> <span class="o">:=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ans</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">num1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">num2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">j</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">add</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="p">=</span> <span class="nx">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">j</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">var</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">x</span> <span class="p">=</span> <span class="nb">int</span><span class="p">(</span><span class="nx">num1</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">j</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">y</span> <span class="p">=</span> <span class="nb">int</span><span class="p">(</span><span class="nx">num2</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">result</span> <span class="o">:=</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">add</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">ans</span> <span class="p">=</span> <span class="nx">strconv</span><span class="p">.</span><span class="nf">Itoa</span><span class="p">(</span><span class="nx">result</span><span class="o">%</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="nx">ans</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">add</span> <span class="p">=</span> <span class="nx">result</span> <span class="o">/</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">ans</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>

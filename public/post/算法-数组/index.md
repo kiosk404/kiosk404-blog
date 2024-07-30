@@ -361,6 +361,32 @@ func removeDuplicates(nums []int) int {
 ```
 <br/>
 
+### No.27 移除元素
+
+- 链接：https://leetcode.cn/problems/remove-element/description/
+- 思路：考虑2层循环，第二层循环直到找到不需要的移除的元素
+
+```go
+func removeElement(nums []int, val int) int {
+	index := 0
+	for i := 0; i < len(nums); i++ {
+		for j := i; j < len(nums); j++ {
+			if nums[j] != val {
+				nums[index] = nums[j]
+				index++
+				i = j        // 将第一层循环的下标移动至不需要移除的地方
+				break
+			}
+		}
+	}
+	return index
+}
+```
+
+
+
+<br/>
+
 ### No.29 顺时针打印矩阵
 
 - 链接：[https://leetcode.cn/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/description/](https://leetcode.cn/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/description/)
@@ -518,7 +544,32 @@ func sum(list []int) int {
 
 ```
 
+<br/>
 
+### 415. 字符串相加
+
+- 链接：https://leetcode.cn/problems/add-strings/
+- 采用末尾向前递进的方式
+
+```go
+func addStrings(num1 string, num2 string) string {
+    add := 0
+    ans := ""
+    for i, j := len(num1) - 1, len(num2) - 1; i >= 0 || j >= 0 || add != 0; i, j = i - 1, j - 1 {
+        var x, y int
+        if i >= 0 {
+            x = int(num1[i] - '0')
+        }
+        if j >= 0 {
+            y = int(num2[j] - '0')
+        }
+        result := x + y + add
+        ans = strconv.Itoa(result%10) + ans
+        add = result / 10
+    }
+    return ans
+}
+```
 
 
 
