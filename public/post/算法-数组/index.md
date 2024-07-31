@@ -363,7 +363,7 @@ func removeDuplicates(nums []int) int {
 
 ### No.27 移除元素
 
-- 链接：https://leetcode.cn/problems/remove-element/description/
+- 链接：[https://leetcode.cn/problems/remove-element/description/](https://leetcode.cn/problems/remove-element/description/)
 - 思路：考虑2层循环，第二层循环直到找到不需要的移除的元素
 
 ```go
@@ -548,7 +548,7 @@ func sum(list []int) int {
 
 ### No.415 字符串相加
 
-- 链接：https://leetcode.cn/problems/add-strings/
+- 链接：[https://leetcode.cn/problems/add-strings/](https://leetcode.cn/problems/add-strings/)
 - 采用末尾向前递进的方式
 
 ```go
