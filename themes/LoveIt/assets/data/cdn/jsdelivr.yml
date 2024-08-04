@@ -1,6 +1,6 @@
 prefix:
   #libFiles: https://fastly.jsdelivr.net/npm/
-  libFiles: https://cdn.staticfile.org/
+  libFiles: https://cdn.staticfile.net/
   # simple-icons@2.14.0 https://github.com/simple-icons/simple-icons
   simpleIcons: https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/
 libFiles:
