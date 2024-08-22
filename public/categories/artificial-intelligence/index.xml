@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Artificial Intelligence - Category - Kiosk&#39;s 个人编程技术分享</title>
+        <link>http://localhost:1313/categories/artificial-intelligence/</link>
+        <description>Artificial Intelligence - Category - Kiosk&#39;s 个人编程技术分享</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/categories/artificial-intelligence/" rel="self" type="application/rss+xml" /><item>
+    <title>ollama 本地AI大模型</title>
+    <link>http://localhost:1313/post/ollama-ai/</link>
+    <pubDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/ollama-ai/</guid>
+    <description><![CDATA[<p>自 OpenAI 公司于 2022 年 11 月 30 日发布 ChatGPT 以来，经过 23 年一整年的发展之后，大语言模型的概念已逐渐普及，各种基于大语言模型的周边产品，以及集成层出不穷，可以说已经玩出花来了。</p>
+<p>在这个过程中，也有不少本地化的模型应用方案冒了出来，针对一些企业知识库问答的场景中，模型本地化是第一优先考虑的问题，因此如何在本地把模型调教的更加智能，就是一个非常重要的技能了。</p>]]></description>
+</item></channel>
+</rss>

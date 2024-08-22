@@ -4,7 +4,7 @@
         <link>http://localhost:1313/</link>
         <description>Kiosk Stduio</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 21 Jul 2024 19:17:41 &#43;0800</lastBuildDate>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</lastBuildDate>
             <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
         <item>
     <title>设计模式（Design Pattern）</title>
@@ -21,6 +21,21 @@
     <guid>http://localhost:1313/post/even-preview/</guid>
     <description><![CDATA[Based on MarkdownPreview test.md.
 Markdown 1 2 3 4 5 6 7 8 # H1 ## H2 ### H3 #### H4 ##### H5 ###### H6 ### Duplicate Header ### Duplicate Header H1 H2 H3 H4 H5 H6 Duplicate Header Duplicate Header Paragraphs 1 2 3 4 This is a paragraph. I am still part of the paragraph. New paragraph. This is a paragraph. I am still part of the paragraph.]]></description>
+</item><item>
+    <title>ollama 本地AI大模型</title>
+    <link>http://localhost:1313/post/ollama-ai/</link>
+    <pubDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/ollama-ai/</guid>
+    <description><![CDATA[<p>自 OpenAI 公司于 2022 年 11 月 30 日发布 ChatGPT 以来，经过 23 年一整年的发展之后，大语言模型的概念已逐渐普及，各种基于大语言模型的周边产品，以及集成层出不穷，可以说已经玩出花来了。</p>
+<p>在这个过程中，也有不少本地化的模型应用方案冒了出来，针对一些企业知识库问答的场景中，模型本地化是第一优先考虑的问题，因此如何在本地把模型调教的更加智能，就是一个非常重要的技能了。</p>]]></description>
+</item><item>
+    <title>Linux自签证书并自信任</title>
+    <link>http://localhost:1313/post/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/</link>
+    <pubDate>Sun, 04 Aug 2024 10:16:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/</guid>
+    <description><![CDATA[<p>由于本地自建了Nginx，需要HTTPS访问，所以这里记录一下 Linux 下的 证书自签名和自信任。</p>]]></description>
 </item><item>
     <title>算法笔记-最短路径算法（Bellman-ford）</title>
     <link>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/</link>
@@ -84,24 +99,5 @@ Map 也是程序中最常见的数据结构，我们的项目中有大量的数�
     <author>Author</author>
     <guid>http://localhost:1313/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/</guid>
     <description><![CDATA[<p>随着业务的快速发展，各层业务之间调用关系越来越复杂，对系统的可用性以及扩展性要求也越来越高。消息队列作为分布式架构中的重要一环，提供了消息传递和消息排队的模型，被应用在<strong>系统解耦、异步处理、流量削峰</strong> 等多个场景，有着举足轻重的地位。</p>]]></description>
-</item><item>
-    <title>入门摄影 (Photography)</title>
-    <link>http://localhost:1313/post/%E5%85%A5%E9%97%A8%E6%91%84%E5%BD%B1/</link>
-    <pubDate>Tue, 24 Jan 2023 16:08:00 &#43;0000</pubDate>
-    <author>Author</author>
-    <guid>http://localhost:1313/post/%E5%85%A5%E9%97%A8%E6%91%84%E5%BD%B1/</guid>
-    <description><![CDATA[<hr>
-<div class="typeit"><div id="id-1" class=""></div></div>
-
-<hr>]]></description>
-</item><item>
-    <title>Redis实际场景中的应用</title>
-    <link>http://localhost:1313/post/redis%E5%AE%9E%E9%99%85%E5%9C%BA%E6%99%AF%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</link>
-    <pubDate>Thu, 24 Nov 2022 17:39:50 &#43;0000</pubDate>
-    <author>Author</author>
-    <guid>http://localhost:1313/post/redis%E5%AE%9E%E9%99%85%E5%9C%BA%E6%99%AF%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</guid>
-    <description><![CDATA[Redis是一个key-value存储系统，现在在各种系统中的使用越来越多，大部分情况下是因为其高性能的特性，被当做缓存使用，这里介绍下Redis经常遇到的使用场景。
-参考：
-程序员Redis入门到实战教程 ]]></description>
 </item></channel>
 </rss>

@@ -107,6 +107,16 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/golang%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/">Golang的内存分配</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-11-23">2022-11-23</time></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div><div class="content"><p>程序中的数据和变量都会被分配到程序所在的虚拟内存当中，而内存空间包含两个重要区域：栈区（Stack）和堆区（Heap）。</p></div><div class="post-footer">
+        <a href="/post/golang%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/golang/">Golang</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/">Golang的Map长啥样</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-11-12">2022-11-12</time></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div><div class="content"><p>Map 是每个编程语言必备的数据结构，就连 lua 这种胶水语言都支持其功能，map 的底层是一个 HashTable，Go 语言的map使用十分简易，但其内部实现不是简单的一个 HashTable。</p></div><div class="post-footer">
+        <a href="/post/golang%E7%9A%84map%E9%95%BF%E5%95%A5%E6%A0%B7/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/golang/">Golang</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/%E5%A6%82%E4%BD%95%E8%AE%BF%E9%97%AE%E8%AE%A4%E8%AF%81/">如何进行访问认证？</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-11-10">2022-11-10</time></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div><div class="content"><p>最近有个Web项目需要对接公司的权限认证系统来保证应用的数据安全隔离。于是对访问认证来了兴趣，这里进行一次统一的梳理。</p></div><div class="post-footer">
         <a href="/post/%E5%A6%82%E4%BD%95%E8%AE%BF%E9%97%AE%E8%AE%A4%E8%AF%81/">Read More</a><div class="post-tags">
@@ -130,21 +140,6 @@
 </ol>
 <p>这里就对第二个疑问做个终结，因为我知道答案了，云厂商有热迁移技术。</p></div><div class="post-footer">
         <a href="/post/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/what-is-numa/">什么是 NUMA</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-09-15">2022-09-15</time></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div><div class="content"><p>最近再看虚拟化相关内容的时候注意到 KVM 支持 SMP 和 NUMA 多 CPU 架构的主机和客户机。注意到CPU的模型概念。</p>
-<p>之前其实有听到过 CPU 模型对高性能计算的影响。但是又不清楚其中的原理。高性能云服务可能会引入 <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/performance_tuning_guide/sect-red_hat_enterprise_linux-performance_tuning_guide-tool_reference-numad" target="_blank" rel="noopener noreffer">numad</a> 守护进程来优化 NUMA 的资源分配。</p>
-<p>Linux man手册中对numad的定义为<code>A user-level daemon that provides placement advice and process management for efficient use of CPUs and memory on systems with NUMA topology.（为高效利用CPU和内存提供布局建议和进程管理功能的用户态守护进程。）</code></p>
-<p>本文将介绍一下什么是 numa ，以及到底有什么用。</p></div><div class="post-footer">
-        <a href="/post/what-is-numa/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/linux/">Linux</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/openstack-request-flow-for-provisioning-instance/">【译】OpenStack 虚拟机创建的请求流程</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-09-14">2022-09-14</time></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div><div class="content"><p>翻译自原文： <a href="https://ilearnstack.com/2013/04/26/request-flow-for-provisioning-instance-in-openstack/" target="_blank" rel="noopener noreffer">Request Flow for Provisioning Instance in Openstack</a></p>
-<p>不过该网站已经无法访问了，可能是作者已经不维护了。有点可惜。</p>
-<br/></div><div class="post-footer">
-        <a href="/post/openstack-request-flow-for-provisioning-instance/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">

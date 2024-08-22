@@ -1,14 +1,5 @@
----
-title: ollama 本地AI大模型
-author: kiosk
-date: 2024-08-21 13:52:18
-lastmod: 2024-08-22 11:26:27
-draft: true
-tags:
-  - ai
-categories:
-  - artificial intelligence
----
+# ollama 本地AI大模型
+
 
 
 
