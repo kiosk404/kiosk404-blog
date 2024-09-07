@@ -107,6 +107,16 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/ebpf%E8%B6%85%E4%B9%8E%E4%BD%A0%E6%83%B3%E8%B1%A1/">eBPF超乎你想象</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-07-31">2022-07-31</time></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class="content">eBPF 是什么？ eBPF：过去 50 年操作系统最大的变革！！！
+在过去，如果想让应用程序处理网络数据包是不可能的，因为应用程序运行在Linux的用户空间，它是不能直接访问主机的网络缓冲区，这里由内核管理和保护。内核保证了进程隔离，进程只能通过系统调用（syscall）来获取自己的网络数据包信息。
+1992 年的 USENIX 会议上，The BSD Packet Filter: A New Architecture for User-level Packet Capture ，第一次提到 BSD Packet Filter （简称BPF）这个概念，这篇论文带来了一个革命性技术。正如其名称他是包过滤相关的技术，其基本原理是用户态定义 BPF 字节码来定义过滤表达式，然后传递给内核，再由虚拟机解释运行。
+有了 BPF 之后，应用程序不再需要 syscall，数据包不需要在内核空间和用户空间之间来回交互传递。而是我们将代码直接交给内核，让内核自己执行，这样就可以让代码全速运行，效率更高。
+我们使用的 tcpdump 主要通过 libpcap 实现，而libpcap 就是基于 eBPF 。执行下面的命令，导出 tcpdump 所灌入内核的 BPF 程序。如下的 tcpdump 命令，可以直接过滤出IP地址包含 1.1.1.1 和 2.2.2.2 的数据包。
+1 2 3 4 5 6 7 8 tcpdump -d &#39;ip src 1.1.1.1 or ip src 2.2.2.2&#39; (000) ldh [12] # 找到以太网类型字段 (001) jeq #0x800 jt 2 jf 6 # 判断是否为以太网 (002) ld [26] # 判断IP头部 (003) jeq #0x1010101 jt 5 jf 4 (004) jeq #0x2020202 jt 5 jf 6 (005) ret #262144 (006) ret #0 1 2 3 4 5 6 7 8 9 // Filter BPF Code static struct sock_filter bpfcode[8] = { { 0x28, 0, 0, 0x0000000c }, // (000) ldh [12] xxxx }; sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); bind(sock, (struct sockaddr *) &amp;addr, sizeof(addr)); setsockopt(sock, SOL_SOCKET, SO_ATTACH_FILTER, &amp;bpf, sizeof(bpf)); Linux 利用 socketopt 中的 SO_ATTACH_FILTER、SO_DETACH_FILTER 来执行系统调用，具体可参考 socket manual page。</div><div class="post-footer">
+        <a href="/post/ebpf%E8%B6%85%E4%B9%8E%E4%BD%A0%E6%83%B3%E8%B1%A1/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ebpf/">EBPF</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/what-happened-to-mysql-query-1/">一条MySQL查询语句经历了什么--索引</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-06-28">2022-06-28</time></span>&nbsp;<span class="post-category">included in <a href="/categories/mysql/"><i class="far fa-folder fa-fw"></i>Mysql</a></span></div><div class="content"><br/>
 <p>MySQL 之前已经接触过非常多了，只是将MySQL当作一个 excel 文档，需要取数据了通过命令获取。 但是实际上 MySQL 内部还是有很多奥秘的，一条语句的执行也有很多有意思的设计逻辑。</p>
@@ -164,12 +174,6 @@ TLS Tracing (openssl) 通过上图，我们可以知道TLS库的数据读写是 
 查询跟踪函数 其实上面的图已经说明了我们要追踪的函数是 SSL_write 和 SSL_read ，但是这里也聊一下这两个函数是如何查找的吧。一般来说，我们可以使用 readelf 命令。输出的结果，排除一些明显和加密过程相关的函数之外，映入眼帘的便是 SSL_read
 1 2 3 4 $ readelf -Ws /usr/lib/x86_64-linux-gnu/libssl.so |grep -i &#39;ssl_read&#39; 658: 0000000000032ce0 126 FUNC GLOBAL DEFAULT 15 SSL_read@@OPENSSL_3.0.0 762: 0000000000038cf0 414 FUNC GLOBAL DEFAULT 15 SSL_read_early_data@@OPENSSL_3.0.0 811: 0000000000032d60 25 FUNC GLOBAL DEFAULT 15 SSL_read_ex@@OPENSSL_3.</div><div class="post-footer">
         <a href="/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ebpf/">EBPF</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA/">如何使用eBPF进行追踪</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-05-10">2022-05-10</time></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class="content"><p>eBPF 我们知道了程序的工作原理和编程接口以及事件触发机制。那么我们就可以开始 eBPF 程序的开发和执行过程了。</p>
-<p>跟踪类 eBPF 程序主要包含 内核插桩 （BPF_PROG_TYPE_KPROBE）、跟踪点（BPF_PROG_TYPE_TRACEPONT）以及性能事件（BPF_TYPE_PERF_EVENT）等类型的程序，而每类的 eBPF 程序又可以挂载到不同的内核函数、内核跟踪点或者性能事件上。当这些内核函数、内核跟踪点或者性能事件被调用的时候，挂载到其上的 eBPF 程序就会自动执行。</p></div><div class="post-footer">
-        <a href="/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ebpf/">EBPF</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">

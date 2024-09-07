@@ -5,6 +5,16 @@
         <description>Artificial Intelligence - Category - Kiosk&#39;s 个人编程技术分享</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
             <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/categories/artificial-intelligence/" rel="self" type="application/rss+xml" /><item>
+    <title>LLM大模型 - ai agent应用技术介绍</title>
+    <link>http://localhost:1313/post/langchain/</link>
+    <pubDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/langchain/</guid>
+    <description><![CDATA[<p>一个本地大模型，ChatGPT3.5 或 ChatGPT 4  都有这样一些问题。</p>
+<p>数据缺少及时性，不能直接帮我们编辑 Word 或者 PDF 文件。大模型目前主要还是基于文本的交互等。</p>
+<p>这样的场景非常多，因为大模型的核心能力是 意图理解与文本生成，而在我们实际应用过程中，输入数据和输出数据不仅仅是纯文本等。</p>
+<p>针对大型语言模型效果不好的问题，之前人们主要关注大模型再训练、大模型微调、大模型的Prompt增强，但对于专有、快速更新的数据却并没有较好的解决方法，为此检索增强生成（RAG）的出现，弥合了LLM常识和专有数据之间的差距。</p>]]></description>
+</item><item>
     <title>ollama 本地AI大模型</title>
     <link>http://localhost:1313/post/ollama-ai/</link>
     <pubDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</pubDate>

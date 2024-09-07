@@ -22,6 +22,16 @@
     <description><![CDATA[Based on MarkdownPreview test.md.
 Markdown 1 2 3 4 5 6 7 8 # H1 ## H2 ### H3 #### H4 ##### H5 ###### H6 ### Duplicate Header ### Duplicate Header H1 H2 H3 H4 H5 H6 Duplicate Header Duplicate Header Paragraphs 1 2 3 4 This is a paragraph. I am still part of the paragraph. New paragraph. This is a paragraph. I am still part of the paragraph.]]></description>
 </item><item>
+    <title>LLM大模型 - ai agent应用技术介绍</title>
+    <link>http://localhost:1313/post/langchain/</link>
+    <pubDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/langchain/</guid>
+    <description><![CDATA[<p>一个本地大模型，ChatGPT3.5 或 ChatGPT 4  都有这样一些问题。</p>
+<p>数据缺少及时性，不能直接帮我们编辑 Word 或者 PDF 文件。大模型目前主要还是基于文本的交互等。</p>
+<p>这样的场景非常多，因为大模型的核心能力是 意图理解与文本生成，而在我们实际应用过程中，输入数据和输出数据不仅仅是纯文本等。</p>
+<p>针对大型语言模型效果不好的问题，之前人们主要关注大模型再训练、大模型微调、大模型的Prompt增强，但对于专有、快速更新的数据却并没有较好的解决方法，为此检索增强生成（RAG）的出现，弥合了LLM常识和专有数据之间的差距。</p>]]></description>
+</item><item>
     <title>ollama 本地AI大模型</title>
     <link>http://localhost:1313/post/ollama-ai/</link>
     <pubDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</pubDate>
@@ -92,12 +102,5 @@ Map 也是程序中最常见的数据结构，我们的项目中有大量的数�
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 func main() { var m = make(map[string]int,10) // 初始化一个map go func() { for { m[&#34;abc&#34;] = 1 //设置key } }() go func() { for { _ = m[&#34;def&#34;] //访问这个map } }() select {} } 虽然这段代码的不同goroutine 是各自在操作不同的元素，但是运行时检测到同时对 map 对象有并发访问，就会直接 panic。
 如何实现一个线程安全的 map 类型 最简单的方式必然是加锁访问这里不再赘述了。
 虽然使用 互斥锁 或 读写锁 可以提供线程安全的 map，但是在大量并发读写的情况下，会出现非常激烈的锁竞争。]]></description>
-</item><item>
-    <title>消息队列基础</title>
-    <link>http://localhost:1313/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/</link>
-    <pubDate>Tue, 04 Apr 2023 11:23:00 &#43;0000</pubDate>
-    <author>Author</author>
-    <guid>http://localhost:1313/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/</guid>
-    <description><![CDATA[<p>随着业务的快速发展，各层业务之间调用关系越来越复杂，对系统的可用性以及扩展性要求也越来越高。消息队列作为分布式架构中的重要一环，提供了消息传递和消息排队的模型，被应用在<strong>系统解耦、异步处理、流量削峰</strong> 等多个场景，有着举足轻重的地位。</p>]]></description>
 </item></channel>
 </rss>

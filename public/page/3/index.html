@@ -107,6 +107,13 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/redis%E5%AE%9E%E9%99%85%E5%9C%BA%E6%99%AF%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">Redis实际场景中的应用</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-11-24">2022-11-24</time></span>&nbsp;<span class="post-category">included in <a href="/categories/nosql/"><i class="far fa-folder fa-fw"></i>Nosql</a></span></div><div class="content">Redis是一个key-value存储系统，现在在各种系统中的使用越来越多，大部分情况下是因为其高性能的特性，被当做缓存使用，这里介绍下Redis经常遇到的使用场景。
+参考：
+程序员Redis入门到实战教程 </div><div class="post-footer">
+        <a href="/post/redis%E5%AE%9E%E9%99%85%E5%9C%BA%E6%99%AF%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/redis/">Redis</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/golang%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/">Golang的内存分配</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-11-23">2022-11-23</time></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div><div class="content"><p>程序中的数据和变量都会被分配到程序所在的虚拟内存当中，而内存空间包含两个重要区域：栈区（Stack）和堆区（Heap）。</p></div><div class="post-footer">
         <a href="/post/golang%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/">Read More</a><div class="post-tags">
@@ -130,16 +137,6 @@
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-10-21">2022-10-21</time></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div><div class="content"><p>在<a href="https://kiosk007.top/post/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/" target="_blank" rel="noopener noreffer">虚拟机怎么做到热迁移</a>提到的两个问题，没想到另一个问题的答案也被我找到了。今天就在计算虚拟化这里回答上篇文章的第一个疑问:</p>
 <p>&ndash; 我的虚机经常CPU使用率不到 5%，它会不会拿着我的资源去偷偷接济同物理机上的其他高负载业务。</p></div><div class="post-footer">
         <a href="/post/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/">虚拟机怎么做到热迁移</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-10-17">2022-10-17</time></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div><div class="content"><p>之前买腾讯云服务的时候，有2大问题一直困扰着我。</p>
-<ol>
-<li>我的虚机经常CPU使用率不到5%，它会不会它拿着我的资源去偷偷接济同物理机上的其他高负载业务。反正我也不知道。</li>
-<li>我一次性买了3年的虚机，一台物理机能一直开机3年吗？总得重启一下吧，在上家公司的做运维的时候，物理机真的是不停有物理机宕机</li>
-</ol>
-<p>这里就对第二个疑问做个终结，因为我知道答案了，云厂商有热迁移技术。</p></div><div class="post-footer">
-        <a href="/post/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">

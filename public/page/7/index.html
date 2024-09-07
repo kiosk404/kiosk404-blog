@@ -107,6 +107,12 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA/">如何使用eBPF进行追踪</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-05-10">2022-05-10</time></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class="content"><p>eBPF 我们知道了程序的工作原理和编程接口以及事件触发机制。那么我们就可以开始 eBPF 程序的开发和执行过程了。</p>
+<p>跟踪类 eBPF 程序主要包含 内核插桩 （BPF_PROG_TYPE_KPROBE）、跟踪点（BPF_PROG_TYPE_TRACEPONT）以及性能事件（BPF_TYPE_PERF_EVENT）等类型的程序，而每类的 eBPF 程序又可以挂载到不同的内核函数、内核跟踪点或者性能事件上。当这些内核函数、内核跟踪点或者性能事件被调用的时候，挂载到其上的 eBPF 程序就会自动执行。</p></div><div class="post-footer">
+        <a href="/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ebpf/">EBPF</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/">Redis持久化机制</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-05-04">2022-05-04</time></span>&nbsp;<span class="post-category">included in <a href="/categories/nosql/"><i class="far fa-folder fa-fw"></i>Nosql</a></span></div><div class="content"><p>Redis 最常见的一个用处就是当作缓存服务器，将后端数据库中的数据存入内存中，再直接从内存中读取数据是一个非常高效的方式。但是内存存储模式有一个问题，掉电后会丢失数据，所以作为一个数据库来用的话必须考虑一旦服务器宕机，内存中数据的保存。</p>
 <p>Redis的持久化机制分为 AOF（Append Only File） 日志和 RDB 快照。</p></div><div class="post-footer">
@@ -148,12 +154,6 @@
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-04-09">2022-04-09</time></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div><div class="content"><p>熟悉 Golang 的话就会知道，用官方提供的 net/http 标准库搭建一个 Web Server，是一件非常简单的事。既然 Golang 利用其精简的语法实现了 Web Server，那么是有必要知其然和知其所以然。最近看到很多文章都介绍了如何实现一个 Web ，那么今天做一个总结。</p></div><div class="post-footer">
         <a href="/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/web/">Web</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/">了解golang的defer</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-04-07">2022-04-07</time></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div><div class="content"><p>golang 中有一个关键字 <code>defer</code> ，golang 的 defer 语句用于延迟调用。defer 会在当前函数返回之前执行 defer 注册的函数。</p>
-<p>在 defer 语句所在的函数退出之前调用。defer 可以代替其它语言中 try…catch… 语句，也可以用来处理释放资源等收尾操作，比如关闭文件句柄、关闭数据库连接等。defer 还能用于 panic 的 recovery。</p></div><div class="post-footer">
-        <a href="/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/golang/">Golang</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
