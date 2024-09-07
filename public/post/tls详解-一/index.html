@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>TLS 详解（一） - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/">
+        <title>TLS 详解（一） - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:43087/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/">
   <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
   <meta property="og:title" content="TLS 详解（一）">
   <meta property="og:description" content="TLS的设计目标是构建一个安全传输层（Transport Layer Security ），在基于连接的传输层（如tcp）之上提供安全加密的通信信道。它是旨在防止窃听，篡改和消息伪造的 IETF 标准。常见应用程序包括Web浏览器，即时消息传递，电子邮件和IP语音都在使用TLS。
@@ -16,15 +16,15 @@ Title From What is Transport Layer Security (TLS)?">
     <meta property="article:published_time" content="2020-05-02T23:31:00+00:00">
     <meta property="article:modified_time" content="2020-05-02T23:31:00+00:00">
     <meta property="article:tag" content="Tls">
-    <meta property="og:image" content="http://localhost:1313/logo.png">
+    <meta property="og:image" content="http://localhost:43087/logo.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:image" content="http://localhost:43087/logo.png">
   <meta name="twitter:title" content="TLS 详解（一）">
   <meta name="twitter:description" content="TLS的设计目标是构建一个安全传输层（Transport Layer Security ），在基于连接的传输层（如tcp）之上提供安全加密的通信信道。它是旨在防止窃听，篡改和消息伪造的 IETF 标准。常见应用程序包括Web浏览器，即时消息传递，电子邮件和IP语音都在使用TLS。
 Title From What is Transport Layer Security (TLS)?">
 <meta name="application-name" content="Kiosk&#39;s">
-<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" /><link rel="prev" href="http://localhost:1313/post/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E6%80%9D%E7%BB%B4/" /><link rel="next" href="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%BA%8C/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:43087/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" /><link rel="prev" href="http://localhost:43087/post/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E6%80%9D%E7%BB%B4/" /><link rel="next" href="http://localhost:43087/post/tls%E8%AF%A6%E8%A7%A3-%E4%BA%8C/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -32,18 +32,18 @@ Title From What is Transport Layer Security (TLS)?">
         "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/localhost:1313\/post\/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80\/"
+            "@id": "http:\/\/localhost:43087\/post\/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80\/"
         },"image": [{
                             "@type": "ImageObject",
-                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "url": "http:\/\/localhost:43087\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
                         }],"genre": "posts","keywords": "tls","wordcount":  1058 ,
-        "url": "http:\/\/localhost:1313\/post\/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80\/","datePublished": "2020-05-02T23:31:00+00:00","dateModified": "2020-05-02T23:31:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "http:\/\/localhost:43087\/post\/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80\/","datePublished": "2020-05-02T23:31:00+00:00","dateModified": "2020-05-02T23:31:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
                     "@type": "ImageObject",
-                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "url": "http:\/\/localhost:43087\/images\/avatar.png",
                     "width":  528 ,
                     "height":  560 
                 }},"author": {
@@ -646,7 +646,7 @@ handshake在TLS的发展中又产生了多个变种，比如RSA密钥交换DH密
                             <a class="link-to-markdown" href="/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" data-title="TLS 详解（一）"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" data-title="TLS 详解（一）"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/"><i class="fab fa-renren fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:43087/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" data-title="TLS 详解（一）"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:43087/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" data-title="TLS 详解（一）"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:43087/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/"><i class="fab fa-renren fa-fw"></i></a></span>
             </div>
         </div>
     </div>

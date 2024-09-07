@@ -1,8 +1,8 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Tags - 标签 - Kiosk&#39;s 个人编程技术分享</title>
-        <link>http://localhost:1313/zh-cn/tags/</link>
+        <link>http://localhost:43087/zh-cn/tags/</link>
         <description>Tags - 标签 - Kiosk&#39;s 个人编程技术分享</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><atom:link href="http://localhost:1313/zh-cn/tags/" rel="self" type="application/rss+xml" /></channel>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><atom:link href="http://localhost:43087/zh-cn/tags/" rel="self" type="application/rss+xml" /></channel>
 </rss>

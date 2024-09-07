@@ -1,15 +1,15 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Ops - Tag - Kiosk&#39;s 个人编程技术分享</title>
-        <link>http://localhost:1313/tags/ops/</link>
+        <link>http://localhost:43087/tags/ops/</link>
         <description>Ops - Tag - Kiosk&#39;s 个人编程技术分享</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 29 May 2021 15:22:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/ops/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 29 May 2021 15:22:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:43087/tags/ops/" rel="self" type="application/rss+xml" /><item>
     <title>curl 命令小结</title>
-    <link>http://localhost:1313/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/</link>
+    <link>http://localhost:43087/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/</link>
     <pubDate>Sat, 29 May 2021 15:22:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:1313/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/</guid>
+    <guid>http://localhost:43087/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/</guid>
     <description><![CDATA[<p>curl 命令是我日常工作中最常用的命令之一，所以很有必要总结一下curl命令的一些用法。如统计耗时、以指定的ip访问某个域名。添加携带某些Header等。curl命令绝对是日常debug之神。</p>
 <figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" title="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" data-thumbnail="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" data-sub-html="<h2>CURL</h2>">
         

@@ -1,15 +1,15 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Etcd - Tag - Kiosk&#39;s 个人编程技术分享</title>
-        <link>http://localhost:1313/tags/etcd/</link>
+        <link>http://localhost:43087/tags/etcd/</link>
         <description>Etcd - Tag - Kiosk&#39;s 个人编程技术分享</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 30 May 2020 21:01:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/etcd/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 30 May 2020 21:01:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:43087/tags/etcd/" rel="self" type="application/rss+xml" /><item>
     <title>etcd 的基本入门</title>
-    <link>http://localhost:1313/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</link>
+    <link>http://localhost:43087/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</link>
     <pubDate>Sat, 30 May 2020 21:01:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:1313/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</guid>
+    <guid>http://localhost:43087/post/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</guid>
     <description><![CDATA[<p><strong>etcd</strong> 是一个强一致性的分布式键值存储系统，可以提供可靠的分布式集群的数据访问方式。</p>
 <p>etcd is a strongly consistent, distributed key-value store that provides a reliable way to store data that needs to be accessed by a distributed system or cluster of machines.</p>
 <p>refer: <a href="https://etcd.io/" target="_blank" rel="noopener noreffer">https://etcd.io/</a></p>]]></description>

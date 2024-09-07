@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>k8s 部署 HTTP3  Nginx  - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/">
+        <title>k8s 部署 HTTP3  Nginx  - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:43087/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/">
   <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
   <meta property="og:title" content="k8s 部署 HTTP3  Nginx ">
   <meta property="og:description" content="在之前的文章中介绍了如何编译支持HTTP3的Nginx 为了一键将H3 Nginx上云，一劳永逸，本文会记录一下容器化Nginx的过程。">
@@ -16,14 +16,14 @@
     <meta property="article:modified_time" content="2021-08-04T22:56:00+00:00">
     <meta property="article:tag" content="K8s">
     <meta property="article:tag" content="Nginx">
-    <meta property="og:image" content="http://localhost:1313/logo.png">
+    <meta property="og:image" content="http://localhost:43087/logo.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:image" content="http://localhost:43087/logo.png">
   <meta name="twitter:title" content="k8s 部署 HTTP3  Nginx ">
   <meta name="twitter:description" content="在之前的文章中介绍了如何编译支持HTTP3的Nginx 为了一键将H3 Nginx上云，一劳永逸，本文会记录一下容器化Nginx的过程。">
 <meta name="application-name" content="Kiosk&#39;s">
-<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/" /><link rel="prev" href="http://localhost:1313/post/%E5%B0%9D%E8%AF%95-nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8http3/" /><link rel="next" href="http://localhost:1313/post/k8s%E6%9E%B6%E6%9E%84%E6%8B%93%E6%89%91/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:43087/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/" /><link rel="prev" href="http://localhost:43087/post/%E5%B0%9D%E8%AF%95-nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8http3/" /><link rel="next" href="http://localhost:43087/post/k8s%E6%9E%B6%E6%9E%84%E6%8B%93%E6%89%91/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -31,18 +31,18 @@
         "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/localhost:1313\/post\/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4\/"
+            "@id": "http:\/\/localhost:43087\/post\/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4\/"
         },"image": [{
                             "@type": "ImageObject",
-                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "url": "http:\/\/localhost:43087\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
                         }],"genre": "posts","keywords": "k8s, Nginx","wordcount":  1419 ,
-        "url": "http:\/\/localhost:1313\/post\/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4\/","datePublished": "2021-08-04T22:56:00+00:00","dateModified": "2021-08-04T22:56:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "http:\/\/localhost:43087\/post\/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4\/","datePublished": "2021-08-04T22:56:00+00:00","dateModified": "2021-08-04T22:56:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
                     "@type": "ImageObject",
-                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "url": "http:\/\/localhost:43087\/images\/avatar.png",
                     "width":  528 ,
                     "height":  560 
                 }},"author": {
@@ -1029,7 +1029,7 @@ d. 暂停和继续Deployment</p>
                             <a class="link-to-markdown" href="/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/" data-title="k8s 部署 HTTP3  Nginx "><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/" data-title="k8s 部署 HTTP3  Nginx "><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/"><i class="fab fa-renren fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:43087/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/" data-title="k8s 部署 HTTP3  Nginx "><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:43087/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/" data-title="k8s 部署 HTTP3  Nginx "><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:43087/post/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4/"><i class="fab fa-renren fa-fw"></i></a></span>
             </div>
         </div>
     </div>
