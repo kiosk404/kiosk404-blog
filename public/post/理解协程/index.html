@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>理解协程 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:43087/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/">
+        <title>理解协程 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/">
   <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
   <meta property="og:title" content="理解协程">
   <meta property="og:description" content="协程 在如今在高并发场景下最容易提到的一个技术，协程即能暂停执行以在之后恢复的函数。。下面是关于 GCC11 编辑器 对协程的介绍 （ A coroutine is a function that can suspend execution to be resumed later. Coroutines are stackless: they suspend execution by returning to the caller and the data that is required to resume execution is stored separately from the stack. ）">
@@ -16,14 +16,14 @@
     <meta property="article:modified_time" content="2020-07-18T16:30:00+00:00">
     <meta property="article:tag" content="Golang">
     <meta property="article:tag" content="协程">
-    <meta property="og:image" content="http://localhost:43087/logo.png">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="http://localhost:43087/logo.png">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
   <meta name="twitter:title" content="理解协程">
   <meta name="twitter:description" content="协程 在如今在高并发场景下最容易提到的一个技术，协程即能暂停执行以在之后恢复的函数。。下面是关于 GCC11 编辑器 对协程的介绍 （ A coroutine is a function that can suspend execution to be resumed later. Coroutines are stackless: they suspend execution by returning to the caller and the data that is required to resume execution is stored separately from the stack. ）">
 <meta name="application-name" content="Kiosk&#39;s">
-<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:43087/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/" /><link rel="prev" href="http://localhost:43087/post/docker-%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80/" /><link rel="next" href="http://localhost:43087/post/android-%E4%BF%A1%E4%BB%BB%E8%87%AA%E7%AD%BE%E5%90%8D%E8%AF%81%E4%B9%A6/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/" /><link rel="prev" href="http://localhost:1313/post/docker-%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80/" /><link rel="next" href="http://localhost:1313/post/android-%E4%BF%A1%E4%BB%BB%E8%87%AA%E7%AD%BE%E5%90%8D%E8%AF%81%E4%B9%A6/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -31,18 +31,18 @@
         "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/localhost:43087\/post\/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B\/"
+            "@id": "http:\/\/localhost:1313\/post\/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B\/"
         },"image": [{
                             "@type": "ImageObject",
-                            "url": "http:\/\/localhost:43087\/images\/Apple-Devices-Preview.png",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
                         }],"genre": "posts","keywords": "golang, 协程","wordcount":  294 ,
-        "url": "http:\/\/localhost:43087\/post\/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B\/","datePublished": "2020-07-18T16:30:00+00:00","dateModified": "2020-07-18T16:30:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "http:\/\/localhost:1313\/post\/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B\/","datePublished": "2020-07-18T16:30:00+00:00","dateModified": "2020-07-18T16:30:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
                     "@type": "ImageObject",
-                    "url": "http:\/\/localhost:43087\/images\/avatar.png",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
                     "width":  528 ,
                     "height":  560 
                 }},"author": {
@@ -295,7 +295,7 @@ go 1.5 版本之后的 GOMAXPROCS 默认是 Num of cpu</p>
                             <a class="link-to-markdown" href="/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:43087/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/" data-title="理解协程"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:43087/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/" data-title="理解协程"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:43087/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/"><i class="fab fa-renren fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/" data-title="理解协程"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/" data-title="理解协程"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/"><i class="fab fa-renren fa-fw"></i></a></span>
             </div>
         </div>
     </div>

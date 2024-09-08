@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>如何减少TTFB以提升WordPress加载性能 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:43087/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/">
+        <title>如何减少TTFB以提升WordPress加载性能 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/">
   <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
   <meta property="og:title" content="如何减少TTFB以提升WordPress加载性能">
   <meta property="og:description" content="当谈论到你的 [WordPress Site](What Is WordPress? Explained for Beginners ) 加载性能时，大多数我们都是在关注前端的性能优化来提升页面加载速度。然而我们有时候应该从服务端视角来看待这个问题。今天我们来讨论一下 TTFB (time to first byte) 是怎么影响你的网站加载速度，另外我们如何去降低他。TTFB是一个经常会被忽略的重要性能因素，但是我们在网站性能优化是必须考虑进来。
@@ -15,15 +15,15 @@
     <meta property="article:section" content="posts">
     <meta property="article:published_time" content="2021-06-05T11:19:00+00:00">
     <meta property="article:modified_time" content="2021-06-05T11:19:00+00:00">
-    <meta property="og:image" content="http://localhost:43087/logo.png">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="http://localhost:43087/logo.png">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
   <meta name="twitter:title" content="如何减少TTFB以提升WordPress加载性能">
   <meta name="twitter:description" content="当谈论到你的 [WordPress Site](What Is WordPress? Explained for Beginners ) 加载性能时，大多数我们都是在关注前端的性能优化来提升页面加载速度。然而我们有时候应该从服务端视角来看待这个问题。今天我们来讨论一下 TTFB (time to first byte) 是怎么影响你的网站加载速度，另外我们如何去降低他。TTFB是一个经常会被忽略的重要性能因素，但是我们在网站性能优化是必须考虑进来。
 – 译 How to Reduce TTFB to Improve WordPress Page Load Times">
 <meta name="application-name" content="Kiosk&#39;s">
-<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:43087/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/" /><link rel="prev" href="http://localhost:43087/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/" /><link rel="next" href="http://localhost:43087/post/http-2-%E7%89%B9%E6%80%A7%E6%A6%82%E8%A7%88/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/" /><link rel="prev" href="http://localhost:1313/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/" /><link rel="next" href="http://localhost:1313/post/http-2-%E7%89%B9%E6%80%A7%E6%A6%82%E8%A7%88/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -31,18 +31,18 @@
         "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/localhost:43087\/post\/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4\/"
+            "@id": "http:\/\/localhost:1313\/post\/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4\/"
         },"image": [{
                             "@type": "ImageObject",
-                            "url": "http:\/\/localhost:43087\/images\/Apple-Devices-Preview.png",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
                         }],"genre": "posts","wordcount":  333 ,
-        "url": "http:\/\/localhost:43087\/post\/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4\/","datePublished": "2021-06-05T11:19:00+00:00","dateModified": "2021-06-05T11:19:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "http:\/\/localhost:1313\/post\/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4\/","datePublished": "2021-06-05T11:19:00+00:00","dateModified": "2021-06-05T11:19:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
                     "@type": "ImageObject",
-                    "url": "http:\/\/localhost:43087\/images\/avatar.png",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
                     "width":  528 ,
                     "height":  560 
                 }},"author": {
@@ -247,7 +247,7 @@
                             <a class="link-to-markdown" href="/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:43087/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/" data-title="如何减少TTFB以提升WordPress加载性能"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:43087/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/" data-title="如何减少TTFB以提升WordPress加载性能"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:43087/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/"><i class="fab fa-renren fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/" data-title="如何减少TTFB以提升WordPress加载性能"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/" data-title="如何减少TTFB以提升WordPress加载性能"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/"><i class="fab fa-renren fa-fw"></i></a></span>
             </div>
         </div>
     </div>

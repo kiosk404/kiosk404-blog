@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>实现一个Web服务-(一) - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:43087/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/">
+        <title>实现一个Web服务-(一) - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/">
   <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
   <meta property="og:title" content="实现一个Web服务-(一)">
   <meta property="og:description" content="熟悉 Golang 的话就会知道，用官方提供的 net/http 标准库搭建一个 Web Server，是一件非常简单的事。既然 Golang 利用其精简的语法实现了 Web Server，那么是有必要知其然和知其所以然。最近看到很多文章都介绍了如何实现一个 Web ，那么今天做一个总结。">
@@ -15,14 +15,14 @@
     <meta property="article:published_time" content="2022-04-09T10:15:00+00:00">
     <meta property="article:modified_time" content="2022-04-09T10:15:00+00:00">
     <meta property="article:tag" content="Web">
-    <meta property="og:image" content="http://localhost:43087/logo.png">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="http://localhost:43087/logo.png">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
   <meta name="twitter:title" content="实现一个Web服务-(一)">
   <meta name="twitter:description" content="熟悉 Golang 的话就会知道，用官方提供的 net/http 标准库搭建一个 Web Server，是一件非常简单的事。既然 Golang 利用其精简的语法实现了 Web Server，那么是有必要知其然和知其所以然。最近看到很多文章都介绍了如何实现一个 Web ，那么今天做一个总结。">
 <meta name="application-name" content="Kiosk&#39;s">
-<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:43087/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/" /><link rel="prev" href="http://localhost:43087/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/" /><link rel="next" href="http://localhost:43087/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%BA%8C/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/" /><link rel="prev" href="http://localhost:1313/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/" /><link rel="next" href="http://localhost:1313/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%BA%8C/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -30,18 +30,18 @@
         "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/localhost:43087\/post\/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80\/"
+            "@id": "http:\/\/localhost:1313\/post\/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80\/"
         },"image": [{
                             "@type": "ImageObject",
-                            "url": "http:\/\/localhost:43087\/images\/Apple-Devices-Preview.png",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
                         }],"genre": "posts","keywords": "web","wordcount":  2615 ,
-        "url": "http:\/\/localhost:43087\/post\/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80\/","datePublished": "2022-04-09T10:15:00+00:00","dateModified": "2022-04-09T10:15:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "http:\/\/localhost:1313\/post\/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80\/","datePublished": "2022-04-09T10:15:00+00:00","dateModified": "2022-04-09T10:15:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
                     "@type": "ImageObject",
-                    "url": "http:\/\/localhost:43087\/images\/avatar.png",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
                     "width":  528 ,
                     "height":  560 
                 }},"author": {
@@ -1638,7 +1638,7 @@
                             <a class="link-to-markdown" href="/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:43087/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/" data-title="实现一个Web服务-(一)"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:43087/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/" data-title="实现一个Web服务-(一)"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:43087/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/"><i class="fab fa-renren fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/" data-title="实现一个Web服务-(一)"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/" data-title="实现一个Web服务-(一)"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/"><i class="fab fa-renren fa-fw"></i></a></span>
             </div>
         </div>
     </div>

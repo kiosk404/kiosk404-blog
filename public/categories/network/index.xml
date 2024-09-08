@@ -1,64 +1,64 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Network - Category - Kiosk&#39;s 个人编程技术分享</title>
-        <link>http://localhost:43087/categories/network/</link>
+        <link>http://localhost:1313/categories/network/</link>
         <description>Network - Category - Kiosk&#39;s 个人编程技术分享</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 28 Feb 2022 18:20:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:43087/categories/network/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 28 Feb 2022 18:20:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/categories/network/" rel="self" type="application/rss+xml" /><item>
     <title>HTTP2 下的 Transfer-Encoding: chunked</title>
-    <link>http://localhost:43087/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/</link>
+    <link>http://localhost:1313/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/</link>
     <pubDate>Mon, 28 Feb 2022 18:20:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/</guid>
+    <guid>http://localhost:1313/post/http2-%E6%94%AF%E6%8C%81%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93/</guid>
     <description><![CDATA[<p>在 <span style="color:#FF7F50"> HTTP </span> 中传输数据有一个 <span style="color:#FF7F50">chunked</span> 的方式, 又称“分块传输”。在响应报文里用头字段<span style="color:#FF7F50">Transfer-Encoding: chunked</span> 来表示。意思是报文里的 body 部分不是一次性发过来的，而是分成了许多的块（<span style="color:#FF7F50">chunk</span>）逐个发送。而 <span style="color:#FF7F50">HTTP2.0</span> 协议作为 <span style="color:#FF7F50">HTTP</span>协议的升级，自然是对<span style="color:#FF7F50">chunked</span>模式做支持？不然！</p>
 <p><strong>HTTP2 是没有 chunked 的！</strong></p>]]></description>
 </item><item>
     <title>HTTP/2.0 Header Compression</title>
-    <link>http://localhost:43087/post/http-2-0-header-compression/</link>
+    <link>http://localhost:1313/post/http-2-0-header-compression/</link>
     <pubDate>Sat, 26 Feb 2022 15:01:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/http-2-0-header-compression/</guid>
+    <guid>http://localhost:1313/post/http-2-0-header-compression/</guid>
     <description><![CDATA[<p>在 <span style="color:#FF7F50">HTTP/1.x </span>时代，支持Body压缩，Header不支持压缩。而现在一个网页可能有几十到上百个请求，一个请求Header至少 500Byte 以上。而这些页面的请求Header大多都是一些重复的字符如UA、Cookie，会消耗不必要的带宽，增加延迟。</p>
 <p>在<span style="color:#FF7F50">HTTP/2.0</span>中，引入了<span style="color:#FF7F5">Header Compression</span>（<a href="https://datatracker.ietf.org/doc/html/rfc7541" style="color:#556B2F">rfc7541</a>），头部压缩技术使用了HPACK，有效的压缩了Header。</p>]]></description>
 </item><item>
     <title>尝试 Nginx 上使用HTTP3</title>
-    <link>http://localhost:43087/post/%E5%B0%9D%E8%AF%95-nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8http3/</link>
+    <link>http://localhost:1313/post/%E5%B0%9D%E8%AF%95-nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8http3/</link>
     <pubDate>Sat, 31 Jul 2021 21:41:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E5%B0%9D%E8%AF%95-nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8http3/</guid>
+    <guid>http://localhost:1313/post/%E5%B0%9D%E8%AF%95-nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8http3/</guid>
     <description><![CDATA[<p>之前的文章介绍了<a href="https://kiosk007.top/2021/07/24/QUIC-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" target="_blank" rel="noopener noreffer">QUIC发生了什么</a>, QUIC 已经演变成了一个“传输层”协议。其上可以运行 HTTP 协议。</p>]]></description>
 </item><item>
     <title>QUIC 发生了什么</title>
-    <link>http://localhost:43087/post/quic-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/</link>
+    <link>http://localhost:1313/post/quic-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/</link>
     <pubDate>Sat, 24 Jul 2021 16:02:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/quic-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
+    <guid>http://localhost:1313/post/quic-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
     <description><![CDATA[<p>从 HTTP/1.1（1999 年发布）到 HTTP/2 发布（2015 年发布）之间的发展差距很大，随着 2019 年 HTTP/3 的发布，HTTP/3 即将成为互联网上超文本传输协议的下一代协议，HTTP/3 是Google QUIC协议的演变。它与传统的 HTTP 有很大的不同。QUIC 是一种新的可靠传输协议，可以被视为一种下一代TCP。</p>]]></description>
 </item><item>
     <title>Wireshark解析器Lua脚本</title>
-    <link>http://localhost:43087/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/</link>
+    <link>http://localhost:1313/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/</link>
     <pubDate>Sat, 10 Jul 2021 15:15:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/</guid>
+    <guid>http://localhost:1313/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/</guid>
     <description><![CDATA[<p>Wireshark集成了Lua解释器，以支持Lua脚本（自己编译的话根据编译配置决定是否支持Lua）。</p>
 <p>启动wireshark，依次点击“Help”，”About Wireshark“菜单，在打开的对话框中的”Wireshark”标签页上观察版本信息，如果如下图一样显示With Lua，说明此版本支持Lua插件。</p>
 <p>然后打开wireshark主目录下的init.lua文件，确保disable_lua的值为false，即开启了lua：</p>]]></description>
 </item><item>
     <title>如何减少TTFB以提升WordPress加载性能</title>
-    <link>http://localhost:43087/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/</link>
+    <link>http://localhost:1313/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/</link>
     <pubDate>Sat, 05 Jun 2021 11:19:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/</guid>
+    <guid>http://localhost:1313/post/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91ttfb%E4%BB%A5%E6%8F%90%E9%AB%98%E7%BD%91%E9%A1%B5%E9%A1%B5%E9%9D%A2%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4/</guid>
     <description><![CDATA[<p>当谈论到你的 [WordPress Site](What Is WordPress? Explained for Beginners
 ) 加载性能时，大多数我们都是在关注前端的性能优化来提升页面加载速度。然而我们有时候应该从服务端视角来看待这个问题。今天我们来讨论一下 <strong>TTFB (time to first byte)</strong> 是怎么影响你的网站加载速度，另外我们如何去降低他。TTFB是一个经常会被忽略的重要性能因素，但是我们在网站性能优化是必须考虑进来。</p>
 
 <p>&ndash; 译 <a href="https://kinsta.com/blog/ttfb/" target="_blank" rel="noopener noreffer">How to Reduce TTFB to Improve WordPress Page Load Times</a></p>]]></description>
 </item><item>
     <title>curl 命令小结</title>
-    <link>http://localhost:43087/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/</link>
+    <link>http://localhost:1313/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/</link>
     <pubDate>Sat, 29 May 2021 15:22:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/</guid>
+    <guid>http://localhost:1313/post/curl-%E5%91%BD%E4%BB%A4%E5%B0%8F%E7%BB%93/</guid>
     <description><![CDATA[<p>curl 命令是我日常工作中最常用的命令之一，所以很有必要总结一下curl命令的一些用法。如统计耗时、以指定的ip访问某个域名。添加携带某些Header等。curl命令绝对是日常debug之神。</p>
 <figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" title="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" data-thumbnail="https://img1.kiosk007.top/static/images/network/curl/curl-command.png" data-sub-html="<h2>CURL</h2>">
         
@@ -66,24 +66,24 @@
     </figure>]]></description>
 </item><item>
     <title>探索 Webtransport</title>
-    <link>http://localhost:43087/post/%E6%8E%A2%E7%B4%A2-webtransport/</link>
+    <link>http://localhost:1313/post/%E6%8E%A2%E7%B4%A2-webtransport/</link>
     <pubDate>Sat, 23 Jan 2021 10:33:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E6%8E%A2%E7%B4%A2-webtransport/</guid>
+    <guid>http://localhost:1313/post/%E6%8E%A2%E7%B4%A2-webtransport/</guid>
     <description><![CDATA[<p>常见的长连接协议如 websocket通信协议于2011年被IETF定为标准RFC 6455，并由RFC7936补充规范。WebSocket API也被W3C定为标准。时至今日，互联网的时代已由HTTP2.0 迈入了 HTTP3 的时代，而对长连接的需求日益升温，由于websocket本身的限制，完全不能复用 QUIC 的高性能优势，所以孕育而生了基于 QUIC 的新一代长连接 Webtransport 。</p>]]></description>
 </item><item>
     <title>TLS详解（三）</title>
-    <link>http://localhost:43087/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/</link>
+    <link>http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/</link>
     <pubDate>Sat, 16 Jan 2021 16:48:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/</guid>
+    <guid>http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/</guid>
     <description><![CDATA[<p>TLS 1.3现已于2018年8月发布。相比与TLS1.2，TLS1.3 在速度和安全性上做出了更大的性能提升，其最大的特点是支持了 Zero Round Trip Time (0-RTT). 在安全性方面，TLS1.3 摒弃了绝大多数不安全的加密套件，只支持几个AEAD的加密认证方式。</p>]]></description>
 </item><item>
     <title>gRPC Quick Start </title>
-    <link>http://localhost:43087/post/grpc-quick-start/</link>
+    <link>http://localhost:1313/post/grpc-quick-start/</link>
     <pubDate>Wed, 25 Nov 2020 23:37:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/grpc-quick-start/</guid>
+    <guid>http://localhost:1313/post/grpc-quick-start/</guid>
     <description><![CDATA[<p>RPC 全称 (Remote Procedure Call)，远程过程调用，指的是一台计算机通过网络请求另一台计算机的上服务，从而不需要了解底层网络细节，RPC 是构建在已经存在的协议（TCP/IP，HTTP 等）之上的。<code>gRPC</code> 是云原生计算基金会（CNCF）项目，gRPC 一开始由 google 开发，是一款语言中立、平台中立的服务间通信框架，使用 gRPC 可以使得客户端像调用本地方法一样，调用远程主机提供的服务。可以在任何地方运行，它使客户端和服务器应用程序能够透明地进行通信，并使构建连接系统变得更加容易。</p>]]></description>
 </item></channel>
 </rss>

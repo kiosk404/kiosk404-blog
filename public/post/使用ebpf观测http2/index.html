@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>使用eBPF观测HTTP2 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:43087/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/">
+        <title>使用eBPF观测HTTP2 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/">
   <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
   <meta property="og:title" content="使用eBPF观测HTTP2">
   <meta property="og:description" content="在当今充满微服务的世界中，对服务之间的消息传输的可观察性和理解变得越来越重要。
@@ -17,15 +17,15 @@
     <meta property="article:modified_time" content="2022-06-04T16:30:00+00:00">
     <meta property="article:tag" content="EBPF">
     <meta property="article:tag" content="Golang">
-    <meta property="og:image" content="http://localhost:43087/logo.png">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="http://localhost:43087/logo.png">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
   <meta name="twitter:title" content="使用eBPF观测HTTP2">
   <meta name="twitter:description" content="在当今充满微服务的世界中，对服务之间的消息传输的可观察性和理解变得越来越重要。
 其中一些微服务的传输协议比较复杂，如HTTP/2 协议为了降低头部内容的重复传输，使用表头压缩算法 HPACK，虽然HPACK有助于提升 HTTP/2 的传输效率，但也使得跟踪变得复杂。不过，通过使用 eBPF uprobes,可以在 Header 被压缩之前对其进行跟踪。">
 <meta name="application-name" content="Kiosk&#39;s">
-<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:43087/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/" /><link rel="prev" href="http://localhost:43087/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/" /><link rel="next" href="http://localhost:43087/post/ceph/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/" /><link rel="prev" href="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/" /><link rel="next" href="http://localhost:1313/post/ceph/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -33,18 +33,18 @@
         "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/localhost:43087\/post\/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2\/"
+            "@id": "http:\/\/localhost:1313\/post\/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2\/"
         },"image": [{
                             "@type": "ImageObject",
-                            "url": "http:\/\/localhost:43087\/images\/Apple-Devices-Preview.png",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
                         }],"genre": "posts","keywords": "eBPF, golang","wordcount":  609 ,
-        "url": "http:\/\/localhost:43087\/post\/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2\/","datePublished": "2022-06-04T16:30:00+00:00","dateModified": "2022-06-04T16:30:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "http:\/\/localhost:1313\/post\/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2\/","datePublished": "2022-06-04T16:30:00+00:00","dateModified": "2022-06-04T16:30:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
                     "@type": "ImageObject",
-                    "url": "http:\/\/localhost:43087\/images\/avatar.png",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
                     "width":  528 ,
                     "height":  560 
                 }},"author": {
@@ -444,7 +444,7 @@
                             <a class="link-to-markdown" href="/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:43087/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/" data-title="使用eBPF观测HTTP2"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:43087/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/" data-title="使用eBPF观测HTTP2"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:43087/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/"><i class="fab fa-renren fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/" data-title="使用eBPF观测HTTP2"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/" data-title="使用eBPF观测HTTP2"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/"><i class="fab fa-renren fa-fw"></i></a></span>
             </div>
         </div>
     </div>

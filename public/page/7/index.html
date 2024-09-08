@@ -6,33 +6,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:43087/">
+        <title>Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/">
   <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
   <meta property="og:title" content="Kiosk&#39;s 个人编程技术分享">
   <meta property="og:description" content="Kiosk Stduio">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="website">
-    <meta property="og:image" content="http://localhost:43087/logo.png">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="http://localhost:43087/logo.png">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
   <meta name="twitter:title" content="Kiosk&#39;s 个人编程技术分享">
   <meta name="twitter:description" content="Kiosk Stduio">
 <meta name="application-name" content="Kiosk&#39;s">
-<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:43087/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Kiosk&#39;s 个人编程技术分享">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/" /><link rel="alternate" href="/index.xml" type="application/rss+xml" title="Kiosk&#39;s 个人编程技术分享">
     <link rel="feed" href="/index.xml" type="application/rss+xml" title="Kiosk&#39;s 个人编程技术分享"><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "WebSite",
-        "url": "http:\/\/localhost:43087\/","inLanguage": "en","author": {
+        "url": "http:\/\/localhost:1313\/","inLanguage": "en","author": {
                 "@type": "Person",
                 "name": "kiosk007"
             },"description": "Kiosk Stduio","image": {
                 "@type": "ImageObject",
-                "url": "http:\/\/localhost:43087\/images\/Apple-Devices-Preview.png",
+                "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                 "width":  3105 ,
                 "height":  1536 
-            },"thumbnailUrl": "http:\/\/localhost:43087\/images\/screenshot.png","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","name": "Kiosk's 个人编程技术分享"
+            },"thumbnailUrl": "http:\/\/localhost:1313\/images\/screenshot.png","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","name": "Kiosk's 个人编程技术分享"
     }
     </script></head>
     <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
@@ -107,6 +107,18 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/">使用eBPF跟踪 SSL/TLS 连接</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-05-15">2022-05-15</time></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class="content">前面的文章介绍了 eBPF 的入门知识，这篇算是一个实战吧，使用 eBPF 来跟踪 TLS加密连接。TLS 是目前互联网上的一个标准工具了，可用于加密的通信。本文尝试使用 eBPF 技术将加密的密文还原为明文。当然这并不意味着TLS不再安全，想干坏事的人可以在中间代理服务器、网关设备上偷听。因为eBPF 所实现的追踪明文一定是要建立在真正去做ssl 明文转密文写入操作的。
+关于eBPF基础知识请查看
+认识eBPF
+如何使用eBPF进行追踪
+简介 BPF 可用于对内核函数、用户态函数进行插桩进而实现观测的需求。当然一个有趣的应用就是跟踪网络流量。虽然TLS 流量通过网卡时是密文的，但是我们可以利用 eBPF在加密前进行跟踪。eBPF 的事件追踪并不局限于 kprobes，uprobes也可以用来追踪应用程序代码到达某个指令时触发 BPF 程序。
+TLS Tracing (openssl) 通过上图，我们可以知道TLS库的数据读写是 SSL_write 和 SSL_read 函数。跟踪这些调用就可以在加密之前或者解密之后的流量。
+查询跟踪函数 其实上面的图已经说明了我们要追踪的函数是 SSL_write 和 SSL_read ，但是这里也聊一下这两个函数是如何查找的吧。一般来说，我们可以使用 readelf 命令。输出的结果，排除一些明显和加密过程相关的函数之外，映入眼帘的便是 SSL_read
+1 2 3 4 $ readelf -Ws /usr/lib/x86_64-linux-gnu/libssl.so |grep -i &#39;ssl_read&#39; 658: 0000000000032ce0 126 FUNC GLOBAL DEFAULT 15 SSL_read@@OPENSSL_3.0.0 762: 0000000000038cf0 414 FUNC GLOBAL DEFAULT 15 SSL_read_early_data@@OPENSSL_3.0.0 811: 0000000000032d60 25 FUNC GLOBAL DEFAULT 15 SSL_read_ex@@OPENSSL_3.</div><div class="post-footer">
+        <a href="/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ebpf/">EBPF</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA/">如何使用eBPF进行追踪</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-05-10">2022-05-10</time></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class="content"><p>eBPF 我们知道了程序的工作原理和编程接口以及事件触发机制。那么我们就可以开始 eBPF 程序的开发和执行过程了。</p>
 <p>跟踪类 eBPF 程序主要包含 内核插桩 （BPF_PROG_TYPE_KPROBE）、跟踪点（BPF_PROG_TYPE_TRACEPONT）以及性能事件（BPF_TYPE_PERF_EVENT）等类型的程序，而每类的 eBPF 程序又可以挂载到不同的内核函数、内核跟踪点或者性能事件上。当这些内核函数、内核跟踪点或者性能事件被调用的时候，挂载到其上的 eBPF 程序就会自动执行。</p></div><div class="post-footer">
@@ -149,11 +161,6 @@
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-04-11">2022-04-11</time></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div><div class="content"><p><a href="https://kiosk007.top/post/%e5%ae%9e%e7%8e%b0%e4%b8%80%e4%b8%aaweb%e6%9c%8d%e5%8a%a1-%e4%b8%80/" target="_blank" rel="noopener noreffer">实现一个Web服务-（一）</a> 从 net/http 基础网络库中实现了一个 Web Server，基本实现了路由匹配、上下文、中间件等特性。除这些基本的功能外，还有一些更高阶的功能。比如优雅关闭、日志等功能。</p></div><div class="post-footer">
         <a href="/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%BA%8C/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/web/">Web</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/">实现一个Web服务-(一)</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-04-09">2022-04-09</time></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div><div class="content"><p>熟悉 Golang 的话就会知道，用官方提供的 net/http 标准库搭建一个 Web Server，是一件非常简单的事。既然 Golang 利用其精简的语法实现了 Web Server，那么是有必要知其然和知其所以然。最近看到很多文章都介绍了如何实现一个 Web ，那么今天做一个总结。</p></div><div class="post-footer">
-        <a href="/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%B8%80/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/web/">Web</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
@@ -184,7 +191,7 @@
                     <span class="page-link" aria-hidden="true">&hellip;</span>
                 </li><li class="page-item ">
                     <span class="page-link">
-                        <a href="/page/17/">17</a>
+                        <a href="/page/18/">18</a>
                     </span>
                 </li></ul></div></div>
             </main><footer class="footer">

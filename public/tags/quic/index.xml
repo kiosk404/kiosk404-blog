@@ -1,29 +1,29 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>QUIC - Tag - Kiosk&#39;s 个人编程技术分享</title>
-        <link>http://localhost:43087/tags/quic/</link>
+        <link>http://localhost:1313/tags/quic/</link>
         <description>QUIC - Tag - Kiosk&#39;s 个人编程技术分享</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 24 Jul 2021 16:02:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:43087/tags/quic/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 24 Jul 2021 16:02:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/quic/" rel="self" type="application/rss+xml" /><item>
     <title>QUIC 发生了什么</title>
-    <link>http://localhost:43087/post/quic-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/</link>
+    <link>http://localhost:1313/post/quic-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/</link>
     <pubDate>Sat, 24 Jul 2021 16:02:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/quic-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
+    <guid>http://localhost:1313/post/quic-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
     <description><![CDATA[<p>从 HTTP/1.1（1999 年发布）到 HTTP/2 发布（2015 年发布）之间的发展差距很大，随着 2019 年 HTTP/3 的发布，HTTP/3 即将成为互联网上超文本传输协议的下一代协议，HTTP/3 是Google QUIC协议的演变。它与传统的 HTTP 有很大的不同。QUIC 是一种新的可靠传输协议，可以被视为一种下一代TCP。</p>]]></description>
 </item><item>
     <title>探索 Webtransport</title>
-    <link>http://localhost:43087/post/%E6%8E%A2%E7%B4%A2-webtransport/</link>
+    <link>http://localhost:1313/post/%E6%8E%A2%E7%B4%A2-webtransport/</link>
     <pubDate>Sat, 23 Jan 2021 10:33:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E6%8E%A2%E7%B4%A2-webtransport/</guid>
+    <guid>http://localhost:1313/post/%E6%8E%A2%E7%B4%A2-webtransport/</guid>
     <description><![CDATA[<p>常见的长连接协议如 websocket通信协议于2011年被IETF定为标准RFC 6455，并由RFC7936补充规范。WebSocket API也被W3C定为标准。时至今日，互联网的时代已由HTTP2.0 迈入了 HTTP3 的时代，而对长连接的需求日益升温，由于websocket本身的限制，完全不能复用 QUIC 的高性能优势，所以孕育而生了基于 QUIC 的新一代长连接 Webtransport 。</p>]]></description>
 </item><item>
     <title>认识 QUIC 协议</title>
-    <link>http://localhost:43087/post/quic-%E5%8D%8F%E8%AE%AE/</link>
+    <link>http://localhost:1313/post/quic-%E5%8D%8F%E8%AE%AE/</link>
     <pubDate>Mon, 06 Apr 2020 18:24:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/quic-%E5%8D%8F%E8%AE%AE/</guid>
+    <guid>http://localhost:1313/post/quic-%E5%8D%8F%E8%AE%AE/</guid>
     <description><![CDATA[<p>HTTP 3 ，它来了，<a href="https://www.fastvue.co/fastvue/blog/googles-quic-protocols-security-and-reporting-implications/" target="_blank" rel="noopener noreffer">QUIC（quick udp internet connection “快速 UDP 互联网连接”）</a>正如其名一样，它就是快。其正在标准化为新一代的互联网传输协议。是由google提出的使用udp进行多路并发的传输协议。</p>
 <p>如果想要网站在弱网情况下提升网络访问速度，那么QUIC将是一个不错的选择。</p>]]></description>
 </item></channel>

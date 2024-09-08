@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Linux流量控制-TC框架 - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6/">
+  <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
+  <meta property="og:title" content="Linux流量控制-TC框架">
+  <meta property="og:description" content="TC（Traffic Control）是Linux操作系统中的流量控制器，用于Linux内核的流量控制。它通过在输出端口处建立一个队列来实现流量控制，可以限速、整形和策略控制网络流量的带宽、延迟、丢包等参数，从而实现网络流量的优化和管理">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-08-22T11:23:00+00:00">
+    <meta property="article:modified_time" content="2022-08-22T11:23:00+00:00">
+    <meta property="article:tag" content="Openstack">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="Linux流量控制-TC框架">
+  <meta name="twitter:description" content="TC（Traffic Control）是Linux操作系统中的流量控制器，用于Linux内核的流量控制。它通过在输出端口处建立一个队列来实现流量控制，可以限速、整形和策略控制网络流量的带宽、延迟、丢包等参数，从而实现网络流量的优化和管理">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6/" /><link rel="prev" href="http://localhost:1313/post/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C/" /><link rel="next" href="http://localhost:1313/post/%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AAopenstack%E4%BA%91%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Linux流量控制-TC框架",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "openstack","wordcount":  1355 ,
+        "url": "http:\/\/localhost:1313\/post\/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6\/","datePublished": "2022-08-22T11:23:00+00:00","dateModified": "2022-08-22T11:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s 个人编程技术分享"><span class="header-title-pre"><i class='fas fa-carrot fa-fw'></i></span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Linux流量控制-TC框架</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-08-22">2022-08-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1355 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#tc-规则">TC 规则</a>
+      <ul>
+        <li><a href="#流量控制方式">流量控制方式</a></li>
+        <li><a href="#流量控制处理的对象">流量控制处理的对象</a></li>
+      </ul>
+    </li>
+    <li><a href="#tc-命令">TC 命令</a></li>
+    <li><a href="#控制网络的-qos-的方式">控制网络的 QoS 的方式</a>
+      <ul>
+        <li><a href="#无类别排队规则">无类别排队规则</a>
+          <ul>
+            <li><a href="#pfifo_fast">pfifo_fast</a></li>
+            <li><a href="#随机公平队列sfqstochastic-fair-queuing">随机公平队列（SFQ，Stochastic Fair Queuing）</a></li>
+            <li><a href="#令牌桶规则tbf-token-bucket-filte">令牌桶规则（TBF， Token Bucket Filte）</a></li>
+          </ul>
+        </li>
+        <li><a href="#基于类别的队列规则">基于类别的队列规则</a></li>
+      </ul>
+    </li>
+    <li><a href="#实际使用">实际使用</a>
+      <ul>
+        <li><a href="#针对端口限速">针对端口限速</a></li>
+        <li><a href="#针对ip进行限速">针对IP进行限速</a></li>
+        <li><a href="#针对ip进行丢包">针对IP进行丢包</a></li>
+        <li><a href="#限速脚本">限速脚本</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>TC（Traffic Control）是Linux操作系统中的流量控制器，用于Linux内核的流量控制。它通过在输出端口处建立一个队列来实现流量控制，可以限速、整形和策略控制网络流量的带宽、延迟、丢包等参数，从而实现网络流量的优化和管理</p>
+<br/>
+<p>TC是Linux自带的模块，一般情况下不需要另行安装，可以用 man tc 查看tc 相关命令细节，tc 要求内核 2.4.18 以上</p>
+<br/>
+<p>Linux中的QoS分为入口(Ingress)部分和出口(Egress)部分，入口部分主要用于进行入口流量限速(policing)，出口部分主要用于队列调度(queuingscheduling)。大多数排队规则(qdisc)都是用于输出方向的，输入方向只有一个排队规则，即ingressqdisc。ingressqdisc本身的功能很有限，输入方向只有一个排队规则，即ingressqdisc（因为没有缓存只能实现流量的drop）但可用于重定向incomingpackets。通过Ingressqdisc把输入方向的数据包重定向到虚拟设备ifb，而ifb的输出方向可以配置多种qdisc，就可以达到对输入方向的流量做队列调度的目的。</p>
+<br/>
+<img src="https://img1.kiosk007.top/static/images/blog/20240908115320-linux-tc-cccc.png" />
+<br/>
+<p>即：</p>
+<ul>
+<li>我们能控制出方向，通过 Shaping 将出的流量控制成我们自己想要的模样。如 QOS（Quality of Service）</li>
+<li>至于入方向， 我们无法控制，只能通过 Policy 将包丢弃。</li>
+</ul>
+<p>Ingress 限速只能对整个网卡入流量限速，无队列之分</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tc qdisc add dev eth0 ingress
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">tc filter add dev eth0 parent ffff: protocol ip prio <span class="m">10</span> u32 match ipsrc 0.0.0.0/0 police rate 2048kbps burst 1m drop flowid :1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>而对于 Egress 利用队列规定建立处理数据包的队列，并定义队列中的数据包被发送的方式，从而实现对流量的控制。TC 模块实现流量控制功能使用的队列规定分为两类，一类是无类队列规定，另一类是分类队列规定。无类队列规定相对简单，而分类队列规定则引出了分类和过滤器等概念，使其流量控制功能增强。</p>
+<br/>
+<h1 id="tc-规则">TC 规则</h1>
+<p>流量控制包括以下的几种方式。</p>
+<h2 id="流量控制方式">流量控制方式</h2>
+<ul>
+<li>
+<p><strong>Shaping（限制）</strong>：当流量被限制时，它的传输速率就被控制在某个值之下，限制值可以远远小于有效带宽，这样可以平滑掉突发的数据流量，使得网络更为稳定。</p>
+</li>
+<li>
+<p><strong>SCHEDULING（调度）</strong>：通过调度数据包的传输，可以在带宽范围内，按照优先级分配带宽，SCHEDULING（调度）也只适用于 Egress 流量。</p>
+</li>
+<li>
+<p><strong>POLICING（策略）</strong>：SHAPPING 用于处理外向的流量，而 POLICING（策略）处于接收到数据</p>
+</li>
+<li>
+<p><strong>DROPPING（丢弃）</strong>：如果流量超过某个设定的带宽，就丢弃数据包，不管是向内还是向外</p>
+</li>
+</ul>
+<br/>
+<h2 id="流量控制处理的对象">流量控制处理的对象</h2>
+<ul>
+<li><strong>qdisc（排队规则）</strong>：流量控制(traffic control)的基础。无论何时，内核如果需要通过某个网络接口发送数据包，它都需要按照为这个接口配置的qdisc(排队规则)把数据包加入队列。然后，内核会尽可能多地从qdisc里面取出数据包，把它们交给网络适配器驱动模块。最简单的QDisc是pfifo它不对进入的数据包做任何的处理，数据包采用先入先出的方式通过队列。不过，它会保存网络接口一时无法处理的数据包。下面会</li>
+<li><strong>class（类别）</strong>：某些QDisc(排队规则)可以包含一些类别，不同的类别中可以包含更深入的QDisc(排队规则)，通过这些细分的QDisc还可以为进入的队列的数据包排队。通过设置各种类别数据包的离队次序，QDisc可以为设置网络数据流量的优先级。</li>
+<li><strong>filter（过滤器）</strong>：决定它们按照何种QDisc进入队列。无论何时数据包进入一个划分子类的类别中，都需要进行分类。分类的方法可以有多种，使用fileter(过滤器)就是其中之一。使用filter(过滤器)分类时，内核会调用附属于这个类(class)的所有过滤器，直到返回一个判决。如果没有判决返回，就作进一步的处理，而处理方式和QDISC有关。需要注意的是，filter(过滤器)是在QDisc内部，它们不能作为主体。</li>
+</ul>
+<br/>
+<h1 id="tc-命令">TC 命令</h1>
+<p>tc 命令使用以下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tc  qdisc <span class="o">[</span> add <span class="p">|</span> change <span class="p">|</span> replace <span class="p">|</span> link <span class="o">]</span> dev DEV <span class="o">[</span> parent qdisc-id <span class="p">|</span> root <span class="o">]</span> <span class="o">[</span> handle qdisc-id <span class="o">]</span> qdisc <span class="o">[</span> qdisc specific parameters <span class="o">]</span>  
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">tc class <span class="o">[</span> add <span class="p">|</span> change <span class="p">|</span> replace <span class="o">]</span> dev DEV parent qdisc-id  <span class="o">[</span>  classid class-id <span class="o">]</span> qdisc <span class="o">[</span> qdisc specific parameters <span class="o">]</span>  
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">tc filter <span class="o">[</span> add <span class="p">|</span> change <span class="p">|</span> replace <span class="o">]</span> dev DEV <span class="o">[</span> parent qdisc-id <span class="p">|</span> root <span class="o">]</span> protocol protocol prio priority filtertype <span class="o">[</span> filtertype specific param‐eters <span class="o">]</span> flowid flow-id  
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">tc <span class="o">[</span> FORMAT <span class="o">]</span> qdisc show <span class="o">[</span> dev DEV <span class="o">]</span>  
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">tc <span class="o">[</span> FORMAT <span class="o">]</span> class show dev DEV  
+</span></span><span class="line"><span class="cl">       
+</span></span><span class="line"><span class="cl">tc filter show dev DEV  
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">    <span class="c1">###### FORMAT := { -s[tatistics] | -d[etails] | -r[aw] | -p[retty] | i[ec] }  </span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h1 id="控制网络的-qos-的方式">控制网络的 QoS 的方式</h1>
+<p>在 Linux 下，可以通过 TC 控制网络的 QoS，主要就是通过队列的方式。</p>
+<h2 id="无类别排队规则">无类别排队规则</h2>
+<p><strong>无类别排队规则(Classless Queuing Disciplines)</strong> ，这是一种把不同的网络包分类的技术。</p>
+<h3 id="pfifo_fast">pfifo_fast</h3>
+<img src="https://img1.kiosk007.top/static/images/blog/20240907212331-linux-tc-pfifo_fast.png">
+<p>pfifo_fast 是三个先入先出的队列，根据网络报的 TOS ，看到这个包到底应该进入哪个队列，TOS 有 4 位组成，</p>
+<p>0 - F 其实就是 0x00 - 0xFF , 表示不同的 TOS 进入哪种队列</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># tc qdisc show dev ens33</span>
+</span></span><span class="line"><span class="cl">qdisc pfifo_fast 0: root refcnt <span class="m">2</span> bands <span class="m">3</span> priomap <span class="m">1</span> <span class="m">2</span> <span class="m">2</span> <span class="m">2</span> <span class="m">1</span> <span class="m">2</span> <span class="m">0</span> <span class="m">0</span> <span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="m">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<ul>
+<li><strong>扩展知识 qdisc</strong></li>
+</ul>
+<p>qdisc 全称是 queuing discipline，中文叫 排队规则。如果需要通过某个网络接口发送数据包，他都需要为这个接口配置 qdisc（排队规则）把数据包加入队列。</p>
+<p>最简单的 qdisc 是 pfifo，他不对进入的数据包做任何的处理，数据包采用先入先出的方式通过队列。pfifo_fast 稍微复杂一点。它的队列包括三个波段（band），在每个波段里面，使用先进先出的规则。</p>
+<p>(如下，执行 <code>ip a</code> 命令可以看到 ens33 有个 qdisc pfifo_fast )</p>
+<br/>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># ip a</span>
+</span></span><span class="line"><span class="cl">... 
+</span></span><span class="line"><span class="cl">2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc pfifo_fast state UP group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 00:0c:29:0d:72:3a brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    altname enp2s1
+</span></span><span class="line"><span class="cl">    inet 172.16.80.129/24 metric <span class="m">100</span> brd 172.16.80.255 scope global dynamic ens33
+</span></span><span class="line"><span class="cl">       valid_lft 946sec preferred_lft 946sec
+</span></span><span class="line"><span class="cl">    inet6 fe80::20c:29ff:fe0d:723a/64 scope link 
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>三个波段（band）的优先级也不相同，band 0 优先级最高。band 2 优先级最低。</p>
+<p>数据包是按照服务类型（Type of Service, TOS） 分配到三个波段 （band）中的。TOS 是 IP 头里面的一个字段的，代表了当前的包是最高优先级还是最低优先级的。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/20240908000645-linux-tc-ip.png" />
+<br/>
+<h3 id="随机公平队列sfqstochastic-fair-queuing">随机公平队列（SFQ，Stochastic Fair Queuing）</h3>
+<img src="https://img1.kiosk007.top/static/images/blog/20240908002216-linux_tc_sfq.png" />
+<br/>
+<p>会建立很多的 FIFO 队列， TCP Session 会计算 hash 值，通过 hash 值分配到某个队列，在队列的另一端，网络报会通过轮询的策略从各个队列取出发送。</p>
+<br/>
+<h3 id="令牌桶规则tbf-token-bucket-filte">令牌桶规则（TBF， Token Bucket Filte）</h3>
+<p>所有的网络报排成队列进行发送 ，但不是到了队头才能发送，而是必须拿到 令牌才可以发送，所以 TBF 可以用来进行限速。</p>
+<br/>
+<h2 id="基于类别的队列规则">基于类别的队列规则</h2>
+<p>基于<strong>类别的队列规则（Classful Queuing Disciplines）</strong> , 其中典型的为 <strong>分层令牌桶（HTB， Hierarchical Token Bucket）</strong>。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/20240908003011-linux_tc_htb.png" />
+<br/>
+<p>HTB 往往是一棵树， 可以使用 TC 为Linux 下的网卡 ens33 创建一个 HTB 的队列规则，需要付给他一个句柄（:1）。</p>
+<br/>
+<p>这是整课树的根节点，接下来会有分支，例如图中的三个分支。分别为 (:10)、(:11)、(:12) 。最后的参数default 12, 表示默认发送给 1:12 ，也即发送给第三个分支。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tc qdisc add dev ens33 root handle 1: htb default <span class="m">12</span> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>对于这个网卡，需要规定发送的速度，一般有2个速度可以配置，一个是<strong>rate</strong>，表示一般情况下的速度，一个是 <strong>ceil</strong>，表示最高情况下的速度，对于根节点来讲，这两个速度是一样的，于是创建一个 root class，速度为 (rate=100kbps, ceil=100kbps)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tc class add dev ens33 parent 1: classid 1:1 htb rate 100kbps ceil 100kbps
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>接下来创建3个分支，也即创建3个子class。每个子 class 统一有2个速度，三个分支分别是 (rate=30kbps, ceil=100kbps)、(rate=10kbps, ceil=100kbps)、（rate=60kbps, ceil=100kbps）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tc class add dev ens33 parent 1:1 classid 1:10 htb rate 30kbps ceil 100kbps
+</span></span><span class="line"><span class="cl">tc class add dev ens33 parent 1:1 classid 1:11 htb rate 10kbps ceil 100kbps
+</span></span><span class="line"><span class="cl">tc class add dev ens33 parent 1:1 classid 1:12 htb rate 60kbps ceil 100kbps
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>可以看到三个 rate 加起来，是整个网卡允许的最大速度。（30+10+60）</p>
+<br/>
+<p>HTB 有一个很好的特性，同一个 root class 下的子类可以相互借流量，如果不直接在队列规则下面创建一个 root class。而是直接创建三个 class，它们是不能直接互相借流量的。</p>
+<p>最后创建 叶子队列规则，分别是 fifo 和 sfq。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tc qdisc add dev ens33 parent 1:10 handle 20: pfifo limit <span class="m">5</span>
+</span></span><span class="line"><span class="cl">tc qdisc add dev ens33 parent 1:11 handle 30: pfifo limit <span class="m">5</span>
+</span></span><span class="line"><span class="cl">tc qdisc add dev ens33 parent 1:12 handle 40: sfq perturb <span class="m">10</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>基于这个队列规则，可以设置 TC 设定的发送规则：从 150.158.101.167 来的包，发送给 80 端口的包，从第一个分支 1:10 走；其他从  150.158.101.167  发送来的包从第二个分支 1:11 走，其他的走默认分支。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tc filter add dev ens33 protocol ip parent 1:0 prio <span class="m">1</span> u32 match ip src 150.158.101.167 match ip dport <span class="m">80</span> 0xffff flowid 1:10
+</span></span><span class="line"><span class="cl">tc filter add dev ens33 protocol ip parent 1:0 prio <span class="m">1</span> u32 match ip src 150.158.101.167 flowid 1:11
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h1 id="实际使用">实际使用</h1>
+<h2 id="针对端口限速">针对端口限速</h2>
+<p>在使用git拉取代码时很容易跑满带宽，为了控制带宽的使用，配置如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#查看现有的队列</span>
+</span></span><span class="line"><span class="cl">tc -s qdisc ls dev ens33
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#查看现有的分类</span>
+</span></span><span class="line"><span class="cl">tc -s class ls dev ens33
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#创建队列</span>
+</span></span><span class="line"><span class="cl">tc qdisc add dev ens33 root handle 1:0 htb default <span class="m">1</span> 
+</span></span><span class="line"><span class="cl"><span class="c1">#添加一个tbf队列，ens33，命名为1:0 ，默认归类为1</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#handle：为队列命名或指定某队列</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#创建分类</span>
+</span></span><span class="line"><span class="cl">tc class add dev ens33 parent 1:0 classid 1:1 htb rate 10Mbit burst 15k
+</span></span><span class="line"><span class="cl"><span class="c1">#为ens33下的root队列1:0添加一个分类并命名为1:1，类型为htb，带宽为10M</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#rate: 是一个类保证得到的带宽值.如果有不只一个类,请保证所有子类总和是小于或等于父类.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#ceil: ceil是一个类最大能得到的带宽值.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#创建一个子分类</span>
+</span></span><span class="line"><span class="cl">tc class add dev ens33 parent 1:1 classid 1:10 htb rate 10Mbit ceil 10Mbit burst 15k
+</span></span><span class="line"><span class="cl"><span class="c1">#为1:1类规则添加一个名为1:10的类，类型为htb，带宽为10M</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#为了避免一个会话永占带宽,添加随即公平队列sfq.</span>
+</span></span><span class="line"><span class="cl">tc qdisc add dev ens33 parent 1:10 handle 10: sfq perturb <span class="m">10</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#perturb：是多少秒后重新配置一次散列算法，默认为10秒</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#sfq,他可以防止一个段内的一个ip占用整个带宽</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#使用u32创建过滤器</span>
+</span></span><span class="line"><span class="cl">tc filter add dev ens33 protocol ip parent 1:0 prio <span class="m">1</span> u32 match ip sport <span class="m">22</span> flowid 1:10
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#删除队列</span>
+</span></span><span class="line"><span class="cl">tc qdisc del dev ens33 root
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h2 id="针对ip进行限速">针对IP进行限速</h2>
+<p>因为带宽资源有限（20Mbit≈2Mbyte），使用git上传代码的时候导致带宽资源告警，所以对git进行限速，要求：内网不限速；外网上传速度为1M左右。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="c1">#针对不同的ip进行限速</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#清空原有规则</span>
+</span></span><span class="line"><span class="cl">tc qdisc del dev ens33 root
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#创建根序列</span>
+</span></span><span class="line"><span class="cl">tc qdisc add dev ens33 root handle 1: htb default <span class="m">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#创建一个主分类绑定所有带宽资源（20M）</span>
+</span></span><span class="line"><span class="cl">tc class add dev ens33 parent 1:0 classid 1:1 htb rate 20Mbit burst 15k
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#创建子分类</span>
+</span></span><span class="line"><span class="cl">tc class add dev ens33 parent 1:1 classid 1:10 htb rate 20Mbit ceil 10Mbit burst 15k
+</span></span><span class="line"><span class="cl">tc class add dev ens33 parent 1:1 classid 1:20 htb rate 20Mbit ceil 20Mbit burst 15k
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#避免一个ip霸占带宽资源（上面有提到）</span>
+</span></span><span class="line"><span class="cl">tc qdisc add dev ens33 parent 1:10 handle 10: sfq perturb <span class="m">10</span>
+</span></span><span class="line"><span class="cl">tc qdisc add dev ens33 parent 1:20 handle 20: sfq perturb <span class="m">10</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#创建过滤器</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#对所有ip限速</span>
+</span></span><span class="line"><span class="cl">tc filter add dev ens33 protocol ip parent 1:0 prio <span class="m">2</span> u32 match ip dst 0.0.0.0/0 flowid 1:10
+</span></span><span class="line"><span class="cl"><span class="c1">#对内网ip放行</span>
+</span></span><span class="line"><span class="cl">tc filter add dev ens33 protocol ip parent 1:0 prio <span class="m">1</span> u32 match ip dst 10.0.0.0/8 flowid 1:20
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>下面是限速的效果</p>
+<p>限速前：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># speedtest-cli</span>
+</span></span><span class="line"><span class="cl">Retrieving speedtest.net configuration...
+</span></span><span class="line"><span class="cl">Testing from China Unicom <span class="o">(</span>123.112.69.232<span class="o">)</span>...
+</span></span><span class="line"><span class="cl">Retrieving speedtest.net server list...
+</span></span><span class="line"><span class="cl">Selecting best server based on ping...
+</span></span><span class="line"><span class="cl">Hosted by China Unicom <span class="o">(</span>Mianyang<span class="o">)</span> <span class="o">[</span>1413.88 km<span class="o">]</span>: 118.96 ms
+</span></span><span class="line"><span class="cl">Testing download speed................................................................................
+</span></span><span class="line"><span class="cl">Download: 7.84 Mbit/s
+</span></span><span class="line"><span class="cl">Testing upload speed......................................................................................................
+</span></span><span class="line"><span class="cl">Upload: 10.59 Mbit/s
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>限速后：(为了演示效果，上传限速1Mbit / s)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># speedtest-cli</span>
+</span></span><span class="line"><span class="cl">Retrieving speedtest.net configuration...
+</span></span><span class="line"><span class="cl">Testing from China Unicom <span class="o">(</span>123.112.69.232<span class="o">)</span>...
+</span></span><span class="line"><span class="cl">Retrieving speedtest.net server list...
+</span></span><span class="line"><span class="cl">Selecting best server based on ping...
+</span></span><span class="line"><span class="cl">Hosted by China Unicom 5G <span class="o">(</span>Shanghai<span class="o">)</span> <span class="o">[</span>1072.57 km<span class="o">]</span>: 57.737 ms
+</span></span><span class="line"><span class="cl">Testing download speed................................................................................
+</span></span><span class="line"><span class="cl">Download: 8.68 Mbit/s
+</span></span><span class="line"><span class="cl">Testing upload speed......................................................................................................
+</span></span><span class="line"><span class="cl">Upload: 1.39 Mbit/s
+</span></span></code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<br/>
+<h2 id="针对ip进行丢包">针对IP进行丢包</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo tc qdisc del dev ens33 root
+</span></span><span class="line"><span class="cl">sudo tc qdisc add dev ens33 root handle 1: htb default <span class="m">10</span>    <span class="c1"># 创建htb规则, 并创建一个分支, 默认发给 :10</span>
+</span></span><span class="line"><span class="cl">sudo tc class add dev ens33 parent 1: classid 1:1 htb rate 100mbps ceil 200mbps <span class="c1"># 创建 root class</span>
+</span></span><span class="line"><span class="cl">sudo tc qdisc add dev ens33 parent 1:1 handle 10: netem loss random 50%         <span class="c1"># 丢包50%</span>
+</span></span><span class="line"><span class="cl">sudo tc filter add dev ens33 protocol ip parent 1:0 u32 match ip dst 110.242.68.66/24 flowid 1:1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>执行后的效果</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># ping 110.242.68.66</span>
+</span></span><span class="line"><span class="cl">PING 110.242.68.66 <span class="o">(</span>110.242.68.66<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 110.242.68.66: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">128</span> <span class="nv">time</span><span class="o">=</span>15.2 ms
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 110.242.68.66: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">25</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">128</span> <span class="nv">time</span><span class="o">=</span>19.7 ms
+</span></span><span class="line"><span class="cl">^C
+</span></span><span class="line"><span class="cl">--- 110.242.68.66 ping statistics ---
+</span></span><span class="line"><span class="cl"><span class="m">28</span> packets transmitted, <span class="m">14</span> received, 50% packet loss, <span class="nb">time</span> 27337ms
+</span></span><span class="line"><span class="cl">rtt min/avg/max/mdev <span class="o">=</span> 15.145/49.997/123.787/31.840 ms
+</span></span></code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<p>更多的 netem 模拟网络波动的方法：<a href="https://www.hi-linux.com/posts/35699.html#vip-container" target="_blank" rel="noopener noreffer">使用 TC 和 Netem 模拟网络异常</a></p>
+<br/>
+<h2 id="限速脚本">限速脚本</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">NBQ</span><span class="o">={</span>Number of TX queues on NIC<span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">HANDLE_ID</span><span class="o">=</span><span class="m">100</span>
+</span></span><span class="line"><span class="cl"><span class="nv">FQ</span><span class="o">=</span><span class="s2">&#34;fq buckets 4096&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">HTB</span><span class="o">=</span><span class="s2">&#34;htb default 2&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> ETH in ens33 ens37
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">        tc qd del dev <span class="nv">$ETH</span> root 2&gt;/dev/null
+</span></span><span class="line"><span class="cl">        tc qd add dev <span class="nv">$ETH</span> root handle <span class="si">${</span><span class="nv">HANDLE_ID</span><span class="si">}</span>: mq
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> i in <span class="sb">`</span>seq <span class="m">1</span> <span class="nv">$NBQ</span><span class="sb">`</span>
+</span></span><span class="line"><span class="cl">        <span class="k">do</span>
+</span></span><span class="line"><span class="cl">                <span class="nv">slot</span><span class="o">=</span><span class="k">$(</span> <span class="nb">printf</span> %x <span class="k">$((</span> i <span class="k">))</span> <span class="k">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">echo</span> <span class="nv">$slot</span>
+</span></span><span class="line"><span class="cl">                tc qd add dev <span class="nv">$ETH</span> handle <span class="nv">$slot</span>: parent 100:<span class="nv">$slot</span> <span class="si">${</span><span class="nv">HTB</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">echo</span> <span class="s2">&#34;tc class add dev </span><span class="nv">$ETH</span><span class="s2"> parent </span><span class="nv">$slot</span><span class="s2">: classid </span><span class="nv">$slot</span><span class="s2">:1 htb rate {limit} ceil (m/k)bit&#34;</span>
+</span></span><span class="line"><span class="cl">                tc class add dev <span class="nv">$ETH</span> parent <span class="nv">$slot</span>: classid <span class="nv">$slot</span>:1 htb rate <span class="o">{</span>limit<span class="o">}</span> ceil <span class="o">{</span>limit<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                tc class add dev <span class="nv">$ETH</span> parent <span class="nv">$slot</span>: classid <span class="nv">$slot</span>:2 htb rate <span class="o">{</span>limit<span class="o">}</span> ceil <span class="o">{</span>limit<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                tc class add dev <span class="nv">$ETH</span> parent <span class="nv">$slot</span>: classid <span class="nv">$slot</span>:3 htb rate 10gbit
+</span></span><span class="line"><span class="cl">                tc filter add dev <span class="nv">$ETH</span> protocol ip parent <span class="nv">$slot</span>: prio <span class="m">1</span> u32 match ip dst <span class="o">{</span>VIP1<span class="o">}</span>/32 flowid <span class="nv">$slot</span>:1
+</span></span><span class="line"><span class="cl">                tc filter add dev <span class="nv">$ETH</span> protocol ip parent <span class="nv">$slot</span>: prio <span class="m">1</span> u32 match ip dst <span class="o">{</span>VIP2<span class="o">}</span>/32 flowid <span class="nv">$slot</span>:2
+</span></span><span class="line"><span class="cl">        <span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>limit \ VIP1 \ VIP2 需要自行补全才能执行</p>
+</blockquote></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-08-22</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6/" data-title="Linux流量控制-TC框架"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6/" data-title="Linux流量控制-TC框架"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C/" class="prev" rel="prev" title="使用Open-vSwitch创建虚拟网络"><i class="fas fa-angle-left fa-fw"></i>使用Open-vSwitch创建虚拟网络</a>
+            <a href="/post/%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AAopenstack%E4%BA%91%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="next" rel="next" title="构建一个 OpenStack 云操作系统">构建一个 OpenStack 云操作系统<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.129.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<script src="https://cdn.staticfile.net/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

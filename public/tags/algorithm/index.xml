@@ -1,15 +1,15 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Algorithm - Tag - Kiosk&#39;s 个人编程技术分享</title>
-        <link>http://localhost:43087/tags/algorithm/</link>
+        <link>http://localhost:1313/tags/algorithm/</link>
         <description>Algorithm - Tag - Kiosk&#39;s 个人编程技术分享</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 31 Jan 2024 22:53:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:43087/tags/algorithm/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 31 Jan 2024 22:53:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/algorithm/" rel="self" type="application/rss+xml" /><item>
     <title>算法笔记-最短路径算法（Bellman-ford）</title>
-    <link>http://localhost:43087/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/</link>
+    <link>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/</link>
     <pubDate>Wed, 31 Jan 2024 22:53:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/</guid>
+    <guid>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/</guid>
     <description><![CDATA[最短路径算法是一个比较常见的用于查找2点之间最短路径的方案。在工作中，由于涉及要查找2点之间的最短路径的场景，所以特此记录一下
 算法思想 美国应用数学家Richard Bellman (理查德.贝尔曼, 动态规划的提出者)于1958 年发表了该算法。此外Lester Ford在1956年也发表了该算法。因此这个算法叫做Bellman-Ford算法。
 Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的算法。其可以被应用在带负权的有向图中，Bellman-ford 算法比dijkstra算法更具普遍性，因为它对边没有要求，可以处理负权边与负权回路。缺点是时间复杂度过高，高达O(VE), V为顶点数，E为边数。
@@ -27,10 +27,10 @@ Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的�
 这里是一个简单的图示来解释负权环：]]></description>
 </item><item>
     <title>算法笔记-稳定匹配算法（Gale-Shapley）</title>
-    <link>http://localhost:43087/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</link>
+    <link>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</link>
     <pubDate>Tue, 31 Oct 2023 22:53:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</guid>
+    <guid>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</guid>
     <description><![CDATA[<p>最近工作中遇到一个场景，需要将两种资源做匹配分发，希望动态的做到最佳分配的状态，而且分配的结果需要稳定，刚好了解到这类的算法，特此记录一下。</p>]]></description>
 </item></channel>
 </rss>

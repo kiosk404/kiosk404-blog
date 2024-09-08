@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>什么是 NUMA - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:43087/post/what-is-numa/">
+        <title>什么是 NUMA - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/what-is-numa/">
   <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
   <meta property="og:title" content="什么是 NUMA">
   <meta property="og:description" content="最近再看虚拟化相关内容的时候注意到 KVM 支持 SMP 和 NUMA 多 CPU 架构的主机和客户机。注意到CPU的模型概念。
@@ -18,17 +18,17 @@ Linux man手册中对numad的定义为A user-level daemon that provides placemen
     <meta property="article:published_time" content="2022-09-15T02:21:00+00:00">
     <meta property="article:modified_time" content="2022-09-15T02:21:00+00:00">
     <meta property="article:tag" content="Linux">
-    <meta property="og:image" content="http://localhost:43087/logo.png">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="http://localhost:43087/logo.png">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
   <meta name="twitter:title" content="什么是 NUMA">
   <meta name="twitter:description" content="最近再看虚拟化相关内容的时候注意到 KVM 支持 SMP 和 NUMA 多 CPU 架构的主机和客户机。注意到CPU的模型概念。
 之前其实有听到过 CPU 模型对高性能计算的影响。但是又不清楚其中的原理。高性能云服务可能会引入 numad 守护进程来优化 NUMA 的资源分配。
 Linux man手册中对numad的定义为A user-level daemon that provides placement advice and process management for efficient use of CPUs and memory on systems with NUMA topology.（为高效利用CPU和内存提供布局建议和进程管理功能的用户态守护进程。）
 本文将介绍一下什么是 numa ，以及到底有什么用。">
 <meta name="application-name" content="Kiosk&#39;s">
-<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:43087/post/what-is-numa/" /><link rel="prev" href="http://localhost:43087/post/openstack-request-flow-for-provisioning-instance/" /><link rel="next" href="http://localhost:43087/post/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/what-is-numa/" /><link rel="prev" href="http://localhost:1313/post/openstack-request-flow-for-provisioning-instance/" /><link rel="next" href="http://localhost:1313/post/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -36,18 +36,18 @@ Linux man手册中对numad的定义为A user-level daemon that provides placemen
         "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/localhost:43087\/post\/what-is-numa\/"
+            "@id": "http:\/\/localhost:1313\/post\/what-is-numa\/"
         },"image": [{
                             "@type": "ImageObject",
-                            "url": "http:\/\/localhost:43087\/images\/Apple-Devices-Preview.png",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
                         }],"genre": "posts","keywords": "linux","wordcount":  212 ,
-        "url": "http:\/\/localhost:43087\/post\/what-is-numa\/","datePublished": "2022-09-15T02:21:00+00:00","dateModified": "2022-09-15T02:21:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "http:\/\/localhost:1313\/post\/what-is-numa\/","datePublished": "2022-09-15T02:21:00+00:00","dateModified": "2022-09-15T02:21:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
                     "@type": "ImageObject",
-                    "url": "http:\/\/localhost:43087\/images\/avatar.png",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
                     "width":  528 ,
                     "height":  560 
                 }},"author": {
@@ -255,7 +255,7 @@ Linux man手册中对numad的定义为A user-level daemon that provides placemen
                             <a class="link-to-markdown" href="/post/what-is-numa/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:43087/post/what-is-numa/" data-title="什么是 NUMA"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:43087/post/what-is-numa/" data-title="什么是 NUMA"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:43087/post/what-is-numa/"><i class="fab fa-renren fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/what-is-numa/" data-title="什么是 NUMA"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/what-is-numa/" data-title="什么是 NUMA"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/what-is-numa/"><i class="fab fa-renren fa-fw"></i></a></span>
             </div>
         </div>
     </div>

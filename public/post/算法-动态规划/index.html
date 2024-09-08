@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>算法 - (动态规划) - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">
+        <title>算法 - (动态规划) - Kiosk&#39;s 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">
   <meta property="og:site_name" content="Kiosk&#39;s 个人编程技术分享">
   <meta property="og:title" content="算法 - (动态规划)">
   <meta property="og:description" content="动态规划 讲解动态规划的资料很多，官方的定义是指把多阶段过程转化为一系列单阶段问题，利用各阶段之间的关系，逐个求解。概念中的各阶段之间的关系，其实指的就是状态转移方程。很多人觉得DP难（下文统称动态规划为DP），根本原因是因为DP区别于一些固定形式的算法（比如DFS、二分法、KMP），没有实际的步骤规定第一步第二步来做什么，所以准确的说，DP其实是一种解决问题的思想。
@@ -17,17 +17,17 @@ No.70 爬楼梯 链接：https://leetcode.cn/problems/climbing-stairs/ 思路：
     <meta property="article:section" content="posts">
     <meta property="article:published_time" content="2022-01-17T10:44:00+00:00">
     <meta property="article:modified_time" content="2022-07-31T22:53:00+00:00">
-    <meta property="og:image" content="http://localhost:43087/logo.png">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="http://localhost:43087/logo.png">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
   <meta name="twitter:title" content="算法 - (动态规划)">
   <meta name="twitter:description" content="动态规划 讲解动态规划的资料很多，官方的定义是指把多阶段过程转化为一系列单阶段问题，利用各阶段之间的关系，逐个求解。概念中的各阶段之间的关系，其实指的就是状态转移方程。很多人觉得DP难（下文统称动态规划为DP），根本原因是因为DP区别于一些固定形式的算法（比如DFS、二分法、KMP），没有实际的步骤规定第一步第二步来做什么，所以准确的说，DP其实是一种解决问题的思想。
 动态规划的关键在于状态的定义，比如 opt[n] 、dp[n]、fib[n] 等。另外就是状态转移方程：opt[n] = best_of(opt[n-1], opt[n-2], …)
 No.70 爬楼梯 链接：https://leetcode.cn/problems/climbing-stairs/ 思路：假设我当前爬到第 N 层，那么我多少种爬法？爬到第N层无非最后一次爬是有两种可能，最后一次爬2楼，最后一次爬1楼，最后一次爬两楼的话，就变成了 dp[n] = dp[n-2] , 最后一次爬一楼就变成了 dp[n] = dp[n-1] ,组合起来就是 dp[n] = dp[n-1] &#43; dp[n-2] 为了从1开始计算到n，每层楼梯有多少种爬法，还需要一次循环
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 func climbStairs(n int) int { if n == 1 { return 1 } dp := make([]int, n&#43;1) dp[1] = 1 // 一层楼梯1种爬法 dp[2] = 2 // 两层楼梯2种爬法，一次爬2层，爬2个一层 for i := 3; i &lt;= n; i&#43;&#43; { dp[i] = dp[i-1] &#43; dp[i-2] } return dp[n] } No.">
 <meta name="application-name" content="Kiosk&#39;s">
-<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" /><link rel="prev" href="http://localhost:43087/post/golang-%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" /><link rel="next" href="http://localhost:43087/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" /><link rel="prev" href="http://localhost:1313/post/golang-%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" /><link rel="next" href="http://localhost:1313/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -35,18 +35,18 @@ No.70 爬楼梯 链接：https://leetcode.cn/problems/climbing-stairs/ 思路：
         "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/localhost:43087\/post\/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92\/"
+            "@id": "http:\/\/localhost:1313\/post\/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92\/"
         },"image": [{
                             "@type": "ImageObject",
-                            "url": "http:\/\/localhost:43087\/images\/Apple-Devices-Preview.png",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
                         }],"genre": "posts","wordcount":  1518 ,
-        "url": "http:\/\/localhost:43087\/post\/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92\/","datePublished": "2022-01-17T10:44:00+00:00","dateModified": "2022-07-31T22:53:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+        "url": "http:\/\/localhost:1313\/post\/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92\/","datePublished": "2022-01-17T10:44:00+00:00","dateModified": "2022-07-31T22:53:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
                     "@type": "ImageObject",
-                    "url": "http:\/\/localhost:43087\/images\/avatar.png",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
                     "width":  528 ,
                     "height":  560 
                 }},"author": {
@@ -972,7 +972,7 @@ No.70 爬楼梯 链接：https://leetcode.cn/problems/climbing-stairs/ 思路：
                             <a class="link-to-markdown" href="/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" data-title="算法 - (动态规划)"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" data-title="算法 - (动态规划)"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"><i class="fab fa-renren fa-fw"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" data-title="算法 - (动态规划)"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" data-title="算法 - (动态规划)"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"><i class="fab fa-renren fa-fw"></i></a></span>
             </div>
         </div>
     </div>

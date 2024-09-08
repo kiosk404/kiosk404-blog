@@ -1,22 +1,22 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Algorithm - Category - Kiosk&#39;s 个人编程技术分享</title>
-        <link>http://localhost:43087/categories/algorithm/</link>
+        <link>http://localhost:1313/categories/algorithm/</link>
         <description>Algorithm - Category - Kiosk&#39;s 个人编程技术分享</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 31 Jan 2024 22:53:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:43087/categories/algorithm/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 31 Jan 2024 22:53:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/categories/algorithm/" rel="self" type="application/rss+xml" /><item>
     <title>设计模式（Design Pattern）</title>
-    <link>http://localhost:43087/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Fdesign-pattern/</link>
+    <link>http://localhost:1313/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Fdesign-pattern/</link>
     <pubDate>Sat, 24 Oct 2020 16:08:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Fdesign-pattern/</guid>
+    <guid>http://localhost:1313/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Fdesign-pattern/</guid>
     <description><![CDATA[<p>设计模式（Design pattern）代表了最佳的实践，通常被有经验的面向对象的软件开发人员所采用。设计模式是软件开发人员在软件开发过程中面临的一般问题的解决方案。这些解决方案是众多软件开发人员经过相当长的一段时间的试验和错误总结出来的。</p>]]></description>
 </item><item>
     <title>算法笔记-最短路径算法（Bellman-ford）</title>
-    <link>http://localhost:43087/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/</link>
+    <link>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/</link>
     <pubDate>Wed, 31 Jan 2024 22:53:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/</guid>
+    <guid>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/</guid>
     <description><![CDATA[最短路径算法是一个比较常见的用于查找2点之间最短路径的方案。在工作中，由于涉及要查找2点之间的最短路径的场景，所以特此记录一下
 算法思想 美国应用数学家Richard Bellman (理查德.贝尔曼, 动态规划的提出者)于1958 年发表了该算法。此外Lester Ford在1956年也发表了该算法。因此这个算法叫做Bellman-Ford算法。
 Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的算法。其可以被应用在带负权的有向图中，Bellman-ford 算法比dijkstra算法更具普遍性，因为它对边没有要求，可以处理负权边与负权回路。缺点是时间复杂度过高，高达O(VE), V为顶点数，E为边数。
@@ -34,41 +34,41 @@ Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的�
 这里是一个简单的图示来解释负权环：]]></description>
 </item><item>
     <title>算法笔记-稳定匹配算法（Gale-Shapley）</title>
-    <link>http://localhost:43087/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</link>
+    <link>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</link>
     <pubDate>Tue, 31 Oct 2023 22:53:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</guid>
+    <guid>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</guid>
     <description><![CDATA[<p>最近工作中遇到一个场景，需要将两种资源做匹配分发，希望动态的做到最佳分配的状态，而且分配的结果需要稳定，刚好了解到这类的算法，特此记录一下。</p>]]></description>
 </item><item>
     <title>算法 - (深度优先搜索)</title>
-    <link>http://localhost:43087/post/%E7%AE%97%E6%B3%95-dfs/</link>
+    <link>http://localhost:1313/post/%E7%AE%97%E6%B3%95-dfs/</link>
     <pubDate>Wed, 26 Oct 2022 10:58:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E7%AE%97%E6%B3%95-dfs/</guid>
+    <guid>http://localhost:1313/post/%E7%AE%97%E6%B3%95-dfs/</guid>
     <description><![CDATA[<p>Depth-First Search，也就是DFS算法，一般可以用来遍历或者搜索树或图。基本思想是假设走一条只有一个出口，但是路上可能会有很多分叉口的路，从头开始，每次遇到一个分叉口就随机选择一条路，当该条路走不通时，就回到上个分叉口重新选择。直到遍历到正确的路线。</p>]]></description>
 </item><item>
     <title>算法 - (动态规划)</title>
-    <link>http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
+    <link>http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
     <pubDate>Mon, 17 Jan 2022 10:44:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</guid>
+    <guid>http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</guid>
     <description><![CDATA[动态规划 讲解动态规划的资料很多，官方的定义是指把多阶段过程转化为一系列单阶段问题，利用各阶段之间的关系，逐个求解。概念中的各阶段之间的关系，其实指的就是状态转移方程。很多人觉得DP难（下文统称动态规划为DP），根本原因是因为DP区别于一些固定形式的算法（比如DFS、二分法、KMP），没有实际的步骤规定第一步第二步来做什么，所以准确的说，DP其实是一种解决问题的思想。
 动态规划的关键在于状态的定义，比如 opt[n] 、dp[n]、fib[n] 等。另外就是状态转移方程：opt[n] = best_of(opt[n-1], opt[n-2], &hellip;)
 No.70 爬楼梯 链接：https://leetcode.cn/problems/climbing-stairs/ 思路：假设我当前爬到第 N 层，那么我多少种爬法？爬到第N层无非最后一次爬是有两种可能，最后一次爬2楼，最后一次爬1楼，最后一次爬两楼的话，就变成了 dp[n] = dp[n-2] , 最后一次爬一楼就变成了 dp[n] = dp[n-1] ,组合起来就是 dp[n] = dp[n-1] + dp[n-2] 为了从1开始计算到n，每层楼梯有多少种爬法，还需要一次循环
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 func climbStairs(n int) int { if n == 1 { return 1 } dp := make([]int, n+1) dp[1] = 1 // 一层楼梯1种爬法 dp[2] = 2 // 两层楼梯2种爬法，一次爬2层，爬2个一层 for i := 3; i &lt;= n; i++ { dp[i] = dp[i-1] + dp[i-2] } return dp[n] } No.]]></description>
 </item><item>
     <title>算法 - (二叉树)</title>
-    <link>http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%8F%89%E6%A0%91/</link>
+    <link>http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%8F%89%E6%A0%91/</link>
     <pubDate>Sat, 17 Oct 2020 10:44:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%8F%89%E6%A0%91/</guid>
+    <guid>http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%8F%89%E6%A0%91/</guid>
     <description><![CDATA[<p>二叉树（Binary tree）是树形结构的一个重要类型。许多实际问题抽象出来的数据结构往往是二叉树形式，即使是一般的树也能简单地转换为二叉树，而且二叉树的存储结构及其算法都较为简单，因此二叉树显得特别重要。以下会以几道 LeetCode 巩固自己的基础</p>]]></description>
 </item><item>
     <title>算法 - (数组、链表)</title>
-    <link>http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E6%95%B0%E7%BB%84/</link>
+    <link>http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E6%95%B0%E7%BB%84/</link>
     <pubDate>Sat, 26 Sep 2020 10:58:00 &#43;0000</pubDate>
     <author>Author</author>
-    <guid>http://localhost:43087/post/%E7%AE%97%E6%B3%95-%E6%95%B0%E7%BB%84/</guid>
+    <guid>http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E6%95%B0%E7%BB%84/</guid>
     <description><![CDATA[数组、链表是编程语言中最常见的数据结构，也是最基础的数据结构。以下会以几道 LeetCode 巩固自己的基础
 结构对比 数组和链表各有各的优势，比如数组的随机插入和删除都是O(n)的，可谓是很低效了。但是数组的查找是是O(1)，直接指定下标即可找到对应的元素。而链表必须遍历，也就是想要查找你一个元素的时间复杂度是 O(n)。所以数组和链表各有各的优势，互相补充。
 数据结构 操作 时间复杂度 数组 prepend O(1) append O(1) lookup O(1) insert O(n) delete O(n) &ndash; &ndash; 链表 prepend O(1) append O(1) lookup O(n) insert O(1) delete O(1) 实现 数组 1 2 3 4 5 6 7 8 9 10 11 12 a := []int{1, 1, 2, 2, 2, 3, 4, 5, 5, 5, 6} var b []int b = append(c, 11) b = append(b, a.]]></description>
