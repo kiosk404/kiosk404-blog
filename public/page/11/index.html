@@ -107,6 +107,13 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/nginx-ingress/">Nginx Ingress</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-09-05">2021-09-05</time></span>&nbsp;<span class="post-category">included in <a href="/categories/k8s/"><i class="far fa-folder fa-fw"></i>K8s</a></span></div><div class="content"><p>在K8S的中， Service 暴露给外界的三种方法。其中有一个叫作 LoadBalancer 类型的 Service，它会为你在 Cloud Provider（比如：Google Cloud 或者 OpenStack）里创建一个与该 Service 对应的负载均衡服务。</p>
+<p>但是，由于每个 Service 都要有一个负载均衡服务，所以这个做法实际上既浪费成本又高。作为用户，我其实更希望看到 Kubernetes 为我内置一个全局的负载均衡器。然后，通过我访问的 URL，把请求转发给不同的后端 Service。</p>
+<p><strong>这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。</strong></p></div><div class="post-footer">
+        <a href="/post/nginx-ingress/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/nginx/">Nginx</a>,&nbsp;<a href="/tags/k8s/">K8s</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/k8s%E6%9E%B6%E6%9E%84%E6%8B%93%E6%89%91/">k8s 架构拓扑</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-08-05">2021-08-05</time></span>&nbsp;<span class="post-category">included in <a href="/categories/k8s/"><i class="far fa-folder fa-fw"></i>K8s</a></span></div><div class="content"><p>这篇文章将从K8S的架构、存储、网络及服务暴露等几个方面介绍,记录K8S的学习过程。</p></div><div class="post-footer">
         <a href="/post/k8s%E6%9E%B6%E6%9E%84%E6%8B%93%E6%89%91/">Read More</a></div>
@@ -132,14 +139,6 @@
 <p>然后打开wireshark主目录下的init.lua文件，确保disable_lua的值为false，即开启了lua：</p></div><div class="post-footer">
         <a href="/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/wireshark/">Wireshark</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/http-2-%E7%89%B9%E6%80%A7%E6%A6%82%E8%A7%88/">HTTP/2 特性概览</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-06-07">2021-06-07</time></span></div><div class="content"><p>HTTP的第一个文档版本于1991年发布，名称为HTTP0.9，后来导致1996年正式引入并认可HTTP1.0。HTTP1.1于1997年问世，此后几乎没有迭代改进。2015年2月，互联网工程任务组（IETF）HTTP工作组修订了HTTP，并以HTTP / 2的形式开发了应用协议的第二个主要版本。</p>
-<blockquote>
-<p>参考 kinsta.com 上 <a href="https://kinsta.com/learn/what-is-http2/" target="_blank" rel="noopener noreffer">what-is-http2</a> 这篇文章。
-<a href="https://httpwg.org/specs/rfc7540.html" target="_blank" rel="noopener noreffer">HTTP RFC 7540</a></p>
-</blockquote></div><div class="post-footer">
-        <a href="/post/http-2-%E7%89%B9%E6%80%A7%E6%A6%82%E8%A7%88/">Read More</a></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

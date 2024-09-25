@@ -1,10 +1,10 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>Kiosk&#39;s/</title>
+        <title>Kiosk&#39;s/ 个人编程技术分享</title>
         <link>http://localhost:1313/</link>
         <description>Kiosk Stduio</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</lastBuildDate>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 21 Sep 2024 13:52:18 &#43;0000</lastBuildDate>
             <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
         <item>
     <title>设计模式（Design Pattern）</title>
@@ -22,7 +22,21 @@
     <description><![CDATA[Based on MarkdownPreview test.md.
 Markdown 1 2 3 4 5 6 7 8 # H1 ## H2 ### H3 #### H4 ##### H5 ###### H6 ### Duplicate Header ### Duplicate Header H1 H2 H3 H4 H5 H6 Duplicate Header Duplicate Header Paragraphs 1 2 3 4 This is a paragraph. I am still part of the paragraph. New paragraph. This is a paragraph. I am still part of the paragraph.]]></description>
 </item><item>
-    <title>LLM大模型 - ai agent应用技术介绍</title>
+    <title>LLM大模型 - RAG</title>
+    <link>http://localhost:1313/post/rag/</link>
+    <pubDate>Sat, 21 Sep 2024 13:52:18 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/rag/</guid>
+    <description><![CDATA[<p>在讨论RAG技术之前，我们先看在开发大语言模型（LLM）应用时会遇到的典型场景问题。比如，当设计一个 LLM 问答应用，当模型回答用户的特定领域问题时，尽管大模型再厉害，也没办法提供准确的答案，而且大模型的训练数据也不可能总是最新的，模型无法及时提供最新的答案，这种现象在 LLM 应用中较为常见。</p>
+<p>除此之外，还有其他的诸多问题。总结为以下几个问题：</p>
+<ul>
+<li><strong>领域知识缺乏</strong>: 大模型的知识来源于训练数据，而训练数据来自于互联网上的爬虫获取到的内容，无法覆盖特定领域的高度专业化的内部知识。</li>
+<li><strong>信息过时</strong>:  模型的训练周期长、花费大，模型一旦完成训练，就难以获取和处理新信息。</li>
+<li><strong>幻觉问题</strong>: 模型都是基于概率生成文本，有时会输出看似合理但实际错误的答案。</li>
+<li><strong>数据安全性</strong>: 在关键领域，如保密单位，企业内部，需要保证数据的安全。</li>
+</ul>]]></description>
+</item><item>
+    <title>LLM大模型 - langchain应用技术介绍</title>
     <link>http://localhost:1313/post/langchain/</link>
     <pubDate>Wed, 21 Aug 2024 13:52:18 &#43;0000</pubDate>
     <author>Author</author>
@@ -90,17 +104,5 @@ Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的�
     <guid>http://localhost:1313/post/10%E6%9C%88%E5%8E%BB%E6%96%B0%E7%96%86%E5%90%A7/</guid>
     <description><![CDATA[<p>2023 年10月因为国庆和中秋重合，所以有8天假期，我们一行是10月1号出发到10月7号，总共7天。10月真的是十分适合去新疆。总体路线是 乌鲁木齐 -&gt; 赛里木湖 -&gt; 五彩滩 -&gt; 禾木 -&gt; 喀纳斯。</p>
 <hr>]]></description>
-</item><item>
-    <title>Golang Map怎么并发访问</title>
-    <link>http://localhost:1313/post/gomap%E6%80%8E%E4%B9%88%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE/</link>
-    <pubDate>Sat, 08 Jul 2023 11:06:00 &#43;0000</pubDate>
-    <author>Author</author>
-    <guid>http://localhost:1313/post/gomap%E6%80%8E%E4%B9%88%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE/</guid>
-    <description><![CDATA[Map 是每门编程语言的最基础的数据结构，这种数据结构的实现就是 key-value之间的映射关系，每个key都有一个唯一的索引值，通过索引值可以很快的找到对应的值。
-Map 也是程序中最常见的数据结构，我们的项目中有大量的数据需要加载到内存中，而且需要高频访问，无疑 map 就是最好的选择，但是众所周知，Map是不支持并发访问的。
-如下：
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 func main() { var m = make(map[string]int,10) // 初始化一个map go func() { for { m[&#34;abc&#34;] = 1 //设置key } }() go func() { for { _ = m[&#34;def&#34;] //访问这个map } }() select {} } 虽然这段代码的不同goroutine 是各自在操作不同的元素，但是运行时检测到同时对 map 对象有并发访问，就会直接 panic。
-如何实现一个线程安全的 map 类型 最简单的方式必然是加锁访问这里不再赘述了。
-虽然使用 互斥锁 或 读写锁 可以提供线程安全的 map，但是在大量并发读写的情况下，会出现非常激烈的锁竞争。]]></description>
 </item></channel>
 </rss>

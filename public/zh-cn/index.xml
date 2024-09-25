@@ -1,6 +1,6 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>Kiosk&#39;s/</title>
+        <title>Kiosk&#39;s/ 个人编程技术分享</title>
         <link>http://localhost:1313/zh-cn/</link>
         <description>关于 LoveIt 主题</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>

@@ -107,6 +107,16 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/minikube/">minikube 实践</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-09-22">2020-09-22</time></span>&nbsp;<span class="post-category">included in <a href="/categories/k8s/"><i class="far fa-folder fa-fw"></i>K8s</a></span></div><div class="content">最近又在折腾 k8s 了，minikube 无疑是单机环境下最好用的 k8s 解决方案了。网上的资源太老旧了，让安装的版本是 1.2.0 - 1.13.0 之间，而且给提供的 minikube 可执行文件在 aliyun 的 oss 上还没有其他的版本，所以决定自己手动安装并且记录一下。
+Minikube可以实现一种轻量级的Kubernetes集群，通过在本地计算机上创建虚拟机并部署只包含单个节点的简单集群
+本文于 24.6 月重新更新过，最新的 minikube 版本是 1.32.0 , kubernetes 最新版本 1.33.0
+如果需要更新 minikube ，需要更新 minikube 安装包
+如需更新minikube，需要更新 minikube 安装包 minikube delete 删除现有虚机，删除 ~/.minikube 目录缓存的文件 重新创建 minikube 环境 配置 先决条件 Minikube在不同操作系统上支持不同的驱动
+macOS Docker 缺省驱动 xhyve driver , VirtualBox 或 VMware Fusion Linux VirtualBox 或 KVM2 Docker 缺省驱动 Windows VirtualBox 或 Hyper-V 注：
+由于minikube复用了docker-machine，在其软件包中已经支持了相应的VirtualBox, VMware Fusion驱动 如果是 Linux 环境下，可以使用 Docker 当底层驱动 安装 minikube 这里建议直接从 github release 页面下载，什么版本的都可以找到。避免网上全是上古版本的minikube。</div><div class="post-footer">
+        <a href="/post/minikube/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/systemd-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/">systemd 基本概念</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-09-20">2020-09-20</time></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class="content"><p>systemd 是 PID 为1的一个程序，负责初始化系统。所有的程序不是systemd直接启动就是由systemd的子系统启动。systemd是内核直接启动，所以信号9(KILL)对systemd也无效。</p>
 <p>systemd 使用Linux控制组跟踪进程，维护安装和自动挂载点，并实现基于事务性依赖关系的详尽服务控制逻辑。其他部分包括日志记录守护程序，用于控制基本系统配置的实用程序，例如主机名，日期，区域设置，维护已登录用户和正在运行的容器和虚拟机的列表，系统帐户，运行时目录和设置，以及用于管理简单网络的守护程序配置，网络时间同步，日志转发和名称解析。</p></div><div class="post-footer">
@@ -131,11 +141,6 @@
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-07-18">2020-07-18</time></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class="content"><p><strong>协程</strong> 在如今在高并发场景下最容易提到的一个技术，协程即能暂停执行以在之后恢复的函数。。下面是关于 <a href="https://en.cppreference.com/w/cpp/language/coroutines" target="_blank" rel="noopener noreffer">GCC11 编辑器</a> 对协程的介绍 （ A coroutine is a function that can suspend execution to be resumed later. Coroutines are stackless: they suspend execution by returning to the caller and the data that is required to resume execution is stored separately from the stack. ）</p></div><div class="post-footer">
         <a href="/post/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/golang/">Golang</a>,&nbsp;<a href="/tags/%E5%8D%8F%E7%A8%8B/">协程</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/docker-%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80/">docker 容器技术基础</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-07-11">2020-07-11</time></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div><div class="content"><p><a href="https://hijiangtao.github.io/2018/04/17/Docker-in-Action/" target="_blank" rel="noopener noreffer">docker</a> 容器是随着PaaS技术的普及随之诞生的，Docker公司推出了docker并通过“容器镜像”解决了容器打包的根本性难题。而容器本身没有价值，有价值的是“容器编排技术”。Docker项目则通过容器技术解决了应用打包的根本性难题。</p></div><div class="post-footer">
-        <a href="/post/docker-%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/devops/">Devops</a>,&nbsp;<a href="/tags/k8s/">K8s</a>,&nbsp;<a href="/tags/docker/">Docker</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

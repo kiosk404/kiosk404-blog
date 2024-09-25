@@ -107,6 +107,28 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/">使用eBPF观测HTTP2</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-06-04">2022-06-04</time></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class="content"><p>在当今充满微服务的世界中，对服务之间的消息传输的可观察性和理解变得越来越重要。</p>
+<p>其中一些微服务的传输协议比较复杂，如HTTP/2 协议为了降低头部内容的重复传输，使用表头压缩算法 HPACK，虽然HPACK有助于提升 HTTP/2 的传输效率，但也使得跟踪变得复杂。不过，通过使用 eBPF uprobes,可以在 Header 被压缩之前对其进行跟踪。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png"
+        data-srcset="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png, https://img1.kiosk007.top/static/images/blog/ebpf_logo.png 1.5x, https://img1.kiosk007.top/static/images/blog/ebpf_logo.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png"
+        title="ebpf_logo" />
+   <div class="post-img-view">
+      <a data-fancybox="gallery" href="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png">
+         <img src="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png" alt="ebpf_logo"  />
+      </a>
+   </div>
+
+
+</p></div><div class="post-footer">
+        <a href="/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ebpf/">EBPF</a>,&nbsp;<a href="/tags/golang/">Golang</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/">使用eBPF跟踪 SSL/TLS 连接</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-05-15">2022-05-15</time></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class="content">前面的文章介绍了 eBPF 的入门知识，这篇算是一个实战吧，使用 eBPF 来跟踪 TLS加密连接。TLS 是目前互联网上的一个标准工具了，可用于加密的通信。本文尝试使用 eBPF 技术将加密的密文还原为明文。当然这并不意味着TLS不再安全，想干坏事的人可以在中间代理服务器、网关设备上偷听。因为eBPF 所实现的追踪明文一定是要建立在真正去做ssl 明文转密文写入操作的。
 关于eBPF基础知识请查看
@@ -156,11 +178,6 @@ TLS Tracing (openssl) 通过上图，我们可以知道TLS库的数据读写是 
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-04-16">2022-04-16</time></span>&nbsp;<span class="post-category">included in <a href="/categories/nosql/"><i class="far fa-folder fa-fw"></i>Nosql</a></span></div><div class="content"><p>一提到 Redis ，首先的一个印象就是快！但是之前很少研究过Redis底层的一些实现。之前接触Redis比较少，有一个项目是做限流用到了 Redis，大致原理是记录最近访问过的IP和时间，如果下次再有请求到来匹配IP查找之前是否有过访问，如果有则判断时间差是否小于一小时，小于则禁掉，大于则更新时间戳，如果没有就是第一次访问。</p></div><div class="post-footer">
         <a href="/post/redis%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%B9%88%E5%BF%AB/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/redis/">Redis</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%BA%8C/">实现一个Web服务-(二)</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-04-11">2022-04-11</time></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div><div class="content"><p><a href="https://kiosk007.top/post/%e5%ae%9e%e7%8e%b0%e4%b8%80%e4%b8%aaweb%e6%9c%8d%e5%8a%a1-%e4%b8%80/" target="_blank" rel="noopener noreffer">实现一个Web服务-（一）</a> 从 net/http 基础网络库中实现了一个 Web Server，基本实现了路由匹配、上下文、中间件等特性。除这些基本的功能外，还有一些更高阶的功能。比如优雅关闭、日志等功能。</p></div><div class="post-footer">
-        <a href="/post/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AAweb%E6%9C%8D%E5%8A%A1-%E4%BA%8C/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/web/">Web</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

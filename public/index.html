@@ -118,7 +118,19 @@ Markdown 1 2 3 4 5 6 7 8 # H1 ## H2 ### H3 #### H4 ##### H5 ###### H6 ### Duplic
         <a href="/post/even-preview/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/preview/">Preview</a></div></div>
 </article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/langchain/">LLM大模型 - ai agent应用技术介绍</a>
+        <a href="/post/rag/">LLM大模型 - RAG</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2024-09-21">2024-09-21</time></span>&nbsp;<span class="post-category">included in <a href="/categories/artificial-intelligence/"><i class="far fa-folder fa-fw"></i>Artificial Intelligence</a></span></div><div class="content"><p>在讨论RAG技术之前，我们先看在开发大语言模型（LLM）应用时会遇到的典型场景问题。比如，当设计一个 LLM 问答应用，当模型回答用户的特定领域问题时，尽管大模型再厉害，也没办法提供准确的答案，而且大模型的训练数据也不可能总是最新的，模型无法及时提供最新的答案，这种现象在 LLM 应用中较为常见。</p>
+<p>除此之外，还有其他的诸多问题。总结为以下几个问题：</p>
+<ul>
+<li><strong>领域知识缺乏</strong>: 大模型的知识来源于训练数据，而训练数据来自于互联网上的爬虫获取到的内容，无法覆盖特定领域的高度专业化的内部知识。</li>
+<li><strong>信息过时</strong>:  模型的训练周期长、花费大，模型一旦完成训练，就难以获取和处理新信息。</li>
+<li><strong>幻觉问题</strong>: 模型都是基于概率生成文本，有时会输出看似合理但实际错误的答案。</li>
+<li><strong>数据安全性</strong>: 在关键领域，如保密单位，企业内部，需要保证数据的安全。</li>
+</ul></div><div class="post-footer">
+        <a href="/post/rag/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ai/">Ai</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/langchain/">LLM大模型 - langchain应用技术介绍</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2024-08-21">2024-08-21</time></span>&nbsp;<span class="post-category">included in <a href="/categories/artificial-intelligence/"><i class="far fa-folder fa-fw"></i>Artificial Intelligence</a></span></div><div class="content"><p>一个本地大模型，ChatGPT3.5 或 ChatGPT 4  都有这样一些问题。</p>
 <p>数据缺少及时性，不能直接帮我们编辑 Word 或者 PDF 文件。大模型目前主要还是基于文本的交互等。</p>
 <p>这样的场景非常多，因为大模型的核心能力是 意图理解与文本生成，而在我们实际应用过程中，输入数据和输出数据不仅仅是纯文本等。</p>
@@ -136,25 +148,6 @@ Markdown 1 2 3 4 5 6 7 8 # H1 ## H2 ### H3 #### H4 ##### H5 ###### H6 ### Duplic
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2024-08-04">2024-08-04</time></span>&nbsp;<span class="post-category">included in <a href="/categories/nginx/"><i class="far fa-folder fa-fw"></i>Nginx</a></span></div><div class="content"><p>由于本地自建了Nginx，需要HTTPS访问，所以这里记录一下 Linux 下的 证书自签名和自信任。</p></div><div class="post-footer">
         <a href="/post/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ssl/">Ssl</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/">算法笔记-最短路径算法（Bellman-ford）</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2024-01-31">2024-01-31</time></span>&nbsp;<span class="post-category">included in <a href="/categories/algorithm/"><i class="far fa-folder fa-fw"></i>Algorithm</a></span></div><div class="content">最短路径算法是一个比较常见的用于查找2点之间最短路径的方案。在工作中，由于涉及要查找2点之间的最短路径的场景，所以特此记录一下
-算法思想 美国应用数学家Richard Bellman (理查德.贝尔曼, 动态规划的提出者)于1958 年发表了该算法。此外Lester Ford在1956年也发表了该算法。因此这个算法叫做Bellman-Ford算法。
-Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的算法。其可以被应用在带负权的有向图中，Bellman-ford 算法比dijkstra算法更具普遍性，因为它对边没有要求，可以处理负权边与负权回路。缺点是时间复杂度过高，高达O(VE), V为顶点数，E为边数。
-其核心思想为：对于任意一个具有n个节点的图 𝐺 ，任意两点之间的最短路径至多包含 𝑛−1 条边。因此我们可以反复通过对边的松弛来得到当前图的最短路径。
-也就是说：第1轮在对所有的边进行松弛后，得到的是源点最多经过一条边到达其他顶点的最短距离；第2轮在对所有的边进行松弛后，得到的是源点最多经过两条边到达其他顶点的最短距离；第3轮在对所有的边进行松弛后，得到的是源点最多经过一条边到达其他顶点的最短距离&hellip;&hellip;
-松弛操作的含义是更新节点之间的最短距离。
-分析 第一步：创建一个带权重 (可以有负权) 的有向图
-第二步：选定一个起点（A），将A 到所有节点的 距离都置为 无穷大。
-第三步：从节点A开始，将节点最短距离更新，比如 A -&gt; B 直接相连，最短距离是 4 ，A-&gt;C 直接相连，距离是 2 。
-第四步：最差的情况下，我们需要 V （节点个数）次这样的操作。一个节点最短路径需要被调整 V 次。
-第五步：注意右上角的节点 D 是怎么调整的，因为 B -&gt; D (4+2) = 6 , C -&gt; D (2+4) =6 , E-&gt;D (6-5)=1 ，所以被更新.
-第五步：经过最大循环次数 or 所有的顶点都有其路径长度且不再变后，检查是否有负循环。
-负环的含义 短路径算法通常用于在加权图中找到两个顶点之间的最短路径。然而，当图中存在负权边时，情况就会变得复杂。负权环（Negative Weight Cycle）是指图中的一个环，其总权重为负值。如果存在负权环，那么最短路径的概念可能会变得模糊，因为你可以无限次地通过这个环来减少路径的总权重。
-负权环的存在可能导致算法无法正确工作，因为它们可能会陷入无限循环。例如，贝尔曼-福特算法（Bellman-Ford）在存在负权环的情况下可以检测到问题，但无法找到最短路径。而像迪杰斯特拉算法（Dijkstra&rsquo;s algorithm）这样的算法则可能给出错误的结果，因为它们假设权重非负。
-这里是一个简单的图示来解释负权环：</div><div class="post-footer">
-        <a href="/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/algorithm/">Algorithm</a></div></div>
 </article><ul class="pagination"><li class="page-item active">
                     <span class="page-link">
                         <a href="/">1</a>

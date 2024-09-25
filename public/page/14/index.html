@@ -107,6 +107,11 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/grpc-quick-start/">gRPC Quick Start </a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-11-25">2020-11-25</time></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div><div class="content"><p>RPC 全称 (Remote Procedure Call)，远程过程调用，指的是一台计算机通过网络请求另一台计算机的上服务，从而不需要了解底层网络细节，RPC 是构建在已经存在的协议（TCP/IP，HTTP 等）之上的。<code>gRPC</code> 是云原生计算基金会（CNCF）项目，gRPC 一开始由 google 开发，是一款语言中立、平台中立的服务间通信框架，使用 gRPC 可以使得客户端像调用本地方法一样，调用远程主机提供的服务。可以在任何地方运行，它使客户端和服务器应用程序能够透明地进行通信，并使构建连接系统变得更加容易。</p></div><div class="post-footer">
+        <a href="/post/grpc-quick-start/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/grpc/">Grpc</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/%E5%9F%BA%E4%BA%8Enginx%E5%AE%9E%E7%8E%B0%E7%9A%84rtmp%E6%9C%8D%E5%8A%A1/">基于Nginx的实时音频直播服务</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-11-16">2020-11-16</time></span>&nbsp;<span class="post-category">included in <a href="/categories/nginx/"><i class="far fa-folder fa-fw"></i>Nginx</a></span></div><div class="content"><p>最近在百度云上下了一些学习视频（别想歪..），苦于一台笔记本不方便同时跟着操作变播放，那么既然都有笔记本了，何不搭建一个视频播放服务呢？笔记本使用Nginx搭建一个视频服务器，iPad上使用播放器（Aplayer），不仅是播放还可以直播，这不正契合了当前的高热话题“实时音视频直播技术”么，最近也找了一部分资料，趁着直播的热度在这里总结一下。</p></div><div class="post-footer">
         <a href="/post/%E5%9F%BA%E4%BA%8Enginx%E5%AE%9E%E7%8E%B0%E7%9A%84rtmp%E6%9C%8D%E5%8A%A1/">Read More</a><div class="post-tags">
@@ -135,16 +140,6 @@ wireshark 是一个伟大的网络问题分析工具，当然它也是有终端�
 结构对比 数组和链表各有各的优势，比如数组的随机插入和删除都是O(n)的，可谓是很低效了。但是数组的查找是是O(1)，直接指定下标即可找到对应的元素。而链表必须遍历，也就是想要查找你一个元素的时间复杂度是 O(n)。所以数组和链表各有各的优势，互相补充。
 数据结构 操作 时间复杂度 数组 prepend O(1) append O(1) lookup O(1) insert O(n) delete O(n) &ndash; &ndash; 链表 prepend O(1) append O(1) lookup O(n) insert O(1) delete O(1) 实现 数组 1 2 3 4 5 6 7 8 9 10 11 12 a := []int{1, 1, 2, 2, 2, 3, 4, 5, 5, 5, 6} var b []int b = append(c, 11) b = append(b, a.</div><div class="post-footer">
         <a href="/post/%E7%AE%97%E6%B3%95-%E6%95%B0%E7%BB%84/">Read More</a></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/minikube/">minikube 实践</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2020-09-22">2020-09-22</time></span>&nbsp;<span class="post-category">included in <a href="/categories/k8s/"><i class="far fa-folder fa-fw"></i>K8s</a></span></div><div class="content">最近又在折腾 k8s 了，minikube 无疑是单机环境下最好用的 k8s 解决方案了。网上的资源太老旧了，让安装的版本是 1.2.0 - 1.13.0 之间，而且给提供的 minikube 可执行文件在 aliyun 的 oss 上还没有其他的版本，所以决定自己手动安装并且记录一下。
-Minikube可以实现一种轻量级的Kubernetes集群，通过在本地计算机上创建虚拟机并部署只包含单个节点的简单集群
-本文于 24.6 月重新更新过，最新的 minikube 版本是 1.32.0 , kubernetes 最新版本 1.33.0
-如果需要更新 minikube ，需要更新 minikube 安装包
-如需更新minikube，需要更新 minikube 安装包 minikube delete 删除现有虚机，删除 ~/.minikube 目录缓存的文件 重新创建 minikube 环境 配置 先决条件 Minikube在不同操作系统上支持不同的驱动
-macOS Docker 缺省驱动 xhyve driver , VirtualBox 或 VMware Fusion Linux VirtualBox 或 KVM2 Docker 缺省驱动 Windows VirtualBox 或 Hyper-V 注：
-由于minikube复用了docker-machine，在其软件包中已经支持了相应的VirtualBox, VMware Fusion驱动 如果是 Linux 环境下，可以使用 Docker 当底层驱动 安装 minikube 这里建议直接从 github release 页面下载，什么版本的都可以找到。避免网上全是上古版本的minikube。</div><div class="post-footer">
-        <a href="/post/minikube/">Read More</a></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
