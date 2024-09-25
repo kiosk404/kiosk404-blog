@@ -4,9 +4,9 @@
     ><url>
             <loc>http://localhost:1313/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Fdesign-pattern/</loc><lastmod>2020-10-24T16:08:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>http://localhost:1313/post/even-preview/</loc><lastmod>2018-07-10T00:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>http://localhost:1313/tags/ai/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1.1</priority></url><url>
-            <loc>http://localhost:1313/categories/artificial-intelligence/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1.1</priority></url><url>
-            <loc>http://localhost:1313/categories/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1.1</priority><xhtml:link
+            <loc>http://localhost:1313/tags/ai/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>http://localhost:1313/categories/artificial-intelligence/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>http://localhost:1313/categories/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
                         href="http://localhost:1313/zh-cn/categories/"
@@ -15,7 +15,7 @@
                     hreflang="en"
                     href="http://localhost:1313/categories/"
                     /></url><url>
-            <loc>http://localhost:1313/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1.1</priority><xhtml:link
+            <loc>http://localhost:1313/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
                         href="http://localhost:1313/zh-cn/"
@@ -24,9 +24,9 @@
                     hreflang="en"
                     href="http://localhost:1313/"
                     /></url><url>
-            <loc>http://localhost:1313/post/rag/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1.1</priority></url><url>
-            <loc>http://localhost:1313/posts/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1.1</priority></url><url>
-            <loc>http://localhost:1313/tags/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1.1</priority><xhtml:link
+            <loc>http://localhost:1313/post/rag/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>http://localhost:1313/posts/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>http://localhost:1313/tags/</loc><lastmod>2024-09-29T11:26:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
                         href="http://localhost:1313/zh-cn/tags/"
