@@ -4,7 +4,7 @@
         <link>http://localhost:1313/</link>
         <description>Kiosk Stduio</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 21 Sep 2024 13:52:18 &#43;0000</lastBuildDate>
+            <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 05 Nov 2024 08:50:00 &#43;0000</lastBuildDate>
             <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
         <item>
     <title>设计模式（Design Pattern）</title>
@@ -21,6 +21,13 @@
     <guid>http://localhost:1313/post/even-preview/</guid>
     <description><![CDATA[Based on MarkdownPreview test.md.
 Markdown 1 2 3 4 5 6 7 8 # H1 ## H2 ### H3 #### H4 ##### H5 ###### H6 ### Duplicate Header ### Duplicate Header H1 H2 H3 H4 H5 H6 Duplicate Header Duplicate Header Paragraphs 1 2 3 4 This is a paragraph. I am still part of the paragraph. New paragraph. This is a paragraph. I am still part of the paragraph.]]></description>
+</item><item>
+    <title>Go 并发模式</title>
+    <link>http://localhost:1313/post/go%E5%B9%B6%E6%B3%95%E6%A8%A1%E5%BC%8F/</link>
+    <pubDate>Tue, 05 Nov 2024 08:50:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/go%E5%B9%B6%E6%B3%95%E6%A8%A1%E5%BC%8F/</guid>
+    <description><![CDATA[<p>Go 语言最吸引人的地方时它内建的 并发支持，这篇文章不做高谈阔论，只总结部分在平时用到的常见的并发编程技巧。</p>]]></description>
 </item><item>
     <title>LLM大模型 - RAG</title>
     <link>http://localhost:1313/post/rag/</link>
@@ -96,13 +103,5 @@ Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的�
     <author>Author</author>
     <guid>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</guid>
     <description><![CDATA[<p>最近工作中遇到一个场景，需要将两种资源做匹配分发，希望动态的做到最佳分配的状态，而且分配的结果需要稳定，刚好了解到这类的算法，特此记录一下。</p>]]></description>
-</item><item>
-    <title>10月去新疆吧</title>
-    <link>http://localhost:1313/post/10%E6%9C%88%E5%8E%BB%E6%96%B0%E7%96%86%E5%90%A7/</link>
-    <pubDate>Mon, 09 Oct 2023 08:50:00 &#43;0000</pubDate>
-    <author>Author</author>
-    <guid>http://localhost:1313/post/10%E6%9C%88%E5%8E%BB%E6%96%B0%E7%96%86%E5%90%A7/</guid>
-    <description><![CDATA[<p>2023 年10月因为国庆和中秋重合，所以有8天假期，我们一行是10月1号出发到10月7号，总共7天。10月真的是十分适合去新疆。总体路线是 乌鲁木齐 -&gt; 赛里木湖 -&gt; 五彩滩 -&gt; 禾木 -&gt; 喀纳斯。</p>
-<hr>]]></description>
 </item></channel>
 </rss>

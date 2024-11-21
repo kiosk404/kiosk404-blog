@@ -107,6 +107,12 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron/">OpenStack网络组件-Neutron</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-09-06">2022-09-06</time></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div><div class="content"><p>Neutron 的设计目标是实现“网络即服务（Networking as a Service）”。为了达到这一目标，在设计上遵循了基于 SDN 实现网络虚拟化的原则，在实现上充分利用了 Linux 系统上的各种网络相关的技术。</p>
+<p>SDN 模式服务— NeutronSDN( 软件定义网络 ), 通过使用它，网络管理员和云计算操作员可以通过程序来动态定义虚拟网络设备。Openstack 网络中的 SDN 组件就是 Quantum.但因为版权问题而改名为Neutron 。</p></div><div class="post-footer">
+        <a href="/post/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/redis%E5%9F%BA%E7%A1%80/">Redis基础</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-09-04">2022-09-04</time></span>&nbsp;<span class="post-category">included in <a href="/categories/nosql/"><i class="far fa-folder fa-fw"></i>Nosql</a></span></div><div class="content"><p>Redis 是一种基于 key-value 的NoSQL数据库。Redis的全称是 Remote Dictionary Server。是一个基于内存的存储系统，可以用作缓存和消息中间件。支持多种类型的数据结构，如字符串（string）、哈希（hash）、列表（list）、集合（set）、有序集合（sorted set），在其基础之上还有一些扩展的数据结构，如位图（bitmap）、HyperLogLog、GEO 等数据结构。其内置了复制（replication）、事务（transaction）和磁盘持久化策略（persistence），并通过 Redis 哨兵（Sentinel）和自动分区（Cluster）提供高可用性。</p></div><div class="post-footer">
         <a href="/post/redis%E5%9F%BA%E7%A1%80/">Read More</a><div class="post-tags">
@@ -144,11 +150,6 @@ Port 交换机上的插口，可以接水晶头，Port隶属于 Bridge，必须�
 CPU 虚拟化 为什么需要 CPU 虚拟化 X86 操作系统是设计在直接运行在裸硬件上的，x86 架构提供4个特权级别给内核（操作系统）来访问硬件，Ring 是指 CPU 的运行级别，Ring 0 是最高级别，依次到 Ring3。以 Linux x86 来说
 操作系统（内核）需要直接访问硬件和内存，因此它的代码需要直接运行在最高级别 Ring 0 上，这样它就可以使用特权指令去控制中断，修改页表，访问设备。 应用程序的代码运行在 Ring 3 上，如果需要访问硬件，必须通过系统调用，执行系统调用的时候，CPU 的运行级别会从 Ring3 切换到 Ring0 ，并跳转到系统调用对应的内核代码位置执行，完成后从 Ring3 回到 Ring0。这个过程就是用户态到内核态的转换。 那么，虚拟化在这里就遇到了一个难题。由于宿主机的操作系统工作于 Ring0，VM 客户机操作系统就不能再工作在 Ring0 上了，但是 VM 客户机的内核操作系统不知道这一点，以前执行什么指令，现在还是执行什么指令。但是没有执行权限会出错。这时 VMM（虚拟机管理程序）就要开始工作了，虚拟机通过 VMM 实现 Guest CPU 对硬件的访问，根据原理有三种实现技术：</div><div class="post-footer">
         <a href="/post/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/%E8%AE%A4%E8%AF%86-openstack/">认识 Openstack</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-08-18">2022-08-18</time></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div><div class="content"><p>最近机缘巧合，需要重新认识一下 openstack 这门技术，之前其实也接触过很多虚拟化的技术，但是不够统一，也打算将之前了解的虚拟化技术好好的回顾一遍。</p></div><div class="post-footer">
-        <a href="/post/%E8%AE%A4%E8%AF%86-openstack/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
