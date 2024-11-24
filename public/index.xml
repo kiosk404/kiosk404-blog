@@ -7,6 +7,13 @@
             <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 05 Nov 2024 08:50:00 &#43;0000</lastBuildDate>
             <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>网速变慢？你可能需要先设置好 DNS</title>
+    <link>http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/</link>
+    <pubDate>Thu, 24 Oct 2024 16:08:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/</guid>
+    <description><![CDATA[<p>有没有觉得 <code>kiosk007.top</code> 最近访问变快了？没错，我的主站最近接入了 腾讯云的 <a href="https://console.cloud.tencent.com/edgeone" target="_blank" rel="noopener noreffer">EO(EdegeOne)</a>，当然只是14天体验版，体验过后还是会改会直连模式，毕竟是要收费的。不过能使得访问质量得到加速，第一个重要原因就是我们的请求被指向了就近节点，实现了就近访问。其中就依赖一个重要的底层技术 - <strong>DNS</strong>。</p>]]></description>
+</item><item>
     <title>设计模式（Design Pattern）</title>
     <link>http://localhost:1313/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Fdesign-pattern/</link>
     <pubDate>Sat, 24 Oct 2020 16:08:00 &#43;0000</pubDate>
@@ -96,12 +103,5 @@ Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的�
     <guid>http://localhost:1313/post/kube-schedule%E5%AE%9E%E7%8E%B0/</guid>
     <description><![CDATA[<p>kubernetest 中有很多核心的组件，其中一个非常重要的组件是 kube-scheduler。 kube-scheduler 负责将新创建的 Pod 调度到合适的节点上运行。</p>
 ]]></description>
-</item><item>
-    <title>算法笔记-稳定匹配算法（Gale-Shapley）</title>
-    <link>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</link>
-    <pubDate>Tue, 31 Oct 2023 22:53:00 &#43;0000</pubDate>
-    <author>Author</author>
-    <guid>http://localhost:1313/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95/</guid>
-    <description><![CDATA[<p>最近工作中遇到一个场景，需要将两种资源做匹配分发，希望动态的做到最佳分配的状态，而且分配的结果需要稳定，刚好了解到这类的算法，特此记录一下。</p>]]></description>
 </item></channel>
 </rss>

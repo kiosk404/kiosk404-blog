@@ -107,6 +107,17 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/">虚拟化-创建一个虚拟机</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-08-21">2022-08-21</time></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div><div class="content">现如今，随着云计算技术的越来越成熟，我们在腾讯云、阿里云上购买的服务器本质上都是虚拟机，这就需要在一台物理服务器上虚拟化出更多的虚拟机，还要让这些虚拟机能够弹性伸缩，实现跨主机迁移。
+而虚拟化技术正是这些能力的基石，而其中的核心技术就是 KVM 虚拟化技术。
+虚拟化 虚拟化的本质是一种资源管理的技术，它可以通过各种技术手段把计算机的实体资源（如：CPU、RAM、存储、网络、I/O 等等）进行抽象和转换，让这些资源可以重新分割、排列与组合，实现最大化使用物理资源的目的。
+服务器上的虚拟化软件，多使用 qemu ，其中 emu 是 emulator 模拟器的意思。单纯使用 qemu 采用的是完全虚拟化模式。但是完全虚拟化是非常低效的，所以要使用硬件辅助的虚拟化技术 Interl-VT，AMD-V，所以需要CPU 硬件开启这个标志位，一般是在 BIOS 里面设置。
+当开启了标注位后，通过 KVM ，GuestOS 的指令不再用 Qemu 转译，直接运行，大大提高了速度。
+CPU 虚拟化 为什么需要 CPU 虚拟化 X86 操作系统是设计在直接运行在裸硬件上的，x86 架构提供4个特权级别给内核（操作系统）来访问硬件，Ring 是指 CPU 的运行级别，Ring 0 是最高级别，依次到 Ring3。以 Linux x86 来说
+操作系统（内核）需要直接访问硬件和内存，因此它的代码需要直接运行在最高级别 Ring 0 上，这样它就可以使用特权指令去控制中断，修改页表，访问设备。 应用程序的代码运行在 Ring 3 上，如果需要访问硬件，必须通过系统调用，执行系统调用的时候，CPU 的运行级别会从 Ring3 切换到 Ring0 ，并跳转到系统调用对应的内核代码位置执行，完成后从 Ring3 回到 Ring0。这个过程就是用户态到内核态的转换。 那么，虚拟化在这里就遇到了一个难题。由于宿主机的操作系统工作于 Ring0，VM 客户机操作系统就不能再工作在 Ring0 上了，但是 VM 客户机的内核操作系统不知道这一点，以前执行什么指令，现在还是执行什么指令。但是没有执行权限会出错。这时 VMM（虚拟机管理程序）就要开始工作了，虚拟机通过 VMM 实现 Guest CPU 对硬件的访问，根据原理有三种实现技术：</div><div class="post-footer">
+        <a href="/post/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/%E8%AE%A4%E8%AF%86-openstack/">认识 Openstack</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-08-18">2022-08-18</time></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div><div class="content"><p>最近机缘巧合，需要重新认识一下 openstack 这门技术，之前其实也接触过很多虚拟化的技术，但是不够统一，也打算将之前了解的虚拟化技术好好的回顾一遍。</p></div><div class="post-footer">
         <a href="/post/%E8%AE%A4%E8%AF%86-openstack/">Read More</a><div class="post-tags">
@@ -142,17 +153,6 @@
 <p>下面对自己学习的MySQL的执行过程做一个学习记录。通过把MySQL 拆解一下，来对MySQL做更深层次的理解。再遇到一些异常或者问题时，可以直戳本质，更为快速定位并解决问题。</p></div><div class="post-footer">
         <a href="/post/what-happened-to-mysql-query-1/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/database/">Database</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/elasticsearch/">elasticsearch 原理及入门</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-06-18">2022-06-18</time></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div><div class="content">前言：最近打算将自己的一些服务尽可能的迁移到 k8s 集群里，ELK 就是其中的一个，后面可以的话将本博客的 搜索功能从 algolia 迁移到 自己的ES 里。搜索这个东西的确很有意思的，在没有自己的 OLAP 分析平台之前，ES 的确是最佳选择。值得好好学习一下。
-前面已经有文章介绍 k8s 集群的搭建方法和ES的部署方式了。
-ubuntu20.04 部署 kubernetes（k8s） Elasticsearch 简介 Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况。
-快速入门 基本概念 节点 Node、集群 Cluster 和 分片 Shard ElasticSearch 是分布式数据库，允许多台服务器协同工作，每台服务器可以运行多个实例。单个实例称为一个节点（node），一组节点构成一个集群（cluster）。分片是底层的工作单元，文档保存在分片内，分片又被分配到集群内的各个节点里，每个分片仅保存全部数据的一部分。
-索引 Index、类型 Type 和 文档 Document 索引是一类文档的结合。而文档是具体的一条数据。对比我们比较熟悉的关系型数据库如下：
-RDBMS(MySQL) Elasticsearch Table Index(Type) Row Doucment Column Field Schema Mapping SQL DSL 使用 Restful API 交互 elasticsearch 本身使用 Restful API 通过端口 9200进行交互。其基本组成如下
-1 curl -X&lt;VERB&gt; &#39;&lt;PROTOCOL&gt;://&lt;HOST&gt;:&lt;PORT&gt;/&lt;PATH&gt;?&lt;QUERY_STRING&gt;&#39; -d &#39;&lt;BODY&gt;&#39; CRUD 具体内容可以参考 这篇文章</div><div class="post-footer">
-        <a href="/post/elasticsearch/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/elasticsearch/">Elasticsearch</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

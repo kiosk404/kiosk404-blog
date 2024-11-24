@@ -107,6 +107,12 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/ollama-ai/">ollama 本地AI大模型</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2024-08-21">2024-08-21</time></span>&nbsp;<span class="post-category">included in <a href="/categories/artificial-intelligence/"><i class="far fa-folder fa-fw"></i>Artificial Intelligence</a></span></div><div class="content"><p>自 OpenAI 公司于 2022 年 11 月 30 日发布 ChatGPT 以来，经过 23 年一整年的发展之后，大语言模型的概念已逐渐普及，各种基于大语言模型的周边产品，以及集成层出不穷，可以说已经玩出花来了。</p>
+<p>在这个过程中，也有不少本地化的模型应用方案冒了出来，针对一些企业知识库问答的场景中，模型本地化是第一优先考虑的问题，因此如何在本地把模型调教的更加智能，就是一个非常重要的技能了。</p></div><div class="post-footer">
+        <a href="/post/ollama-ai/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ai/">Ai</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/">Linux自签证书并自信任</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2024-08-04">2024-08-04</time></span>&nbsp;<span class="post-category">included in <a href="/categories/nginx/"><i class="far fa-folder fa-fw"></i>Nginx</a></span></div><div class="content"><p>由于本地自建了Nginx，需要HTTPS访问，所以这里记录一下 Linux 下的 证书自签名和自信任。</p></div><div class="post-footer">
         <a href="/post/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/">Read More</a><div class="post-tags">
@@ -146,16 +152,6 @@ Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的�
 <hr></div><div class="post-footer">
         <a href="/post/10%E6%9C%88%E5%8E%BB%E6%96%B0%E7%96%86%E5%90%A7/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/%E6%B8%B8%E8%AE%B0/">游记</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/gomap%E6%80%8E%E4%B9%88%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE/">Golang Map怎么并发访问</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2023-07-08">2023-07-08</time></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div><div class="content">Map 是每门编程语言的最基础的数据结构，这种数据结构的实现就是 key-value之间的映射关系，每个key都有一个唯一的索引值，通过索引值可以很快的找到对应的值。
-Map 也是程序中最常见的数据结构，我们的项目中有大量的数据需要加载到内存中，而且需要高频访问，无疑 map 就是最好的选择，但是众所周知，Map是不支持并发访问的。
-如下：
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 func main() { var m = make(map[string]int,10) // 初始化一个map go func() { for { m[&#34;abc&#34;] = 1 //设置key } }() go func() { for { _ = m[&#34;def&#34;] //访问这个map } }() select {} } 虽然这段代码的不同goroutine 是各自在操作不同的元素，但是运行时检测到同时对 map 对象有并发访问，就会直接 panic。
-如何实现一个线程安全的 map 类型 最简单的方式必然是加锁访问这里不再赘述了。
-虽然使用 互斥锁 或 读写锁 可以提供线程安全的 map，但是在大量并发读写的情况下，会出现非常激烈的锁竞争。</div><div class="post-footer">
-        <a href="/post/gomap%E6%80%8E%E4%B9%88%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/golang/">Golang</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>

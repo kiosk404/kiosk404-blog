@@ -107,6 +107,17 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><h1 class="home-title">Kiosk Studio (2022)</h1><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/kiosk404" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="https://www.zhihu.com/people/xxx" title="知乎" target="_blank" rel="noopener noreffer me"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/zhihu.svg"></i></a><a href="mailto:weijiaxiang007@foxmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/post/elasticsearch/">elasticsearch 原理及入门</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-06-18">2022-06-18</time></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div><div class="content">前言：最近打算将自己的一些服务尽可能的迁移到 k8s 集群里，ELK 就是其中的一个，后面可以的话将本博客的 搜索功能从 algolia 迁移到 自己的ES 里。搜索这个东西的确很有意思的，在没有自己的 OLAP 分析平台之前，ES 的确是最佳选择。值得好好学习一下。
+前面已经有文章介绍 k8s 集群的搭建方法和ES的部署方式了。
+ubuntu20.04 部署 kubernetes（k8s） Elasticsearch 简介 Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况。
+快速入门 基本概念 节点 Node、集群 Cluster 和 分片 Shard ElasticSearch 是分布式数据库，允许多台服务器协同工作，每台服务器可以运行多个实例。单个实例称为一个节点（node），一组节点构成一个集群（cluster）。分片是底层的工作单元，文档保存在分片内，分片又被分配到集群内的各个节点里，每个分片仅保存全部数据的一部分。
+索引 Index、类型 Type 和 文档 Document 索引是一类文档的结合。而文档是具体的一条数据。对比我们比较熟悉的关系型数据库如下：
+RDBMS(MySQL) Elasticsearch Table Index(Type) Row Doucment Column Field Schema Mapping SQL DSL 使用 Restful API 交互 elasticsearch 本身使用 Restful API 通过端口 9200进行交互。其基本组成如下
+1 curl -X&lt;VERB&gt; &#39;&lt;PROTOCOL&gt;://&lt;HOST&gt;:&lt;PORT&gt;/&lt;PATH&gt;?&lt;QUERY_STRING&gt;&#39; -d &#39;&lt;BODY&gt;&#39; CRUD 具体内容可以参考 这篇文章</div><div class="post-footer">
+        <a href="/post/elasticsearch/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/elasticsearch/">Elasticsearch</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/ceph/">分布式存储系统 ceph</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-06-18">2022-06-18</time></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div><div class="content"><ul>
 <li><a href="https://kiosk007.top/post/ubuntu20-04-%E9%83%A8%E7%BD%B2-kubernetes-k8s/" target="_blank" rel="noopener noreffer">部署k8s</a></li>
@@ -159,27 +170,6 @@ TLS Tracing (openssl) 通过上图，我们可以知道TLS库的数据读写是 
 <p>Redis的持久化机制分为 AOF（Append Only File） 日志和 RDB 快照。</p></div><div class="post-footer">
         <a href="/post/redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/redis/">Redis</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/post/%E8%AE%A4%E8%AF%86ebpf/">认识eBPF</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-04-30">2022-04-30</time></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class="content"><p>eBPF  是从 BPF（Berkeley Packet Filter）技术扩展而来，最初就是为了实现快速包过滤而实现的一门技术，因为可以直接在内核中执行，避免了向用户态复制每一个数据包，从而极大提升了包过滤的性能。后来由于这个思路非常受到欢迎，在各个场景都需要内核态的快速开发，使得BPF不再限于网络栈，而是内核的一个顶级子系统。即成了现在的 eBPF 。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png"
-        data-srcset="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png, https://img1.kiosk007.top/static/images/blog/ebpf_logo.png 1.5x, https://img1.kiosk007.top/static/images/blog/ebpf_logo.png 2x"
-        data-sizes="auto"
-        alt="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png"
-        title="ebpf_logo" />
-   <div class="post-img-view">
-      <a data-fancybox="gallery" href="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png">
-         <img src="https://img1.kiosk007.top/static/images/blog/ebpf_logo.png" alt="ebpf_logo"  />
-      </a>
-   </div>
-
-
-</p></div><div class="post-footer">
-        <a href="/post/%E8%AE%A4%E8%AF%86ebpf/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ebpf/">EBPF</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
