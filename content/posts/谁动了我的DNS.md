@@ -26,7 +26,7 @@ DNS，英文全称「Domain Name Server」，中文全称「域名服务器」�
 ```bash
 # dig kiosk007.top +short
 kiosk007.top.eo.dnse1.com.
-101.72.224.113
+101.72.224.113 
 119.188.123.202
 ```
 
