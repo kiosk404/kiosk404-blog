@@ -167,7 +167,7 @@ TLS Tracing (openssl) 通过上图，我们可以知道TLS库的数据读写是 
 		    </div>
 			<div class="details-content">
 				<div class="admonition-content">
-					<span class="timeago" datetime="2022-05-15T16:30:00" title="May 15, 2022">May 15, 2022</span></div>
+					本文最后更新于 <span class="timeago" datetime="2022-05-15T16:30:00" title="May 15, 2022">May 15, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
 			</div>
 		 </div><p>前面的文章介绍了 eBPF 的入门知识，这篇算是一个实战吧，使用 eBPF 来跟踪 TLS加密连接。<a href="https://kiosk007.top/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" target="_blank" rel="noopener noreffer">TLS</a> 是目前互联网上的一个标准工具了，可用于加密的通信。本文尝试使用 eBPF 技术将加密的密文还原为明文。当然这并不意味着TLS不再安全，想干坏事的人可以在中间代理服务器、网关设备上偷听。因为eBPF 所实现的追踪明文一定是要建立在真正去做ssl 明文转密文写入操作的。</p>
 <br>

@@ -156,7 +156,7 @@
 		    </div>
 			<div class="details-content">
 				<div class="admonition-content">
-					<span class="timeago" datetime="2020-04-06T14:26:00" title="April 6, 2020">April 6, 2020</span></div>
+					本文最后更新于 <span class="timeago" datetime="2020-04-06T14:26:00" title="April 6, 2020">April 6, 2020</span>，文中内容可能已过时，请谨慎使用。</div>
 			</div>
 		 </div><p>应用服务器通过发起 TCP 连接其他服务器时，如代理服务器需要请求上游服务器，每个连接会占用一个连接发起方端口，在高并发场景下，可能会导致端口耗尽。同时连接主动关闭方为了TCP正常断开连接，TCP 主动关闭方为了确保最后一个ACK能够达到被动关闭方，所以会等待2MSL。在等待期间该端口就会处于 <a href="https://benohead.com/blog/2013/07/21/tcp-about-fin_wait_2-time_wait-and-close_wait/" target="_blank" rel="noopener noreffer">TIME_WAIT</a> 状态。</p>
 <p><strong>MSL (maximum segment lifetime)</strong>：LINUX 的硬编码字段，名称为 TCP_TIMEWAIT_LEN，值为60s，而一个time_wait 默认等待的时间为 2MSL</p>

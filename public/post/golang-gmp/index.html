@@ -155,7 +155,7 @@
 		    </div>
 			<div class="details-content">
 				<div class="admonition-content">
-					<span class="timeago" datetime="2022-04-02T11:06:00" title="April 2, 2022">April 2, 2022</span></div>
+					本文最后更新于 <span class="timeago" datetime="2022-04-02T11:06:00" title="April 2, 2022">April 2, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
 			</div>
 		 </div><p>介绍 GMP 的文章有很多了，大家应该也粗浅的知道什么G（goroutine）M（Machine）P（Processsor）。相较于 Java 这样的编程语言，我们经常听到一个线程池的概念。线程池就是提前创建若干个线程，如果有任务需要处理，线程池里的线程就会处理任务，处理完之后线程并不会被销毁，而是等待下一个任务。由于创建和销毁线程都是消耗系统资源的，所以当你想要频繁的创建和销毁线程的时候就可以考虑使用线程池来提升系统的性能。</p>
 <p>GMP 的出现可以类比Java中的线程池，当然也有像 <a href="http://github.com/panjf2000/ants" target="_blank" rel="noopener noreffer">ants</a> 这样的协程池实现，但是本质上 Golang GMP 就是在很好的完成线程池的角色任务。</p>

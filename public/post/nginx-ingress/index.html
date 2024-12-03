@@ -152,7 +152,7 @@
 		    </div>
 			<div class="details-content">
 				<div class="admonition-content">
-					<span class="timeago" datetime="2021-09-05T11:37:00" title="September 5, 2021">September 5, 2021</span></div>
+					本文最后更新于 <span class="timeago" datetime="2021-09-05T11:37:00" title="September 5, 2021">September 5, 2021</span>，文中内容可能已过时，请谨慎使用。</div>
 			</div>
 		 </div><p>在K8S的中， Service 暴露给外界的三种方法。其中有一个叫作 LoadBalancer 类型的 Service，它会为你在 Cloud Provider（比如：Google Cloud 或者 OpenStack）里创建一个与该 Service 对应的负载均衡服务。</p>
 <p>但是，由于每个 Service 都要有一个负载均衡服务，所以这个做法实际上既浪费成本又高。作为用户，我其实更希望看到 Kubernetes 为我内置一个全局的负载均衡器。然后，通过我访问的 URL，把请求转发给不同的后端 Service。</p>

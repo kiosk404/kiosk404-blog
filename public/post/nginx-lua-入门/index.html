@@ -164,7 +164,7 @@ lua-nginx-module 是一个实现使用lua语言直接控制Nginx内HTTP请求的
 		    </div>
 			<div class="details-content">
 				<div class="admonition-content">
-					<span class="timeago" datetime="2021-12-04T10:16:00" title="December 4, 2021">December 4, 2021</span></div>
+					本文最后更新于 <span class="timeago" datetime="2021-12-04T10:16:00" title="December 4, 2021">December 4, 2021</span>，文中内容可能已过时，请谨慎使用。</div>
 			</div>
 		 </div><p>上周我从腾讯云买了一台服务器，开始将本站解析到腾讯云上，至此本站彻底支持了HTTP3访问。不过也需要对Nginx进行一定程度的封装。一个最佳的选择是使用 <code>lua-nginx-module</code> 来扩展Nginx的能力，比如我想对请求进行一些访问统计，将数据发送到 open-falcon 或者 Prometheus 上。</p>
 <p><a href="https://github.com/openresty/lua-nginx-module" target="_blank" rel="noopener noreffer">lua-nginx-module</a> 是一个实现使用lua语言直接控制Nginx内HTTP请求的一个Nginx module。这个组合很强大，提供了动态语言的强悍性能和生产力。</p>

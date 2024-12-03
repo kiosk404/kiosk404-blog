@@ -151,7 +151,7 @@
 		    </div>
 			<div class="details-content">
 				<div class="admonition-content">
-					<span class="timeago" datetime="2022-04-16T22:24:00" title="April 16, 2022">April 16, 2022</span></div>
+					本文最后更新于 <span class="timeago" datetime="2022-04-16T22:24:00" title="April 16, 2022">April 16, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
 			</div>
 		 </div><p>一提到 Redis ，首先的一个印象就是快！但是之前很少研究过Redis底层的一些实现。之前接触Redis比较少，有一个项目是做限流用到了 Redis，大致原理是记录最近访问过的IP和时间，如果下次再有请求到来匹配IP查找之前是否有过访问，如果有则判断时间差是否小于一小时，小于则禁掉，大于则更新时间戳，如果没有就是第一次访问。</p>
 <p>再回顾一下这个限流器的逻辑。</p>

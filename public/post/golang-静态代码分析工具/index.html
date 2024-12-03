@@ -142,7 +142,7 @@
 		    </div>
 			<div class="details-content">
 				<div class="admonition-content">
-					<span class="timeago" datetime="2021-12-18T22:01:00" title="December 18, 2021">December 18, 2021</span></div>
+					本文最后更新于 <span class="timeago" datetime="2021-12-18T22:01:00" title="December 18, 2021">December 18, 2021</span>，文中内容可能已过时，请谨慎使用。</div>
 			</div>
 		 </div><p>在日常Golang编程过程中，需要对 Go 代码做静态代码检查。虽然 Go 命令提供了 <code>go vet</code> 和 <code>go tool vet</code>，但是它们检查的内容还不够全面。go 的 vet 工具可以用来检查 go 代码中可以通过编译但仍然有可能存在错误的代码。包括并发访问安全、死锁、泄露上下文、结构体反射等等，参考<a href="https://zhuanlan.zhihu.com/p/357406395" target="_blank" rel="noopener noreffer">文章</a></p>
 <p>可用于 Go 语言代码分析的工具有很多，比如 golint、gofmt、misspell 等，如果一一引用配置，就会比较烦琐，所以通常我们不会单独地使用它们，而是使用 golangci-lint。</p>
