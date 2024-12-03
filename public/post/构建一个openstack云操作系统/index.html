@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>构建一个 OpenStack 云操作系统 - Kiosk&#39;s/ 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AAopenstack%E4%BA%91%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
-  <meta property="og:site_name" content="Kiosk&#39;s/ 个人编程技术分享">
+        <title>构建一个 OpenStack 云操作系统 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AAopenstack%E4%BA%91%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
   <meta property="og:title" content="构建一个 OpenStack 云操作系统">
   <meta property="og:description" content="在前面的 文章 中认识了 OpenStack ，这篇文章会实际搭建一个 OpenStack 服务来更好的认识 OpenStack。OpenStack 本身能被定义为云操作系统，本身是比较复杂的，其是云计算的基石，虽然近些年已经有被 Kubernets 拍在沙滩上的意思，但是虚拟机相比于容器，其在腾讯云、华为云、阿里云等云厂商，还是主要对外的计算服务。">
   <meta property="og:locale" content="en">
@@ -55,7 +55,7 @@
         <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
     <div class="header-wrapper">
         <div class="header-title">
-            <a href="/" title="Kiosk&#39;s/ 个人编程技术分享"><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
         </div>
         <div class="menu">
             <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
@@ -77,7 +77,7 @@
     <div class="header-container">
         <div class="header-wrapper">
             <div class="header-title">
-                <a href="/" title="Kiosk&#39;s/ 个人编程技术分享"><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
             </div>
             <div class="menu-toggle" id="menu-toggle-mobile">
                 <span></span><span></span><span></span>
@@ -226,7 +226,15 @@
     <li><a href="#dashboard-管理">Dashboard 管理</a></li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><p>在前面的 <a href="https://kiosk007.top/post/%E8%AE%A4%E8%AF%86-openstack/" target="_blank" rel="noopener noreffer">文章</a> 中认识了 OpenStack ，这篇文章会实际搭建一个 OpenStack 服务来更好的认识 OpenStack。OpenStack 本身能被定义为云操作系统，本身是比较复杂的，其是云计算的基石，虽然近些年已经有被 Kubernets 拍在沙滩上的意思，但是虚拟机相比于容器，其在腾讯云、华为云、阿里云等云厂商，还是主要对外的计算服务。</p>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					<span class="timeago" datetime="2022-08-29T11:26:27" title="August 29, 2022">August 29, 2022</span></div>
+			</div>
+		 </div><p>在前面的 <a href="https://kiosk007.top/post/%E8%AE%A4%E8%AF%86-openstack/" target="_blank" rel="noopener noreffer">文章</a> 中认识了 OpenStack ，这篇文章会实际搭建一个 OpenStack 服务来更好的认识 OpenStack。OpenStack 本身能被定义为云操作系统，本身是比较复杂的，其是云计算的基石，虽然近些年已经有被 Kubernets 拍在沙滩上的意思，但是虚拟机相比于容器，其在腾讯云、华为云、阿里云等云厂商，还是主要对外的计算服务。</p>
 <p>这里我们采用最原始的部署方式来部署一个 OpenStack。</p>
 <p>官方的安装方式：<a href="https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/yoga/install-overview.html" target="_blank" rel="noopener noreffer">openstack Installation overview</a></p>
 <h1 id="资源准备">资源准备</h1>
@@ -3303,5 +3311,5 @@
             </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
                 <i class="fas fa-comment fa-fw"></i>
             </a>
-        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
 </html>

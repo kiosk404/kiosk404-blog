@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Interview on Kiosk&#39;s/ 个人编程技术分享</title>
+    <title>Interview on Kiosk&#39;s/ </title>
     <link>http://localhost:1313/topic/interview/</link>
-    <description>Recent content in Interview on Kiosk&#39;s/ 个人编程技术分享</description>
+    <description>Recent content in Interview on Kiosk&#39;s/ </description>
     <generator>Hugo</generator>
     <language>en</language>
-    <managingEditor>weijiaxiang007@foxmail.com (kiosk007)</managingEditor>
-    <webMaster>weijiaxiang007@foxmail.com (kiosk007)</webMaster>
+    <managingEditor>kiosk007@foxmail.com (kiosk007)</managingEditor>
+    <webMaster>kiosk007@foxmail.com (kiosk007)</webMaster>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
     <lastBuildDate>Mon, 08 Aug 2022 23:41:26 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/topic/interview/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>DataBase</title>
       <link>http://localhost:1313/topic/interview/database/</link>
-      <pubDate>Mon, 08 Aug 2022 23:41:26 +0000</pubDate><author>weijiaxiang007@foxmail.com (kiosk007)</author>
+      <pubDate>Mon, 08 Aug 2022 23:41:26 +0000</pubDate><author>kiosk007@foxmail.com (kiosk007)</author>
       <guid>http://localhost:1313/topic/interview/database/</guid>
       <description>Based on Redis&#xA;Redis Redis 基础 Redis 底层有哪些数据结构 rehash 的过程 Redis 为什么是一个单线程模型 zset的底层实现 Redis的Key过期机制和淘汰原理 Redis的持久化机制 Redis 如何实现高可用 Redis 分布式锁 Redis如何应对并发访问 Redis AOF 日志文件太大怎么办 Redis使用 Redis 有什么操作会导致其变慢 Redis 在时间序场景的应用 Redis缓存失效 Redis大Key问题 Redis集群 Redis 集群 slot 如何选择 Elasticsearch 什么是倒排索引 文档索引步骤顺序 MySQL myisam和innodb的区别 MySQL的索引有哪些 MySQL的锁类型有哪些 事务的基本特性和隔离级别 MySQL主从同步是如何实现的 MySQL事务中什么是幻读 什么是Next-Key Lock 什么是 MVCC MySQL的日志 undo log \ redo log \ binlog 什么是MySQL的两段式提交 MySQL 索引为什么用B+树 MySQL索引为什么会有最左前缀匹配原则 MySQL 其他类型题目链接 MySQL 索引下推 前缀索引\倒序索引 幻读 Redis 20道Redis经典面试题</description>
     </item>
     <item>
       <title>Devops</title>
       <link>http://localhost:1313/topic/interview/devops/</link>
-      <pubDate>Wed, 08 Jun 2022 23:41:26 +0000</pubDate><author>weijiaxiang007@foxmail.com (kiosk007)</author>
+      <pubDate>Wed, 08 Jun 2022 23:41:26 +0000</pubDate><author>kiosk007@foxmail.com (kiosk007)</author>
       <guid>http://localhost:1313/topic/interview/devops/</guid>
       <description>DevOps is the union of people, process, and technology to continually provide value to customers.&#xA;Devops&#xA;进程、线程、协程 CPU 性能分析工具 Linux启动顺序 Docker&#xA;Docker是什么 Devops 进程、线程、协程 进程（Process） 进程是具有一定独立功能的程序在一定数据集上的运行活动，进程是系统中进行资源分配和调度的独立单元。每个进程都有自己独立的内存空间，不同的进程通过进程间通信进行通信。由于进程比较重，占用独立内存，上下文进程之间的切换开销（栈、寄存器、虚拟内存、文件句柄等）比较大，但是比较稳定和安全。 线程（Thread） 线程是进程的一个实体，是CPU调度和分派的基本单位。它是一个比进程更小的基本单元，可以独立运行。线程本身基本上不拥有系统资源，只有少数运行中必不可少的资源（如程序计数器、一组寄存器和堆栈），但它可以与属于同一进程的其他线程共享该进程拥有的所有资源过程。线程间通信主要是通过共享内存，上下文切换速度快，资源开销少，但相对于进程来说不够稳定，容易丢失数据。 协程（Coroutine） 协程是用户态的轻量级线程，协程的调度完全由用户控制。协程有自己的寄存器上下文和堆栈。当协程调度切换时，将寄存器上下文和堆栈保存到其他地方。切换回来时，恢复之前保存的寄存器上下文和堆栈。直接操作栈基本不会有内核切换开销，可以不加锁访问全局变量，所以上下文切换非常快。 CPU 性能分析工具 top、mpstat、pidstat、uptime、vmstate&#xA;关注点：&#xA;上下文切换（cs context switch）：过多的上下文切换会导致 CPU时间消耗在寄存器、内存栈以及虚拟内存等数据的保存和恢复上，从而缩短真正运行的时间。&#xA;自愿上下文切换：进程无法获取到所需要的资源导致的上下文切换。比如 I/O 、内存等系统资源不足 非自愿上下文切换：进程因为时间片到时原因，被系统强制调度。 就绪队列长度（r runing or runnable）：是正在运行和等待 CPU 的进程数。&#xA;不可中断睡眠状态的进程数（b Blocked）：处于不可中断睡眠状态的进程数。&#xA;Linux 启动顺序 针对不同的架构，引导的方式有所差异。x86支持UEFI（Unified Extensible Firmware Interface）和BIOS方式启动，AArch64仅支持UEFI方式启动。 统一的可扩展固件接口UEFI是一种全新类型的接口标准，用于开机自检、引导操作系统的启动，是传统BIOS的一种替代方案&#xA;第一阶段：硬件引导启动 Power ON 加电自检：主要检查外围设备CPU、内存等 BIOS POST初始化硬件： 加载MBR到内存阶段：BIOS 读取并执行启动设备的MBR中的Bootloader 第二阶段：GRUB2启动引导阶段 解析grub的配置文件 /boot 分区下 /boot/grub/grub.</description>
     </item>
     <item>
       <title>Golang</title>
       <link>http://localhost:1313/topic/interview/golang/</link>
-      <pubDate>Wed, 08 Jun 2022 23:41:26 +0000</pubDate><author>weijiaxiang007@foxmail.com (kiosk007)</author>
+      <pubDate>Wed, 08 Jun 2022 23:41:26 +0000</pubDate><author>kiosk007@foxmail.com (kiosk007)</author>
       <guid>http://localhost:1313/topic/interview/golang/</guid>
       <description>Based on google&#xA;sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Golang Slice interface{}变量和nil做比较 go中 import/const/var/init/main 的执行顺序 defer的执行顺序 什么是 go 的内存逃逸 medium Golang 的内存管理 Go 是如何分配内存的 Golang 的GC过程 什么是强弱三色不变式 GC的时机是什么时候 GMP 协程阻塞，调度器会怎么做？ M的流转状态 一个goroute会占用多少内存，假设多个goroute一直占用资源会怎样 一个 goroute 发生OOM 会怎样？ 若干个 goroute，其中一个 panic，会发生什么，defer可以捕获子goroute的panic吗？ 反射 反射如何获取字段tag 如何通过反射修改值 锁 golang 的锁机制 Mutex的锁有哪几种模式 Mutex锁底层如何实现 Mutex是悲观锁还是乐观锁 RWMutex(读写锁)适用于什么场景 channel channel 的内部实现是怎么样的? 读一个已关闭的channel会怎样、没初始化的channel写会怎样 已关闭的channel写数据会怎样，如何判断一个channel已关闭 select case 中有2个case 读channel，其中一个关闭，读数据会怎样 golang如何限制并发 context golang中的context有什么用 context.Background的意义 WithCancel() 和 WithTimeout() 可以通知多个goroutine, 如何实现的 map map 为什么是不安全的？ sample new 和 make 的区别？ Go语言中 new 和 make 是两个内置函数，主要用来创建并分配类型的内存。</description>
     </item>

@@ -12,7 +12,7 @@ themesDir = "./themes"
 # website title
 # 网站标题
 # title = "Kiosk's/"  为了应付SXXB检查,先注释掉
-title = "Kiosk's/ 个人编程技术分享"
+title = "Kiosk's/ "
 
 # whether to use robots.txt
 # 是否使用 robots.txt
@@ -221,7 +221,7 @@ enableEmoji = true
         XMPP = ""
         Matrix = ""
         Bilibili = ""
-        Email = "weijiaxiang007@foxmail.com"
+        Email = "kiosk007@foxmail.com"
         RSS = true
 
   [languages.zh-cn]
@@ -574,7 +574,7 @@ enableEmoji = true
       copy = true
       # the maximum number of lines of displayed code by default
       # 默认展开显示的代码行数
-      maxShownLines = 35
+      maxShownLines = 100
     # KaTeX mathematical formulas config (KaTeX https://katex.org/)
     # KaTeX 数学公式配置 (KaTeX https://katex.org/)
     [params.page.math]
@@ -839,6 +839,11 @@ enableEmoji = true
     # whether to use object-fit-images to be compatible with older browsers
     # 是否使用 object-fit-images 来兼容旧式浏览器
     objectFit = false
+  [params.outdatedInfoWarning]
+    enable = true
+    hint = 90     # Display hint if the last modified time is more than these days ago.    # 如果文章最后更新于这天数之前，显示提醒
+    warn = 180    # Display warning if the last modified time is more than these days ago.    # 如果文章最后更新于这天数之前，显示警告
+
 
 # Markup related configuration in Hugo
 # Hugo 解析文档的配置
@@ -878,7 +883,7 @@ enableEmoji = true
 # 作者配置
 [author]
   name = "kiosk007"
-  email = "weijiaxiang007@foxmail.com"
+  email = "kiosk007@foxmail.com"
   link = "/about"
 
 # Sitemap config
@@ -931,3 +936,5 @@ enableEmoji = true
   section = ["HTML", "RSS"]
   taxonomy = ["HTML", "RSS"]
   term = ["HTML"]
+  # Display a message at the beginning of an article to warn the readers that it's content may be outdated.
+  # 在文章末尾显示提示信息，提醒读者文章内容可能过时。

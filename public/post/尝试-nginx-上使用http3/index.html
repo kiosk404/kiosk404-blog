@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>尝试 Nginx 上使用HTTP3 - Kiosk&#39;s/ 个人编程技术分享</title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E5%B0%9D%E8%AF%95-nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8http3/">
-  <meta property="og:site_name" content="Kiosk&#39;s/ 个人编程技术分享">
+        <title>尝试 Nginx 上使用HTTP3 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E5%B0%9D%E8%AF%95-nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8http3/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
   <meta property="og:title" content="尝试 Nginx 上使用HTTP3">
   <meta property="og:description" content="之前的文章介绍了QUIC发生了什么, QUIC 已经演变成了一个“传输层”协议。其上可以运行 HTTP 协议。">
   <meta property="og:locale" content="en">
@@ -56,7 +56,7 @@
         <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
     <div class="header-wrapper">
         <div class="header-title">
-            <a href="/" title="Kiosk&#39;s/ 个人编程技术分享"><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
         </div>
         <div class="menu">
             <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
@@ -78,7 +78,7 @@
     <div class="header-container">
         <div class="header-wrapper">
             <div class="header-title">
-                <a href="/" title="Kiosk&#39;s/ 个人编程技术分享"><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
             </div>
             <div class="menu-toggle" id="menu-toggle-mobile">
                 <span></span><span></span><span></span>
@@ -153,7 +153,15 @@
     </li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><p>之前的文章介绍了<a href="https://kiosk007.top/2021/07/24/QUIC-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" target="_blank" rel="noopener noreffer">QUIC发生了什么</a>, QUIC 已经演变成了一个“传输层”协议。其上可以运行 HTTP 协议。</p>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					<span class="timeago" datetime="2021-07-31T21:41:00" title="July 31, 2021">July 31, 2021</span></div>
+			</div>
+		 </div><p>之前的文章介绍了<a href="https://kiosk007.top/2021/07/24/QUIC-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" target="_blank" rel="noopener noreffer">QUIC发生了什么</a>, QUIC 已经演变成了一个“传输层”协议。其上可以运行 HTTP 协议。</p>
 <p>在去年6月，Nginx的官方博客发表了<a href="https://www.nginx.com/blog/introducing-technology-preview-nginx-support-for-quic-http-3/" target="_blank" rel="noopener noreffer">一篇对 HTTP3 技术的支持概览</a>。Nginx 官方宣布了 <code>http_v3_module</code> 的最初版本。但这只是一个技术概览，并不建议就应用到生产环境上。关于HTTP3的支持目前还没有正式合入主线分支。是在 <a href="https://hg.nginx.org/nginx-quic?_ga=2.233412253.2051667104.1627697657-1009067521.1605942879" target="_blank" rel="noopener noreffer">https://hg.nginx.org/nginx-quic</a> 这个专门的分支上。</p>
 <p>今年7月，Nginx又发了<a href="https://www.nginx.com/blog/our-roadmap-quic-http-3-support-nginx/" target="_blank" rel="noopener noreffer">一篇博客</a>，明确表示，Nginx QUIC 将于今年年底正式合入Nginx 主分支。</p>
 <p>另外 QUIC+HTTP/3 的Nginx官方实现是和 CloudFlare 的 <a href="https://blog.cloudflare.com/experiment-with-http-3-using-nginx-and-quiche/" target="_blank" rel="noopener noreffer">quiche project</a> 并不是一个。</p>
@@ -614,5 +622,5 @@
             </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
                 <i class="fas fa-comment fa-fw"></i>
             </a>
-        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":35},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="/lib/twemoji/twemoji.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"},"twemoji":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
 </html>
