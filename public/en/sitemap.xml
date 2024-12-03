@@ -5,7 +5,8 @@
             <loc>http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/</loc><lastmod>2024-10-24T16:08:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>http://localhost:1313/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Fdesign-pattern/</loc><lastmod>2020-10-24T16:08:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>http://localhost:1313/post/even-preview/</loc><lastmod>2018-07-10T00:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>http://localhost:1313/</loc><lastmod>2024-12-04T00:04:15&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>http://localhost:1313/photos/</loc><lastmod>2024-12-04T00:17:42&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>http://localhost:1313/</loc><lastmod>2024-12-04T00:17:42&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
                         href="http://localhost:1313/zh-cn/"
@@ -14,9 +15,6 @@
                     hreflang="en"
                     href="http://localhost:1313/"
                     /></url><url>
-            <loc>http://localhost:1313/photos/</loc><lastmod>2024-12-04T00:04:15&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>http://localhost:1313/page/photos/</loc><lastmod>2024-12-03T23:57:35&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>http://localhost:1313/page/</loc><lastmod>2024-12-03T23:57:35&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>http://localhost:1313/categories/</loc><lastmod>2024-11-05T08:50:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
