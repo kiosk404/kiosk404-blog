@@ -6,9 +6,7 @@ tags:
 categories:
   - network
 date: 2024-10-24 16:08:00
-weight: 10
-contentCopyright: MIT
-mathjax: true
+lastmod: 2024-06-18 19:16:20
 ---
 
 有没有觉得 `kiosk007.top` 最近访问变快了？没错，我的主站最近接入了 腾讯云的 [EO(EdegeOne)](https://console.cloud.tencent.com/edgeone)，当然只是14天体验版，体验过后还是会改会直连模式，毕竟是要收费的。不过能使得访问质量得到加速，第一个重要原因就是我们的请求被指向了就近节点，实现了就近访问。其中就依赖一个重要的底层技术 - **DNS**。

@@ -7,13 +7,6 @@
             <webMaster>kiosk007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 04 Dec 2024 00:27:15 &#43;0800</lastBuildDate>
             <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
         <item>
-    <title>网速变慢？你可能需要先设置好 DNS</title>
-    <link>http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/</link>
-    <pubDate>Thu, 24 Oct 2024 16:08:00 &#43;0000</pubDate>
-    <author>Author</author>
-    <guid>http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/</guid>
-    <description><![CDATA[<p>有没有觉得 <code>kiosk007.top</code> 最近访问变快了？没错，我的主站最近接入了 腾讯云的 <a href="https://console.cloud.tencent.com/edgeone" target="_blank" rel="noopener noreffer">EO(EdegeOne)</a>，当然只是14天体验版，体验过后还是会改会直连模式，毕竟是要收费的。不过能使得访问质量得到加速，第一个重要原因就是我们的请求被指向了就近节点，实现了就近访问。其中就依赖一个重要的底层技术 - <strong>DNS</strong>。</p>]]></description>
-</item><item>
     <title>设计模式（Design Pattern）</title>
     <link>http://localhost:1313/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8Fdesign-pattern/</link>
     <pubDate>Sat, 24 Oct 2020 16:08:00 &#43;0000</pubDate>
@@ -35,6 +28,13 @@ Markdown 1 2 3 4 5 6 7 8 # H1 ## H2 ### H3 #### H4 ##### H5 ###### H6 ### Duplic
     <author>Author</author>
     <guid>http://localhost:1313/post/go%E5%B9%B6%E6%B3%95%E6%A8%A1%E5%BC%8F/</guid>
     <description><![CDATA[<p>Go 语言最吸引人的地方时它内建的 并发支持，这篇文章不做高谈阔论，只总结部分在平时用到的常见的并发编程技巧。</p>]]></description>
+</item><item>
+    <title>网速变慢？你可能需要先设置好 DNS</title>
+    <link>http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/</link>
+    <pubDate>Thu, 24 Oct 2024 16:08:00 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/</guid>
+    <description><![CDATA[<p>有没有觉得 <code>kiosk007.top</code> 最近访问变快了？没错，我的主站最近接入了 腾讯云的 <a href="https://console.cloud.tencent.com/edgeone" target="_blank" rel="noopener noreffer">EO(EdegeOne)</a>，当然只是14天体验版，体验过后还是会改会直连模式，毕竟是要收费的。不过能使得访问质量得到加速，第一个重要原因就是我们的请求被指向了就近节点，实现了就近访问。其中就依赖一个重要的底层技术 - <strong>DNS</strong>。</p>]]></description>
 </item><item>
     <title>LLM大模型 - RAG</title>
     <link>http://localhost:1313/post/rag/</link>
