@@ -41,6 +41,24 @@ DNS（Domain Name System）智能解析是一种更高级的域名解析技术�
 - 在贵阳移动解析到了 [221.178.3.68](https://ipinfo.io/221.178.3.68) 和 [36.147.64.154](https://ipinfo.io/36.147.62.154) ，从  [ipinfo.io](https://ipinfo.io/) 可以查看到两个IP都是重庆移动的IP，在地理位置上都属于 西南省份。
 - 在 甘肃移动解析出的 2个IP 分别属于 宁夏移动和甘肃移动的，在地理位置上都属于 西北省份。
 
+</br>
+
+用 edns 可以看到使用不同的客户端IP访问，效果是不一样的
+
+```bash
+# dig kiosk007.top @223.5.5.5 +subnet=114.249.170.11 +short
+kiosk007.top.eo.dnse1.com.
+101.72.224.113
+119.188.123.202
+
+# dig kiosk007.top @223.5.5.5 +subnet=111.229.108.83 +short
+kiosk007.top.eo.dnse1.com.
+116.207.185.121
+61.160.209.235
+
+
+```
+
 
 
 <br/>
@@ -392,21 +410,266 @@ dig ins-r23tsuuf.ias.tencent-cloud.net +short
 
 ## CNAME 记录打平 (CNAME Flattening)
 
+CNAME 记录打平最早 CloudFlare  有一篇文章记录 [Introducing CNAME Flattening: RFC-Compliant CNAMEs at a Domain's Root](https://blog.cloudflare.com/introducing-cname-flattening-rfc-compliant-cnames-at-a-domains-root/)
+
+<br/>
+
+这篇文章介绍了Cloudflare推出的一项新功能——CNAME Flattening。以下是文章的主要内容总结：
+
+1. **背景和问题**：
+   - 传统上，域名的根记录（即没有子域名的顶级域名，如`example.com`）需要指向一个IP地址（使用A记录）。这限制了使用基于云的服务，因为将服务绑定到IP地址可能会导致资源共享和性能问题。
+   - CNAME记录允许一个域名指向另一个域名（最终会解析为A记录和IP地址），这为子域名（如`www.example.com`）提供了灵活性，但在根记录中使用CNAME存在问题，因为DNS规范不允许根记录使用CNAME。
+2. **CNAME的优势**：
+   - CNAME作为别名，提供了灵活性，允许服务在不改变DNS设置的情况下动态调整IP地址。
+   - 通过使用CNAME，可以避免因资源过载而导致的性能问题，并且可以轻松地将流量从一个IP地址转移到另一个IP地址。
+
+3. **DNS规范和问题**：
+
+   - DNS规范规定根记录不能是CNAME，因为根记录通常需要与其他记录（如MX记录用于邮件，NS记录用于域名服务器）关联。
+
+   - 遵循这一规范的大多数权威DNS服务器不允许在根记录中包含CNAME记录。
+
+4. **CNAME Flattening的解决方案**：
+
+   - Cloudflare通过扩展其权威DNS基础设施，实现了一种在遵循RFC的同时支持根记录使用CNAME的方法。当根记录中有CNAME时，Cloudflare会递归地解析CNAME链，直到找到A记录，然后返回与A记录关联的IP地址，这个过程称为“CNAME Flattening”。
+
+   - 这种方法遵循DNS规范，对任何与Cloudflare DNS交互的服务都是透明的，并且解决了之前遇到的边缘情况问题，如Microsoft Exchange邮件服务器的问题。
+
+5. **好处**：
+
+   - CNAME Flattening允许在不违反DNS规范的情况下在根记录中使用CNAME，提供了灵活性。
+
+   - 通过缓存CNAME响应，Cloudflare减少了CNAME解析时间，平均减少了约30%。
+
+   - Cloudflare已经开始在更广泛的范围内测试CNAME Flattening，包括内部使用的CNAME。
 
 
 
+<br/>
 
-
+当然... dnspod 是做了特殊支持的，支持 MX 记录和 CNAME 记录共存。
 
 
 
 ## ANAME 
+
+和 CNAME Flattening 相似。
+
+假设本站的域名 img1.kiosk007.top . 有 2层CNAME ，而且通过CNAME 一眼就看出用的是 七牛云。
+
+```bash
+# dig img1.kiosk007.top +short
+img1-kiosk007-top-idvf0pq.qiniudns.com.
+allcdn.china.qiniu.qnydns.com.
+allcdn.lv2.qnydns.com.
+111.45.28.78
+112.16.229.53
+
+```
+
+能不能隐藏 我用了 七牛云 这个事实呢？也就是说需要消除掉 中间的CNAME 从而直接给出 A 记录，从原理上是可以实现的，这就需要引入 ANAME 了，
+
+这篇文章分享了什么是 [ANAME](https://dnsmadeeasy.com/post/what-is-an-aname-record) 
+
+<br/>
+
+<img src="https://img1.kiosk007.top/static/images/blog/20241207172323-6232264c785939d94e06c0b6_ANAME_RECORD_EXAMPLE.png" />
+
+<br/>
+
+1. **ANAME记录的定义**：
+   - ANAME记录是一种能够在域名根上使用的记录，类似于CNAME，但没有CNAME的限制。它可以被视为一个转变为CNAME的A记录。
+2. **ANAME记录的用途**：
+   - ANAME记录允许你将裸域名（无子域名的顶级域名）指向一个主机名或完全限定域名（FQDN）。
+   - 它们适用于需要频繁更新和/或最精确的GeoDNS解析的关键系统，尤其是对于内容分发网络（CDN）来说非常有用。
+3. **ANAME记录的工作原理**：
+   - 当查询ANAME记录时，权威名称服务器实际上会解析存储在ANAME记录中的主机或FQDN。
+   - 如果ANAME记录无法解析，服务器将返回最近缓存的IP地址，确保用户仍然可以接收内容，避免不必要的停机时间。
+4. **ANAME记录的历史**：
+   - DNS Made Easy的创始人之一是ANAME技术的创新者之一。在ANAME存在之前，他们使用API调用来实现相同的结果，后来开发了自己的记录，并将其命名为“ANAME记录”。
+5. **ANAME记录示例**：
+   - 文章提供了一个ANAME记录的示例，展示了如何将dnsmadeeasy.com的ANAME记录指向一个FQDN（例如127.1.1.1）。
+   - 与A记录和CNAME记录相比，ANAME记录结合了两者的功能，并消除了CNAME记录的限制。
+6. **ANAME记录的优势**：
+   - ANAME记录可以以多种方式集成到组织的DNS策略中，允许你绕过某些记录限制，定制DNS配置以适应你的域名。
 
 
 
 
 
 ## DNS 解析优化调优
+
+### 全球加速DNS解析优化
+
+众所周知的原因，海外用户访问国内的网络质量是非常差的，所以如果一个域名希望是全球访问时，那么这个域名的权威NS 应该设置在哪里呢？
+
+如果设置在国内，那么海外访问会比较慢，如果设置在海外，那么国内访问会比较慢。
+
+对于一个云厂商，想要加速DNS阶段的解析速度，其中重要一点就是需要做的就是优化其NS访问速度。
+
+聪明的做法应该是给权威DNS做一次智能解析。国内用国内的权威DNS地址，海外用海外的权威DNS地址。
+
+<br/>
+
+>知识补充：
+>
+>我们知道想要使用一家云厂商的 加速域名，需要将我们自己的域名 CNAME 过去，
+>
+>阿里云的常见 CNAME 的二级域名常见的有：
+>
+>- queniurc.com.
+>- queniuaa.com.
+>
+>七牛云的二级域：
+>
+>- qiniudns.com.
+
+<br/>
+
+**不错，阿里云的CNAME 的权威就是这么做的~**
+
+```bash 
+# dig xxxxx.queniuaa.com @m.gtld-servers.net.
+
+; <<>> DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu <<>> xxxxx.queniuaa.com @m.gtld-servers.net.
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 32001
+;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 2, ADDITIONAL: 1
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;xxxxx.queniuaa.com.		IN	A
+
+;; AUTHORITY SECTION:
+queniuaa.com.		172800	IN	NS	vipns6.queniudns.net.
+queniuaa.com.		172800	IN	NS	vipns7.queniudns.net.
+
+;; Query time: 251 msec
+;; SERVER: 192.55.83.30#53(m.gtld-servers.net.) (UDP)
+;; WHEN: Sat Dec 07 15:08:50 CST 2024
+;; MSG SIZE  rcvd: 102
+```
+
+我们看下 阿里云的 DNS 智能解析效果。
+
+```bash
+# dig vipns6.queniudns.net. +subnet=114.114.11.1 +short   # (114.114.11.1 是一个国内IP)
+47.240.195.220      (这些结果解析出的都是 国内的IP)
+121.40.6.145      
+47.108.110.113
+203.107.13.55
+47.88.250.116
+47.254.165.60
+47.120.230.155
+
+# dig vipns6.queniudns.net. +subnet=1.1.1.1 +short    # (1.1.1.1 是一个海外IP)
+47.89.91.91			（解析的结果是美国 Aliyun）
+205.204.111.111
+```
+
+但实际效果不然，如果我们自己建权威的话会发现，智能解析没有效果？国内的权威还是会收到大量的海外解析请求。为什么？智能解析失效了吗？不是的，这是因为胶水记录。
+
+<br/>
+
+**这里再举个阿里云动态加速的反例**
+
+```bash
+# dig cdngslb.com.  @i.gtld-servers.net.
+
+; <<>> DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu <<>> cdngslb.com. @i.gtld-servers.net.
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 43709
+;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 2, ADDITIONAL: 15
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;cdngslb.com.			IN	A
+
+;; AUTHORITY SECTION:
+cdngslb.com.		172800	IN	NS	ns1.cdngslb.com.
+cdngslb.com.		172800	IN	NS	ns2.cdngslb.com.
+
+;; ADDITIONAL SECTION:
+ns1.cdngslb.com.	172800	IN	A	106.11.35.19
+ns1.cdngslb.com.	172800	IN	A	106.11.41.157
+ns1.cdngslb.com.	172800	IN	A	140.205.103.192
+ns1.cdngslb.com.	172800	IN	A	140.205.122.66
+ns1.cdngslb.com.	172800	IN	AAAA	2401:b180:4100::14
+ns1.cdngslb.com.	172800	IN	A	47.241.207.18
+ns1.cdngslb.com.	172800	IN	A	47.88.74.38
+ns2.cdngslb.com.	172800	IN	A	106.11.35.18
+ns2.cdngslb.com.	172800	IN	A	106.11.41.158
+ns2.cdngslb.com.	172800	IN	A	140.205.103.194
+ns2.cdngslb.com.	172800	IN	A	140.205.122.77
+ns2.cdngslb.com.	172800	IN	AAAA	2401:b180:4100::15
+ns2.cdngslb.com.	172800	IN	A	47.241.207.16
+ns2.cdngslb.com.	172800	IN	A	47.88.74.36
+
+;; Query time: 201 msec
+;; SERVER: 192.43.172.30#53(i.gtld-servers.net.) (UDP)
+;; WHEN: Sat Dec 07 16:22:44 CST 2024
+;; MSG SIZE  rcvd: 324
+```
+
+看到了吗？胶水记录将 Aliyun 全球加速CNAME 权威的所有A记录全部返回了，也就是虽然 cdngslb.com 是全球加速的，且做了智能解析，国内的用国内的权威，海外的用海外的，但是!!!!  `.com` 权威服务器将 `cdngslb.com` 的全部NS服务器的A记录记录都返回了。这会导致 智能解析失效...
+
+<br/>
+
+**所以 ！！！ 胶水记录用不好的话在全球加速这种场景下就是个副作用。**
+
+那如何避免胶水记录呢?????
+
+就像 case 1 中的一样，将 CNAME 和 CNAME 权威的根域设置不一样就可以了。
+
+比如 CNAME 是 `.com` 结尾的，CNAME 的权威是 `.net` 结尾的。这样就可以防止出现胶水记录了，在全球加速的场景下是有优势的。
+
+<br/>
+
+### 多层CNAME 解析加速
+
+假设你的域名 CNAME 套了好多层，那么就意味着需要很多层的递归才能解析出最终的 A 记录。
+
+CNAME 是 为了满足 复杂的调度和管理需求的，但是其实可以做到在 多层 CNAME 的基础之上，保证解析的效率。
+
+比如 DNS Pod 推出的 CNAME 加速。
+
+文章连接： https://docs.dnspod.com/dns/cname-flattening-zh/
+
+<br/>
+
+假设 `a.com`，`b.com`，`c.com` 都是在 DNSPod 解析的域名：
+
+| 域名      | 记录类型 | 记录值    |
+| :-------- | :------- | :-------- |
+| www.a.com | CNAME    | www.b.com |
+| www.b.com | CNAME    | www.c.com |
+| www.c.com | A        | 1.2.3.4   |
+
+一般情况下，递归需要到授权服务器请求三次才能得到 `www.a.com` 的 IP 地址，如下图所示：
+
+<img src="https://img1.kiosk007.top/static/images/blog/20241207172148-dns_cname_flattening_1.png" />
+
+<br/>
+
+启用 CNAME 加速功能，授权服务器会把 CNAME 记录和最终的 A 记录一次返回给递归，递归服务器由请求三次授权服务器，减小到请求一次，如下图所示：
+
+<img src="https://img1.kiosk007.top/static/images/blog/20241207172215-dns_cname_flattening_2.png" />
+
+
+
+这样就极大地减少了请求和应答中网络通信消耗的时间，让解析变得更快，特别是在设置多条 CNAME 解析记录的情况下，加速效果更明显。
+
+
+
+<br/>
+
+
 
 
 
@@ -526,4 +789,172 @@ DNS 是配置本机指向的DNS服务器，建议配置运营商或者公共DNS�
 systemctl enable coredns
 systemctl start coredns
 ```
+
+
+
+### 配置 `example.io` 域名解析
+
+`example.io` 这个域名并不存在，我们在本地给他一个解析结果。
+
+使用 `file` 插件自定义域名的解析.  [file 插件](https://coredns.io/plugins/file/)
+
+```
+.:53 {
+	bind 127.0.0.1 ::1
+        errors
+        health {
+            lameduck 5s
+        }
+        ready
+        cache 30
+        reload
+        loadbalance
+	forward . 223.5.5.5 119.29.29.29
+}
+
+example.io:53 {
+	bind 127.0.0.1
+	file /etc/coredns/example.io.db example.io
+}
+
+```
+
+创建 `/etc/coredns/example.io.db`  文件。内容如下
+
+```
+$TTL 3600 ; 记录超时时间
+$ORIGIN example.io. ; 指定 origin，下面的@符号可以作为他的别名，注意后面的.
+; SOA 格式 [domain_name] IN SOA [域主服务器或主DNS服务器名] [管理员email] (时间信息)
+@           IN  SOA  ns1.example.io. admin.example.io. (
+                     2019071601 ; Serial
+                     4H         ; Refresh
+                     1H         ; Retry
+                     7D         ; Expire
+                     4H )       ; Negative Cache TTL
+
+; 配置 DNS 记录，指向 ns1.example.io
+@           IN  NS   ns1
+; 配置 ns1.example.io 的 A 记录, 指向coredns所在的机器
+ns1         IN  A    127.0.0.1
+; 配置 example.io 的 A 记录，指向网站或其他用途的机器
+@           IN  A    1.1.1.1
+; 配置泛域名，没有准确的三级子域名的域名全部指向此IPV4地址
+*   	    IN  A    5.5.5.5
+cdn 	    IN  CNAME cname1
+cname1      IN  CNAME cname2
+cname2      IN  A   1.2.3.4
+```
+
+尝试解析一下，看看效果
+
+```bash
+# dig cdn.example.io  @127.0.0.1 +short
+cname1.example.io.
+cname2.example.io.
+1.2.3.4
+```
+
+<br/>
+
+### 尝试实现 CNAME Flattening
+
+这里使用 CoreDNS 的 [Flatten插件](https://github.com/litobro/flatten)
+
+这里需要自己手动重新编译一个 coredns ，coredns 是golang 实现的，而本人的 golang 环境是现成的，就不介绍 golang 环境的搭建了。
+
+```bash
+git clone https://github.com/coredns/coredns.git
+
+# 在 plugin.cfg 文件中添加
+vim plugin.cfg
+
+...   # 添加一条
+flatten:github.com/litobro/flatten
+
+
+# 开始编译
+go generate
+go build
+
+sudo cp coredns /usr/local/bin
+```
+
+
+
+对配置文件做如下的修改
+
+```bash
+.:53 {
+        bind 127.0.0.1 ::1
+        errors
+        health {
+            lameduck 5s
+        }
+        ready
+        cache 30
+        reload
+        loadbalance
+        forward . 223.5.5.5 119.29.29.29
+}
+
+kiosk.io:53 {
+        bind 127.0.0.1
+        log
+        flatten kiosk.io cdn.example.io 127.0.0.1:53
+}
+
+example.io:53 {
+        bind 127.0.0.1
+        log
+        file /etc/coredns/example.io.db example.io
+}
+
+```
+
+启动 coreDNS:
+
+```bash
+# /usr/local/bin/coredns -conf=/etc/coredns/Corefile 
+.:53 on 127.0.0.1
+example.io.:53 on 127.0.0.1
+kiosk.io.:53 on 127.0.0.1
+.:53 on ::1
+[INFO] plugin/reload: Running configuration SHA512 = be58f721ab98e4affc5464a859492153ee35d2aaa3b558eb2c623258f9bbc3d7f3ba998af7b1973673179cb625550c0aa065111fbcab4f7aa49896cc8d1fc5d0
+CoreDNS-1.11.3
+linux/amd64, go1.23.0, 
+
+```
+
+验证效果:
+
+kiosk.io 这个域名被 转移映射到 example.io 上
+
+```bash
+# dig kiosk.io @127.0.0.1 
+
+; <<>> DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu <<>> kiosk.io @127.0.0.1
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 38076
+;; flags: qr aa rd; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 1
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+; COOKIE: a4084560500f58f9 (echoed)
+;; QUESTION SECTION:
+;kiosk.io.			IN	A
+
+;; ANSWER SECTION:
+kiosk.io.		3600	IN	CNAME	cname1.example.io.
+kiosk.io.		3600	IN	CNAME	cname2.example.io.
+kiosk.io.		3600	IN	A	1.2.3.4
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#53(127.0.0.1) (UDP)
+;; WHEN: Sat Dec 07 19:51:05 CST 2024
+;; MSG SIZE  rcvd: 151
+
+```
+
 
