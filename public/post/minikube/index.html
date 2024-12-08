@@ -47,7 +47,7 @@ macOS Docker 缺省驱动 xhyve driver , VirtualBox 或 VMware Fusion Linux Virt
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","wordcount":  700 ,
+                        }],"genre": "posts","wordcount":  697 ,
         "url": "http:\/\/localhost:1313\/post\/minikube\/","datePublished": "2020-09-22T09:53:00+00:00","dateModified": "2024-06-18T19:16:20+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -129,7 +129,7 @@ macOS Docker 缺省驱动 xhyve driver , VirtualBox 或 VMware Fusion Linux Virt
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">minikube 实践</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/k8s/"><i class="far fa-folder fa-fw"></i>K8s</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-09-22">2020-09-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;700 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-09-22">2020-09-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;697 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -221,19 +221,10 @@ macOS Docker 缺省驱动 xhyve driver , VirtualBox 或 VMware Fusion Linux Virt
 <h2 id="安装-kubectl">安装 kubectl</h2>
 <p>kubectl 建议也是安装最新的（要和 kubenetes apiserver 的版本不要差太多）</p>
 <p>这里我会下载最新的 稳定版本，这里安装的实际是 1.30</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">curl -LO &#34;https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl&#34;
-</span></span><span class="line"><span class="cl">sudo chmod +x kubectl
-</span></span><span class="line"><span class="cl">sudo cp kubectl /usr/local/bin
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>curl -LO &#34;https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl&#34;
+sudo chmod +x kubectl
+sudo cp kubectl /usr/local/bin
+</code></pre><br/>
 <h1 id="启动">启动</h1>
 <blockquote>
 <p>为了方便大家开发和体验Kubernetes，社区提供了可以在本地部署的开发环境 <a href="https://github.com/kubernetes/minikube" target="_blank" rel="noopener noreffer">Minikube</a>。由于网络访问原因，很多朋友无法直接使用minikube进行实验。在v1.24.0的官方 Minikube 中，已经合并了由阿里云团队支持的方案，可以帮助大家利用阿里云的服务来获取所需Docker镜像，</p>

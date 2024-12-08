@@ -864,9 +864,9 @@ enableEmoji = true
     # 启用代码围栏
     codeFences = true
     # 启用语言猜测
-    guessSyntax = true
+    guessSyntax = false
     # 设置标签样式
-    style = "monokai"
+    style = "monokaidark"
   # Goldmark is from Hugo 0.60 the default library used for Markdown
   # Goldmark 是 Hugo 0.60 以来的默认 Markdown 解析库
   [markup.goldmark]

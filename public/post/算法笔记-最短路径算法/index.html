@@ -64,7 +64,7 @@ Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的�
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "algorithm","wordcount":  490 ,
+                        }],"genre": "posts","keywords": "algorithm","wordcount":  489 ,
         "url": "http:\/\/localhost:1313\/post\/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95\/","datePublished": "2024-01-31T22:53:00+00:00","dateModified": "2024-01-31T22:53:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -146,7 +146,7 @@ Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的�
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">算法笔记-最短路径算法（Bellman-ford）</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/algorithm/"><i class="far fa-folder fa-fw"></i>Algorithm</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-01-31">2024-01-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;490 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-01-31">2024-01-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;489 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -200,15 +200,8 @@ Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的�
 <p>短路径算法通常用于在加权图中找到两个顶点之间的最短路径。然而，当图中存在负权边时，情况就会变得复杂。负权环（Negative Weight Cycle）是指图中的一个环，其总权重为负值。如果存在负权环，那么最短路径的概念可能会变得模糊，因为你可以无限次地通过这个环来减少路径的总权重。</p>
 <p>负权环的存在可能导致算法无法正确工作，因为它们可能会陷入无限循环。例如，贝尔曼-福特算法（Bellman-Ford）在存在负权环的情况下可以检测到问题，但无法找到最短路径。而像迪杰斯特拉算法（Dijkstra&rsquo;s algorithm）这样的算法则可能给出错误的结果，因为它们假设权重非负。</p>
 <p>这里是一个简单的图示来解释负权环：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">A --1--&gt; B --2--&gt; C --(-3)--&gt; A
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在这个图中，A到B是1的权重，B到C是2的权重，而C回到A有一个权重为-3的边。这个图中存在一个负权环：A -&gt; C -&gt; A。如果我们从A出发，经过C再回到A，总权重是-3。如果我们重复这个过程，路径的总权重可以无限减小。</p>
+<pre tabindex="0"><code>A --1--&gt; B --2--&gt; C --(-3)--&gt; A
+</code></pre><p>在这个图中，A到B是1的权重，B到C是2的权重，而C回到A有一个权重为-3的边。这个图中存在一个负权环：A -&gt; C -&gt; A。如果我们从A出发，经过C再回到A，总权重是-3。如果我们重复这个过程，路径的总权重可以无限减小。</p>
 <br/>
 <p>参考：https://www.geeksforgeeks.org/bellman-ford-algorithm-dp-23/</p>
 <h1 id="golang-实现">Golang 实现</h1>

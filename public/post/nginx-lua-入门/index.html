@@ -38,7 +38,7 @@ lua-nginx-module 是一个实现使用lua语言直接控制Nginx内HTTP请求的
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "nginx","wordcount":  2015 ,
+                        }],"genre": "posts","keywords": "nginx","wordcount":  1992 ,
         "url": "http:\/\/localhost:1313\/post\/nginx-lua-%E5%85%A5%E9%97%A8\/","datePublished": "2021-12-04T10:16:00+00:00","dateModified": "2021-12-04T10:16:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -120,7 +120,7 @@ lua-nginx-module 是一个实现使用lua语言直接控制Nginx内HTTP请求的
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Nginx Lua 扩展 --（Nginx 监控）</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/nginx/"><i class="far fa-folder fa-fw"></i>Nginx</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-04">2021-12-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2015 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-04">2021-12-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1992 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;10 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -619,15 +619,8 @@ lua 代码中可以看到大量的使用 <code>local</code> 关键字。
 </div>
 </div><p><strong>d第三种用 shared dict 来共享数据，这些数据可以在多个 worker 之间共享。</strong></p>
 <p>这种方法是基于红黑树实现的，性能很好，但也有自己的局限性——你必须事先在 Nginx 的配置文件中，声明共享内存的大小，并且这不能在运行期更改：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">lua_shared_dict dogs 10m;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>shared dict 同样只能缓存字符串类型的数据，不支持复杂的 Lua 数据类型。这也就意味着，当我需要存放 table 等复杂的数据类型时，我将不得不使用 json 或者其他的方法，来序列化和反序列化，这自然会带来不小的性能损耗。</p>
+<pre tabindex="0"><code>lua_shared_dict dogs 10m;
+</code></pre><p>shared dict 同样只能缓存字符串类型的数据，不支持复杂的 Lua 数据类型。这也就意味着，当我需要存放 table 等复杂的数据类型时，我将不得不使用 json 或者其他的方法，来序列化和反序列化，这自然会带来不小的性能损耗。</p>
 <p><code>shared dict</code> 同样支持多种api调用，如 <code>set</code>、<code>get</code>、<code>incr</code>、<code>replace</code>等，具体可以参考<a href="https://github.com/openresty/lua-nginx-module#ngxshareddict" target="_blank" rel="noopener noreffer">官方文档</a></p>
 <img src="https://img1.kiosk007.top/static/images/nginx/lua/nginx_share_dict.png" style="height:500px">
 <h1 id="prometheus-监控-nginx">prometheus 监控 Nginx</h1>
@@ -812,55 +805,28 @@ lua 代码中可以看到大量的使用 <code>local</code> 关键字。
 具体可以参考 <a href="https://prometheus.fuckcloudnative.io/di-san-zhang-prometheus/di-4-jie-cha-xun/basics" target="_blank" rel="noopener noreffer">教程</a></p>
 <p><strong>下面以监控CPU为例</strong></p>
 <p>对于节点我们首先能想到的就是要先对 CPU 进行监控，因为 CPU 是处理任务的核心，根据 CPU 的状态可以分析出当前系统的健康状态。要对节点进行 CPU 监控，需要用到 <code>node_cpu_seconds_total</code> 这个监控指标，在 metrics 接口中该指标内容如下所示：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ curl 127.0.0.1:9100/metrics -s |grep -v &#34;#&#34; |grep node_cpu
-</span></span><span class="line"><span class="cl">node_cpu_guest_seconds_total{cpu=&#34;0&#34;,mode=&#34;nice&#34;} 0
-</span></span><span class="line"><span class="cl">node_cpu_guest_seconds_total{cpu=&#34;0&#34;,mode=&#34;user&#34;} 0
-</span></span><span class="line"><span class="cl">node_cpu_guest_seconds_total{cpu=&#34;1&#34;,mode=&#34;nice&#34;} 0
-</span></span><span class="line"><span class="cl">node_cpu_guest_seconds_total{cpu=&#34;1&#34;,mode=&#34;user&#34;} 0
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;idle&#34;} 130304.6
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;iowait&#34;} 17.37
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;irq&#34;} 0
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;nice&#34;} 20.25
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;softirq&#34;} 12.51
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;steal&#34;} 0
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;system&#34;} 585.6
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;user&#34;} 467.62
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;idle&#34;} 130201.93
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;iowait&#34;} 78.33
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;irq&#34;} 0
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;nice&#34;} 18.39
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;softirq&#34;} 12.38
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;steal&#34;} 0
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;system&#34;} 590.54
-</span></span><span class="line"><span class="cl">node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;user&#34;} 464.42
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>从接口中描述可以看出该指标是用来统计 CPU 每种模式下所花费的时间，是一个 Counter 类型的指标，也就是会一直增长，这个数值其实是 CPU 时间片的一个累积值，意思就是从操作系统启动起来 CPU 开始工作，就开始记录自己总共使用的时间，然后保存下来，而且这里的累积的 CPU 使用时间还会分成几个不同的模式。</p>
+<pre tabindex="0"><code>$ curl 127.0.0.1:9100/metrics -s |grep -v &#34;#&#34; |grep node_cpu
+node_cpu_guest_seconds_total{cpu=&#34;0&#34;,mode=&#34;nice&#34;} 0
+node_cpu_guest_seconds_total{cpu=&#34;0&#34;,mode=&#34;user&#34;} 0
+node_cpu_guest_seconds_total{cpu=&#34;1&#34;,mode=&#34;nice&#34;} 0
+node_cpu_guest_seconds_total{cpu=&#34;1&#34;,mode=&#34;user&#34;} 0
+node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;idle&#34;} 130304.6
+node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;iowait&#34;} 17.37
+node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;irq&#34;} 0
+node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;nice&#34;} 20.25
+node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;softirq&#34;} 12.51
+node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;steal&#34;} 0
+node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;system&#34;} 585.6
+node_cpu_seconds_total{cpu=&#34;0&#34;,mode=&#34;user&#34;} 467.62
+node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;idle&#34;} 130201.93
+node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;iowait&#34;} 78.33
+node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;irq&#34;} 0
+node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;nice&#34;} 18.39
+node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;softirq&#34;} 12.38
+node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;steal&#34;} 0
+node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;system&#34;} 590.54
+node_cpu_seconds_total{cpu=&#34;1&#34;,mode=&#34;user&#34;} 464.42
+</code></pre><p>从接口中描述可以看出该指标是用来统计 CPU 每种模式下所花费的时间，是一个 Counter 类型的指标，也就是会一直增长，这个数值其实是 CPU 时间片的一个累积值，意思就是从操作系统启动起来 CPU 开始工作，就开始记录自己总共使用的时间，然后保存下来，而且这里的累积的 CPU 使用时间还会分成几个不同的模式。</p>
 <p>接下来我们来对节点的 CPU 进行监控，我们也知道一个一直增长的 CPU 时间对我们意义不大，一般我们更希望监控的是节点的 CPU 使用率。</p>
 <p>要计算 CPU 的使用率，那么就需要搞清楚这个使用率的含义，CPU 使用率是 CPU 除空闲（idle）状态之外的其他所有 CPU 状态的时间总和除以总的 CPU 时间得到的结果，理解了这个概念后就可以写出正确的 promql 查询语句了。</p>
 <p>要计算除空闲状态之外的 CPU 时间总和，更好的方式是不是直接计算空闲状态的 CPU 时间使用率，然后用 1 减掉就是我们想要的结果了，所以首先我们先过滤 idle 模式的指标，在 Prometheus 的 WebUI 中输入 <code>node_cpu_seconds_total{mode=&quot;idle&quot;} </code>进行过滤：</p>
@@ -890,15 +856,8 @@ lua 代码中可以看到大量的使用 <code>local</code> 关键字。
 <h1 id="nginx-lua-prometheus">nginx-lua-prometheus</h1>
 <p><code>nginx-lua-prometheus</code> 是一个lua写的Nginx监控项目，可以拉取Nginx的相关metrics 生成监控dashboard。</p>
 <p>参考<a href="https://github.com/knyar/nginx-lua-prometheus" target="_blank" rel="noopener noreffer">github</a></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">git clone http://github.com/knyar/nginx-lua-prometheus
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>快速安装，需要将下面的内容写在 <code>nginx.conf</code> 的 <code>http</code> 块内。</p>
+<pre tabindex="0"><code>git clone http://github.com/knyar/nginx-lua-prometheus
+</code></pre><p>快速安装，需要将下面的内容写在 <code>nginx.conf</code> 的 <code>http</code> 块内。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1

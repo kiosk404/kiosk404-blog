@@ -38,7 +38,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "eBPF","wordcount":  1498 ,
+                        }],"genre": "posts","keywords": "eBPF","wordcount":  1475 ,
         "url": "http:\/\/localhost:1313\/post\/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA\/","datePublished": "2022-05-10T16:30:00+00:00","dateModified": "2022-05-10T16:30:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -120,8 +120,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">如何使用eBPF进行追踪</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-05-10">2022-05-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1498 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-05-10">2022-05-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1475 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>Contents</span>
@@ -161,28 +161,12 @@
 <h1 id="内核跟踪点">内核跟踪点</h1>
 <p><strong>内核本身的调试和跟踪一直是内核提供的核心功能之一</strong>。内核符号表 <code>/proc/kallsyms</code> 不仅包含了内核函数，还包含了非栈数据变量等等，其中被显式导出的内核函数（7w+）才能被eBPF kprobe 类型程序动态追踪。</p>
 <p>以 v.5.15 内核版本为例，约有 7.1w 个内核函数</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># cat /sys/kernel/debug/tracing/available_filter_functions | wc -l
-</span></span><span class="line"><span class="cl">71961
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>除了内核函数和跟踪点外，性能事件可以使用 <a href="https://man7.org/linux/man-pages/man1/perf.1.html" target="_blank" rel="noopener noreffer">perf</a> 命令来查询。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">sudo perf list [hw|sw|cache|tracepoint|pmu|sdt|metric|metricgroup]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>通常，我们会以 bpftrace 、 BCC 和libbpf 这三种方式进行开发 eBPF 程序。这三种方式各有优缺点。</p>
+<pre tabindex="0"><code># cat /sys/kernel/debug/tracing/available_filter_functions | wc -l
+71961
+</code></pre><p>除了内核函数和跟踪点外，性能事件可以使用 <a href="https://man7.org/linux/man-pages/man1/perf.1.html" target="_blank" rel="noopener noreffer">perf</a> 命令来查询。</p>
+<pre tabindex="0"><code>
+sudo perf list [hw|sw|cache|tracepoint|pmu|sdt|metric|metricgroup]
+</code></pre><p>通常，我们会以 bpftrace 、 BCC 和libbpf 这三种方式进行开发 eBPF 程序。这三种方式各有优缺点。</p>
 <ul>
 <li><strong>bpftrace 通常用于快速排查问题和定位问题，支持用单行脚本的方式来快速开发并执行一个 eBPF 程序</strong> ，不过 bpftrace 功能有限，不支持特别复杂的 eBPF 程序，也依赖 BCC 和 LLVM 动态编译执行。</li>
 <li><strong>BCC 通常用于开发复杂的 eBPF 程序</strong>，但是BCC 依赖于 LLVM 和内核头文件才可以动态编译和加载 eBPF 程序。</li>
@@ -191,25 +175,13 @@
 <h2 id="bpftrace-查询内核跟踪点">bpftrace 查询内核跟踪点</h2>
 <p>bpftrace 在 eBPF 和 BCC 之上构建了一个简化的跟踪语言，通过简单的几行脚本就可以实现复杂的跟踪功能，多行跟踪指令也可以放到脚本中执行（脚本后缀通常为 .bt）。</p>
 <p>安装 bpftrace</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># Ubuntu 22.04
-</span></span><span class="line"><span class="cl">sudo apt-get install -y bpftrace
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># RHEL8/CentOS8
-</span></span><span class="line"><span class="cl">sudo dnf install -y bpftrace
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>安装完成之后可以使用 bpftrace 加上 -l 的参数来查询内核插桩和跟踪点。</p>
+<pre tabindex="0"><code>
+# Ubuntu 22.04
+sudo apt-get install -y bpftrace
+
+# RHEL8/CentOS8
+sudo dnf install -y bpftrace
+</code></pre><p>安装完成之后可以使用 bpftrace 加上 -l 的参数来查询内核插桩和跟踪点。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -341,21 +313,11 @@
 </li>
 </ul>
 <p>这下在其他终端执行的命令就会在这里被追踪到。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Attaching 1 probe...
-</span></span><span class="line"><span class="cl">68460  bash    ping qq.com
-</span></span><span class="line"><span class="cl">68653  cron    /bin/sh -c command -v debian-sa1 &gt; /dev/null &amp;&amp; debian-sa1 1 1
-</span></span><span class="line"><span class="cl">68654  sh      debian-sa1 1 1
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>还可以追踪某进程打开的文件：</p>
+<pre tabindex="0"><code>Attaching 1 probe...
+68460  bash    ping qq.com
+68653  cron    /bin/sh -c command -v debian-sa1 &gt; /dev/null &amp;&amp; debian-sa1 1 1
+68654  sh      debian-sa1 1 1
+</code></pre><p>还可以追踪某进程打开的文件：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -807,23 +769,12 @@
     </div>
 <p>此外，<strong>调试信息并非一定要内置在最终分发的应用程序二进制文件中，它们也可以放到独立的调试文件存储</strong>。为了减少二进制文件的大小，通常会把调试信息从二进制文件中剥离，比如每次编译和发布程序之前，会执行 strip 命令，把调试信息删除。</p>
 <p>假设我们要跟踪 Bash 这个C语言程序，就需要在跟踪之前，安装调试信息。安装失败参考 <a href="https://cloud.tencent.com/developer/article/1637887" target="_blank" rel="noopener noreffer">这篇文章</a></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Ubuntu
-</span></span><span class="line"><span class="cl">sudo apt install bash-dbgsym
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># RHEL
-</span></span><span class="line"><span class="cl">sudo debuginfo-install bash
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>有了 Bash 调试信息之后，再执行下面的步骤，查询Bash的符号表：</p>
+<pre tabindex="0"><code># Ubuntu
+sudo apt install bash-dbgsym
+
+# RHEL
+sudo debuginfo-install bash
+</code></pre><p>有了 Bash 调试信息之后，再执行下面的步骤，查询Bash的符号表：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -850,21 +801,11 @@
 </div>
 </div><p>参考 bash 命令的<a href="https://git.savannah.gnu.org/cgit/bash.git/tree/lib/readline/readline.c?h=bash-5.1#n352" target="_blank" rel="noopener noreffer">源代码</a>，每条Bash命令执行之前都会调用 <code>char readline(const char prompt)</code> 函数读取用户的输入。然后再去解析执行。</p>
 <p>bpftrace、BCC 以及 libbpf 等工具均支持 uretprobe，可以用下面的方法追踪。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo bpftrace -e &#39;uretprobe:/usr/bin/bash:readline { printf(&#34;User %d executed \&#34;%s\&#34; command\n&#34;, uid, str(retval)); }&#39;
-</span></span><span class="line"><span class="cl">Attaching 1 probe...
-</span></span><span class="line"><span class="cl">User 0 executed &#34;ls&#34; command
-</span></span><span class="line"><span class="cl">User 0 executed &#34;ping qq.com&#34; command
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<pre tabindex="0"><code>sudo bpftrace -e &#39;uretprobe:/usr/bin/bash:readline { printf(&#34;User %d executed \&#34;%s\&#34; command\n&#34;, uid, str(retval)); }&#39;
+Attaching 1 probe...
+User 0 executed &#34;ls&#34; command
+User 0 executed &#34;ping qq.com&#34; command
+</code></pre><blockquote>
 <p>注：uid 和 retval 是两个内置变量。</p>
 </blockquote>
 <p>如果想要获取返回值，BCC复杂一些，对于BCC的 uretprobe 来说，其官方文档 <a href="https://github.com/iovisor/bcc/blob/master/docs/reference_guide.md#5-uretprobes" target="_blank" rel="noopener noreffer">uretprobes</a>。根据这里的文档。返回值可以通过宏 <code>RT_REGE_RC(ctx)</code> 获取(kprobe 其实也一样)。</p>

@@ -35,7 +35,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","wordcount":  1301 ,
+                        }],"genre": "posts","wordcount":  1131 ,
         "url": "http:\/\/localhost:1313\/post\/kubernetes-%E8%B0%83%E5%BA%A6%E5%AF%B9%E8%B1%A1\/","datePublished": "2020-08-22T09:53:00+00:00","dateModified": "2022-06-18T19:16:20+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -117,8 +117,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Kubernetes 调度对象</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/k8s/"><i class="far fa-folder fa-fw"></i>K8s</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-08-22">2020-08-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1301 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-08-22">2020-08-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1131 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;6 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>Contents</span>
@@ -179,75 +179,38 @@
 <h2 id="pod-配置文件">Pod 配置文件</h2>
 <p>Pod的创建时基于k8s 的配置文件 &ndash; yaml 文件创建的，这样的好处是可以记录每一个Pod的基础信息,<strong>凡是调度、网络、存储、安全相关的属性，基本上都是Pod级别的</strong></p>
 <p>下面是Pod中的几个重要字段的含义和用法。具体更多的用法可以参考 <code>$GOPATH/src/k8s.io/kubernetes/vendor/k8s.io/api/core/v1/types.go</code>,</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apiVersion: v1    # 版本号
-</span></span><span class="line"><span class="cl">kind: Pod         # Pod
-</span></span><span class="line"><span class="cl">metadata:         # 元数据
-</span></span><span class="line"><span class="cl">  name: nginx     # Pod名称
-</span></span><span class="line"><span class="cl">  namespace: string    # Pod所属的命名空间
-</span></span><span class="line"><span class="cl">  labels:         # 自定义标签
-</span></span><span class="line"><span class="cl">    - name: string   # 自定义标签名字
-</span></span><span class="line"><span class="cl">  annotations:       # 自定义注释列表
-</span></span><span class="line"><span class="cl">    - name: string 
-</span></span><span class="line"><span class="cl">spec:          # Pod中容器的详细定义
-</span></span><span class="line"><span class="cl">  hostNetwork: true   # 共享宿主机网络
-</span></span><span class="line"><span class="cl">  hostIPC: true       # 共享宿主机IPC
-</span></span><span class="line"><span class="cl">  hostPID: true       # 共享宿主机PID
-</span></span><span class="line"><span class="cl">  shareProcessNamespace: true   # Pod间共享PID
-</span></span><span class="line"><span class="cl">  nodeSelector:       # 设置NodeSelector表示将该Pod调度到包含这个label的node上，以key：value的格式指定
-</span></span><span class="line"><span class="cl">  imagePullSecrets:    #Pull镜像时使用的secret名称，以key：secretkey格式指定
-</span></span><span class="line"><span class="cl">    - name: string
-</span></span><span class="line"><span class="cl">   disktype: ssd        
-</span></span><span class="line"><span class="cl">  hostAliases:        # 设置 /etc/hosts
-</span></span><span class="line"><span class="cl">   - ip: &#34;10.1.2.3&#34;
-</span></span><span class="line"><span class="cl">    hostnames:
-</span></span><span class="line"><span class="cl">    - &#34;foo.remote&#34;
-</span></span><span class="line"><span class="cl">    - &#34;bar.remote&#34;
-</span></span><span class="line"><span class="cl">  restartPolicy: [Always | Never | OnFailure]  # Pod的重启策略
-</span></span><span class="line"><span class="cl">  containers:
-</span></span><span class="line"><span class="cl">  - name: nginx
-</span></span><span class="line"><span class="cl">    image: nginx
-</span></span><span class="line"><span class="cl">  - name: shell
-</span></span><span class="line"><span class="cl">    image: busybox
-</span></span><span class="line"><span class="cl">    stdin: true
-</span></span><span class="line"><span class="cl">    tty: true
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>apiVersion: v1    # 版本号
+kind: Pod         # Pod
+metadata:         # 元数据
+  name: nginx     # Pod名称
+  namespace: string    # Pod所属的命名空间
+  labels:         # 自定义标签
+    - name: string   # 自定义标签名字
+  annotations:       # 自定义注释列表
+    - name: string 
+spec:          # Pod中容器的详细定义
+  hostNetwork: true   # 共享宿主机网络
+  hostIPC: true       # 共享宿主机IPC
+  hostPID: true       # 共享宿主机PID
+  shareProcessNamespace: true   # Pod间共享PID
+  nodeSelector:       # 设置NodeSelector表示将该Pod调度到包含这个label的node上，以key：value的格式指定
+  imagePullSecrets:    #Pull镜像时使用的secret名称，以key：secretkey格式指定
+    - name: string
+   disktype: ssd        
+  hostAliases:        # 设置 /etc/hosts
+   - ip: &#34;10.1.2.3&#34;
+    hostnames:
+    - &#34;foo.remote&#34;
+    - &#34;bar.remote&#34;
+  restartPolicy: [Always | Never | OnFailure]  # Pod的重启策略
+  containers:
+  - name: nginx
+    image: nginx
+  - name: shell
+    image: busybox
+    stdin: true
+    tty: true
+</code></pre><ul>
 <li><strong>spec</strong></li>
 </ul>
 <p><strong>nodeSeletor</strong> 是一个供用户将 Pod 与 Node 进行绑定的字段
@@ -269,161 +232,81 @@
 <ul>
 <li><strong>容器 &amp;&amp; 镜像</strong></li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span><span class="lnt">69
-</span><span class="lnt">70
-</span><span class="lnt">71
-</span><span class="lnt">72
-</span><span class="lnt">73
-</span><span class="lnt">74
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apiVersion: v1
-</span></span><span class="line"><span class="cl">kind: Pod
-</span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: lifecycle-demo
-</span></span><span class="line"><span class="cl">spec:
-</span></span><span class="line"><span class="cl">  containers:     # Pod中容器列表
-</span></span><span class="line"><span class="cl">  - name: demo    # 容器名
-</span></span><span class="line"><span class="cl">    image: nginx:1.19.2
-</span></span><span class="line"><span class="cl">    command: [string]    # 容器的启动命令列表，如不指定，使用打包时使用的启动命令
-</span></span><span class="line"><span class="cl">    args: [string]       # 容器的启动命令参数列表
-</span></span><span class="line"><span class="cl">    workingDir: string   # 容器的工作目录
-</span></span><span class="line"><span class="cl">    imagePullPolicy: [Always | Never | IfNotPresent] # 容器拉取策略
-</span></span><span class="line"><span class="cl">    nodeSelector: obeject  # 设置NodeSelector表示将该Pod调度到包含这个label的node上，以key：value的格式指定
-</span></span><span class="line"><span class="cl">    lifecycle:      # 容器生命周期
-</span></span><span class="line"><span class="cl">      postStart:
-</span></span><span class="line"><span class="cl">        exec:
-</span></span><span class="line"><span class="cl">          command: [&#34;/bin/sh&#34;, &#34;-c&#34;, &#34;echo Hello from the postStart handler &gt; /usr/share/message&#34;]
-</span></span><span class="line"><span class="cl">      preStop:
-</span></span><span class="line"><span class="cl">        exec:
-</span></span><span class="line"><span class="cl">          command: [&#34;/usr/sbin/nginx&#34;,&#34;-s&#34;,&#34;quit&#34;]
-</span></span><span class="line"><span class="cl">    volumes:       #在该pod上定义共享存储卷列表
-</span></span><span class="line"><span class="cl">    - name: string     #共享存储卷名称 （volumes类型有很多种）
-</span></span><span class="line"><span class="cl">      emptyDir: {}     #类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值
-</span></span><span class="line"><span class="cl">      hostPath: string     #类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录
-</span></span><span class="line"><span class="cl">        path: string     #Pod所在宿主机的目录，将被用于同期中mount的目录
-</span></span><span class="line"><span class="cl">      secret:      #类型为secret的存储卷，挂载集群与定义的secre对象到容器内部
-</span></span><span class="line"><span class="cl">        scretname: string  
-</span></span><span class="line"><span class="cl">        items:     
-</span></span><span class="line"><span class="cl">        - key: string
-</span></span><span class="line"><span class="cl">          path: string
-</span></span><span class="line"><span class="cl">      configMap:     #类型为configMap的存储卷，挂载预定义的configMap对象到容器内部
-</span></span><span class="line"><span class="cl">        name: string
-</span></span><span class="line"><span class="cl">        items:
-</span></span><span class="line"><span class="cl">        - key: string
-</span></span><span class="line"><span class="cl">          path: string
-</span></span><span class="line"><span class="cl">    volumeMounts:    #挂载到容器内部的存储卷配置
-</span></span><span class="line"><span class="cl">    - name: string     #引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名
-</span></span><span class="line"><span class="cl">      mountPath: string    #存储卷在容器内mount的绝对路径，应少于512字符
-</span></span><span class="line"><span class="cl">      readOnly: boolean    #是否为只读模式
-</span></span><span class="line"><span class="cl">    ports:       #需要暴露的端口库号列表
-</span></span><span class="line"><span class="cl">    - name: string     #端口号名称
-</span></span><span class="line"><span class="cl">      containerPort: int   #容器需要监听的端口号
-</span></span><span class="line"><span class="cl">      hostPort: int    #容器所在主机需要监听的端口号，默认与Container相同
-</span></span><span class="line"><span class="cl">      protocol: string     #端口协议，支持TCP和UDP，默认TCP
-</span></span><span class="line"><span class="cl">    env:       #容器运行前需设置的环境变量列表
-</span></span><span class="line"><span class="cl">    - name: string     #环境变量名称
-</span></span><span class="line"><span class="cl">      value: string    #环境变量的值
-</span></span><span class="line"><span class="cl">    resources:       #资源限制和请求的设置
-</span></span><span class="line"><span class="cl">      limits:      #资源限制的设置
-</span></span><span class="line"><span class="cl">        cpu: string    #Cpu的限制，单位为core数，将用于docker run --cpu-shares参数
-</span></span><span class="line"><span class="cl">        memory: string     #内存限制，单位可以为Mib/Gib，将用于docker run --memory参数
-</span></span><span class="line"><span class="cl">      requests:      #资源请求的设置
-</span></span><span class="line"><span class="cl">        cpu: string    #Cpu请求，容器启动的初始可用数量
-</span></span><span class="line"><span class="cl">        memory: string     #内存请求，容器启动的初始可用数量
-</span></span><span class="line"><span class="cl">    livenessProbe:     #对Pod内个容器健康检查的设置，当探测无响应几次后将自动重启该容器，检查方法有exec、httpGet和tcpSocket，对一个容器只需设置其中一种方法即可
-</span></span><span class="line"><span class="cl">      exec:      #对Pod容器内检查方式设置为exec方式
-</span></span><span class="line"><span class="cl">        command: [string]  #exec方式需要制定的命令或脚本
-</span></span><span class="line"><span class="cl">      httpGet:       #对Pod内个容器健康检查方法设置为HttpGet，需要制定Path、port
-</span></span><span class="line"><span class="cl">        path: string
-</span></span><span class="line"><span class="cl">        port: number
-</span></span><span class="line"><span class="cl">        host: string
-</span></span><span class="line"><span class="cl">        scheme: string
-</span></span><span class="line"><span class="cl">        HttpHeaders:
-</span></span><span class="line"><span class="cl">        - name: string
-</span></span><span class="line"><span class="cl">          value: string
-</span></span><span class="line"><span class="cl">      tcpSocket:     #对Pod内个容器健康检查方式设置为tcpSocket方式
-</span></span><span class="line"><span class="cl">         port: number
-</span></span><span class="line"><span class="cl">       initialDelaySeconds: 0  #容器启动完成后首次探测的时间，单位为秒
-</span></span><span class="line"><span class="cl">       timeoutSeconds: 0   #对容器健康检查探测等待响应的超时时间，单位秒，默认1秒
-</span></span><span class="line"><span class="cl">       periodSeconds: 0    #对容器监控检查的定期探测时间设置，单位秒，默认10秒一次
-</span></span><span class="line"><span class="cl">       successThreshold: 0
-</span></span><span class="line"><span class="cl">       failureThreshold: 0
-</span></span><span class="line"><span class="cl">       securityContext:
-</span></span><span class="line"><span class="cl">         privileged:false
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>ImagePullPolicy</strong> 定义了镜像拉取的策略，是一个Container级别的属性，默认值是Always，即每次创建Pod都重新拉取一次镜像，如果被定义为Never或者 ifNotPresent 时，则意味着Pod永远不会主动拉取这个镜像，或者只有宿主机不存在这个镜像时才会拉取。</p>
+<pre tabindex="0"><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-demo
+spec:
+  containers:     # Pod中容器列表
+  - name: demo    # 容器名
+    image: nginx:1.19.2
+    command: [string]    # 容器的启动命令列表，如不指定，使用打包时使用的启动命令
+    args: [string]       # 容器的启动命令参数列表
+    workingDir: string   # 容器的工作目录
+    imagePullPolicy: [Always | Never | IfNotPresent] # 容器拉取策略
+    nodeSelector: obeject  # 设置NodeSelector表示将该Pod调度到包含这个label的node上，以key：value的格式指定
+    lifecycle:      # 容器生命周期
+      postStart:
+        exec:
+          command: [&#34;/bin/sh&#34;, &#34;-c&#34;, &#34;echo Hello from the postStart handler &gt; /usr/share/message&#34;]
+      preStop:
+        exec:
+          command: [&#34;/usr/sbin/nginx&#34;,&#34;-s&#34;,&#34;quit&#34;]
+    volumes:       #在该pod上定义共享存储卷列表
+    - name: string     #共享存储卷名称 （volumes类型有很多种）
+      emptyDir: {}     #类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值
+      hostPath: string     #类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录
+        path: string     #Pod所在宿主机的目录，将被用于同期中mount的目录
+      secret:      #类型为secret的存储卷，挂载集群与定义的secre对象到容器内部
+        scretname: string  
+        items:     
+        - key: string
+          path: string
+      configMap:     #类型为configMap的存储卷，挂载预定义的configMap对象到容器内部
+        name: string
+        items:
+        - key: string
+          path: string
+    volumeMounts:    #挂载到容器内部的存储卷配置
+    - name: string     #引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名
+      mountPath: string    #存储卷在容器内mount的绝对路径，应少于512字符
+      readOnly: boolean    #是否为只读模式
+    ports:       #需要暴露的端口库号列表
+    - name: string     #端口号名称
+      containerPort: int   #容器需要监听的端口号
+      hostPort: int    #容器所在主机需要监听的端口号，默认与Container相同
+      protocol: string     #端口协议，支持TCP和UDP，默认TCP
+    env:       #容器运行前需设置的环境变量列表
+    - name: string     #环境变量名称
+      value: string    #环境变量的值
+    resources:       #资源限制和请求的设置
+      limits:      #资源限制的设置
+        cpu: string    #Cpu的限制，单位为core数，将用于docker run --cpu-shares参数
+        memory: string     #内存限制，单位可以为Mib/Gib，将用于docker run --memory参数
+      requests:      #资源请求的设置
+        cpu: string    #Cpu请求，容器启动的初始可用数量
+        memory: string     #内存请求，容器启动的初始可用数量
+    livenessProbe:     #对Pod内个容器健康检查的设置，当探测无响应几次后将自动重启该容器，检查方法有exec、httpGet和tcpSocket，对一个容器只需设置其中一种方法即可
+      exec:      #对Pod容器内检查方式设置为exec方式
+        command: [string]  #exec方式需要制定的命令或脚本
+      httpGet:       #对Pod内个容器健康检查方法设置为HttpGet，需要制定Path、port
+        path: string
+        port: number
+        host: string
+        scheme: string
+        HttpHeaders:
+        - name: string
+          value: string
+      tcpSocket:     #对Pod内个容器健康检查方式设置为tcpSocket方式
+         port: number
+       initialDelaySeconds: 0  #容器启动完成后首次探测的时间，单位为秒
+       timeoutSeconds: 0   #对容器健康检查探测等待响应的超时时间，单位秒，默认1秒
+       periodSeconds: 0    #对容器监控检查的定期探测时间设置，单位秒，默认10秒一次
+       successThreshold: 0
+       failureThreshold: 0
+       securityContext:
+         privileged:false
+</code></pre><p><strong>ImagePullPolicy</strong> 定义了镜像拉取的策略，是一个Container级别的属性，默认值是Always，即每次创建Pod都重新拉取一次镜像，如果被定义为Never或者 ifNotPresent 时，则意味着Pod永远不会主动拉取这个镜像，或者只有宿主机不存在这个镜像时才会拉取。</p>
 <p><strong>Lifecycle</strong> 定义了容器生命周期的一些钩子，可以执行容器启动前启动后的一些命令，</p>
 <ul>
 <li><strong>Projected Volume</strong></li>
@@ -437,113 +320,52 @@
 <li>ServiceAccountToken  (保存授权信息)</li>
 </ol>
 <p>以Secret为例，其存在的意义其实就是将一些重要的数据投射进容器，比如数据库密码。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apiVersion: v1
-</span></span><span class="line"><span class="cl">kind: Pod
-</span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: test-projected-volume 
-</span></span><span class="line"><span class="cl">spec:
-</span></span><span class="line"><span class="cl">  containers:
-</span></span><span class="line"><span class="cl">  - name: test-secret-volume
-</span></span><span class="line"><span class="cl">    image: busybox
-</span></span><span class="line"><span class="cl">    args:
-</span></span><span class="line"><span class="cl">    - sleep
-</span></span><span class="line"><span class="cl">    - &#34;86400&#34;
-</span></span><span class="line"><span class="cl">    volumeMounts:
-</span></span><span class="line"><span class="cl">    - name: mysql-cred
-</span></span><span class="line"><span class="cl">      mountPath: &#34;/projected-volume&#34;
-</span></span><span class="line"><span class="cl">      readOnly: true
-</span></span><span class="line"><span class="cl">  volumes:
-</span></span><span class="line"><span class="cl">  - name: mysql-cred
-</span></span><span class="line"><span class="cl">    projected:
-</span></span><span class="line"><span class="cl">      sources:
-</span></span><span class="line"><span class="cl">      - secret:
-</span></span><span class="line"><span class="cl">          name: user
-</span></span><span class="line"><span class="cl">      - secret:
-</span></span><span class="line"><span class="cl">          name: pass
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>数据库的用户名和密码，正是以Secret对象交付给 k8s 保存的</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ cat ./username.txt
-</span></span><span class="line"><span class="cl">admin
-</span></span><span class="line"><span class="cl">$ cat ./password.txt
-</span></span><span class="line"><span class="cl">c1oudc0w!
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ kubectl create secret generic user --from-file=./username.txt
-</span></span><span class="line"><span class="cl">$ kubectl create secret generic pass --from-file=./password.txt
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ kubectl get secrets
-</span></span><span class="line"><span class="cl">NAME           TYPE                                DATA      AGE
-</span></span><span class="line"><span class="cl">user          Opaque                                1         51s
-</span></span><span class="line"><span class="cl">pass          Opaque                                1         51s
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>也可以通过yaml文件的格式创建Secret对象</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apiVersion: v1
-</span></span><span class="line"><span class="cl">kind: Secret
-</span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: mysecret
-</span></span><span class="line"><span class="cl">type: Opaque
-</span></span><span class="line"><span class="cl">data:
-</span></span><span class="line"><span class="cl">  user: YWRtaW4=
-</span></span><span class="line"><span class="cl">  pass: MWYyZDFlMmU2N2Rm
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h1 id="deployment">Deployment</h1>
+<pre tabindex="0"><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: test-projected-volume 
+spec:
+  containers:
+  - name: test-secret-volume
+    image: busybox
+    args:
+    - sleep
+    - &#34;86400&#34;
+    volumeMounts:
+    - name: mysql-cred
+      mountPath: &#34;/projected-volume&#34;
+      readOnly: true
+  volumes:
+  - name: mysql-cred
+    projected:
+      sources:
+      - secret:
+          name: user
+      - secret:
+          name: pass
+</code></pre><p>数据库的用户名和密码，正是以Secret对象交付给 k8s 保存的</p>
+<pre tabindex="0"><code>$ cat ./username.txt
+admin
+$ cat ./password.txt
+c1oudc0w!
+
+$ kubectl create secret generic user --from-file=./username.txt
+$ kubectl create secret generic pass --from-file=./password.txt
+
+$ kubectl get secrets
+NAME           TYPE                                DATA      AGE
+user          Opaque                                1         51s
+pass          Opaque                                1         51s
+</code></pre><p>也可以通过yaml文件的格式创建Secret对象</p>
+<pre tabindex="0"><code>apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+type: Opaque
+data:
+  user: YWRtaW4=
+  pass: MWYyZDFlMmU2N2Rm
+</code></pre><h1 id="deployment">Deployment</h1>
 <p>Pod 看似复杂的API对象，实际上是容器的进一步抽象和封装。而控制器（Deployment）则是控制Pod的抽象。有了控制器，我们可以定义需要2个pod，当pod个数不够时，自动创建pod直到pod个数满足配置文件 replicas 里 定义的个数。</p>
 <p>在 k8s 架构中，有一个叫做 kube-controller-manager 的组件，这个组件负责了k8s集群中的集群属性。使用Deployment控制的pod在生产环境才有意义。</p>
 <h2 id="功能">功能</h2>
@@ -555,57 +377,29 @@
 </ol>
 <p>Deployment 本质也是从Etcd中获取到所有携带了“app：nginx” 标签的Pod，统计其数量，并根据 ReplicaSet 字段进行调整。</p>
 <h2 id="配置文件">配置文件</h2>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apiVersion: extensions/v1beta1   
-</span></span><span class="line"><span class="cl">kind: Deployment                 
-</span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: string         # Deployment名称
-</span></span><span class="line"><span class="cl">spec:
-</span></span><span class="line"><span class="cl">  replicas: 3            # 目标副本数量
-</span></span><span class="line"><span class="cl">  revisonHistoryLimit: 0 # 控制历史版本个数，0的话就没办法再进行回滚操作
-</span></span><span class="line"><span class="cl">  strategy:
-</span></span><span class="line"><span class="cl">    rollingUpdate:       # 滚动更新
-</span></span><span class="line"><span class="cl">      maxSurge: 1        # 滚动升级时最大同时升级1个pod
-</span></span><span class="line"><span class="cl">      maxUnavailable: 1  # 滚动升级时最大允许不可用的pod个数
-</span></span><span class="line"><span class="cl">  template:         
-</span></span><span class="line"><span class="cl">    metadata:
-</span></span><span class="line"><span class="cl">      labels:
-</span></span><span class="line"><span class="cl">        app: string      # 模板名称
-</span></span><span class="line"><span class="cl">    sepc:                # 定义容器模板，该模板可以包含多个容器
-</span></span><span class="line"><span class="cl">      containers:                               
-</span></span><span class="line"><span class="cl">        - name: string                                 
-</span></span><span class="line"><span class="cl">          image: string 
-</span></span><span class="line"><span class="cl">          ports:
-</span></span><span class="line"><span class="cl">            - name: http
-</span></span><span class="line"><span class="cl">              containerPort: 8080  # 对service暴露端口
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>template</strong> Deployment里的template 字段和一个标准的Pod对象的API定义丝毫不差，而所有被这个Deployment管理的Pod实例就是根据这个template创建出来的。</p>
+<pre tabindex="0"><code>apiVersion: extensions/v1beta1   
+kind: Deployment                 
+metadata:
+  name: string         # Deployment名称
+spec:
+  replicas: 3            # 目标副本数量
+  revisonHistoryLimit: 0 # 控制历史版本个数，0的话就没办法再进行回滚操作
+  strategy:
+    rollingUpdate:       # 滚动更新
+      maxSurge: 1        # 滚动升级时最大同时升级1个pod
+      maxUnavailable: 1  # 滚动升级时最大允许不可用的pod个数
+  template:         
+    metadata:
+      labels:
+        app: string      # 模板名称
+    sepc:                # 定义容器模板，该模板可以包含多个容器
+      containers:                               
+        - name: string                                 
+          image: string 
+          ports:
+            - name: http
+              containerPort: 8080  # 对service暴露端口
+</code></pre><p><strong>template</strong> Deployment里的template 字段和一个标准的Pod对象的API定义丝毫不差，而所有被这个Deployment管理的Pod实例就是根据这个template创建出来的。</p>
 <h2 id="replicaset-对象"><strong>ReplicaSet 对象</strong></h2>
 <p>Deployment 看似简单，但实际上，他是实现 Kubernetes 项目一个非常重要的功能：<strong>Pod的&quot;水平扩展/收缩&quot;</strong>。这个功能是平台级别项目必须具备的编排能力。</p>
 <br/>

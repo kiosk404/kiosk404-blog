@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "git","wordcount":  1392 ,
+                        }],"genre": "posts","keywords": "git","wordcount":  1370 ,
         "url": "http:\/\/localhost:1313\/post\/git-quick-start\/","datePublished": "2020-12-19T19:11:00+00:00","dateModified": "2020-12-19T19:11:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Git Quick Start</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/git/"><i class="far fa-folder fa-fw"></i>Git</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-12-19">2020-12-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1392 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-12-19">2020-12-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1370 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -558,23 +558,12 @@
 
 </p>
 <p>分别包含三个部分，分别是 <strong>Header</strong>、<strong>Body</strong>、<strong>Footer</strong>，格式如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;type&gt;[optional scope]: &lt;description&gt;
-</span></span><span class="line"><span class="cl">// 空行
-</span></span><span class="line"><span class="cl">[optional body]
-</span></span><span class="line"><span class="cl">// 空行
-</span></span><span class="line"><span class="cl">[optional footer(s)]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>下面是常见的 type 类型以及它们所属的类别：</p>
+<pre tabindex="0"><code>&lt;type&gt;[optional scope]: &lt;description&gt;
+// 空行
+[optional body]
+// 空行
+[optional footer(s)]
+</code></pre><p>下面是常见的 type 类型以及它们所属的类别：</p>
 <img src="https://img1.kiosk007.top/static/images/blog/git_commit_type.webp" alt="git_commit_type" style="zoom:80%;clear:both;display:block;margin:auto;" />
 <h2 id="commit-合并">Commit 合并</h2>
 <p>合并提交，就是将多个 commit 合并为一个 commit 提交，一般建议将新的commit 合并到主干时，只保留 2～3 个 commit 记录。</p>
@@ -587,23 +576,12 @@
 <p>git rebase 支持的变更操作如下：</p>
 <img src="https://img1.kiosk007.top/static/images/blog/git_rebase_1.webp" alt="git_rebase_1" style="zoom:50%;clear:both;display:block;margin:auto;" />
 <p>在上面的 7 个命令中，squash 和 fixup 可以用来合并 commit，比如我们只需要将合并的 commit 前面的动词改成 <strong>squash</strong> （或者一个单词 s 简写）即可。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">pick 07c5abd Introduce OpenPGP and teach basic usage
-</span></span><span class="line"><span class="cl">s de9b1eb Fix PostChecker::Post#urls
-</span></span><span class="line"><span class="cl">s 3e7ee36 Hey kids, stop all the highlighting
-</span></span><span class="line"><span class="cl">pick fa20af3 git interactive rebase, squash, amend
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="commit-信息修改">Commit 信息修改</h2>
+<pre tabindex="0"><code>
+pick 07c5abd Introduce OpenPGP and teach basic usage
+s de9b1eb Fix PostChecker::Post#urls
+s 3e7ee36 Hey kids, stop all the highlighting
+pick fa20af3 git interactive rebase, squash, amend
+</code></pre><h2 id="commit-信息修改">Commit 信息修改</h2>
 <p>我们有时候需要能够修改之前某次 commit 的 Commit Message。</p>
 <p>具体来说，我们有两种修改的方法，分别对应两种不同的情况：</p>
 <ol>
@@ -624,40 +602,18 @@
 <h2 id="不同人修改同文件的同一区域">不同人修改同文件的同一区域</h2>
 <p>先使用 git pull 将远端内容拉下来。</p>
 <p>此时会报错</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">From github.com:kiosk404/git_new_feature
-</span></span><span class="line"><span class="cl">   d651f5..cfa2fca feature/2021 -&gt; github/feature/2021
-</span></span><span class="line"><span class="cl">Auto-merging index.html
-</span></span><span class="line"><span class="cl">CONFLICT(content): Merge conflict in index.html
-</span></span><span class="line"><span class="cl">Automatic merge failed; fix conflicts and then commit the result.
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这时打开出现冲突的文件，如 index.html。选择如何处理保留情况</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">============
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; ca234567bac345345555232799453bfacac
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>使用 git status 检查一下是否完成（肯定完成）</p>
+<pre tabindex="0"><code class="language-git" data-lang="git">From github.com:kiosk404/git_new_feature
+   d651f5..cfa2fca feature/2021 -&gt; github/feature/2021
+Auto-merging index.html
+CONFLICT(content): Merge conflict in index.html
+Automatic merge failed; fix conflicts and then commit the result.
+</code></pre><p>这时打开出现冲突的文件，如 index.html。选择如何处理保留情况</p>
+<pre tabindex="0"><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+
+============
+
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; ca234567bac345345555232799453bfacac
+</code></pre><p>使用 git status 检查一下是否完成（肯定完成）</p>
 <p>生成一个新的 commit （git commit -am &ldquo;xxxx&rdquo;）</p>
 <blockquote>
 <p>如果不想合并了可以使用 git merge &ndash;abort</p>
@@ -860,17 +816,9 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>如果出现以下报错</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fatal: Cannot update paths and switch to branch &#39;dev2&#39; at the same time.
-</span></span><span class="line"><span class="cl">Did you intend to checkout &#39;origin/dev2&#39; which can not be resolved as commit?
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>表示拉取不成功。我们需要先执行</p>
+<pre tabindex="0"><code>fatal: Cannot update paths and switch to branch &#39;dev2&#39; at the same time.
+Did you intend to checkout &#39;origin/dev2&#39; which can not be resolved as commit?
+</code></pre><p>表示拉取不成功。我们需要先执行</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1

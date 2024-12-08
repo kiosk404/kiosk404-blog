@@ -48,7 +48,7 @@ CPU 虚拟化 为什么需要 CPU 虚拟化 X86 操作系统是设计在直接�
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "openstack","wordcount":  1043 ,
+                        }],"genre": "posts","keywords": "openstack","wordcount":  1019 ,
         "url": "http:\/\/localhost:1313\/post\/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA\/","datePublished": "2022-08-21T11:23:00+00:00","dateModified": "2022-08-21T11:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -130,7 +130,7 @@ CPU 虚拟化 为什么需要 CPU 虚拟化 X86 操作系统是设计在直接�
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">虚拟化-创建一个虚拟机</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-08-21">2022-08-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1043 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-08-21">2022-08-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1019 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -349,19 +349,10 @@ CPU 虚拟化 为什么需要 CPU 虚拟化 X86 操作系统是设计在直接�
 <img src="https://img1.kiosk007.top/static/images/blog/virtual_machine_vmware.png" alt="virtual_machine_vmware" style="zoom:30%;clear:both;display:block;margin:auto;" />
 <p>使用 <code>grep -E --color '(vmx|vms)' /proc/cpuinfo</code> 命令如果可以看到输出则表示开启了硬件支持虚拟化。</p>
 <p>另外需要注意的是 kvm 内核模块需要加载成功。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ lsmod|grep kvm
-</span></span><span class="line"><span class="cl">kvm_intel             282624  0
-</span></span><span class="line"><span class="cl">kvm                   663552  1 kvm_intel
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="qemu-模拟">qemu 模拟</h2>
+<pre tabindex="0"><code>$ lsmod|grep kvm
+kvm_intel             282624  0
+kvm                   663552  1 kvm_intel
+</code></pre><h2 id="qemu-模拟">qemu 模拟</h2>
 <ul>
 <li><strong>模拟CPU</strong></li>
 </ul>
@@ -397,31 +388,16 @@ CPU 虚拟化 为什么需要 CPU 虚拟化 X86 操作系统是设计在直接�
 </ul>
 <p>使用 qemu-system-x86_64 的 drive 选项指定如 if=vritio，来支持高级的版虚拟化技术。(-hda 选项不能和高级的drive同时使用，hda很初级)</p>
 <p>查看 磁盘镜像的格式：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ qemu-img info cirros-0.3.0-x86_64-disk.img 
-</span></span><span class="line"><span class="cl">image: cirros-0.3.0-x86_64-disk.img
-</span></span><span class="line"><span class="cl">file format: qcow2
-</span></span><span class="line"><span class="cl">virtual size: 39.2 MiB (41126400 bytes)
-</span></span><span class="line"><span class="cl">disk size: 10.1 MiB
-</span></span><span class="line"><span class="cl">cluster_size: 65536
-</span></span><span class="line"><span class="cl">Format specific information:
-</span></span><span class="line"><span class="cl">    compat: 0.10
-</span></span><span class="line"><span class="cl">    refcount bits: 16
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<pre tabindex="0"><code>$ qemu-img info cirros-0.3.0-x86_64-disk.img 
+image: cirros-0.3.0-x86_64-disk.img
+file format: qcow2
+virtual size: 39.2 MiB (41126400 bytes)
+disk size: 10.1 MiB
+cluster_size: 65536
+Format specific information:
+    compat: 0.10
+    refcount bits: 16
+</code></pre><blockquote>
 <p>qcow2镜像是qemu的一种镜像格式，是&rsquo;qemu copy on write&rsquo;的简写。相比 raw 格式有很多高级功能支持。</p>
 </blockquote>
 <br/>
@@ -455,35 +431,18 @@ CPU 虚拟化 为什么需要 CPU 虚拟化 X86 操作系统是设计在直接�
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>一段系统启动的加载之后，可以看到如下的输出（cirros的镜像是网上找的似乎某个教育机构的，登陆密码有写）</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">=== datasource: None None ===
-</span></span><span class="line"><span class="cl">=== cirros: current=0.4.0 latest=0.4.0 uptime=10.63 ===
-</span></span><span class="line"><span class="cl">  ____               ____  ____
-</span></span><span class="line"><span class="cl"> / __/ __ ____ ____ / __ \/ __/
-</span></span><span class="line"><span class="cl">/ /__ / // __// __// /_/ /\ \ 
-</span></span><span class="line"><span class="cl">\___//_//_/  /_/   \____/___/ 
-</span></span><span class="line"><span class="cl">   http://cirros-cloud.net
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">login as &#39;root&#39; user. default password: &#39;byte-edu.com&#39;.
-</span></span><span class="line"><span class="cl">cirros login:
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里用的是 nographic 模式，如果想要图形界面连上虚拟机，就需要安装一个 vncviewer，ubuntu 下可以使用 <code>sudo apt install vncviewer</code></p>
+<pre tabindex="0"><code>=== datasource: None None ===
+=== cirros: current=0.4.0 latest=0.4.0 uptime=10.63 ===
+  ____               ____  ____
+ / __/ __ ____ ____ / __ \/ __/
+/ /__ / // __// __// /_/ /\ \ 
+\___//_//_/  /_/   \____/___/ 
+   http://cirros-cloud.net
+
+
+login as &#39;root&#39; user. default password: &#39;byte-edu.com&#39;.
+cirros login:
+</code></pre><p>这里用的是 nographic 模式，如果想要图形界面连上虚拟机，就需要安装一个 vncviewer，ubuntu 下可以使用 <code>sudo apt install vncviewer</code></p>
 <br/>
 <h2 id="创建一个-ubuntu-虚拟机">创建一个 Ubuntu 虚拟机</h2>
 <ol>
@@ -539,15 +498,8 @@ CPU 虚拟化 为什么需要 CPU 虚拟化 X86 操作系统是设计在直接�
 </div><ol start="3">
 <li>在物理主机上使用 VNC 连上虚拟机</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vncviewer 172.16.101.136:5900
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="https://img1.kiosk007.top/static/images/blog/ubuntu_qemu.png" alt="ubuntu_qemu" style="zoom:50%;clear:both;margin:auto;display:block;" />
+<pre tabindex="0"><code>vncviewer 172.16.101.136:5900
+</code></pre><img src="https://img1.kiosk007.top/static/images/blog/ubuntu_qemu.png" alt="ubuntu_qemu" style="zoom:50%;clear:both;margin:auto;display:block;" />
 <ol start="4">
 <li>为虚拟机加上网络功能</li>
 </ol>

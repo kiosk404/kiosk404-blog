@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "openstack","wordcount":  841 ,
+                        }],"genre": "posts","keywords": "openstack","wordcount":  820 ,
         "url": "http:\/\/localhost:1313\/post\/cloud-vm-lifecycle\/","datePublished": "2022-09-12T11:23:00+00:00","dateModified": "2022-09-12T11:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">【译】虚拟机生命周期</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-09-12">2022-09-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;841 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-09-12">2022-09-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;820 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -469,163 +469,62 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>定义一个新的持久性 Domain：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh define MyNewVM.xml
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>Domain XML 文件格式有很多有用的可选元素。所以，请阅读这篇包括样例和大多共性场景的完整 Domain XML 格式参考<a href="http://libvirt.org/formatdomain.html" target="_blank" rel="noopener noreffer">文章</a> 。</p>
+<pre tabindex="0"><code>virsh define MyNewVM.xml
+</code></pre><p>Domain XML 文件格式有很多有用的可选元素。所以，请阅读这篇包括样例和大多共性场景的完整 Domain XML 格式参考<a href="http://libvirt.org/formatdomain.html" target="_blank" rel="noopener noreffer">文章</a> 。</p>
 <br/>
 <h2 id="编辑-domain">编辑 Domain</h2>
 <p>编辑 Domain 可以使用自己喜欢的编辑器。需要设定 <strong>VISUAL</strong> 或者 <strong>EDITOR</strong> 环境变量，没有设置变量的话，默认使用 vi 编辑器。关闭编辑器后，Libvirt 会自动检查内容变化并应用 （apply）它们，另外，在 Virtual Machine Manager 中也可以编辑 Domain</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh edit &lt;domain&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>virsh edit &lt;domain&gt;
+</code></pre><br/>
 <h2 id="启动-domain">启动 Domain</h2>
 <p>一旦一个 Domain 被创建好，就可以开始运行它了，可以通过 Virtual Machine Manager 或者执行 virsh start 命令，如：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh start MyNewVM
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这个命令可以执行干净启动 （clean boot up） 或者回复 Domain 之前保存的状态。需要注意的是，其组件如网络等设备也是需要准备好的。</p>
+<pre tabindex="0"><code>virsh start MyNewVM
+</code></pre><p>这个命令可以执行干净启动 （clean boot up） 或者回复 Domain 之前保存的状态。需要注意的是，其组件如网络等设备也是需要准备好的。</p>
 <p>就如前面提到的，短暂型 Domain 可以直接运行而无需定义 （define）动作：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh create /path/to/MyNewVM.xml
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>virsh create /path/to/MyNewVM.xml
+</code></pre><br/>
 <h2 id="关闭或重启-domain">关闭或重启 Domain</h2>
 <p>关闭 Domain：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh shutdown &lt;domain&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>重启一个持久型 Domain:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh reboot &lt;domain&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>重启一个 短暂型 Domain 是不可能的，因为它在关机（shutdown）后已经不在了（undefined）。</p>
+<pre tabindex="0"><code>virsh shutdown &lt;domain&gt;
+</code></pre><p>重启一个持久型 Domain:</p>
+<pre tabindex="0"><code>virsh reboot &lt;domain&gt;
+</code></pre><p>重启一个 短暂型 Domain 是不可能的，因为它在关机（shutdown）后已经不在了（undefined）。</p>
 <p>粗野关机（inelegant shutdown），也称为强制关机（hard-stop），这等同于拔电源：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh destory &lt;domain&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>virsh destory &lt;domain&gt;
+</code></pre><br/>
 <h2 id="暂停-domain">暂停 Domain</h2>
 <p>暂停 Domain</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh suspend &lt;domain&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>或者在 Virtual Machine Manager 中主工具栏点击 <em>Pause</em> 按钮。当虚拟机处于挂起状态（Suspended State），它占用系统 RAM 资源而不是处理器资源；磁盘和网络 I/O 也不会发生。</p>
+<pre tabindex="0"><code>virsh suspend &lt;domain&gt;
+</code></pre><p>或者在 Virtual Machine Manager 中主工具栏点击 <em>Pause</em> 按钮。当虚拟机处于挂起状态（Suspended State），它占用系统 RAM 资源而不是处理器资源；磁盘和网络 I/O 也不会发生。</p>
 <br/>
 <h2 id="继续运行-domain">继续运行 Domain</h2>
 <p>任何一个暂停或者挂起的 Domain 都可以恢复运行：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh resume &lt;domain&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>或者通过反点击（unclick） Virtual Machine Manager 的 <em>Pause</em> 按钮。</p>
+<pre tabindex="0"><code>virsh resume &lt;domain&gt;
+</code></pre><p>或者通过反点击（unclick） Virtual Machine Manager 的 <em>Pause</em> 按钮。</p>
 <br/>
 <h2 id="生成快照">生成快照</h2>
 <p>生成快照</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh snapshot-create &lt;domain&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>virsh snapshot-create &lt;domain&gt;
+</code></pre><br/>
 <h2 id="列出快照">列出快照</h2>
 <p>列出 Domain 快照</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh snapshot-list &lt;domain&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输出结果可能看起来像这样子：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Name                 Creation Time             State
-</span></span><span class="line"><span class="cl">---------------------------------------------------
-</span></span><span class="line"><span class="cl"> 1295973577           2011-01-25 17:39:37 +0100 running
-</span></span><span class="line"><span class="cl"> 1295978837           2011-01-25 19:07:17 +0100 running
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>我们可以看到，一个快照是在当地时间 17:39:17 创建的，名为 1295973577，代表着 Unix 时间；另一个快照是在 19:07:17 创建，名为 1295978837。</p>
+<pre tabindex="0"><code>virsh snapshot-list &lt;domain&gt;
+</code></pre><p>输出结果可能看起来像这样子：</p>
+<pre tabindex="0"><code>Name                 Creation Time             State
+---------------------------------------------------
+ 1295973577           2011-01-25 17:39:37 +0100 running
+ 1295978837           2011-01-25 19:07:17 +0100 running
+</code></pre><p>我们可以看到，一个快照是在当地时间 17:39:17 创建的，名为 1295973577，代表着 Unix 时间；另一个快照是在 19:07:17 创建，名为 1295978837。</p>
 <br/>
 <h2 id="从快照恢复-domain">从快照恢复 Domain</h2>
 <p>从一个快照中恢复 Domain ：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh snapshot-restore &lt;domain&gt; &lt;snapshotname&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这就恢复 Domain 到快照保存的状态。注意，Domain 的任何变化都会被销毁。</p>
+<pre tabindex="0"><code>virsh snapshot-restore &lt;domain&gt; &lt;snapshotname&gt;
+</code></pre><p>这就恢复 Domain 到快照保存的状态。注意，Domain 的任何变化都会被销毁。</p>
 <br/>
 <h2 id="移除-domain-的快照">移除 Domain 的快照</h2>
 <p>移除 Domain 的快照</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh snapshot-delete &lt;domain&gt; &lt;snapshotname&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>virsh snapshot-delete &lt;domain&gt; &lt;snapshotname&gt;
+</code></pre><br/>
 <h2 id="迁移-1">迁移</h2>
 <p>Libvirt 提供了虚拟机迁移的支持，这意味着可以通过网络来迁移虚拟机，迁移主要有两种模式：</p>
 <ol>
@@ -634,48 +533,20 @@
 </ol>
 <p>一个成功的迁移有很多事情需要完成，对于虚拟机，存储配置需要匹配得上、待迁移 Domain 使用的存储卷都要放在同一路径下。完整的迁移参考：<a href="https://www.libvirt.org/migration.html" target="_blank" rel="noopener noreffer">Guest migration</a></p>
 <p>一旦可以迁移，可以使用 virsh 来迁移虚拟机了：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh migrate &lt;domain&gt; &lt;remote host URI&gt; --migrateuri tcp://&lt;remote host&gt;:&lt;port&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>virsh migrate &lt;domain&gt; &lt;remote host URI&gt; --migrateuri tcp://&lt;remote host&gt;:&lt;port&gt;
+</code></pre><br/>
 <h2 id="删除-domain">删除 Domain</h2>
 <p>我们可以删除一个 inactive Domain：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh undefine &lt;domain&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>图形化管理工具 Virtual Machine Manager 可以参考<a href="https://wiki.libvirt.org/page/DeletingVirtualMachine_in_VirtualMachineManager" target="_blank" rel="noopener noreffer">这篇文章</a>删除</p>
+<pre tabindex="0"><code>virsh undefine &lt;domain&gt;
+</code></pre><p>图形化管理工具 Virtual Machine Manager 可以参考<a href="https://wiki.libvirt.org/page/DeletingVirtualMachine_in_VirtualMachineManager" target="_blank" rel="noopener noreffer">这篇文章</a>删除</p>
 <br/>
 <h2 id="擦除-domain-存储数据">擦除 Domain 存储数据</h2>
 <p>Domain 使用的存储卷可能会包含保密数据，所以在移除它之前需要擦除上面的数据：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh vol-wipe &lt;volume&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这截断（truncate）或扩展（extend）该卷为其原始的大小，实际上是用0来填充文件，这保证之前存储在该卷上的数据不再可读。</p>
+<pre tabindex="0"><code>virsh vol-wipe &lt;volume&gt;
+</code></pre><p>这截断（truncate）或扩展（extend）该卷为其原始的大小，实际上是用0来填充文件，这保证之前存储在该卷上的数据不再可读。</p>
 <p>最后，可以删除卷了</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">virsh vol-delete &lt;volume&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>virsh vol-delete &lt;volume&gt;
+</code></pre><br/>
 <br/>
 <h1 id="reference">Reference</h1>
 <p>以下网页还能提供更有用的一些信息：</p>

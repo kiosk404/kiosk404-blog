@@ -13,7 +13,7 @@
 1992 年的 USENIX 会议上，The BSD Packet Filter: A New Architecture for User-level Packet Capture ，第一次提到 BSD Packet Filter （简称BPF）这个概念，这篇论文带来了一个革命性技术。正如其名称他是包过滤相关的技术，其基本原理是用户态定义 BPF 字节码来定义过滤表达式，然后传递给内核，再由虚拟机解释运行。
 有了 BPF 之后，应用程序不再需要 syscall，数据包不需要在内核空间和用户空间之间来回交互传递。而是我们将代码直接交给内核，让内核自己执行，这样就可以让代码全速运行，效率更高。
 我们使用的 tcpdump 主要通过 libpcap 实现，而libpcap 就是基于 eBPF 。执行下面的命令，导出 tcpdump 所灌入内核的 BPF 程序。如下的 tcpdump 命令，可以直接过滤出IP地址包含 1.1.1.1 和 2.2.2.2 的数据包。
-1 2 3 4 5 6 7 8 tcpdump -d &#39;ip src 1.1.1.1 or ip src 2.2.2.2&#39; (000) ldh [12] # 找到以太网类型字段 (001) jeq #0x800 jt 2 jf 6 # 判断是否为以太网 (002) ld [26] # 判断IP头部 (003) jeq #0x1010101 jt 5 jf 4 (004) jeq #0x2020202 jt 5 jf 6 (005) ret #262144 (006) ret #0 1 2 3 4 5 6 7 8 9 // Filter BPF Code static struct sock_filter bpfcode[8] = { { 0x28, 0, 0, 0x0000000c }, // (000) ldh [12] xxxx }; sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); bind(sock, (struct sockaddr *) &amp;addr, sizeof(addr)); setsockopt(sock, SOL_SOCKET, SO_ATTACH_FILTER, &amp;bpf, sizeof(bpf)); Linux 利用 socketopt 中的 SO_ATTACH_FILTER、SO_DETACH_FILTER 来执行系统调用，具体可参考 socket manual page。">
+tcpdump -d &#39;ip src 1.1.1.1 or ip src 2.2.2.2&#39; (000) ldh [12] # 找到以太网类型字段 (001) jeq #0x800 jt 2 jf 6 # 判断是否为以太网 (002) ld [26] # 判断IP头部 (003) jeq #0x1010101 jt 5 jf 4 (004) jeq #0x2020202 jt 5 jf 6 (005) ret #262144 (006) ret #0 1 2 3 4 5 6 7 8 9 // Filter BPF Code static struct sock_filter bpfcode[8] = { { 0x28, 0, 0, 0x0000000c }, // (000) ldh [12] xxxx }; sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); bind(sock, (struct sockaddr *) &amp;addr, sizeof(addr)); setsockopt(sock, SOL_SOCKET, SO_ATTACH_FILTER, &amp;bpf, sizeof(bpf)); Linux 利用 socketopt 中的 SO_ATTACH_FILTER、SO_DETACH_FILTER 来执行系统调用，具体可参考 socket manual page。">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -30,7 +30,7 @@
 1992 年的 USENIX 会议上，The BSD Packet Filter: A New Architecture for User-level Packet Capture ，第一次提到 BSD Packet Filter （简称BPF）这个概念，这篇论文带来了一个革命性技术。正如其名称他是包过滤相关的技术，其基本原理是用户态定义 BPF 字节码来定义过滤表达式，然后传递给内核，再由虚拟机解释运行。
 有了 BPF 之后，应用程序不再需要 syscall，数据包不需要在内核空间和用户空间之间来回交互传递。而是我们将代码直接交给内核，让内核自己执行，这样就可以让代码全速运行，效率更高。
 我们使用的 tcpdump 主要通过 libpcap 实现，而libpcap 就是基于 eBPF 。执行下面的命令，导出 tcpdump 所灌入内核的 BPF 程序。如下的 tcpdump 命令，可以直接过滤出IP地址包含 1.1.1.1 和 2.2.2.2 的数据包。
-1 2 3 4 5 6 7 8 tcpdump -d &#39;ip src 1.1.1.1 or ip src 2.2.2.2&#39; (000) ldh [12] # 找到以太网类型字段 (001) jeq #0x800 jt 2 jf 6 # 判断是否为以太网 (002) ld [26] # 判断IP头部 (003) jeq #0x1010101 jt 5 jf 4 (004) jeq #0x2020202 jt 5 jf 6 (005) ret #262144 (006) ret #0 1 2 3 4 5 6 7 8 9 // Filter BPF Code static struct sock_filter bpfcode[8] = { { 0x28, 0, 0, 0x0000000c }, // (000) ldh [12] xxxx }; sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); bind(sock, (struct sockaddr *) &amp;addr, sizeof(addr)); setsockopt(sock, SOL_SOCKET, SO_ATTACH_FILTER, &amp;bpf, sizeof(bpf)); Linux 利用 socketopt 中的 SO_ATTACH_FILTER、SO_DETACH_FILTER 来执行系统调用，具体可参考 socket manual page。">
+tcpdump -d &#39;ip src 1.1.1.1 or ip src 2.2.2.2&#39; (000) ldh [12] # 找到以太网类型字段 (001) jeq #0x800 jt 2 jf 6 # 判断是否为以太网 (002) ld [26] # 判断IP头部 (003) jeq #0x1010101 jt 5 jf 4 (004) jeq #0x2020202 jt 5 jf 6 (005) ret #262144 (006) ret #0 1 2 3 4 5 6 7 8 9 // Filter BPF Code static struct sock_filter bpfcode[8] = { { 0x28, 0, 0, 0x0000000c }, // (000) ldh [12] xxxx }; sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); bind(sock, (struct sockaddr *) &amp;addr, sizeof(addr)); setsockopt(sock, SOL_SOCKET, SO_ATTACH_FILTER, &amp;bpf, sizeof(bpf)); Linux 利用 socketopt 中的 SO_ATTACH_FILTER、SO_DETACH_FILTER 来执行系统调用，具体可参考 socket manual page。">
 <meta name="application-name" content="Kiosk&#39;s">
 <meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/ebpf%E8%B6%85%E4%B9%8E%E4%BD%A0%E6%83%B3%E8%B1%A1/" /><link rel="prev" href="http://localhost:1313/post/what-happened-to-mysql-query-1/" /><link rel="next" href="http://localhost:1313/post/what-happened-to-mysql-query-2/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
     {
@@ -46,7 +46,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "eBPF","wordcount":  1523 ,
+                        }],"genre": "posts","keywords": "eBPF","wordcount":  1501 ,
         "url": "http:\/\/localhost:1313\/post\/ebpf%E8%B6%85%E4%B9%8E%E4%BD%A0%E6%83%B3%E8%B1%A1\/","datePublished": "2022-07-31T16:30:00+00:00","dateModified": "2022-07-31T16:30:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -128,7 +128,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">eBPF超乎你想象</h1><h2 class="single-subtitle">eBPF是一种起源于Linux内核的革命性技术</h2><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-07-31">2022-07-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1523 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-07-31">2022-07-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1501 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -201,29 +201,15 @@
 <p>有了 BPF 之后，应用程序不再需要 syscall，数据包不需要在内核空间和用户空间之间来回交互传递。而是我们将代码直接交给内核，让内核自己执行，这样就可以让代码全速运行，效率更高。</p>
 <br/>
 <p>我们使用的 tcpdump 主要通过 libpcap 实现，而libpcap 就是基于 eBPF 。执行下面的命令，导出 tcpdump 所灌入内核的 BPF 程序。如下的 tcpdump 命令，可以直接过滤出IP地址包含 1.1.1.1 和 2.2.2.2 的数据包。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tcpdump -d &#39;ip src 1.1.1.1 or ip src 2.2.2.2&#39;
-</span></span><span class="line"><span class="cl">(000) ldh      [12]                                   # 找到以太网类型字段
-</span></span><span class="line"><span class="cl">(001) jeq      #0x800           jt 2        jf 6      # 判断是否为以太网
-</span></span><span class="line"><span class="cl">(002) ld       [26]                                   # 判断IP头部
-</span></span><span class="line"><span class="cl">(003) jeq      #0x1010101       jt 5        jf 4
-</span></span><span class="line"><span class="cl">(004) jeq      #0x2020202       jt 5        jf 6
-</span></span><span class="line"><span class="cl">(005) ret      #262144
-</span></span><span class="line"><span class="cl">(006) ret      #0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>tcpdump -d &#39;ip src 1.1.1.1 or ip src 2.2.2.2&#39;
+(000) ldh      [12]                                   # 找到以太网类型字段
+(001) jeq      #0x800           jt 2        jf 6      # 判断是否为以太网
+(002) ld       [26]                                   # 判断IP头部
+(003) jeq      #0x1010101       jt 5        jf 4
+(004) jeq      #0x2020202       jt 5        jf 6
+(005) ret      #262144
+(006) ret      #0
+</code></pre><br/>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -263,52 +249,26 @@
 <br/>
 <h1 id="应用场景有哪些">应用场景有哪些？</h1>
 <p>eBPF 程序类型决定一个 eBPF 程序可以挂载的事件类型和事件参数，这意味着，内核中不同事件会触发不同类型的 eBPF 程序。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">$</span> <span class="n">sudo</span> <span class="n">bpftool</span> <span class="n">feature</span> <span class="n">probe</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">program_type</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">socket_filter</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">kprobe</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">sched_cls</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">sched_act</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">tracepoint</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">xdp</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">perf_event</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">cgroup_skb</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">cgroup_sock</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">lwt_in</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="n">eBPF</span> <span class="n">program_type</span> <span class="n">lwt_out</span> <span class="n">is</span> <span class="n">available</span>
-</span></span><span class="line"><span class="cl"><span class="o">...</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>根据具体功能和应用场景的不同，这些应用程序大概分为三类：跟踪类、网络类、其他类型。</p>
+<pre tabindex="0"><code>$ sudo bpftool feature probe | grep program_type
+eBPF program_type socket_filter is available
+eBPF program_type kprobe is available
+eBPF program_type sched_cls is available
+eBPF program_type sched_act is available
+eBPF program_type tracepoint is available
+eBPF program_type xdp is available
+eBPF program_type perf_event is available
+eBPF program_type cgroup_skb is available
+eBPF program_type cgroup_sock is available
+eBPF program_type lwt_in is available
+eBPF program_type lwt_out is available
+...
+</code></pre><p>根据具体功能和应用场景的不同，这些应用程序大概分为三类：跟踪类、网络类、其他类型。</p>
 <br/>
 <h2 id="跟踪类-ebpf-程序">跟踪类 eBPF 程序</h2>
 <p>跟踪类 eBPF 程序主要用于系统提取跟踪信息，进而为监控、追踪、性能优化等提供数据支撑。这类eBPF 程序的类型包含 BPF_PROG_TYPE_KPROBE 、 BPF_PROG_TYPE_TRACEPOINT、BPF_PROG_PERF_EVENT、BPF_PROG_TYPE_RAW_TRACEPOINT、BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE、BPF_PROG_TYPE_TRACING。</p>
 <p><a href="https://github.com/iovisor/bcc" target="_blank" rel="noopener noreffer">BCC</a> 工具集就属于这类。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">apt</span> <span class="n">install</span> <span class="n">bcc</span><span class="o">-</span><span class="n">tools</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="https://img1.kiosk007.top/static/images/blog/ebpf_bcc_tool.png" alt="ebpf_bcc_tool" style="zoom: 50%;margin:auto;display:block;clear:both" />
+<pre tabindex="0"><code>apt install bcc-tools
+</code></pre><img src="https://img1.kiosk007.top/static/images/blog/ebpf_bcc_tool.png" alt="ebpf_bcc_tool" style="zoom: 50%;margin:auto;display:block;clear:both" />
 <br/>
 <h2 id="网络类-ebpf-程序">网络类 eBPF 程序</h2>
 <p>网络类 eBPF 程序对网络数据包进行过滤和处理，进而实现网络观测、过滤、流量控制以及性能优化各种丰富的功能。</p>

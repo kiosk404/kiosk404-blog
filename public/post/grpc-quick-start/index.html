@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "grpc","wordcount":  1750 ,
+                        }],"genre": "posts","keywords": "grpc","wordcount":  1689 ,
         "url": "http:\/\/localhost:1313\/post\/grpc-quick-start\/","datePublished": "2020-11-25T23:37:00+00:00","dateModified": "2020-11-25T23:37:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">gRPC Quick Start </h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-25">2020-11-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1750 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;9 minutes&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-25">2020-11-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1689 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>Contents</span>
@@ -247,113 +247,57 @@
 <li><font color='#FFB90F'> reserved</font> : 保护某字段或定义，如在message中指定 数字1 被保护，或变量名 person 被保护。一般用来保护废弃的数字定义。如<code>reserved 5;  reserved &quot;salary&quot;;</code> 如果再使用5 或者 salary 则会报错。</li>
 </ol>
 <p><strong>demo</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">syntax</span> <span class="o">=</span> <span class="s2">&#34;proto3&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">package</span> <span class="n">my</span><span class="o">.</span><span class="n">project</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="s2">&#34;google/protobuf/timestamp.proto&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">option</span> <span class="n">go_package</span> <span class="o">=</span> <span class="s2">&#34;pb&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">message</span> <span class="n">PersonMessage</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="n">int32</span>   <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="ne">bool</span>    <span class="n">is_adult</span> <span class="o">=</span><span class="mi">2</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">string</span>  <span class="n">name</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="ne">float</span>   <span class="n">height</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="ne">float</span>   <span class="n">weight</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">bytes</span>   <span class="n">avatar</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">string</span>  <span class="n">email</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="ne">bool</span>    <span class="n">email_verified</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">repeated</span> <span class="n">string</span> <span class="n">phone_numbers</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span>  <span class="o">//</span> <span class="n">packed</span>
-</span></span><span class="line"><span class="cl">  <span class="n">Gender</span>  <span class="n">gender</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">Date</span>    <span class="n">birthday</span> <span class="o">=</span> <span class="mi">12</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">repeated</span> <span class="n">Address</span> <span class="n">addresses</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">google</span><span class="o">.</span><span class="n">protobuf</span><span class="o">.</span><span class="n">Timestamp</span> <span class="n">lastModified</span> <span class="o">=</span> <span class="mi">14</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="k">enum</span> <span class="n">Gender</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">option</span> <span class="n">allow_alias</span> <span class="o">=</span> <span class="bp">true</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Not_SPECIFIED</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">MALE</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">FEMALE</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">MAN</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">WOMAN</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="n">message</span> <span class="n">Address</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">string</span> <span class="n">province</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">string</span> <span class="n">city</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">string</span> <span class="n">zip_code</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">string</span> <span class="n">street</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">string</span> <span class="n">number</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="n">reserved</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span> <span class="n">to</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span> <span class="n">to</span> <span class="nb">max</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">reserved</span> <span class="s2">&#34;foo&#34;</span><span class="p">,</span><span class="s2">&#34;bar&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">message</span> <span class="n">Date</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="n">int32</span> <span class="n">year</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">int32</span> <span class="n">month</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">int32</span> <span class="n">day</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="golang-protocol-buffer">Golang protocol buffer</h2>
+<pre tabindex="0"><code class="language-protoc" data-lang="protoc">syntax = &#34;proto3&#34;;
+
+package my.project; 
+
+import &#34;google/protobuf/timestamp.proto&#34;;
+
+option go_package = &#34;pb&#34;;
+
+message PersonMessage {
+  int32   id = 1;
+  bool    is_adult =2;
+  string  name = 3;
+  float   height = 4;
+  float   weight = 5;
+  bytes   avatar = 6;
+  string  email = 7;
+  bool    email_verified = 8;
+  repeated string phone_numbers = 9;  // packed
+  Gender  gender = 11;
+  Date    birthday = 12;
+  repeated Address addresses = 13;
+  google.protobuf.Timestamp lastModified = 14;
+
+  enum Gender {
+    option allow_alias = true;
+    Not_SPECIFIED = 0;
+    MALE = 1;
+    FEMALE = 2;
+    MAN = 1;
+    WOMAN = 2;
+  }
+
+  message Address {
+    string province = 1;
+    string city = 2;
+    string zip_code = 3;
+    string street = 4;
+    string number = 5;
+  }
+
+  reserved 10, 20 to 100, 200 to max;
+  reserved &#34;foo&#34;,&#34;bar&#34;;
+}
+
+
+message Date {
+  int32 year = 1;
+  int32 month = 2;
+  int32 day = 3;
+}
+</code></pre><h2 id="golang-protocol-buffer">Golang protocol buffer</h2>
 <p>定义 <code>.proto</code> 文件后，使用命令
 <code>protoc --protoc_path src/ -go_out=src/ src/person.proto</code> 生成golang 文件</p>
 <p><strong>定义一个pb</strong></p>
@@ -691,21 +635,11 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>注意，返回的参数是一条流，其流发送的方法也可以使用Send函数，这里是一个循环，将employee对象循环写入这条流中。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">type EmployeeService_GetAllServer interface {
-</span></span><span class="line"><span class="cl">	Send(*EmployeeResponse) error
-</span></span><span class="line"><span class="cl">	grpc.ServerStream
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>type EmployeeService_GetAllServer interface {
+	Send(*EmployeeResponse) error
+	grpc.ServerStream
+}
+</code></pre><ul>
 <li><strong>客户端推送流 <code>AddPhoto()</code></strong></li>
 </ul>
 <div class="highlight"><div class="chroma">
@@ -844,27 +778,14 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>这个client拥有之前定义的客户端可调用的 RPC 方法。如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-</span></span><span class="line"><span class="cl">type EmployeeServiceClient interface {
-</span></span><span class="line"><span class="cl">	GetByNo(ctx context.Context, in *GetByNoRequest, opts ...grpc.CallOption) (*EmployeeResponse, error)
-</span></span><span class="line"><span class="cl">	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (EmployeeService_GetAllClient, error)
-</span></span><span class="line"><span class="cl">	AddPhoto(ctx context.Context, opts ...grpc.CallOption) (EmployeeService_AddPhotoClient, error)
-</span></span><span class="line"><span class="cl">	SaveAll(ctx context.Context, opts ...grpc.CallOption) (EmployeeService_SaveAllClient, error)
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>实现 Client 调用</strong></p>
+<pre tabindex="0"><code>// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type EmployeeServiceClient interface {
+	GetByNo(ctx context.Context, in *GetByNoRequest, opts ...grpc.CallOption) (*EmployeeResponse, error)
+	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (EmployeeService_GetAllClient, error)
+	AddPhoto(ctx context.Context, opts ...grpc.CallOption) (EmployeeService_AddPhotoClient, error)
+	SaveAll(ctx context.Context, opts ...grpc.CallOption) (EmployeeService_SaveAllClient, error)
+}
+</code></pre><p><strong>实现 Client 调用</strong></p>
 <ul>
 <li><strong>一元请求 <code>GetByNo()</code></strong></li>
 </ul>

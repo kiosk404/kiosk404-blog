@@ -52,7 +52,7 @@ Port 交换机上的插口，可以接水晶头，Port隶属于 Bridge，必须�
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "openstack","wordcount":  2015 ,
+                        }],"genre": "posts","keywords": "openstack","wordcount":  1981 ,
         "url": "http:\/\/localhost:1313\/post\/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C\/","datePublished": "2022-08-22T11:23:00+00:00","dateModified": "2022-08-22T11:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -134,7 +134,7 @@ Port 交换机上的插口，可以接水晶头，Port隶属于 Bridge，必须�
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">使用Open-vSwitch创建虚拟网络</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-08-22">2022-08-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2015 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-08-22">2022-08-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1981 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;10 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -535,58 +535,28 @@ Port 交换机上的插口，可以接水晶头，Port隶属于 Bridge，必须�
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>此时 vm1 无法再 ping 通 vm2</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ovs-vsctl list Port vif0.0
-</span></span><span class="line"><span class="cl">_uuid               : 83d88e1f-c234-4666-aba1-ece7b3d278b9
-</span></span><span class="line"><span class="cl">...
-</span></span><span class="line"><span class="cl">fake_bridge         : false
-</span></span><span class="line"><span class="cl">interfaces          : [f07ff627-90e3-4650-a0da-588b722e9407]
-</span></span><span class="line"><span class="cl">lacp                : []
-</span></span><span class="line"><span class="cl">mac                 : []
-</span></span><span class="line"><span class="cl">name                : vif0.0
-</span></span><span class="line"><span class="cl">other_config        : {}
-</span></span><span class="line"><span class="cl">protected           : false
-</span></span><span class="line"><span class="cl">...
-</span></span><span class="line"><span class="cl">tag                 : 10
-</span></span><span class="line"><span class="cl">trunks              : []
-</span></span><span class="line"><span class="cl">vlan_mode           : []
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>$ ovs-vsctl list Port vif0.0
+_uuid               : 83d88e1f-c234-4666-aba1-ece7b3d278b9
+...
+fake_bridge         : false
+interfaces          : [f07ff627-90e3-4650-a0da-588b722e9407]
+lacp                : []
+mac                 : []
+name                : vif0.0
+other_config        : {}
+protected           : false
+...
+tag                 : 10
+trunks              : []
+vlan_mode           : []
+</code></pre><ul>
 <li>在 instance_001 上再启动一个 ovs 交换机 br1-in。</li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ovs-vsctl add-br br1-in
-</span></span><span class="line"><span class="cl">$ ovs-vsctl list-br
-</span></span><span class="line"><span class="cl">br-in
-</span></span><span class="line"><span class="cl">br1-in
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>$ ovs-vsctl add-br br1-in
+$ ovs-vsctl list-br
+br-in
+br1-in
+</code></pre><ul>
 <li>启动一个新的虚拟机 vm3，并将vm3 连接在 br1-in 上，并配置 ip。</li>
 </ul>
 <div class="highlight"><div class="chroma">
@@ -653,33 +623,17 @@ Port 交换机上的插口，可以接水晶头，Port隶属于 Bridge，必须�
 </div><ul>
 <li>此时 vm3 由于和 vm1 同出于 tag=10 的Vlan，vm3 和 vm2 无法ping 通，但是 vm3 和 vm1 可以ping 通。</li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ping 10.0.3.2
-</span></span><span class="line"><span class="cl">PING 10.0.3.2 (10.0.3.2): 56 data bytes
-</span></span><span class="line"><span class="cl">^C
-</span></span><span class="line"><span class="cl">--- 10.0.3.2 ping statistics ---
-</span></span><span class="line"><span class="cl">4 packets transmitted, 0 packets received, 100% packet loss
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ ping 10.0.3.1
-</span></span><span class="line"><span class="cl">PING 10.0.3.1 (10.0.3.1): 56 data bytes
-</span></span><span class="line"><span class="cl">64 bytes from 10.0.3.1: seq=0 ttl=64 time=11.117 ms
-</span></span><span class="line"><span class="cl">64 bytes from 10.0.3.1: seq=1 ttl=64 time=1.852 ms
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<pre tabindex="0"><code>$ ping 10.0.3.2
+PING 10.0.3.2 (10.0.3.2): 56 data bytes
+^C
+--- 10.0.3.2 ping statistics ---
+4 packets transmitted, 0 packets received, 100% packet loss
+
+$ ping 10.0.3.1
+PING 10.0.3.1 (10.0.3.1): 56 data bytes
+64 bytes from 10.0.3.1: seq=0 ttl=64 time=11.117 ms
+64 bytes from 10.0.3.1: seq=1 ttl=64 time=1.852 ms
+</code></pre><blockquote>
 <p>实验结束，删除 VLAN tag 配置可使用</p>
 <p>ovs-vsctl remove Port vif0.0 tag 10</p>
 </blockquote>
@@ -692,25 +646,13 @@ Port 交换机上的插口，可以接水晶头，Port隶属于 Bridge，必须�
 <ul>
 <li>使用网络空间创建一个 Namespace</li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ip netns add r0   #添加namespace
-</span></span><span class="line"><span class="cl">$ ip link add sif0 type veth peer name rif0 #添加一对网卡
-</span></span><span class="line"><span class="cl">$ ip link set sif0 up
-</span></span><span class="line"><span class="cl">$ ip link set rif0 up
-</span></span><span class="line"><span class="cl">$ ip link set rif0 netns r0  #把网卡rif0给r0
-</span></span><span class="line"><span class="cl">$ ovs-vsctl add-port ovs-br1 sif0 #把网卡sif0给br-in
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>$ ip netns add r0   #添加namespace
+$ ip link add sif0 type veth peer name rif0 #添加一对网卡
+$ ip link set sif0 up
+$ ip link set rif0 up
+$ ip link set rif0 netns r0  #把网卡rif0给r0
+$ ovs-vsctl add-port ovs-br1 sif0 #把网卡sif0给br-in
+</code></pre><ul>
 <li>激活r0上的网卡</li>
 </ul>
 <div class="highlight"><div class="chroma">

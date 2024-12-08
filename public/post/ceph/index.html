@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "k8s","wordcount":  434 ,
+                        }],"genre": "posts","keywords": "k8s","wordcount":  391 ,
         "url": "http:\/\/localhost:1313\/post\/ceph\/","datePublished": "2022-06-18T13:52:18+00:00","dateModified": "2022-06-18T13:52:18+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">分布式存储系统 ceph</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-06-18">2022-06-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;434 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-06-18">2022-06-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;391 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>Contents</span>
@@ -197,141 +197,64 @@
 <ul>
 <li>下载 Rook</li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">git clone https://github.com/rook/rook.git
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>git clone https://github.com/rook/rook.git
+</code></pre><ul>
 <li>启动 rook operator（operator 作为 kubernetes 的插件存在，提供API扩展Rock的一些概念）</li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ git clone --single-branch --branch v1.9.2 https://github.com/rook/rook.git
-</span></span><span class="line"><span class="cl">cd rook/deploy/examples
-</span></span><span class="line"><span class="cl">kubectl create -f crds.yaml -f common.yaml -f operator.yaml
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在国内访问一些镜像时，正常情况下访问不通，将镜像改为国内阿里云的镜像，这里用了这篇<a href="https://blog.csdn.net/qq_40592377/article/details/110292089" target="_blank" rel="noopener noreffer">文章</a> 里的镜像。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#在91行下面，修改下面几个配置，改为阿里云的地址，tag不变（默认是注释掉的，先解开注释）
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">ROOK_CSI_CEPH_IMAGE: &#34;registry.aliyuncs.com/it00021hot/cephcsi:v3.6.1&#34;
-</span></span><span class="line"><span class="cl">  ROOK_CSI_REGISTRAR_IMAGE: &#34;registry.aliyuncs.com/it00021hot/csi-node-driver-registrar:v2.5.0&#34;
-</span></span><span class="line"><span class="cl">  ROOK_CSI_RESIZER_IMAGE: &#34;registry.aliyuncs.com/it00021hot/csi-resizer:v1.4.0&#34;
-</span></span><span class="line"><span class="cl">  ROOK_CSI_PROVISIONER_IMAGE: &#34;registry.aliyuncs.com/it00021hot/csi-provisioner:v3.1.0&#34;
-</span></span><span class="line"><span class="cl">  ROOK_CSI_SNAPSHOTTER_IMAGE: &#34;registry.aliyuncs.com/it00021hot/csi-snapshotter:v5.0.1&#34;
-</span></span><span class="line"><span class="cl">  ROOK_CSI_ATTACHER_IMAGE: &#34;registry.aliyuncs.com/it00021hot/csi-attacher:v3.4.0&#34;
-</span></span><span class="line"><span class="cl">  ROOK_CSI_NFS_IMAGE: &#34;registry.aliyuncs.com/it00021hot/nfsplugin:v3.1.0&#34;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>$ git clone --single-branch --branch v1.9.2 https://github.com/rook/rook.git
+cd rook/deploy/examples
+kubectl create -f crds.yaml -f common.yaml -f operator.yaml
+</code></pre><p>在国内访问一些镜像时，正常情况下访问不通，将镜像改为国内阿里云的镜像，这里用了这篇<a href="https://blog.csdn.net/qq_40592377/article/details/110292089" target="_blank" rel="noopener noreffer">文章</a> 里的镜像。</p>
+<pre tabindex="0"><code>#在91行下面，修改下面几个配置，改为阿里云的地址，tag不变（默认是注释掉的，先解开注释）
+
+ROOK_CSI_CEPH_IMAGE: &#34;registry.aliyuncs.com/it00021hot/cephcsi:v3.6.1&#34;
+  ROOK_CSI_REGISTRAR_IMAGE: &#34;registry.aliyuncs.com/it00021hot/csi-node-driver-registrar:v2.5.0&#34;
+  ROOK_CSI_RESIZER_IMAGE: &#34;registry.aliyuncs.com/it00021hot/csi-resizer:v1.4.0&#34;
+  ROOK_CSI_PROVISIONER_IMAGE: &#34;registry.aliyuncs.com/it00021hot/csi-provisioner:v3.1.0&#34;
+  ROOK_CSI_SNAPSHOTTER_IMAGE: &#34;registry.aliyuncs.com/it00021hot/csi-snapshotter:v5.0.1&#34;
+  ROOK_CSI_ATTACHER_IMAGE: &#34;registry.aliyuncs.com/it00021hot/csi-attacher:v3.4.0&#34;
+  ROOK_CSI_NFS_IMAGE: &#34;registry.aliyuncs.com/it00021hot/nfsplugin:v3.1.0&#34;
+</code></pre><ul>
 <li>确保 rock operator 处于 Running 状态后，接下来启动rook cluster，由于使用了 Minikube，所以选择 rook/deploy/examples/cluster-test.yaml 文件进行集群创建。</li>
 </ul>
 <ol>
 <li>将 cluster-test.yaml 中的 devieFilter 一项注释去掉，虚拟机的硬盘是 vda, 所以需要在 deviceFilter 处填上 va[^a]，以忽略创建在vda上的osd</li>
 <li>默认的ceph镜像地址 quay.io 在国内访问不了，可替换为 quay.mirrors.ustc.edu.cn/ceph/ceph:v17</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kubectl create -f cluster-test.yaml
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>kubectl create -f cluster-test.yaml
+</code></pre><ul>
 <li>部署toolbox</li>
 </ul>
 <p>toolbox 是一个rook的工具集容器，该容器中的命令可以用来调试、测试rook，对Ceph临时测试</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">kubectl</span> <span class="n">apply</span> <span class="o">-</span><span class="n">f</span> <span class="n">toolbox</span><span class="o">.</span><span class="n">yaml</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>kubectl apply -f toolbox.yaml
+</code></pre><ul>
 <li>测试 rook-ceph</li>
 </ul>
 <p>可以添加个别名，就不需要写太多的命令</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">kubectl</span> <span class="o">-</span><span class="n">n</span> <span class="n">rook</span><span class="o">-</span><span class="n">ceph</span> <span class="n">exec</span> <span class="o">-</span><span class="n">it</span> <span class="o">$</span><span class="p">(</span><span class="n">kubectl</span> <span class="o">-</span><span class="n">n</span> <span class="n">rook</span><span class="o">-</span><span class="n">ceph</span> <span class="n">get</span> <span class="n">pod</span> <span class="o">-</span><span class="n">l</span> <span class="s2">&#34;app=rook-ceph-tools&#34;</span> <span class="o">-</span><span class="n">o</span> <span class="n">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.items[0].metadata.name}&#39;</span><span class="p">)</span> <span class="o">--</span> <span class="n">ceph</span> <span class="o">-</span><span class="n">s</span>
-</span></span><span class="line"><span class="cl">  <span class="n">cluster</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">id</span><span class="p">:</span>     <span class="n">d2259cda</span><span class="o">-</span><span class="n">d11f</span><span class="o">-</span><span class="mi">4</span><span class="n">d87</span><span class="o">-</span><span class="n">a8c8</span><span class="o">-</span><span class="mi">08</span><span class="n">ac16438067</span>
-</span></span><span class="line"><span class="cl">    <span class="n">health</span><span class="p">:</span> <span class="n">HEALTH_WARN</span>
-</span></span><span class="line"><span class="cl">            <span class="n">Reduced</span> <span class="n">data</span> <span class="n">availability</span><span class="p">:</span> <span class="mi">1</span> <span class="n">pg</span> <span class="n">inactive</span>
-</span></span><span class="line"><span class="cl">            <span class="n">OSD</span> <span class="n">count</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">osd_pool_default_size</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl"> 
-</span></span><span class="line"><span class="cl">  <span class="n">services</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">mon</span><span class="p">:</span> <span class="mi">1</span> <span class="n">daemons</span><span class="p">,</span> <span class="n">quorum</span> <span class="n">a</span> <span class="p">(</span><span class="n">age</span> <span class="mi">13</span><span class="n">h</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">mgr</span><span class="p">:</span> <span class="n">a</span><span class="p">(</span><span class="n">active</span><span class="p">,</span> <span class="n">since</span> <span class="mi">13</span><span class="n">h</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">osd</span><span class="p">:</span> <span class="mi">0</span> <span class="n">osds</span><span class="p">:</span> <span class="mi">0</span> <span class="n">up</span><span class="p">,</span> <span class="mi">0</span> <span class="ow">in</span>
-</span></span><span class="line"><span class="cl"> 
-</span></span><span class="line"><span class="cl">  <span class="n">data</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">pools</span><span class="p">:</span>   <span class="mi">1</span> <span class="n">pools</span><span class="p">,</span> <span class="mi">1</span> <span class="n">pgs</span>
-</span></span><span class="line"><span class="cl">    <span class="n">objects</span><span class="p">:</span> <span class="mi">0</span> <span class="n">objects</span><span class="p">,</span> <span class="mi">0</span> <span class="n">B</span>
-</span></span><span class="line"><span class="cl">    <span class="n">usage</span><span class="p">:</span>   <span class="mi">0</span> <span class="n">B</span> <span class="n">used</span><span class="p">,</span> <span class="mi">0</span> <span class="n">B</span> <span class="o">/</span> <span class="mi">0</span> <span class="n">B</span> <span class="n">avail</span>
-</span></span><span class="line"><span class="cl">    <span class="n">pgs</span><span class="p">:</span>     <span class="mf">100.000</span><span class="o">%</span> <span class="n">pgs</span> <span class="n">unknown</span>
-</span></span><span class="line"><span class="cl">             <span class="mi">1</span> <span class="n">unknown</span>
-</span></span><span class="line"><span class="cl"> 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l &#34;app=rook-ceph-tools&#34; -o jsonpath=&#39;{.items[0].metadata.name}&#39;) -- ceph -s
+  cluster:
+    id:     d2259cda-d11f-4d87-a8c8-08ac16438067
+    health: HEALTH_WARN
+            Reduced data availability: 1 pg inactive
+            OSD count 0 &lt; osd_pool_default_size 1
+ 
+  services:
+    mon: 1 daemons, quorum a (age 13h)
+    mgr: a(active, since 13h)
+    osd: 0 osds: 0 up, 0 in
+ 
+  data:
+    pools:   1 pools, 1 pgs
+    objects: 0 objects, 0 B
+    usage:   0 B used, 0 B / 0 B avail
+    pgs:     100.000% pgs unknown
+             1 unknown
+ 
+</code></pre><ul>
 <li>部署 ceph dashboard</li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kubectl apply -f dashboard-external-http.yaml
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>查看service和minikube的ip，利用ip+NodePort访问</p>
+<pre tabindex="0"><code>kubectl apply -f dashboard-external-http.yaml
+</code></pre><p>查看service和minikube的ip，利用ip+NodePort访问</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -375,29 +298,15 @@
 <li>创建StorageClass</li>
 </ul>
 <p>在提供（Provisioning）块存储之前，需要先创建 StorageClass 和存储池。K8S 需要创建这两类资源，才能和 Rook 交互，进而分配持久卷（PV）。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ cd rook/deploy/examples/csi/rbd
-</span></span><span class="line"><span class="cl">$ kubectl apply -f storageclass.yaml 
-</span></span><span class="line"><span class="cl">cephblockpool.ceph.rook.io/replicapool created
-</span></span><span class="line"><span class="cl">storageclass.storage.k8s.io/rook-ceph-block created
-</span></span><span class="line"><span class="cl">$ kubectl get sc
-</span></span><span class="line"><span class="cl">NAME                 PROVISIONER                  RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
-</span></span><span class="line"><span class="cl">rook-ceph-block      rook-ceph.rbd.csi.ceph.com   Delete          Immediate           true                   9s
-</span></span><span class="line"><span class="cl">standard (default)   k8s.io/minikube-hostpath     Delete          Immediate           false                  22h
-</span></span></code></pre></td></tr></table>
-</div>
-</div><!------->
+<pre tabindex="0"><code>$ cd rook/deploy/examples/csi/rbd
+$ kubectl apply -f storageclass.yaml 
+cephblockpool.ceph.rook.io/replicapool created
+storageclass.storage.k8s.io/rook-ceph-block created
+$ kubectl get sc
+NAME                 PROVISIONER                  RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+rook-ceph-block      rook-ceph.rbd.csi.ceph.com   Delete          Immediate           true                   9s
+standard (default)   k8s.io/minikube-hostpath     Delete          Immediate           false                  22h
+</code></pre><!------->
 <br/>
 <br/>
 <p>参考：</p>

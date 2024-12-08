@@ -40,7 +40,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "wireshark","wordcount":  973 ,
+                        }],"genre": "posts","keywords": "wireshark","wordcount":  950 ,
         "url": "http:\/\/localhost:1313\/post\/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC\/","datePublished": "2021-07-10T15:15:00+00:00","dateModified": "2021-07-10T15:15:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -122,7 +122,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Wireshark解析器Lua脚本</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-07-10">2021-07-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;973 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-07-10">2021-07-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;950 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -433,59 +433,30 @@
 fields.tcp_flag_reserved = ProtoField.uint16(&ldquo;tcp.flag.reserved&rdquo;, &ldquo;Reserved&rdquo;, base.HEX, flag_select, 0x1000)</p>
 <p>&ndash; TCP Flag 需要 3 字节，这样处理解析器即可, 0b00010000000 做掩码。
 data_flag_info_tree:add(fields.tcp_flag_reserved, tvb(offset, 3))</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;img src=&#34;https://img1.kiosk007.top/static/images/wireshark/proto_field_tcp.png&#34;&gt;
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">## 3.TVB
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">TVB 是 `proto.dissector(tvb, pinfo, treeitem)` 的第一个参数，我们将在 `proto.dissector` 函数里做我们的协议解析。
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">[Tvb（Testy Virtual Buffer）](https://www.wireshark.org/docs/wsdg_html_chunked/lua_module_Tvb.html#lua_class_Tvb)表示报文缓存，也就是实际的报文数据，可以通过下面介绍的TvbRange从报文数据中解出信息。主要接口有：
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">| 接口        | 说明     | 
-</span></span><span class="line"><span class="cl">| --------   | -----:   |
-</span></span><span class="line"><span class="cl">| tvb:__tostring() | 将报文数据转化为字符串，可用于调试 |
-</span></span><span class="line"><span class="cl">| tvb:reported_len() | get tvb的(not captured)长度 |
-</span></span><span class="line"><span class="cl">| tvb:len() | get tvb的(captured)长度 |
-</span></span><span class="line"><span class="cl">| tvb:reported_length_remaining() | 获取当前tvb的剩余长度，如果偏移值大于报文长度，则返回-1 |
-</span></span><span class="line"><span class="cl">| tvb:offset() | 返回原始偏移 |
-</span></span><span class="line"><span class="cl">| tvb:raw() | 获取tvb中二进制字节的Lua字符串 |
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">用法举例：
-</span></span><span class="line"><span class="cl">``` lua
-</span></span><span class="line"><span class="cl">-- tvb(offset, 4)表示从offset开始之后的4个字节
-</span></span><span class="line"><span class="cl">subtree:add_le(fields.peer_ipaddr, tvb(offset, 4))
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="4tvbrange">4.TvbRange</h2>
+<pre tabindex="0"><code>&lt;img src=&#34;https://img1.kiosk007.top/static/images/wireshark/proto_field_tcp.png&#34;&gt;
+
+
+## 3.TVB
+
+TVB 是 `proto.dissector(tvb, pinfo, treeitem)` 的第一个参数，我们将在 `proto.dissector` 函数里做我们的协议解析。
+
+[Tvb（Testy Virtual Buffer）](https://www.wireshark.org/docs/wsdg_html_chunked/lua_module_Tvb.html#lua_class_Tvb)表示报文缓存，也就是实际的报文数据，可以通过下面介绍的TvbRange从报文数据中解出信息。主要接口有：
+
+| 接口        | 说明     | 
+| --------   | -----:   |
+| tvb:__tostring() | 将报文数据转化为字符串，可用于调试 |
+| tvb:reported_len() | get tvb的(not captured)长度 |
+| tvb:len() | get tvb的(captured)长度 |
+| tvb:reported_length_remaining() | 获取当前tvb的剩余长度，如果偏移值大于报文长度，则返回-1 |
+| tvb:offset() | 返回原始偏移 |
+| tvb:raw() | 获取tvb中二进制字节的Lua字符串 |
+
+
+用法举例：
+``` lua
+-- tvb(offset, 4)表示从offset开始之后的4个字节
+subtree:add_le(fields.peer_ipaddr, tvb(offset, 4))
+</code></pre><h2 id="4tvbrange">4.TvbRange</h2>
 <p>表示Tvb的可用范围，常用来从Tvb中解出信息。主要接口有</p>
 <table>
 <thead>

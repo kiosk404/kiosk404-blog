@@ -37,7 +37,7 @@ Redis Redis 基础 Redis 底层有哪些数据结构 rehash 的过程 Redis 为�
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "topic","wordcount":  677 ,
+                        }],"genre": "topic","wordcount":  669 ,
         "url": "http:\/\/localhost:1313\/topic\/interview\/database\/","datePublished": "2022-08-08T23:41:26+00:00","dateModified": "2022-08-08T23:41:26+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -255,40 +255,20 @@ Redis Redis 基础 Redis 底层有哪些数据结构 rehash 的过程 Redis 为�
 <p>和单机模式上的锁机制类似，分布式锁同样可以用一个变量来实现。但是有两个要求，要求一：需要实现分布式的原子性。要求二：共享存储系统的可靠性。</p>
 <p>假设一个变量 redis_lock，初始值是0。A来加锁，由0变1，此时B再来持锁，就持锁失败了。因为变量 redis_lock 已经是1了。再由于redis是一个单线程模型，redis会串行处理他们的请求。</p>
 <p>使用 SETNS 和 DEL 两个命令实现加锁和释放锁。(SETNX 命令，它用于设置键值对的值。具体来说，就是这个命令在执行时会判断键值对是否存在，如果不存在，就设置键值对的值，如果存在，就不做任何设置)</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 加锁
-</span></span><span class="line"><span class="cl">SETNX lock_key 1
-</span></span><span class="line"><span class="cl">// 业务逻辑
-</span></span><span class="line"><span class="cl">DO THINGS
-</span></span><span class="line"><span class="cl">// 释放锁
-</span></span><span class="line"><span class="cl">DEL lock_key
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>附加：</p>
+<pre tabindex="0"><code class="language-redis" data-lang="redis">// 加锁
+SETNX lock_key 1
+// 业务逻辑
+DO THINGS
+// 释放锁
+DEL lock_key
+</code></pre><p>附加：</p>
 <ol>
 <li>可以给变量加个过期时间。当客户端异常没有主动解锁时，可以自动删除锁。</li>
 <li>为了保证锁不被其他客户端误释放，可以加一个 unique_value 。只有unique_value相同才可以操作。</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 加锁, unique_value作为客户端唯一性的标识
-</span></span><span class="line"><span class="cl">SET lock_key unique_value NX PX 10000
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>// 加锁, unique_value作为客户端唯一性的标识
+SET lock_key unique_value NX PX 10000
+</code></pre><br/>
 <h4 id="redis如何应对并发访问">Redis如何应对并发访问</h4>
 <p>首先加锁可以解决并发访问问题，其次 Redis 提供两种原子操作的方法来实现并发控制，分别是单命令操作和Lua脚本。</p>
 <p>其本质是将多个操作放到 Lua 脚本中原子执行</p>

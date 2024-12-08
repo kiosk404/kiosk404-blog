@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "golang","wordcount":  751 ,
+                        }],"genre": "posts","keywords": "golang","wordcount":  743 ,
         "url": "http:\/\/localhost:1313\/post\/golang-%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7\/","datePublished": "2021-12-18T22:01:00+00:00","dateModified": "2021-12-18T22:01:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">GoLang 静态代码分析工具</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-18">2021-12-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;751 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-12-18">2021-12-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;743 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -540,29 +540,15 @@
 </div><h1 id="继承到ci">继承到CI</h1>
 <p>集成到 <code>CI</code> 代码检查一定要集成到 <code>CI</code> 流程中，效果才会更好，这样开发者提交代码的时候，<code>CI</code> 就会自动检查代码，及时发现问题并进行修正。</p>
 <p>不管你是使用 <code>Jenkins</code>，还是 <code>Gitlab CI</code>，或者 <code>Github Action</code>，都可以通过 <code>Makefile</code> 的方式运行 <code>golangci-lint</code> 。现在我在项目根目录下创建一个 <code>Makefile</code> 文件，并添加如下代码：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">getdeps:
-</span></span><span class="line"><span class="cl">   @mkdir -p ${GOPATH}/bin
-</span></span><span class="line"><span class="cl">   @which golangci-lint 1&gt;/dev/null || (echo &#34;Installing golangci-lint&#34; &amp;&amp; go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.32.2)
-</span></span><span class="line"><span class="cl">lint:
-</span></span><span class="line"><span class="cl">   @echo &#34;Running $@ check&#34;
-</span></span><span class="line"><span class="cl">   @GO111MODULE=on ${GOPATH}/bin/golangci-lint cache clean
-</span></span><span class="line"><span class="cl">   @GO111MODULE=on ${GOPATH}/bin/golangci-lint run --timeout=5m --config ./.golangci.yml
-</span></span><span class="line"><span class="cl">verifiers: getdeps lint
-</span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer" id="post-footer">
+<pre tabindex="0"><code>getdeps:
+   @mkdir -p ${GOPATH}/bin
+   @which golangci-lint 1&gt;/dev/null || (echo &#34;Installing golangci-lint&#34; &amp;&amp; go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.32.2)
+lint:
+   @echo &#34;Running $@ check&#34;
+   @GO111MODULE=on ${GOPATH}/bin/golangci-lint cache clean
+   @GO111MODULE=on ${GOPATH}/bin/golangci-lint run --timeout=5m --config ./.golangci.yml
+verifiers: getdeps lint
+</code></pre></div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">

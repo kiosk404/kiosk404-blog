@@ -38,7 +38,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "elasticsearch","wordcount":  2261 ,
+                        }],"genre": "posts","keywords": "elasticsearch","wordcount":  2192 ,
         "url": "http:\/\/localhost:1313\/post\/%E6%90%AD%E5%BB%BA%E6%88%91%E7%9A%84elk-7-2\/","datePublished": "2021-03-27T13:52:18+00:00","dateModified": "2022-06-26T11:26:27+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -120,7 +120,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">搭建我的ELK 7.12</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-03-27">2021-03-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2261 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-03-27">2021-03-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2192 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;11 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -342,49 +342,22 @@
 <ul>
 <li><strong>seccomp unavailable 错误</strong></li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">解决方法：elasticsearch.yml 配置
-</span></span><span class="line"><span class="cl">bootstrap.memory_lock: false
-</span></span><span class="line"><span class="cl">bootstrap.system_call_filter: false
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>解决方法：elasticsearch.yml 配置
+bootstrap.memory_lock: false
+bootstrap.system_call_filter: false
+</code></pre><ul>
 <li><strong>max file descriptors [4096] for elasticsearch process likely too low, increase to at least [65536]</strong></li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">解决方法：修改 /etc/security/limits.conf，配置：
-</span></span><span class="line"><span class="cl">hard nofile 80000
-</span></span><span class="line"><span class="cl">soft nofile 80000
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>解决方法：修改 /etc/security/limits.conf，配置：
+hard nofile 80000
+soft nofile 80000
+</code></pre><ul>
 <li><strong>max virtual memory areas vm.max_map_count [65530] is too low</strong></li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">解决方法：修改 /etc/sysctl.conf，添加 ：
-</span></span><span class="line"><span class="cl">vm.max_map_count = 262144
-</span></span><span class="line"><span class="cl">然后 sysctl -p 生效
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<pre tabindex="0"><code>解决方法：修改 /etc/sysctl.conf，添加 ：
+vm.max_map_count = 262144
+然后 sysctl -p 生效
+</code></pre><blockquote>
 <p>安装插件方式：./bin/elasticsearch-plugin install analysis-icu</p>
 </blockquote>
 <p><strong>ES 相关配置</strong></p>
@@ -1166,131 +1139,66 @@ Likely root cause: java.security.AccessControlException: access denied (&ldquo;j
 </div>
 </div><br/>
 <h2 id="启动集群">启动集群</h2>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 启动实例1
-</span></span><span class="line"><span class="cl">./bin/elasticsearch -E cluster.name=kiosk-es -Enode.name=es-node1 \
-</span></span><span class="line"><span class="cl">-E path.data=/home/ubuntu/data/elasticsearch-8.2.3/data/data1  \
-</span></span><span class="line"><span class="cl">-E path.logs=/home/ubuntu/data/elasticsearch-8.2.3/logs/log1 \
-</span></span><span class="line"><span class="cl">-E http.port=9200 -E transport.port=9300 -E network.host=127.0.0.1 \
-</span></span><span class="line"><span class="cl">-E discovery.seed_hosts=&#34;127.0.0.1:9300&#34;,&#34;127.0.0.1:9301&#34;,&#34;127.0.0.1:9302&#34; \
-</span></span><span class="line"><span class="cl">-E action.destructive_requires_name=true \
-</span></span><span class="line"><span class="cl">-E cluster.initial_master_nodes=&#34;es-node1&#34;,&#34;es-node2&#34;,&#34;es-node3&#34; \
-</span></span><span class="line"><span class="cl">-E xpack.security.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.enrollment.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.verification_mode=certificate \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node1/http.p12 \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node1/http.p12 \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.verification_mode=certificate \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node1/es-node1.p12 \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node1/es-node1.p12 \
-</span></span><span class="line"><span class="cl">-d
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># 启动实例2 
-</span></span><span class="line"><span class="cl">./bin/elasticsearch -E cluster.name=kiosk-es -E node.name=es-node2 \
-</span></span><span class="line"><span class="cl">-E path.data=/home/ubuntu/data/elasticsearch-8.2.3/data/data2 \
-</span></span><span class="line"><span class="cl">-E path.logs=/home/ubuntu/data/elasticsearch-8.2.3/logs/log2 \
-</span></span><span class="line"><span class="cl">-E http.port=9201 -E transport.port=9301 -E network.host=127.0.0.1 \
-</span></span><span class="line"><span class="cl">-E discovery.seed_hosts=&#34;127.0.0.1:9300&#34;,&#34;127.0.0.1:9301&#34;,&#34;127.0.0.1:9302&#34; \
-</span></span><span class="line"><span class="cl">-E action.destructive_requires_name=true \
-</span></span><span class="line"><span class="cl">-E cluster.initial_master_nodes=&#34;es-node1&#34;,&#34;es-node2&#34;,&#34;es-node3&#34; \
-</span></span><span class="line"><span class="cl">-E xpack.security.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.enrollment.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.verification_mode=certificate \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node2/http.p12 \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node2/http.p12 \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.verification_mode=certificate \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node2/es-node2.p12 \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node2/es-node2.p12 \
-</span></span><span class="line"><span class="cl">-d
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># 启动实例3 
-</span></span><span class="line"><span class="cl">./bin/elasticsearch -E cluster.name=kiosk-es -E node.name=es-node3 \
-</span></span><span class="line"><span class="cl">-E path.data=/home/ubuntu/data/elasticsearch-8.2.3/data/data3 \
-</span></span><span class="line"><span class="cl">-E path.logs=/home/ubuntu/data/elasticsearch-8.2.3/logs/log3 \
-</span></span><span class="line"><span class="cl">-E http.port=9202 -E transport.port=9302 -E network.host=127.0.0.1 \
-</span></span><span class="line"><span class="cl">-E discovery.seed_hosts=&#34;127.0.0.1:9300&#34;,&#34;127.0.0.1:9301&#34;,&#34;127.0.0.1:9302&#34; \
-</span></span><span class="line"><span class="cl">-E action.destructive_requires_name=true \
-</span></span><span class="line"><span class="cl">-E cluster.initial_master_nodes=&#34;es-node1&#34;,&#34;es-node2&#34;,&#34;es-node3&#34; \
-</span></span><span class="line"><span class="cl">-E xpack.security.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.enrollment.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.verification_mode=certificate \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node3/http.p12 \
-</span></span><span class="line"><span class="cl">-E xpack.security.http.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node3/http.p12 \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.enabled=true \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.verification_mode=certificate \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node3/es-node3.p12 \
-</span></span><span class="line"><span class="cl">-E xpack.security.transport.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node3/es-node3.p12 \
-</span></span><span class="line"><span class="cl">-d
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code># 启动实例1
+./bin/elasticsearch -E cluster.name=kiosk-es -Enode.name=es-node1 \
+-E path.data=/home/ubuntu/data/elasticsearch-8.2.3/data/data1  \
+-E path.logs=/home/ubuntu/data/elasticsearch-8.2.3/logs/log1 \
+-E http.port=9200 -E transport.port=9300 -E network.host=127.0.0.1 \
+-E discovery.seed_hosts=&#34;127.0.0.1:9300&#34;,&#34;127.0.0.1:9301&#34;,&#34;127.0.0.1:9302&#34; \
+-E action.destructive_requires_name=true \
+-E cluster.initial_master_nodes=&#34;es-node1&#34;,&#34;es-node2&#34;,&#34;es-node3&#34; \
+-E xpack.security.enabled=true \
+-E xpack.security.enrollment.enabled=true \
+-E xpack.security.http.ssl.enabled=true \
+-E xpack.security.http.ssl.verification_mode=certificate \
+-E xpack.security.http.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node1/http.p12 \
+-E xpack.security.http.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node1/http.p12 \
+-E xpack.security.transport.ssl.enabled=true \
+-E xpack.security.transport.ssl.verification_mode=certificate \
+-E xpack.security.transport.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node1/es-node1.p12 \
+-E xpack.security.transport.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node1/es-node1.p12 \
+-d
+
+# 启动实例2 
+./bin/elasticsearch -E cluster.name=kiosk-es -E node.name=es-node2 \
+-E path.data=/home/ubuntu/data/elasticsearch-8.2.3/data/data2 \
+-E path.logs=/home/ubuntu/data/elasticsearch-8.2.3/logs/log2 \
+-E http.port=9201 -E transport.port=9301 -E network.host=127.0.0.1 \
+-E discovery.seed_hosts=&#34;127.0.0.1:9300&#34;,&#34;127.0.0.1:9301&#34;,&#34;127.0.0.1:9302&#34; \
+-E action.destructive_requires_name=true \
+-E cluster.initial_master_nodes=&#34;es-node1&#34;,&#34;es-node2&#34;,&#34;es-node3&#34; \
+-E xpack.security.enabled=true \
+-E xpack.security.enrollment.enabled=true \
+-E xpack.security.http.ssl.enabled=true \
+-E xpack.security.http.ssl.verification_mode=certificate \
+-E xpack.security.http.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node2/http.p12 \
+-E xpack.security.http.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node2/http.p12 \
+-E xpack.security.transport.ssl.enabled=true \
+-E xpack.security.transport.ssl.verification_mode=certificate \
+-E xpack.security.transport.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node2/es-node2.p12 \
+-E xpack.security.transport.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node2/es-node2.p12 \
+-d
+
+# 启动实例3 
+./bin/elasticsearch -E cluster.name=kiosk-es -E node.name=es-node3 \
+-E path.data=/home/ubuntu/data/elasticsearch-8.2.3/data/data3 \
+-E path.logs=/home/ubuntu/data/elasticsearch-8.2.3/logs/log3 \
+-E http.port=9202 -E transport.port=9302 -E network.host=127.0.0.1 \
+-E discovery.seed_hosts=&#34;127.0.0.1:9300&#34;,&#34;127.0.0.1:9301&#34;,&#34;127.0.0.1:9302&#34; \
+-E action.destructive_requires_name=true \
+-E cluster.initial_master_nodes=&#34;es-node1&#34;,&#34;es-node2&#34;,&#34;es-node3&#34; \
+-E xpack.security.enabled=true \
+-E xpack.security.enrollment.enabled=true \
+-E xpack.security.http.ssl.enabled=true \
+-E xpack.security.http.ssl.verification_mode=certificate \
+-E xpack.security.http.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node3/http.p12 \
+-E xpack.security.http.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node3/http.p12 \
+-E xpack.security.transport.ssl.enabled=true \
+-E xpack.security.transport.ssl.verification_mode=certificate \
+-E xpack.security.transport.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node3/es-node3.p12 \
+-E xpack.security.transport.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node3/es-node3.p12 \
+-d
+</code></pre><br/>
 <p>这样启动比较晕&#x1f635;的是，所有的命令行最好都带上这些 -E 选项，比如我想要改 elastic 用户的密码，应该这样做。。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1303,15 +1211,8 @@ Likely root cause: java.security.AccessControlException: access denied (&ldquo;j
 </div><br/>
 <h2 id="启动kibana">启动Kibana</h2>
 <p>别忘了带上上面说的一堆 &ldquo;-E&rdquo; 选项</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">./bin/elasticsearch-reset-password -u kibana_system
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>./bin/elasticsearch-reset-password -u kibana_system
+</code></pre><br/>
 <p>得到 kibana_system 用户的密码后，将内容填进 ./config/kibana.yml 配置文件中，大概 42-51 行</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

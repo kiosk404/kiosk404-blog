@@ -37,7 +37,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "k8s, Nginx","wordcount":  1419 ,
+                        }],"genre": "posts","keywords": "k8s, Nginx","wordcount":  1325 ,
         "url": "http:\/\/localhost:1313\/post\/k8s-%E9%83%A8%E7%BD%B2-nginx-%E9%9B%86%E7%BE%A4\/","datePublished": "2021-08-04T22:56:00+00:00","dateModified": "2021-08-04T22:56:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -119,7 +119,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">k8s 部署 HTTP3  Nginx </h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/k8s/"><i class="far fa-folder fa-fw"></i>K8s</a>&nbsp;<a href="/categories/nginx/"><i class="far fa-folder fa-fw"></i>Nginx</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-08-04">2021-08-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1419 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-08-04">2021-08-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1325 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -161,31 +161,14 @@
 		 </div><p>在之前的文章中介绍了如何编译<a href="https://kiosk007.top/2021/07/31/%E5%B0%9D%E8%AF%95-Nginx-%E4%B8%8A%E4%BD%BF%E7%94%A8HTTP3/" target="_blank" rel="noopener noreffer">支持HTTP3的Nginx</a> 为了一键将H3 Nginx上云，一劳永逸，本文会记录一下容器化Nginx的过程。</p>
 <h1 id="制作镜像">制作镜像</h1>
 <p>Docker Image 的制作两种方法，支持 HTTP3 的 Nginx 在上面的文章中已经阐述(不过需要加上 <code>nginx-upstream-dynamic-servers</code> 这个模块，后面会用到)，镜像的制作是将编译好的二进制文件打包放进 Docker 镜像当中，并保证其可运行。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">方法 1：docker commit #保存 container 的当前状态到 image 后，然后生成对应的 image
-</span></span><span class="line"><span class="cl">方法 2：docker build #使用 Dockerfile 文件自动化制作 image
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="方法一-docker-commit">方法一: docker commit</h2>
+<pre tabindex="0"><code>方法 1：docker commit #保存 container 的当前状态到 image 后，然后生成对应的 image
+方法 2：docker build #使用 Dockerfile 文件自动化制作 image
+</code></pre><h2 id="方法一-docker-commit">方法一: docker commit</h2>
 <p>获取 ubuntu 镜像</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ docker run -it ubuntu:latest /bin/bash
-</span></span><span class="line"><span class="cl"># 进入到容器后，创建 nginx 家目录
-</span></span><span class="line"><span class="cl">mkdir nginx
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>Nginx 的编译产物会全部放进 ${NGINX_QUIC_PATH}/objs 目录下。所以创建镜像需要将这里面的必要文件copy进镜像中。</p>
+<pre tabindex="0"><code>$ docker run -it ubuntu:latest /bin/bash
+# 进入到容器后，创建 nginx 家目录
+mkdir nginx
+</code></pre><p>Nginx 的编译产物会全部放进 ${NGINX_QUIC_PATH}/objs 目录下。所以创建镜像需要将这里面的必要文件copy进镜像中。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -427,28 +410,14 @@ Dockerfile 有点像源码编译时./configure 后产生的 Makefile</p>
 <ul>
 <li>构建镜像文件</li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">➜  docker build -t kiosk007/nginx-quic:v0.2 .
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>&ndash;tag, -t: 镜像的名字及标签，通常 name:tag 或者 name 格式；可以在一次构建中为一个镜像设置多个标签.</p>
+<pre tabindex="0"><code>➜  docker build -t kiosk007/nginx-quic:v0.2 .
+</code></pre><p>&ndash;tag, -t: 镜像的名字及标签，通常 name:tag 或者 name 格式；可以在一次构建中为一个镜像设置多个标签.</p>
 <p>镜像打包好后，通过 <code>docker images </code> 命令可以看到当前的镜像id</p>
 <ul>
 <li>运行容器</li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">➜  docker run --name http3_nginx -v ~/Project/Nginx/nginx-quic:/nginx -p 8080:80 -p 8443:443/udp -p 8443:443/tcp -d 35edbb5f8be1
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<pre tabindex="0"><code>➜  docker run --name http3_nginx -v ~/Project/Nginx/nginx-quic:/nginx -p 8080:80 -p 8443:443/udp -p 8443:443/tcp -d 35edbb5f8be1
+</code></pre><blockquote>
 <p>-p 8443:443 映射端口
 -d 守护进程运行
 -name http3_nginx 指定容器的名称
@@ -511,17 +480,9 @@ Dockerfile 有点像源码编译时./configure 后产生的 Makefile</p>
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker push weijiaxiang007/nginx-http3:latest
 </span></span></code></pre></td></tr></table>
 </div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker container prune  # 删除所有停止的容器
-</span></span><span class="line"><span class="cl">docker image prune -a   # 删除没有用到的镜像
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h1 id="kubernetes">kubernetes</h1>
+</div><pre tabindex="0"><code>docker container prune  # 删除所有停止的容器
+docker image prune -a   # 删除没有用到的镜像
+</code></pre><h1 id="kubernetes">kubernetes</h1>
 <h2 id="minikube">minikube</h2>
 <p>Minikube是由Kubernetes社区维护的单机版的Kubernetes集群。并支持Kubernetes的大部分功能，从基础的容器编排管理，到高级特性如负载均衡、Ingress，权限控制等。</p>
 <p>安装 minikube ，可参考官方文档 <a href="https://minikube.sigs.k8s.io/docs/start/" target="_blank" rel="noopener noreffer">minikube start</a>, 另外还需要安装 kubectl 另外做一些配置（如关掉 swap ），具体可参考我之前的<a href="https://kiosk007.top/2020/07/24/ubuntu20-04-%E9%83%A8%E7%BD%B2-Kubernetes-k8s/#%E5%AE%89%E8%A3%85k8s-master" target="_blank" rel="noopener noreffer">文章</a> 。</p>
@@ -642,35 +603,18 @@ d. 暂停和继续Deployment</p>
 </ul>
 <p>Kubernetes Service 定义了这样一种抽象：一个 Pod 的逻辑分组，也就是为一组Pod提供统一的访问方式。通常 Pod 通过 Label Selector 实现的与 Service 绑定。</p>
 <p>一个 Service 在 Kubernetes 中是一个 REST 对象，和 Pod 类似。 像所有的 REST 对象一样， Service 定义可以基于 POST 方式，请求 apiserver 创建新的实例。 例如，假定有一组 Pod，它们对外暴露了 9376 端口，同时还被打上 &ldquo;app=MyApp&rdquo; 标签。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kind: Service
-</span></span><span class="line"><span class="cl">apiVersion: v1
-</span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: my-service
-</span></span><span class="line"><span class="cl">spec:
-</span></span><span class="line"><span class="cl">  selector:
-</span></span><span class="line"><span class="cl">    app: MyApp
-</span></span><span class="line"><span class="cl">  ports:
-</span></span><span class="line"><span class="cl">    - protocol: TCP
-</span></span><span class="line"><span class="cl">      port: 80
-</span></span><span class="line"><span class="cl">      targetPort: 9376
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>参考: <a href="https://kubernetes.io/zh/docs/concepts/services-networking/service/" target="_blank" rel="noopener noreffer">https://kubernetes.io/zh/docs/concepts/services-networking/service/</a></p>
+<pre tabindex="0"><code>kind: Service
+apiVersion: v1
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: MyApp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+</code></pre><p>参考: <a href="https://kubernetes.io/zh/docs/concepts/services-networking/service/" target="_blank" rel="noopener noreffer">https://kubernetes.io/zh/docs/concepts/services-networking/service/</a></p>
 <h2 id="如何获取k8s集群中的服务">如何获取K8S集群中的服务?</h2>
 <p>一般来说暴露服务的三种方式</p>
 <ul>
@@ -835,157 +779,79 @@ d. 暂停和继续Deployment</p>
 <p>可参考： <a href="https://kiosk007.top/2020/07/24/ubuntu20-04-%E9%83%A8%E7%BD%B2-Kubernetes-k8s/" target="_blank" rel="noopener noreffer">ubuntu20.04 部署 Kubernetes (k8s)</a></p>
 <h2 id="nginx-depolyment">Nginx depolyment</h2>
 <p>新建文件: <code>nginx_http3-deployment.yaml</code></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span><span class="lnt">69
-</span><span class="lnt">70
-</span><span class="lnt">71
-</span><span class="lnt">72
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apiVersion: apps/v1
-</span></span><span class="line"><span class="cl">kind: Deployment
-</span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: nginx-http3-deployment
-</span></span><span class="line"><span class="cl">  namespace: default    #必填，Pod所属的命名空间
-</span></span><span class="line"><span class="cl">  labels:               #自定义标签
-</span></span><span class="line"><span class="cl">    app: nginx        #自定义标签名字&lt;key: value&gt;
-</span></span><span class="line"><span class="cl">  annotations:          #自定义注释列表
-</span></span><span class="line"><span class="cl">    imageregistry: &#34;https://hub.docker.com/&#34;
-</span></span><span class="line"><span class="cl">spec:
-</span></span><span class="line"><span class="cl">  selector:
-</span></span><span class="line"><span class="cl">    matchLabels:
-</span></span><span class="line"><span class="cl">      app: nginx-http3  # 必填，通过此标签匹配对应pod
-</span></span><span class="line"><span class="cl">  replicas: 1           # 副本集个数
-</span></span><span class="line"><span class="cl">  template:             # 必填，应用容器模版定义
-</span></span><span class="line"><span class="cl">    metadata:
-</span></span><span class="line"><span class="cl">      labels:           # 必填，遇上面matchLabels的标签相同
-</span></span><span class="line"><span class="cl">        app: nginx-http3
-</span></span><span class="line"><span class="cl">    spec:
-</span></span><span class="line"><span class="cl">      hostIPC: true  
-</span></span><span class="line"><span class="cl">      hostNetwork: true   # 使用主机网络
-</span></span><span class="line"><span class="cl">      #Pod的重启策略，Always表示一旦不管以何种方式终止运行，kubelet都将重启，OnFailure表示只有Pod以非0退出码退出才重启，Never表示不再重启该Pod
-</span></span><span class="line"><span class="cl">      restartPolicy: Always   
-</span></span><span class="line"><span class="cl">      shareProcessNamespace: true  # Pod 里的容器共享 PID Namespace
-</span></span><span class="line"><span class="cl">      containers:
-</span></span><span class="line"><span class="cl">      - name: nginx
-</span></span><span class="line"><span class="cl">        image: weijiaxiang007/nginx-http3:v0.2
-</span></span><span class="line"><span class="cl">        imagePullPolicy: IfNotPresent   # [Always | Never | IfNotPresent] 获取镜像的策略 Alawys表示下载镜像;IfnotPresent表示优先使用本地镜像，否则下载镜像;Nerver表示仅使用本地镜像
-</span></span><span class="line"><span class="cl">        workingDir: &#34;/nginx/&#34;            # 选填，容器的工作目录
-</span></span><span class="line"><span class="cl">        volumeMounts:                   # 挂载到容器内部的存储卷配置
-</span></span><span class="line"><span class="cl">        - mountPath: &#34;/nginx/&#34;
-</span></span><span class="line"><span class="cl">          name: nginx-vol               # 引用pod定义的共享存储卷的名称
-</span></span><span class="line"><span class="cl">        livenessProbe:                  # 对Pod内个容器健康检查的设置，当探测无响应几次后将自动重启该容器，检查方法有exec、httpGet和tcpSocket
-</span></span><span class="line"><span class="cl">          httpGet:       
-</span></span><span class="line"><span class="cl">            path: /_check_domain_health      
-</span></span><span class="line"><span class="cl">            port: 80
-</span></span><span class="line"><span class="cl">            scheme: HTTP       
-</span></span><span class="line"><span class="cl">          initialDelaySeconds: 30       # 容器启动完成后首次探测的时间，单位为秒
-</span></span><span class="line"><span class="cl">          periodSeconds: 1200             # 对容器监控检查的定期探测时间设置，单位秒，默认10秒一次
-</span></span><span class="line"><span class="cl">          timeoutSeconds: 1            # 对容器健康检查探测等待响应的超时时间，单位秒，默认1秒
-</span></span><span class="line"><span class="cl">        resources:
-</span></span><span class="line"><span class="cl">          requests:
-</span></span><span class="line"><span class="cl">            cpu: 50m
-</span></span><span class="line"><span class="cl">            memory: 200Mi
-</span></span><span class="line"><span class="cl">          limits:
-</span></span><span class="line"><span class="cl">            cpu: 500m
-</span></span><span class="line"><span class="cl">            memory: 500Mi
-</span></span><span class="line"><span class="cl">        env:
-</span></span><span class="line"><span class="cl">          - name: NGINX_VERSION
-</span></span><span class="line"><span class="cl">            value: &#34;1.21.0&#34;
-</span></span><span class="line"><span class="cl">          - name: RUN_DEV
-</span></span><span class="line"><span class="cl">            value: &#34;boe&#34;
-</span></span><span class="line"><span class="cl">      - name: shell
-</span></span><span class="line"><span class="cl">        image: ubuntu    
-</span></span><span class="line"><span class="cl">        stdin: true    
-</span></span><span class="line"><span class="cl">        tty: true
-</span></span><span class="line"><span class="cl">        workingDir: &#34;/nginx/&#34;            # 选填，容器的工作目录
-</span></span><span class="line"><span class="cl">        command: [&#34;/bin/bash&#34;,&#34;-c&#34;,&#34;sleep 100000000&#34;]
-</span></span><span class="line"><span class="cl">        volumeMounts:                   # 挂载到容器内部的存储卷配置
-</span></span><span class="line"><span class="cl">          - mountPath: &#34;/nginx/&#34;
-</span></span><span class="line"><span class="cl">            name: nginx-vol               # 引用pod定义的共享存储卷的名称
-</span></span><span class="line"><span class="cl">        lifecycle:      
-</span></span><span class="line"><span class="cl">          postStart:        
-</span></span><span class="line"><span class="cl">            exec:          
-</span></span><span class="line"><span class="cl">              command: [&#34;/bin/sh&#34;, &#34;-c&#34;, &#34;echo Nginx HTTP3 Server Start from the postStart handler &gt; /usr/share/message&#34;]      
-</span></span><span class="line"><span class="cl">          preStop:        
-</span></span><span class="line"><span class="cl">            exec:          
-</span></span><span class="line"><span class="cl">              command: [&#34;/sbin/nginx&#34;,&#34;-s&#34;,&#34;quit&#34;]
-</span></span><span class="line"><span class="cl">      volumes:                # 在该pod上定义共享存储卷列表
-</span></span><span class="line"><span class="cl">      - name: nginx-vol       # 共享存储卷名称 （volumes类型有很多种）
-</span></span><span class="line"><span class="cl">        hostPath:
-</span></span><span class="line"><span class="cl">          path: /host
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>创建 deployment</p>
+<pre tabindex="0"><code class="language-ymal" data-lang="ymal">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-http3-deployment
+  namespace: default    #必填，Pod所属的命名空间
+  labels:               #自定义标签
+    app: nginx        #自定义标签名字&lt;key: value&gt;
+  annotations:          #自定义注释列表
+    imageregistry: &#34;https://hub.docker.com/&#34;
+spec:
+  selector:
+    matchLabels:
+      app: nginx-http3  # 必填，通过此标签匹配对应pod
+  replicas: 1           # 副本集个数
+  template:             # 必填，应用容器模版定义
+    metadata:
+      labels:           # 必填，遇上面matchLabels的标签相同
+        app: nginx-http3
+    spec:
+      hostIPC: true  
+      hostNetwork: true   # 使用主机网络
+      #Pod的重启策略，Always表示一旦不管以何种方式终止运行，kubelet都将重启，OnFailure表示只有Pod以非0退出码退出才重启，Never表示不再重启该Pod
+      restartPolicy: Always   
+      shareProcessNamespace: true  # Pod 里的容器共享 PID Namespace
+      containers:
+      - name: nginx
+        image: weijiaxiang007/nginx-http3:v0.2
+        imagePullPolicy: IfNotPresent   # [Always | Never | IfNotPresent] 获取镜像的策略 Alawys表示下载镜像;IfnotPresent表示优先使用本地镜像，否则下载镜像;Nerver表示仅使用本地镜像
+        workingDir: &#34;/nginx/&#34;            # 选填，容器的工作目录
+        volumeMounts:                   # 挂载到容器内部的存储卷配置
+        - mountPath: &#34;/nginx/&#34;
+          name: nginx-vol               # 引用pod定义的共享存储卷的名称
+        livenessProbe:                  # 对Pod内个容器健康检查的设置，当探测无响应几次后将自动重启该容器，检查方法有exec、httpGet和tcpSocket
+          httpGet:       
+            path: /_check_domain_health      
+            port: 80
+            scheme: HTTP       
+          initialDelaySeconds: 30       # 容器启动完成后首次探测的时间，单位为秒
+          periodSeconds: 1200             # 对容器监控检查的定期探测时间设置，单位秒，默认10秒一次
+          timeoutSeconds: 1            # 对容器健康检查探测等待响应的超时时间，单位秒，默认1秒
+        resources:
+          requests:
+            cpu: 50m
+            memory: 200Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
+        env:
+          - name: NGINX_VERSION
+            value: &#34;1.21.0&#34;
+          - name: RUN_DEV
+            value: &#34;boe&#34;
+      - name: shell
+        image: ubuntu    
+        stdin: true    
+        tty: true
+        workingDir: &#34;/nginx/&#34;            # 选填，容器的工作目录
+        command: [&#34;/bin/bash&#34;,&#34;-c&#34;,&#34;sleep 100000000&#34;]
+        volumeMounts:                   # 挂载到容器内部的存储卷配置
+          - mountPath: &#34;/nginx/&#34;
+            name: nginx-vol               # 引用pod定义的共享存储卷的名称
+        lifecycle:      
+          postStart:        
+            exec:          
+              command: [&#34;/bin/sh&#34;, &#34;-c&#34;, &#34;echo Nginx HTTP3 Server Start from the postStart handler &gt; /usr/share/message&#34;]      
+          preStop:        
+            exec:          
+              command: [&#34;/sbin/nginx&#34;,&#34;-s&#34;,&#34;quit&#34;]
+      volumes:                # 在该pod上定义共享存储卷列表
+      - name: nginx-vol       # 共享存储卷名称 （volumes类型有很多种）
+        hostPath:
+          path: /host
+</code></pre><p>创建 deployment</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1014,17 +880,9 @@ d. 暂停和继续Deployment</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>验证</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">➜  curl https://webtransport.kiosk007.top:443/ping --resolve webtransport.kiosk007.top:443:192.168.49.2
-</span></span><span class="line"><span class="cl">pong
-</span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer" id="post-footer">
+<pre tabindex="0"><code>➜  curl https://webtransport.kiosk007.top:443/ping --resolve webtransport.kiosk007.top:443:192.168.49.2
+pong
+</code></pre></div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">

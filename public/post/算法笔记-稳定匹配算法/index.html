@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "algorithm","wordcount":  866 ,
+                        }],"genre": "posts","keywords": "algorithm","wordcount":  850 ,
         "url": "http:\/\/localhost:1313\/post\/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E7%A8%B3%E5%AE%9A%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95\/","datePublished": "2023-10-31T22:53:00+00:00","dateModified": "2023-10-31T22:53:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">算法笔记-稳定匹配算法（Gale-Shapley）</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/algorithm/"><i class="far fa-folder fa-fw"></i>Algorithm</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2023-10-31">2023-10-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;866 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2023-10-31">2023-10-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;850 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>Contents</span>
@@ -178,33 +178,17 @@
 <blockquote>
 <p><strong>伪代码如下</strong></p>
 </blockquote>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Gale-Shapley
-</span></span><span class="line"><span class="cl">initialize each person to be free
-</span></span><span class="line"><span class="cl">while (some man m is free and hasn&#39;t proposed to every woman) do
-</span></span><span class="line"><span class="cl">    w = highest ranked woman in m&#39;s list to whom m has not yet proposed
-</span></span><span class="line"><span class="cl">    if (w is free) then
-</span></span><span class="line"><span class="cl">       (m, w) become engaged
-</span></span><span class="line"><span class="cl">    else if (w prefers m to her fiance m&#39;) then
-</span></span><span class="line"><span class="cl">       (m, w) become engaged
-</span></span><span class="line"><span class="cl">       m&#39; become free
-</span></span><span class="line"><span class="cl">return the set S of engaged pairs
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>Golang 实现版本</strong></p>
+<pre tabindex="0"><code># Gale-Shapley
+initialize each person to be free
+while (some man m is free and hasn&#39;t proposed to every woman) do
+    w = highest ranked woman in m&#39;s list to whom m has not yet proposed
+    if (w is free) then
+       (m, w) become engaged
+    else if (w prefers m to her fiance m&#39;) then
+       (m, w) become engaged
+       m&#39; become free
+return the set S of engaged pairs
+</code></pre><p><strong>Golang 实现版本</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -468,19 +452,10 @@
 </div>
 </div><br/>
 <p>运行结果如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Xavier -- Amy
-</span></span><span class="line"><span class="cl">Yancey -- Bertha
-</span></span><span class="line"><span class="cl">Zeus -- Clare
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>Xavier -- Amy
+Yancey -- Bertha
+Zeus -- Clare
+</code></pre><br/>
 <p>我们来看看这段 procedure 的流程，首先初始化所有人都为自由身（free 的状态）。接着开始进行迭代，迭代的终止条件为没有自由身的男生，也就是每位男生都找到了一个对象，迭代中找到一位为 free 的男生，并从他的喜好排序中找到最高位还没有被追求过的女生。如果女生是 free 状态，则直接答应求婚（状态变为 engaged），因为女生是可以反悔的，所以先同意这次求婚没有太大的损失，但如果这位女生已经是 engaged 的状态，就会将她的未婚夫与这位求婚的男士做对比，若她接受这位向她求婚的男生，就将他们配为新的一对，将其未婚夫变为 free 的状态，直到所有男生都不是 free 的状态，结束迭代。</p>
 <br/>
 <h1 id="分析">分析</h1>
@@ -576,19 +551,10 @@
 <br/>
 <p>比如上面的运行结果是 <code>Xavier &lt;-&gt; Amy</code> 、<code>Yancey &lt;-&gt; Bertha</code>、<code>Zeus &lt;-&gt; Clare</code> 这三个匹配结果。</p>
 <p>现在我们打乱他们的求婚顺序，让 Zeus 先求婚再是 Yancey，最后才是 Xavier 。接下来看看结果</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Zeus -- Clare
-</span></span><span class="line"><span class="cl">Yancey -- Bertha
-</span></span><span class="line"><span class="cl">Xavier -- Amy
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以看到运行结果没有变化。</p>
+<pre tabindex="0"><code>Zeus -- Clare
+Yancey -- Bertha
+Xavier -- Amy
+</code></pre><p>可以看到运行结果没有变化。</p>
 <h1 id="拓展">拓展</h1>
 <p>现在有了这个匹配算法，可以做什么事呢？比如 CDN 调度，资源分配就可以利用这个算法，比如将各地区的流量分配至各地区的节点，节点可以承接流量。而且为了 95 水位的稳定，还需要一个省的流量不要经常变动。这就需要稳定匹配算法了。</p></div><div class="post-footer" id="post-footer">
     <div class="post-info">

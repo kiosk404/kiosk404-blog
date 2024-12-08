@@ -1,19 +1,24 @@
-/* 代码块容器 */
-.highlight {
-    position: relative;
-    margin: 1.5rem 0;
-    border-radius: 8px;
-    background: #1E1E1E !important;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-    overflow: hidden;
+/* 增加选择器优先级并添加 !important */
+:root {
+    --code-background: #f5f2f2;
 }
 
-/* macOS 风格的标题栏 */
+/* 立即应用样式，防止闪烁 */
+.highlight {
+    position: relative !important;
+    margin: 1.5rem 0 !important;
+    border-radius: 8px !important;
+    background: var(--code-background) !important;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1) !important;
+    overflow: hidden !important;
+}
+
+/* 标题栏 */
 .highlight::before {
     content: '';
     display: block;
     height: 30px;
-    background: linear-gradient(to bottom, #3a3a3a, #2d2d2d);
+    background: linear-gradient(to bottom, #4D4D4D, #3F3F3F);
     border-bottom: 1px solid #4a4a4a;
 }
 
@@ -26,14 +31,16 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #ff5f56;
+    background: #FF5F56;
     box-shadow: 
-        20px 0 0 #ffbd2e,
-        40px 0 0 #27c93f;
+        20px 0 0 #FFBD2E,
+        40px 0 0 #27C93F;
 }
 
 /* 代码区域 */
-.highlight > .chroma {
+/* 代码区域 */
+.highlight > .chroma,
+.highlight pre.chroma {  /* 增加选择器以提高优先级 */
     position: relative;
     padding: 2rem 1rem 1rem;
     margin-top: -5px;
@@ -41,120 +48,19 @@
     font-size: 0.9rem;
     line-height: 1.5;
     overflow-x: auto;
-    background: #1E1E1E !important;
-    color: #A9B7C6 !important;
+    background: #f6efef !important;
+    color: #25272b !important;
 }
 
-/* 代码行 */
-.highlight .lntd {
-    border: none;
+/* 添加以下代码以覆盖可能的主题默认样式 */
+.highlight pre {
+    background: #f6efef !important;
+    margin: 0 !important;
 }
 
-/* 行号列 */
-.highlight .lntd:first-child {
-    padding-right: 10px;
-    width: 40px;
-    background: #252525 !important;
-    border-right: 1px solid #333;
-    user-select: none;
+/* 确保代码行不会被主题样式影响 */
+.highlight .chroma code,
+.highlight .chroma span {
+    background: none !important;
+    color: inherit;
 }
-
-/* 行号 */
-.highlight .lnt {
-    margin-right: 0.4em;
-    padding: 0 0.4em;
-    color: #606366 !important;
-    display: block;
-    text-align: right;
-}
-
-/* 代码高亮配色方案 */
-.highlight {
-    /* 关键字 */
-    .keyword { color: #CC7832 !important; font-weight: bold; }
-    /* 字符串 */
-    .string { color: #6A8759 !important; }
-    /* 数字 */
-    .number { color: #6897BB !important; }
-    /* 注释 */
-    .comment { color: #808080 !important; font-style: italic; }
-    /* 函数 */
-    .function { color: #FFC66D !important; }
-    /* 类名 */
-    .type { color: #A9B7C6 !important; }
-    /* 变量 */
-    .variable { color: #9876AA !important; }
-    /* 属性 */
-    .property { color: #9876AA !important; }
-    /* 运算符 */
-    .operator { color: #CC7832 !important; }
-    /* 标点符号 */
-    .punctuation { color: #A9B7C6 !important; }
-}
-
-/* 内联代码 */
-code:not([class]) {
-    padding: 0.2em 0.4em;
-    margin: 0 0.2em;
-    font-size: 0.85em;
-    background: rgba(175,184,193,0.2);
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', 'Fira Code', Monaco, Consolas, monospace;
-}
-
-/* 复制按钮 */
-.highlight .copy-button {
-    position: absolute;
-    right: 10px;
-    top: 5px;
-    padding: 4px 8px;
-    font-size: 12px;
-    color: #fff;
-    background: transparent;
-    border: 1px solid #666;
-    border-radius: 4px;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.highlight:hover .copy-button {
-    opacity: 1;
-}
-
-.highlight .copy-button:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-/* 暗色主题适配 */
-[theme="dark"] .highlight {
-    background: #1E1E1E !important;
-}
-
-[theme="dark"] .highlight::before {
-    background: linear-gradient(to bottom, #343746, #282a36);
-    border-bottom-color: #454858;
-}
-
-/* 滚动条美化 */
-.highlight > .chroma::-webkit-scrollbar {
-    height: 8px;
-}
-
-.highlight > .chroma::-webkit-scrollbar-track {
-    background: #2d2d2d;
-}
-
-.highlight > .chroma::-webkit-scrollbar-thumb {
-    background: #666;
-    border-radius: 4px;
-}
-
-.highlight > .chroma::-webkit-scrollbar-thumb:hover {
-    background: #888;
-}
-
-/* 选中文本的样式 */
-.highlight > .chroma ::selection {
-    background: rgba(255,255,255,0.2);
-} 

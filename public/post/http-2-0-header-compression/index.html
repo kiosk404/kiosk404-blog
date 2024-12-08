@@ -38,7 +38,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "network","wordcount":  2133 ,
+                        }],"genre": "posts","keywords": "network","wordcount":  2080 ,
         "url": "http:\/\/localhost:1313\/post\/http-2-0-header-compression\/","datePublished": "2022-02-26T15:01:00+00:00","dateModified": "2022-02-26T15:01:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -120,8 +120,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">HTTP/2.0 Header Compression</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-02-26">2022-02-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2133 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;11 minutes&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-02-26">2022-02-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2080 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;10 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>Contents</span>
@@ -416,61 +416,31 @@
 </ol>
 <h2 id="static-table">Static Table</h2>
 <p>静态表（<a href="https://tools.ietf.org/html/rfc7541#section-2.3.1" style="color:#556B2F">rfc7541#section-2.3.1</a>），包含61个预定义Header key-value，传输的时候使用对应的索引Index替换。静态表内容具体的定义可以参考这里 <a href="https://datatracker.ietf.org/doc/html/rfc7541#appendix-A" style="color:#556B2F">rfc7541#appendix-A</a>。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl">          <span class="o">+-------+-----------------------------+---------------+</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="n">Index</span> <span class="o">|</span> <span class="n">Header</span> <span class="n">Name</span>                 <span class="o">|</span> <span class="n">Header</span> <span class="n">Value</span>  <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">+-------+-----------------------------+---------------+</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">1</span>     <span class="o">|</span> <span class="p">:</span><span class="n">authority</span>                  <span class="o">|</span>               <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">2</span>     <span class="o">|</span> <span class="p">:</span><span class="n">method</span>                     <span class="o">|</span> <span class="n">GET</span>           <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">3</span>     <span class="o">|</span> <span class="p">:</span><span class="n">method</span>                     <span class="o">|</span> <span class="n">POST</span>          <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">4</span>     <span class="o">|</span> <span class="p">:</span><span class="n">path</span>                       <span class="o">|</span> <span class="o">/</span>             <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">5</span>     <span class="o">|</span> <span class="p">:</span><span class="n">path</span>                       <span class="o">|</span> <span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">html</span>   <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">6</span>     <span class="o">|</span> <span class="p">:</span><span class="n">scheme</span>                     <span class="o">|</span> <span class="n">http</span>          <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">7</span>     <span class="o">|</span> <span class="p">:</span><span class="n">scheme</span>                     <span class="o">|</span> <span class="n">https</span>         <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">8</span>     <span class="o">|</span> <span class="p">:</span><span class="n">status</span>                     <span class="o">|</span> <span class="mi">200</span>           <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">9</span>     <span class="o">|</span> <span class="p">:</span><span class="n">status</span>                     <span class="o">|</span> <span class="mi">204</span>           <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">10</span>    <span class="o">|</span> <span class="p">:</span><span class="n">status</span>                     <span class="o">|</span> <span class="mi">206</span>           <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">11</span>    <span class="o">|</span> <span class="p">:</span><span class="n">status</span>                     <span class="o">|</span> <span class="mi">304</span>           <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">12</span>    <span class="o">|</span> <span class="p">:</span><span class="n">status</span>                     <span class="o">|</span> <span class="mi">400</span>           <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">13</span>    <span class="o">|</span> <span class="p">:</span><span class="n">status</span>                     <span class="o">|</span> <span class="mi">404</span>           <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">14</span>    <span class="o">|</span> <span class="p">:</span><span class="n">status</span>                     <span class="o">|</span> <span class="mi">500</span>           <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">15</span>    <span class="o">|</span> <span class="n">accept</span><span class="o">-</span><span class="n">charset</span>              <span class="o">|</span>               <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">...</span><span class="err">省略</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">58</span>    <span class="o">|</span> <span class="n">user</span><span class="o">-</span><span class="n">agent</span>                  <span class="o">|</span>               <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">59</span>    <span class="o">|</span> <span class="n">vary</span>                        <span class="o">|</span>               <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">60</span>    <span class="o">|</span> <span class="n">via</span>                         <span class="o">|</span>               <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">|</span> <span class="mi">61</span>    <span class="o">|</span> <span class="n">www</span><span class="o">-</span><span class="n">authenticate</span>            <span class="o">|</span>               <span class="o">|</span>
-</span></span><span class="line"><span class="cl">          <span class="o">+-------+-----------------------------+---------------+</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在golang里的实现如下：</p>
+<pre tabindex="0"><code>          +-------+-----------------------------+---------------+
+          | Index | Header Name                 | Header Value  |
+          +-------+-----------------------------+---------------+
+          | 1     | :authority                  |               |
+          | 2     | :method                     | GET           |
+          | 3     | :method                     | POST          |
+          | 4     | :path                       | /             |
+          | 5     | :path                       | /index.html   |
+          | 6     | :scheme                     | http          |
+          | 7     | :scheme                     | https         |
+          | 8     | :status                     | 200           |
+          | 9     | :status                     | 204           |
+          | 10    | :status                     | 206           |
+          | 11    | :status                     | 304           |
+          | 12    | :status                     | 400           |
+          | 13    | :status                     | 404           |
+          | 14    | :status                     | 500           |
+          | 15    | accept-charset              |               |
+          ...省略
+          | 58    | user-agent                  |               |
+          | 59    | vary                        |               |
+          | 60    | via                         |               |
+          | 61    | www-authenticate            |               |
+          +-------+-----------------------------+---------------+
+</code></pre><p>在golang里的实现如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -511,23 +481,12 @@
 </div>
 </div><p>上面的<span style="color:#FF7F50">t.init</span>函数仅做初始化<span style="color:#FF7F50">t.byName</span>和<span style="color:#FF7F50">t.byNameValue</span>用。</p>
 <p>实际传输的过程中如果遇到对应的字符，则直接以index代替。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">:method GET = 2 = 00000010
-</span></span><span class="line"><span class="cl">:method POST = 3 = 00000011
-</span></span><span class="line"><span class="cl">:path / = 4 = 00000100
-</span></span><span class="line"><span class="cl">:path /index.html = 5 = 00000101
-</span></span><span class="line"><span class="cl">:scheme https = 7 = 00000111
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="dynamic-table">Dynamic Table</h2>
+<pre tabindex="0"><code>:method GET = 2 = 00000010
+:method POST = 3 = 00000011
+:path / = 4 = 00000100
+:path /index.html = 5 = 00000101
+:scheme https = 7 = 00000111
+</code></pre><h2 id="dynamic-table">Dynamic Table</h2>
 <p>动态表（<a href="https://datatracker.ietf.org/doc/html/rfc7541#section-2.3.2" style="color:#556B2F"> rfc7541#section-2.3.2</a>），是一个<span style="color:#FF7F50">FIFO</span>队列，初始是空的，它有以下特点：</p>
 <p>解压header的时候按需添加，每次添加的时候，放在队首，移除的时候，从队尾开始。</p>
 <p>大小不是无限制的，可以通过<span style="color:#FF7F50">SETTING Frame</span>里的<span style="color:#FF7F50"><strong>SETTINGS_HEADER_TABLE_SIZE</strong></span>设置，默认 256Byte。</p>
@@ -693,21 +652,11 @@
 <p>VarInt 是一种编码方式, 可以参考 <a href="https://zhuanlan.zhihu.com/p/84250836" target="_blank" rel="noopener noreffer">https://zhuanlan.zhihu.com/p/84250836</a></p>
 </blockquote>
 <p>可参考 <a href="https://datatracker.ietf.org/doc/html/rfc7541#section-6.1" style="color:#556B2F"> rfc7541#section-6.1</a></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">     0   1   2   3   4   5   6   7
-</span></span><span class="line"><span class="cl">   +---+---+---+---+---+---+---+---+
-</span></span><span class="line"><span class="cl">   | 1 |        Index (7+)         |
-</span></span><span class="line"><span class="cl">   +---+---------------------------+
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="增加动态表">增加动态表</h3>
+<pre tabindex="0"><code>     0   1   2   3   4   5   6   7
+   +---+---+---+---+---+---+---+---+
+   | 1 |        Index (7+)         |
+   +---+---------------------------+
+</code></pre><h3 id="增加动态表">增加动态表</h3>
 <p>当已有的HPACK表中没有索引时，需要增加动态表。此时对应的是 <strong>e.dynTab.add(f)</strong> 该方法</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -746,37 +695,19 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>经过编码后会呈下图所示：可参考 <a href="https://datatracker.ietf.org/doc/html/rfc7541#section-6.2.1" style="color:#556B2F"> rfc7541#section-6.2.1</a></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">     0   1   2   3   4   5   6   7
-</span></span><span class="line"><span class="cl">   +---+---+---+---+---+---+---+---+
-</span></span><span class="line"><span class="cl">   | 0 | 1 |           0           |
-</span></span><span class="line"><span class="cl">   +---+---+-----------------------+
-</span></span><span class="line"><span class="cl">   | H |     Name Length (7+)      |
-</span></span><span class="line"><span class="cl">   +---+---------------------------+
-</span></span><span class="line"><span class="cl">   |  Name String (Length octets)  |
-</span></span><span class="line"><span class="cl">   +---+---------------------------+
-</span></span><span class="line"><span class="cl">   | H |     Value Length (7+)     |
-</span></span><span class="line"><span class="cl">   +---+---------------------------+
-</span></span><span class="line"><span class="cl">   | Value String (Length octets)  |
-</span></span><span class="line"><span class="cl">   +-------------------------------+
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>另一个 <strong>appendIndexedName(e.buf, f, idx, indexing)</strong> 方法</p>
+<pre tabindex="0"><code>     0   1   2   3   4   5   6   7
+   +---+---+---+---+---+---+---+---+
+   | 0 | 1 |           0           |
+   +---+---+-----------------------+
+   | H |     Name Length (7+)      |
+   +---+---------------------------+
+   |  Name String (Length octets)  |
+   +---+---------------------------+
+   | H |     Value Length (7+)     |
+   +---+---------------------------+
+   | Value String (Length octets)  |
+   +-------------------------------+
+</code></pre><p>另一个 <strong>appendIndexedName(e.buf, f, idx, indexing)</strong> 方法</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -808,29 +739,15 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>经过编码后会呈下图所示：可参考 <a href="https://datatracker.ietf.org/doc/html/rfc7541#section-6.2.1" style="color:#556B2F"> rfc7541#section-6.2.1</a></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">     0   1   2   3   4   5   6   7
-</span></span><span class="line"><span class="cl">   +---+---+---+---+---+---+---+---+
-</span></span><span class="line"><span class="cl">   | 0 | 1 |      Index (6+)       |
-</span></span><span class="line"><span class="cl">   +---+---+-----------------------+
-</span></span><span class="line"><span class="cl">   | H |     Value Length (7+)     |
-</span></span><span class="line"><span class="cl">   +---+---------------------------+
-</span></span><span class="line"><span class="cl">   | Value String (Length octets)  |
-</span></span><span class="line"><span class="cl">   +-------------------------------+
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="huffman-编码原理">Huffman 编码原理</h3>
+<pre tabindex="0"><code>     0   1   2   3   4   5   6   7
+   +---+---+---+---+---+---+---+---+
+   | 0 | 1 |      Index (6+)       |
+   +---+---+-----------------------+
+   | H |     Value Length (7+)     |
+   +---+---------------------------+
+   | Value String (Length octets)  |
+   +-------------------------------+
+</code></pre><h3 id="huffman-编码原理">Huffman 编码原理</h3>
 <p><span style="color:#FF7F50"> Hpack</span> 中的 <span style="color:#FF7F50">Huffman</span> 是静态<span style="color:#FF7F50">Huffman</span>编码，对应上面的 <strong>appendHpackString</strong> 函数，接下来我们详细看看。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

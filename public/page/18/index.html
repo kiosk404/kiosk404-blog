@@ -114,62 +114,31 @@
 </article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/js-flowchart-diagrams/">JS Flowchart Diagrams</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk007</a></span>&nbsp;<span class="post-publish">published on <time datetime="2015-03-04">2015-03-04</time></span></div><div class="content"><h2 id="usage">Usage</h2>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">st=&gt;start: Start|past:&gt;http://www.google.com[blank]
-</span></span><span class="line"><span class="cl">e=&gt;end: End:&gt;http://www.google.com
-</span></span><span class="line"><span class="cl">op1=&gt;operation: My Operation|past
-</span></span><span class="line"><span class="cl">op2=&gt;operation: Stuff|current
-</span></span><span class="line"><span class="cl">sub1=&gt;subroutine: My Subroutine|invalid
-</span></span><span class="line"><span class="cl">cond=&gt;condition: Yes
-</span></span><span class="line"><span class="cl">or No?|approved:&gt;http://www.google.com
-</span></span><span class="line"><span class="cl">c2=&gt;condition: Good idea|rejected
-</span></span><span class="line"><span class="cl">io=&gt;inputoutput: catch something...|request
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">st-&gt;op1(right)-&gt;cond
-</span></span><span class="line"><span class="cl">cond(yes, right)-&gt;c2
-</span></span><span class="line"><span class="cl">cond(no)-&gt;sub1(left)-&gt;op1
-</span></span><span class="line"><span class="cl">c2(yes)-&gt;io-&gt;e
-</span></span><span class="line"><span class="cl">c2(no)-&gt;op2-&gt;e
-</span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer">
+<pre tabindex="0"><code class="language-flow" data-lang="flow">st=&gt;start: Start|past:&gt;http://www.google.com[blank]
+e=&gt;end: End:&gt;http://www.google.com
+op1=&gt;operation: My Operation|past
+op2=&gt;operation: Stuff|current
+sub1=&gt;subroutine: My Subroutine|invalid
+cond=&gt;condition: Yes
+or No?|approved:&gt;http://www.google.com
+c2=&gt;condition: Good idea|rejected
+io=&gt;inputoutput: catch something...|request
+
+st-&gt;op1(right)-&gt;cond
+cond(yes, right)-&gt;c2
+cond(no)-&gt;sub1(left)-&gt;op1
+c2(yes)-&gt;io-&gt;e
+c2(no)-&gt;op2-&gt;e
+</code></pre></div><div class="post-footer">
         <a href="/post/js-flowchart-diagrams/">Read More</a></div>
 </article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/js-sequence-diagrams/">JS Sequence Diagrams</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk007</a></span>&nbsp;<span class="post-publish">published on <time datetime="2015-03-04">2015-03-04</time></span></div><div class="content"><h2 id="usage">Usage</h2>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Andrew-&gt;China: Says Hello
-</span></span><span class="line"><span class="cl">Note right of China: China thinks\nabout it
-</span></span><span class="line"><span class="cl">China--&gt;Andrew: How are you?
-</span></span><span class="line"><span class="cl">Andrew-&gt;&gt;China: I am good thanks!
-</span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer">
+<pre tabindex="0"><code class="language-sequence" data-lang="sequence">Andrew-&gt;China: Says Hello
+Note right of China: China thinks\nabout it
+China--&gt;Andrew: How are you?
+Andrew-&gt;&gt;China: I am good thanks!
+</code></pre></div><div class="post-footer">
         <a href="/post/js-sequence-diagrams/">Read More</a></div>
 </article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/post/syntax-highlighting/">Syntax Highlighting</a>

@@ -35,7 +35,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","wordcount":  1753 ,
+                        }],"genre": "posts","wordcount":  1751 ,
         "url": "http:\/\/localhost:1313\/post\/%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%8F%89%E6%A0%91\/","datePublished": "2020-10-17T10:44:00+00:00","dateModified": "2022-07-31T22:53:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -117,7 +117,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">算法 - (二叉树)</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/algorithm/"><i class="far fa-folder fa-fw"></i>Algorithm</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-10-17">2020-10-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1753 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-10-17">2020-10-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1751 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;9 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -815,17 +815,9 @@
 </li>
 <li>
 <p>思路：老样子，肯定是一道递归题，我们只需要思考当前一层该如何计算即可，假设</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    1
-</span></span><span class="line"><span class="cl"> 2     3
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这样一颗树，那么翻转就是 <code>left := root.Left</code> <code>right := root.Right</code> 最后再 <code>root.Left = right root.Right = left</code> 即可。很显然，左子数将重复进行上述递归操作，同理右子树。</p>
+<pre tabindex="0"><code>    1
+ 2     3
+</code></pre><p>这样一颗树，那么翻转就是 <code>left := root.Left</code> <code>right := root.Right</code> 最后再 <code>root.Left = right root.Right = left</code> 即可。很显然，左子数将重复进行上述递归操作，同理右子树。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1

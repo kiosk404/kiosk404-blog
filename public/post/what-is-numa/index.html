@@ -42,7 +42,7 @@ Linux man手册中对numad的定义为A user-level daemon that provides placemen
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "linux","wordcount":  212 ,
+                        }],"genre": "posts","keywords": "linux","wordcount":  202 ,
         "url": "http:\/\/localhost:1313\/post\/what-is-numa\/","datePublished": "2022-09-15T02:21:00+00:00","dateModified": "2022-09-15T02:21:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -124,7 +124,7 @@ Linux man手册中对numad的定义为A user-level daemon that provides placemen
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">什么是 NUMA</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-09-15">2022-09-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;212 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-09-15">2022-09-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;202 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;One minute&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -168,15 +168,8 @@ Linux man手册中对numad的定义为A user-level daemon that provides placemen
 <h1 id="numa-相关命令">numa 相关命令</h1>
 <p><strong>numactl</strong>（英文全拼：NUMA Control）命令用于查看当前服务器的 NUMA 节点配置和运行状态，可通过该工具将进程绑定到指定 CPU core，由指定 CPU core 来运行对应进程。</p>
 <p>numactl 通常不会预先安装，但可在大多数 Linux 发行版的默认仓库中找到。例如，在 Debian/Ubuntu 系统上可以使用如下命令进行安装。（安装完成后会有两个命令：<code>numactl</code> 和 <code>numastat</code>）</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo apt install numactl
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>sudo apt install numactl
+</code></pre><br/>
 <h2 id="示例">示例</h2>
 <ol>
 <li>查看当前的 NUMA 运行状态</li>
@@ -212,41 +205,20 @@ Linux man手册中对numad的定义为A user-level daemon that provides placemen
 <ol start="2">
 <li>查看当前服务器的 NUMA 配置</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ numactl -H
-</span></span><span class="line"><span class="cl">available: 1 nodes (0)
-</span></span><span class="line"><span class="cl">node 0 cpus: 0 1 2 3 4 5 6 7
-</span></span><span class="line"><span class="cl">node 0 size: 15726 MB
-</span></span><span class="line"><span class="cl">node 0 free: 799 MB
-</span></span><span class="line"><span class="cl">node distances:
-</span></span><span class="line"><span class="cl">node   0 
-</span></span><span class="line"><span class="cl">  0:  10 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>$ numactl -H
+available: 1 nodes (0)
+node 0 cpus: 0 1 2 3 4 5 6 7
+node 0 size: 15726 MB
+node 0 free: 799 MB
+node distances:
+node   0 
+  0:  10 
+</code></pre><br/>
 <ol start="3">
 <li>将应用程序 test 绑定到 0～7 核运行</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ numactl -C 0-7 ./test
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>$ numactl -C 0-7 ./test
+</code></pre><br/>
 <p>参考:</p>
 <ul>
 <li><a href="https://www.techplayon.com/what-is-numa-non-uniform-memory-access/" target="_blank" rel="noopener noreffer">What is NUMA (non-uniform memory access)?</a></li>

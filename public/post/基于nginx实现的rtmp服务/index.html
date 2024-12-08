@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "点播","wordcount":  741 ,
+                        }],"genre": "posts","keywords": "点播","wordcount":  736 ,
         "url": "http:\/\/localhost:1313\/post\/%E5%9F%BA%E4%BA%8Enginx%E5%AE%9E%E7%8E%B0%E7%9A%84rtmp%E6%9C%8D%E5%8A%A1\/","datePublished": "2020-11-16T23:02:00+00:00","dateModified": "2020-11-16T23:02:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">基于Nginx的实时音频直播服务</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/nginx/"><i class="far fa-folder fa-fw"></i>Nginx</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-16">2020-11-16</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;741 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-16">2020-11-16</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;736 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -416,15 +416,8 @@ Nginx Rtmp模块: nginx-rtmp-module</p>
 </div>
 </div><p><strong>试验</strong></p>
 <p>使用 ffmpeg 推流</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ffmpeg -re -i ./Golang从入门到癫狂.mp4 -vcodec libx264 -acodec aac -strict -2 -f flv &#39;rtmp://localhost:1935/live/room&#39;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>ipad 上去App Store下载 <strong>Aplyer</strong>
+<pre tabindex="0"><code>ffmpeg -re -i ./Golang从入门到癫狂.mp4 -vcodec libx264 -acodec aac -strict -2 -f flv &#39;rtmp://localhost:1935/live/room&#39;
+</code></pre><p>ipad 上去App Store下载 <strong>Aplyer</strong>
 <img src="https://img1.kiosk007.top/static/images/live/aplyer.jpeg" style='height:350px' /></p>
 <p>打开Aplayer，选择最下方的“网络”，在输入框中输入<code>rtmp://192.168.1.10/live/room</code> 即可观看直播了。</p>
 <h3 id="hls直播">HLS直播</h3>
@@ -435,17 +428,9 @@ Nginx Rtmp模块: nginx-rtmp-module</p>
 </ol>
 <p><strong>配置rtmp流产生hls文件</strong>
 创建存放hls文件的目录, 确保 Nginx worker 用户可以读写该目录。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkdir -p /home/work/data/hls
-</span></span><span class="line"><span class="cl">chown work:work /home/work/data/hls
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>修改配置，增加hls相关配置</p>
+<pre tabindex="0"><code>mkdir -p /home/work/data/hls
+chown work:work /home/work/data/hls
+</code></pre><p>修改配置，增加hls相关配置</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -498,17 +483,9 @@ Nginx Rtmp模块: nginx-rtmp-module</p>
 <li><code>hls_path /home/work/data/hls</code> : 设置hls目录</li>
 </ul>
 <p>此时使用ffmpeg进行推流后，在/home/work/data/hls目录下，就会有HLS要用到的m3u8和ts文件。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># ls
-</span></span><span class="line"><span class="cl">room1-0.ts  room1-1.ts  room1.m3u8
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>设置nginx来访问hls文件
+<pre tabindex="0"><code># ls
+room1-0.ts  room1-1.ts  room1.m3u8
+</code></pre><p>设置nginx来访问hls文件
 配置nginx通过http访问hls文件, 在server中添加如下location。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

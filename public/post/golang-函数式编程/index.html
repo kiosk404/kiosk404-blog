@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "golang","wordcount":  1223 ,
+                        }],"genre": "posts","keywords": "golang","wordcount":  1216 ,
         "url": "http:\/\/localhost:1313\/post\/golang-%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B\/","datePublished": "2021-01-30T11:12:00+00:00","dateModified": "2021-01-30T11:12:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">GoLang 编程技巧 (一)</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-30">2021-01-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1223 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-01-30">2021-01-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1216 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;6 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -298,17 +298,9 @@
 <li>最后，对 foo 做切片后赋值给 bar，再修改 bar[1]。</li>
 </ol>
 <p>最终的foo和bar的结果是什么呢? 是不是和想象的不太一样，这是因为切片操作的底层数组是同一个数组。foo 和 bar 的内存是共享的，所以，foo 和 bar 对数组内容的修改都会影响到对方。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fmt.Println(foo)  // res: [0 0 99 42 100]
-</span></span><span class="line"><span class="cl">fmt.Println(bar)  // res: [0 99 42]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>再来看一个 <code>append</code> 的例子。</p>
+<pre tabindex="0"><code>fmt.Println(foo)  // res: [0 0 99 42 100]
+fmt.Println(bar)  // res: [0 99 42]
+</code></pre><p>再来看一个 <code>append</code> 的例子。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -332,17 +324,9 @@
 </div><p>在这段代码中，把 <code>a[1:16]</code> 的切片赋给 b ，此时，a 和 b 的内存空间是共享的，然后，对 a 做了一个 append()的操作，这个操作会让 a 重新分配内存，这就会导致 a 和 b 不再共享，如下图所示：
 <img src="https://static001.geekbang.org/resource/image/9a/13/9a29d71d309616f6092f6bea23f30013.png" style="max-width: 70%;border-radius: 6px"></p>
 <p>这时 a 和 b 的值是多少？append()操作让 a 的容量变成了 64，而长度是 33。这里你需要重点注意一下，<strong>append()这个函数在 cap 不够用的时候，就会重新分配内存以扩大容量，如果够用，就不会重新分配内存了！</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fmt.Println(a)  // res: [0 0 42 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1]
-</span></span><span class="line"><span class="cl">fmt.Println(b)  // res: [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>那既然这样相同的例子我们再来一遍，如果让a不要重新分配内存(比如初始化a的时候使用<code> a := make([]int, 33))</code>，那么b的结果就会变成 <code>[0 42 0 0 0 0 0 0 0 0 0 0 0 0 0]</code> <strong>注意</strong>：这时的b会因为<code>a[2]</code> 的变化而变化。</p>
+<pre tabindex="0"><code>fmt.Println(a)  // res: [0 0 42 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1]
+fmt.Println(b)  // res: [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+</code></pre><p>那既然这样相同的例子我们再来一遍，如果让a不要重新分配内存(比如初始化a的时候使用<code> a := make([]int, 33))</code>，那么b的结果就会变成 <code>[0 42 0 0 0 0 0 0 0 0 0 0 0 0 0]</code> <strong>注意</strong>：这时的b会因为<code>a[2]</code> 的变化而变化。</p>
 <p>同样的例子如下，只要没有发生</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -440,19 +424,10 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>在这个示例中，我们创建了一个字节流 <code>r</code>, 在循环从r中读取出数据。循环会执行3次，第一次读取4个字节，第二次读取1个字节，第三次读到 <code>io.EOF</code> 返回跳出循环。注意，Read方法读取时会清空 <code>buf</code> 里的数据，所以这里需要每次读完打印一下。再次读时，<code>buf</code> 里的数据会被重新覆盖。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">4 &lt;nil&gt; [97 98 99 100]
-</span></span><span class="line"><span class="cl">1 &lt;nil&gt; [101]
-</span></span><span class="line"><span class="cl">0 EOF []
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>另外还可以使用 <code>io.ReadFull</code> 或者 <code>ioutil.ReadAll</code> 取读取字节流,<code>io.ReadFull</code>用法和<code>Read</code>差不多，<code>ioutil.ReadAll</code>不需要设置buf可直接返回buf。更多可参考：<a href="https://yourbasic.org/golang/io-reader-interface-explained/" target="_blank" rel="noopener noreffer">How to use the io.Reader interface
+<pre tabindex="0"><code>4 &lt;nil&gt; [97 98 99 100]
+1 &lt;nil&gt; [101]
+0 EOF []
+</code></pre><p>另外还可以使用 <code>io.ReadFull</code> 或者 <code>ioutil.ReadAll</code> 取读取字节流,<code>io.ReadFull</code>用法和<code>Read</code>差不多，<code>ioutil.ReadAll</code>不需要设置buf可直接返回buf。更多可参考：<a href="https://yourbasic.org/golang/io-reader-interface-explained/" target="_blank" rel="noopener noreffer">How to use the io.Reader interface
 </a></p>
 <ul>
 <li><strong>利用接口特性</strong></li>

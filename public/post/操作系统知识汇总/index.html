@@ -38,7 +38,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "devops","wordcount":  652 ,
+                        }],"genre": "posts","keywords": "devops","wordcount":  645 ,
         "url": "http:\/\/localhost:1313\/post\/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB\/","datePublished": "2022-02-05T08:50:00+00:00","dateModified": "2022-02-05T08:50:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -120,7 +120,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">操作系统知识汇总</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-02-05">2022-02-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;652 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-02-05">2022-02-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;645 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -392,15 +392,8 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>解决方式，直接关了swap 。不过我执行了下面的命令，电脑直接卡死重启了。。。。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">swapoff -a &amp;&amp; swapon -a
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h1 id="io-性能篇">IO 性能篇</h1>
+<pre tabindex="0"><code>swapoff -a &amp;&amp; swapon -a
+</code></pre><h1 id="io-性能篇">IO 性能篇</h1>
 <p>要介绍 IO 性能的相关问题，需要先知道Linux 的文件系统是怎样工作的。</p>
 <p>同 CPU、内存一样，磁盘和文件系统的管理，也是操作系统最核心的功能。</p>
 <ul>
@@ -423,25 +416,13 @@
 <h2 id="iops">IOPS</h2>
 <p>IOPS（Input/Output Per Second），是指每秒的 I/O 请求数。 常见的磁盘IO的性能问题都和这个有关。过多的IO读写可能会导致读写变缓慢。</p>
 <p>使用命令 iotop 可以观察到整体系统的io情况，也可以看到是哪个进程的io占比比较高。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ iotop
-</span></span><span class="line"><span class="cl">Total DISK READ :       0.00 B/s | Total DISK WRITE :       7.85 K/s 
-</span></span><span class="line"><span class="cl">Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       0.00 B/s 
-</span></span><span class="line"><span class="cl">  TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO&gt;    COMMAND 
-</span></span><span class="line"><span class="cl">15055 be/3 root        0.00 B/s    7.85 K/s  0.00 %  0.00 % systemd-journald 
-</span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer" id="post-footer">
+<pre tabindex="0"><code>
+$ iotop
+Total DISK READ :       0.00 B/s | Total DISK WRITE :       7.85 K/s 
+Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       0.00 B/s 
+  TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO&gt;    COMMAND 
+15055 be/3 root        0.00 B/s    7.85 K/s  0.00 %  0.00 % systemd-journald 
+</code></pre></div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">

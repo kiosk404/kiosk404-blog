@@ -37,7 +37,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "golang, 协程","wordcount":  294 ,
+                        }],"genre": "posts","keywords": "golang, 协程","wordcount":  291 ,
         "url": "http:\/\/localhost:1313\/post\/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B\/","datePublished": "2020-07-18T16:30:00+00:00","dateModified": "2020-07-18T16:30:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -119,7 +119,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">理解协程</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-07-18">2020-07-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;294 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-07-18">2020-07-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;291 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -226,19 +226,10 @@ Goroutine堆栈只有几十kb。如果某一线程之上的协程不幸发生阻
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>在1.13 版本下的Go SDK 执行</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">➜  go version
-</span></span><span class="line"><span class="cl">go version go1.13.14 linux/amd64
-</span></span><span class="line"><span class="cl">➜  go run main.go
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src='https://img1.kiosk007.top/static/images/coroutines/goroutine_NonPreemptive.png' />
+<pre tabindex="0"><code>➜  go version
+go version go1.13.14 linux/amd64
+➜  go run main.go
+</code></pre><img src='https://img1.kiosk007.top/static/images/coroutines/goroutine_NonPreemptive.png' />
 <p>这个程序会卡住。因为main函数也是一个goroutine。而程序中对一个变量++ 是不会交出控制权的（io操作可以交出控制权，如fmt.println，一次IO系统调用等，或者手动交出控制权<code>runtime.Gosched()</code>），所以main也得不到运行了，可以看到这段程序死机了。可以看到，我是8核CPU，这个程序在执行时发生了死循环，占用CPU 738%(约等于800%)对应8个核。</p>
 <ul>
 <li>抢占式调度</li>

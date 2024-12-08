@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "Certificate","wordcount":  521 ,
+                        }],"genre": "posts","keywords": "Certificate","wordcount":  501 ,
         "url": "http:\/\/localhost:1313\/post\/android-%E4%BF%A1%E4%BB%BB%E8%87%AA%E7%AD%BE%E5%90%8D%E8%AF%81%E4%B9%A6\/","datePublished": "2020-07-22T23:23:00+00:00","dateModified": "2020-07-22T23:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Android 信任自签名证书</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-07-22">2020-07-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;521 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-07-22">2020-07-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;501 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -376,60 +376,28 @@
 <p>这里先安装 Termux （可以在 google play 或者 豌豆荚下载）</p>
 <p>安装 Termux 之后，安装sshd
 手机上操作：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pkg install openssh -y
-</span></span><span class="line"><span class="cl"># start ssh
-</span></span><span class="line"><span class="cl">sshd
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>配置远程登录</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># PC copy ssh 公钥 (没有的化，执行 ssh-keygen 生成)
-</span></span><span class="line"><span class="cl">➜  copy id_rsa.pub
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># Termux 粘贴公钥
-</span></span><span class="line"><span class="cl">cd .ssh
-</span></span><span class="line"><span class="cl">vim authorized_keys
-</span></span><span class="line"><span class="cl">粘贴保存
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">查看当前用户，后面登录用
-</span></span><span class="line"><span class="cl">whoami
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># PC 上配置端口转发
-</span></span><span class="line"><span class="cl">（如果是远程的话配置一下 adb connect xxxxxx:xxx）
-</span></span><span class="line"><span class="cl">➜  adb forward --list
-</span></span><span class="line"><span class="cl">➜  adb forward --remove-all
-</span></span><span class="line"><span class="cl">➜  adb forward tcp:8022 tcp:8022
-</span></span><span class="line"><span class="cl">➜  ssh u0_a221@127.0.0.1 -p 8022
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<pre tabindex="0"><code>pkg install openssh -y
+# start ssh
+sshd
+</code></pre><p>配置远程登录</p>
+<pre tabindex="0"><code># PC copy ssh 公钥 (没有的化，执行 ssh-keygen 生成)
+➜  copy id_rsa.pub
+
+# Termux 粘贴公钥
+cd .ssh
+vim authorized_keys
+粘贴保存
+
+查看当前用户，后面登录用
+whoami
+
+# PC 上配置端口转发
+（如果是远程的话配置一下 adb connect xxxxxx:xxx）
+➜  adb forward --list
+➜  adb forward --remove-all
+➜  adb forward tcp:8022 tcp:8022
+➜  ssh u0_a221@127.0.0.1 -p 8022
+</code></pre><blockquote>
 <p>Tips: 界面左滑，长按 <code>KEYBOARD</code> 可以出现辅助按钮， ESC、CTR、ALT 等。再次单按 <code>KEYBOARD</code> 可出现键盘。</p>
 </blockquote>
 <img src="https://img1.kiosk007.top/static/images/network/AndroidRoot/android_root.png" /></div><div class="post-footer" id="post-footer">

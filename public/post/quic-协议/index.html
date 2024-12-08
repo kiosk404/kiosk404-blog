@@ -38,7 +38,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "QUIC","wordcount":  888 ,
+                        }],"genre": "posts","keywords": "QUIC","wordcount":  884 ,
         "url": "http:\/\/localhost:1313\/post\/quic-%E5%8D%8F%E8%AE%AE\/","datePublished": "2020-04-06T18:24:00+00:00","dateModified": "2020-04-06T18:24:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -120,7 +120,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">认识 QUIC 协议</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-04-06">2020-04-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;888 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-04-06">2020-04-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;884 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -502,24 +502,10 @@ QUIC的TLS只能使用TLS1.3，这就可以做到PSK的0RTT。</p>
 <p>通过 BlockFrame 告诉对端由于流量控制被阻塞了，无法发送数据。QUIC 的流量控制和 TCP 有点区别，TCP 为了保证可靠性，窗口左边沿向右滑动时的长度取决于已经确认的字节数。如果中间出现丢包，就算接收到了更大序号的 Segment，窗口也无法超过这个序列号。</p>
 <p>但 QUIC 不同，就算此前有些 packet 没有接收到，它的滑动只取决于接收到的最大偏移字节数。</p>
 <p>针对 QUIC Stream：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">可用窗口数 = 最大窗口数 - 接收到的最大偏移数
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>针对 Connection：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">可用窗口数 = Stream1窗口 + Stream2窗口 + Stream3窗口 + SteamN窗口
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="更灵活的拥塞控制算法">更灵活的拥塞控制算法</h3>
+<pre tabindex="0"><code>可用窗口数 = 最大窗口数 - 接收到的最大偏移数
+</code></pre><p>针对 Connection：</p>
+<pre tabindex="0"><code>可用窗口数 = Stream1窗口 + Stream2窗口 + Stream3窗口 + SteamN窗口
+</code></pre><h3 id="更灵活的拥塞控制算法">更灵活的拥塞控制算法</h3>
 <p>QUIC 协议当前默认使用了 TCP 协议的 Cubic 拥塞控制算法，但是可以灵活的支持 CubicBytes, Reno, RenoBytes, BBR, PCC 等拥塞控制算法</p>
 <h4 id="单调递增的package-number">单调递增的Package Number</h4>
 <p>TCP 为了保证可靠性，使用了基于字节序号的 Sequence Number 及 Ack 来确认消息的有序到达。</p>
@@ -542,24 +528,10 @@ QUIC的TLS只能使用TLS1.3，这就可以做到PSK的0RTT。</p>
 <p>Tcp 的 Timestamp 选项存在一个问题，它只是回显了发送方的时间戳，但是没有计算接收端接收到 segment 到发送 Ack 该 segment 的时间。这个时间可以简称为 Ack Delay。这样就会导致RTT计算误差</p>
 <img src="https://img1.kiosk007.top/static/images/network/QUIC/ack_delay.jpg" style="width:600px;height:300px">
 <p>可以认为 TCP 的 RTT 计算：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">RTT = timestamp1 - timestamp2 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>QUIC 的 RTT 计算：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">RTT = timestamp1 - timestamp2 - Ack Delay
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>当然具体还得基于采样和历史数据综合计算。</p>
+<pre tabindex="0"><code>RTT = timestamp1 - timestamp2 
+</code></pre><p>QUIC 的 RTT 计算：</p>
+<pre tabindex="0"><code>RTT = timestamp1 - timestamp2 - Ack Delay
+</code></pre><p>当然具体还得基于采样和历史数据综合计算。</p>
 <h2 id="参考">参考:</h2>
 <p>[1] <a href="https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&amp;mid=2651000241&amp;idx=2&amp;sn=2b6e9426d15099c799c1d0a34d3877d4&amp;chksm=bdbef5e28ac97cf4207ebcb8d119eafc96d590e167921bbc29b180210321a9d21d5c38c44f77&amp;scene=27#wechat_redirect" target="_blank" rel="noopener noreffer">科普：QUIC协议原理分析
 </a></p>

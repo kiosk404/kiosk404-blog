@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "wireshark","wordcount":  1397 ,
+                        }],"genre": "posts","keywords": "wireshark","wordcount":  1373 ,
         "url": "http:\/\/localhost:1313\/post\/%E7%8E%A9%E8%BD%AC-tshark-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7\/","datePublished": "2020-11-07T22:26:00+00:00","dateModified": "2020-11-07T22:26:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">玩转 tshark 命令行工具</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-07">2020-11-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1397 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-07">2020-11-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1373 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -535,59 +535,30 @@ wireshark 是一个伟大的网络问题分析工具，当然它也是有终端�
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><strong>分析 <code>tcp.stream</code> id 为 0 的传输带宽 。</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ tshark -o tcp.desegment_tcp_streams:FALSE -n \
-</span></span><span class="line"><span class="cl">-q -r wechat.pcapng -z io,stat,1,&#34;BYTES()tcp.stream==0&#34;
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">===============================
-</span></span><span class="line"><span class="cl">| IO Statistics               |
-</span></span><span class="line"><span class="cl">|                             |
-</span></span><span class="line"><span class="cl">| Duration: 50.712225 secs    |
-</span></span><span class="line"><span class="cl">| Interval:  1 secs           |
-</span></span><span class="line"><span class="cl">|                             |
-</span></span><span class="line"><span class="cl">| Col 1: BYTES()tcp.stream==0 |
-</span></span><span class="line"><span class="cl">|-----------------------------|
-</span></span><span class="line"><span class="cl">|          |1       |         |
-</span></span><span class="line"><span class="cl">| Interval |  BYTES |         |
-</span></span><span class="line"><span class="cl">|-------------------|         |
-</span></span><span class="line"><span class="cl">|  0 &lt;&gt;  1 |      0 |         |
-</span></span><span class="line"><span class="cl">|  1 &lt;&gt;  2 |      0 |         |
-</span></span><span class="line"><span class="cl">...
-</span></span><span class="line"><span class="cl">|  8 &lt;&gt;  9 | 128301 |         |
-</span></span><span class="line"><span class="cl">|  9 &lt;&gt; 10 | 127132 |         |
-</span></span><span class="line"><span class="cl">| 10 &lt;&gt; 11 | 128667 |         |
-</span></span><span class="line"><span class="cl">| 11 &lt;&gt; 12 | 127749 |         |
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">...
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>wireshark 的TCP流图中的吞吐量</p>
+<pre tabindex="0"><code>$ tshark -o tcp.desegment_tcp_streams:FALSE -n \
+-q -r wechat.pcapng -z io,stat,1,&#34;BYTES()tcp.stream==0&#34;
+
+===============================
+| IO Statistics               |
+|                             |
+| Duration: 50.712225 secs    |
+| Interval:  1 secs           |
+|                             |
+| Col 1: BYTES()tcp.stream==0 |
+|-----------------------------|
+|          |1       |         |
+| Interval |  BYTES |         |
+|-------------------|         |
+|  0 &lt;&gt;  1 |      0 |         |
+|  1 &lt;&gt;  2 |      0 |         |
+...
+|  8 &lt;&gt;  9 | 128301 |         |
+|  9 &lt;&gt; 10 | 127132 |         |
+| 10 &lt;&gt; 11 | 128667 |         |
+| 11 &lt;&gt; 12 | 127749 |         |
+
+...
+</code></pre><p>wireshark 的TCP流图中的吞吐量</p>
 <img src="https://img1.kiosk007.top/static/images/tshark/wireshark_throughput.png" style="height:300px" />
 <p>对比通过 tshark的 io graph 绘出的图。</p>
 <img src="https://img1.kiosk007.top/static/images/tshark/tshark_throughput.png" style="weight:300px" />
@@ -603,15 +574,8 @@ wireshark 是一个伟大的网络问题分析工具，当然它也是有终端�
 </ul>
 <h2 id="专家信息">专家信息</h2>
 <p>可统计重传、TLS 会话复用、HTTP 会话、TCP RST 等等。功能强大</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tshark -r refresh_video.pcap -q -z expert
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="https://img1.kiosk007.top/static/images/tshark/tshark_expert.png" />
+<pre tabindex="0"><code>tshark -r refresh_video.pcap -q -z expert
+</code></pre><img src="https://img1.kiosk007.top/static/images/tshark/tshark_expert.png" />
 <h2 id="高阶使用">高阶使用</h2>
 <ul>
 <li>分析SQL查询的时间分布</li>

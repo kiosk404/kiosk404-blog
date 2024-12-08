@@ -37,7 +37,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "nginx, devops","wordcount":  538 ,
+                        }],"genre": "posts","keywords": "nginx, devops","wordcount":  536 ,
         "url": "http:\/\/localhost:1313\/post\/%E8%87%AA%E5%BB%BA-nginx-%E7%AB%99%E7%82%B9%E9%83%A8%E7%BD%B2\/","datePublished": "2020-04-18T20:51:00+00:00","dateModified": "2020-04-18T20:51:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -119,7 +119,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">自建 Nginx 部署</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/nginx/"><i class="far fa-folder fa-fw"></i>Nginx</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-04-18">2020-04-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;538 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-04-18">2020-04-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;536 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -318,17 +318,9 @@
 </div><p>ca的证书在 <code>./demoCA/cacert.pem</code>
 kiosk.io 的证书在 <code>./kiosk.io/kiosk.io.crt</code> ， key在 <code>./kiosk.io/kiosk.io.key</code> 的。拷贝至Nginx所在目录即可。
 将ca证书加入系统证书中。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ sudo cp ./demoCA/cacert.pem /usr/local/share/ca-certificates/cacert.crt
-</span></span><span class="line"><span class="cl">$ sudo update-ca-certificates
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>其实update-ca-certificates是一个shell脚本,命令的本质其实是将PEM格式的根证书内容附加到**/etc/ssl/certs/ca-certificates.crt**, 而**/etc/ssl/certs/ca-certificates.crt** 中本身就包含了系统自带的各种可信根证书。</p>
+<pre tabindex="0"><code>$ sudo cp ./demoCA/cacert.pem /usr/local/share/ca-certificates/cacert.crt
+$ sudo update-ca-certificates
+</code></pre><p>其实update-ca-certificates是一个shell脚本,命令的本质其实是将PEM格式的根证书内容附加到**/etc/ssl/certs/ca-certificates.crt**, 而**/etc/ssl/certs/ca-certificates.crt** 中本身就包含了系统自带的各种可信根证书。</p>
 <p>当然在企业内网还可以签署 客户端证书，没有装客户端证书的用户将不能访问该站点。在Nginx的配置文件中加上如下配置。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

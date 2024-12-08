@@ -42,7 +42,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "ai","wordcount":  933 ,
+                        }],"genre": "posts","keywords": "ai","wordcount":  901 ,
         "url": "http:\/\/localhost:1313\/post\/langchain\/","datePublished": "2024-08-21T13:52:18+00:00","dateModified": "2024-08-29T11:26:27+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -124,7 +124,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">LLM大模型 - langchain应用技术介绍</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/artificial-intelligence/"><i class="far fa-folder fa-fw"></i>Artificial Intelligence</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-08-21">2024-08-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;933 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-08-21">2024-08-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;901 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -597,77 +597,39 @@
 <h1 id="用langchain-实现">用LangChain 实现</h1>
 <p>用Python和LangChain来演绎一段Agent的实际任务：就是让Agent自己去网上搜索“北京的面积”和“纽约的面积”，然后计算出来两者的差值。</p>
 <p>虽然这个任务非常简单，用提示词+大模型本身就有可能可以得到答案，但是通过这个简单的任务，可以展示Agent的工作流程。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">os</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">langchain</span><span class="o">.</span><span class="n">agents</span> <span class="n">import</span> <span class="n">load_tools</span>
-</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">langchain</span><span class="o">.</span><span class="n">agents</span> <span class="n">import</span> <span class="n">initialize_agent</span>
-</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">langchain</span><span class="o">.</span><span class="n">agents</span> <span class="n">import</span> <span class="n">AgentType</span>
-</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">langchain</span><span class="o">.</span><span class="n">llms</span> <span class="n">import</span> <span class="n">Tongyi</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">langchain</span><span class="o">.</span><span class="n">tools</span> <span class="n">import</span> <span class="n">DuckDuckGoSearchRun</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># duck duck search</span>
-</span></span><span class="line"><span class="cl"><span class="n">search</span> <span class="o">=</span> <span class="n">DuckDuckGoSearchRun</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">res</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&#34;北京的面积有多大？&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">res</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&#34;纽约的面积有多大？&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&#34;DASHSCOPE_API_KEY&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&#34;sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">llm</span> <span class="o">=</span> <span class="n">Tongyi</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">tools</span> <span class="o">=</span> <span class="n">load_tools</span><span class="p">([</span><span class="s2">&#34;ddg-search&#34;</span><span class="p">,</span> <span class="s2">&#34;llm-math&#34;</span><span class="p">],</span> <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">agent</span> <span class="o">=</span> <span class="n">initialize_agent</span><span class="p">(</span>
-</span></span><span class="line"><span class="cl">    <span class="n">tools</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">llm</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">agent</span><span class="o">=</span><span class="n">AgentType</span><span class="o">.</span><span class="n">ZERO_SHOT_REACT_DESCRIPTION</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">verbose</span><span class="o">=</span><span class="n">True</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">agent</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&#34;北京的面积和纽约的面积差是多少？&#34;</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>import os
+
+from langchain.agents import load_tools
+from langchain.agents import initialize_agent
+from langchain.agents import AgentType
+from langchain.llms import Tongyi
+
+from langchain.tools import DuckDuckGoSearchRun
+
+# duck duck search
+search = DuckDuckGoSearchRun()
+
+res = search.run(&#34;北京的面积有多大？&#34;)
+print(res)
+
+res = search.run(&#34;纽约的面积有多大？&#34;)
+print(res)
+
+
+os.environ[&#34;DASHSCOPE_API_KEY&#34;] = &#34;sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&#34;
+
+llm = Tongyi()
+
+tools = load_tools([&#34;ddg-search&#34;, &#34;llm-math&#34;], llm=llm)
+
+agent = initialize_agent(
+    tools,
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=True)
+
+agent.run(&#34;北京的面积和纽约的面积差是多少？&#34;)
+</code></pre><br/>
 <h1 id="其他">其他</h1>
 <p><a href="https://tmc.github.io/langchaingo/docs/" target="_blank" rel="noopener noreffer">langchaingo</a> 是 langchain 的 golang 实现，不过还有很多缺陷。相比官方支持的 Python 版本还有非常大的差距。</p>
 <p>以下是我深刻体验到的 langchaingo 的问题</p>

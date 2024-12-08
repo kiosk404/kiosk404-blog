@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "golang","wordcount":  362 ,
+                        }],"genre": "posts","keywords": "golang","wordcount":  328 ,
         "url": "http:\/\/localhost:1313\/post\/golang-%E7%9A%84%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90\/","datePublished": "2022-03-30T00:36:00+00:00","dateModified": "2022-03-30T00:36:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Golang 的内存对齐</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-03-30">2022-03-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;362 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-03-30">2022-03-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;328 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -148,23 +148,12 @@
 			</div>
 		 </div><p>今天又在网上看到了一个以前不知道的概念，内存对齐？从名字就可以看出来，这是一个偏性能优化类的概念。</p>
 <p>如果使用了 go-lint，会有这样一个<a href="maligned" rel="">检查项</a>。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">linters-settings:
-</span></span><span class="line"><span class="cl">  maligned:
-</span></span><span class="line"><span class="cl">    # Print struct with more effective memory layout or not.
-</span></span><span class="line"><span class="cl">    # Default: false
-</span></span><span class="line"><span class="cl">    suggest-new: true
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>检查是否有更有效的内存布局，其本质就对 Golang 中 Struct 结构体字段的内存对齐进行检查。</p>
+<pre tabindex="0"><code>linters-settings:
+  maligned:
+    # Print struct with more effective memory layout or not.
+    # Default: false
+    suggest-new: true
+</code></pre><p>检查是否有更有效的内存布局，其本质就对 Golang 中 Struct 结构体字段的内存对齐进行检查。</p>
 <h2 id="前情概要">前情概要</h2>
 <p>在分析内存对齐之前，我们先看看几个关于操作系统对内存是如何管理的。</p>
 <p>内存是与CPU是程序运行的搭档，内存用于暂存CPU中的运算数据。早期，程序直接运行在物理内存上，直接操作物理内存，但是存在一些问题，比如使用效率低，地址空间不隔离等问题。就出现了虚拟内存这个概念，虚拟内存是程序和物理内存之间的一个中间层，在Liunx操作系统中。虚拟内存被划为<code>用户空间</code> 和 <code>内核空间</code>，用户只能访问用户空间的虚拟地址，而内核空间只有通过系统调用和外设中断才能访问。</p>
@@ -259,41 +248,21 @@
 <li>除了结构成员需要对齐，结构本身也需要对齐，结构的长度必须是编译器默认的对齐长度和成员中最长类型中最小的数据大小的倍数对齐。</li>
 </ul>
 <p><strong>举个例子</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">//</span> <span class="mi">64</span><span class="err">位平台，对齐参数是</span><span class="mi">8</span>
-</span></span><span class="line"><span class="cl"><span class="n">type</span> <span class="n">User</span> <span class="n">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">A</span> <span class="n">int32</span> <span class="o">//</span> <span class="mi">4</span>
-</span></span><span class="line"><span class="cl">    <span class="n">B</span> <span class="p">[]</span><span class="n">int32</span> <span class="o">//</span> <span class="mi">24</span>
-</span></span><span class="line"><span class="cl">    <span class="n">C</span> <span class="n">string</span> <span class="o">//</span> <span class="mi">16</span>
-</span></span><span class="line"><span class="cl">    <span class="n">D</span> <span class="ne">bool</span> <span class="o">//</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">func</span> <span class="n">main</span><span class="p">()</span>  <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">var</span> <span class="n">u</span> <span class="n">User</span>
-</span></span><span class="line"><span class="cl">    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&#34;u1 size is &#34;</span><span class="p">,</span><span class="n">unsafe</span><span class="o">.</span><span class="n">Sizeof</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="o">//</span> <span class="err">运行结果</span>
-</span></span><span class="line"><span class="cl"><span class="n">u</span> <span class="n">size</span> <span class="n">is</span>  <span class="mi">56</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>// 64位平台，对齐参数是8
+type User struct {
+    A int32 // 4
+    B []int32 // 24
+    C string // 16
+    D bool // 1
+}
+
+func main()  {
+    var u User
+    fmt.Println(&#34;u1 size is &#34;,unsafe.Sizeof(u))
+}
+// 运行结果
+u size is  56
+</code></pre><ul>
 <li>第一个字段类型是<code>int32</code>，对齐值是4，大小为4，所以放在内存布局中的第一位.</li>
 <li>第二个字段类型是<code>[]int32</code>，对齐值是8，大小为<code>24</code>，按照第一条规则，偏移量应该是成员大小<code>24</code>与对齐值<code>8</code>中较小那个的整数倍，那么偏移量就是<code>8</code>，所以<code>4-7</code>位会由编译进行填充，一般为<code>0</code>值，也称为空洞，第<code>9</code>到<code>32</code>位为第二个字段<code>B</code>.</li>
 <li>第三个字段类型是<code>string</code>，对齐值是<code>8</code>，大小为<code>16</code>，所以他的内存偏移值必须是8的倍数，因为<code>user</code>前两个字段就已经排到了第<code>32</code>位，所以<code>offset</code>为<code>32</code>正好是<code>8</code>的倍数，不要填充，从<code>32</code>位到<code>48</code>位是第三个字段<code>C</code>.</li>
@@ -356,50 +325,23 @@
 </div>
 </div><h2 id="go-lint-检查">go-lint 检查</h2>
 <p>在文章的开头有提到过使用 <code>golangci-lint</code> 命令行工具进行内存对齐检查。首先我们打印一下 <code>linters</code> 中和 <code>mem</code> 有关的选项，从后面的说明已经其功能了。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">golangci-lint linters |rg &#34;mem&#34;
-</span></span><span class="line"><span class="cl">maligned [deprecated]: Tool to detect Go structs that would take less memory if their fields were sorted [fast: false, auto-fix: false]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>还是上面最开始提到的例子。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">T1</span> <span class="kd">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">a</span> <span class="kt">int8</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">b</span> <span class="kt">int64</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">c</span> <span class="kt">int16</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">T1</span><span class="p">{})</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>运行lint检查命令。</p>
+<pre tabindex="0"><code>golangci-lint linters |rg &#34;mem&#34;
+maligned [deprecated]: Tool to detect Go structs that would take less memory if their fields were sorted [fast: false, auto-fix: false]
+</code></pre><p>还是上面最开始提到的例子。</p>
+<pre tabindex="0"><code>package main
+
+import &#34;fmt&#34;
+
+type T1 struct {
+   a int8
+   b int64
+   c int16
+}
+
+func main() {
+   fmt.Println(&amp;T1{})
+}
+</code></pre><p>运行lint检查命令。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1

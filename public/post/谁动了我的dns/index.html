@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "web","wordcount":  2571 ,
+                        }],"genre": "posts","keywords": "web","wordcount":  2515 ,
         "url": "http:\/\/localhost:1313\/post\/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns\/","datePublished": "2024-10-24T16:08:00+00:00","dateModified": "2024-06-18T19:16:20+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,8 +118,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">网速变慢？你可能需要先设置好 DNS</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-10-24">2024-10-24</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2571 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;13 minutes&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-10-24">2024-10-24</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2515 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;12 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>Contents</span>
@@ -1187,169 +1187,77 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>这是一个简单的配置:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">.</span><span class="p">:</span><span class="mi">53</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="n">bind</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span> <span class="p">::</span><span class="mi">1</span>
-</span></span><span class="line"><span class="cl">        <span class="n">errors</span>
-</span></span><span class="line"><span class="cl">        <span class="n">health</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="n">lameduck</span> <span class="mi">5</span><span class="n">s</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="n">ready</span>
-</span></span><span class="line"><span class="cl">	<span class="n">forward</span> <span class="o">.</span> <span class="mf">223.5</span><span class="o">.</span><span class="mf">5.5</span> <span class="mf">129.29</span><span class="o">.</span><span class="mf">29.29</span>
-</span></span><span class="line"><span class="cl">        <span class="n">cache</span> <span class="mi">30</span>
-</span></span><span class="line"><span class="cl">        <span class="n">reload</span>
-</span></span><span class="line"><span class="cl">        <span class="n">loadbalance</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>   
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>.:53 {
+	bind 127.0.0.1 ::1
+        errors
+        health {
+            lameduck 5s
+        }
+        ready
+	forward . 223.5.5.5 129.29.29.29
+        cache 30
+        reload
+        loadbalance
+    }   
+</code></pre><br/>
 <ol start="4">
 <li>确保 53 端口未被占用</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">lsof -i :53
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>systemd-resolved 占用53端口（Ubuntu Server常见） 首先修改 /etc/systemd/resolved.conf,内容如下:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[Resolve]
-</span></span><span class="line"><span class="cl">DNS=114.114.114.114
-</span></span><span class="line"><span class="cl">DNSStubListener=no
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>DNS 是配置本机指向的DNS服务器，建议配置运营商或者公共DNS。 DNSStubListener=no 是指不监听53端口。 配置完成后执行命令重启系统服务： <code>sudo systemctl daemon-reload</code> <code>sudo systemctl restart systemd-resolved</code> 查看/etc/resolv.conf 软链位置，执行命令 <code>ll /etc/resolv.conf</code>，如果软链显示如下，则不需要改动: <code>/etc/resolv.conf -&gt; /run/systemd/resolve/resolv.conf</code>，否则设置软链 <code>sudo ln -s -f /run/systemd/resolve/resolv.conf /etc/resolv.conf</code>。</p>
+<pre tabindex="0"><code>lsof -i :53
+</code></pre><p>systemd-resolved 占用53端口（Ubuntu Server常见） 首先修改 /etc/systemd/resolved.conf,内容如下:</p>
+<pre tabindex="0"><code>[Resolve]
+DNS=114.114.114.114
+DNSStubListener=no
+</code></pre><p>DNS 是配置本机指向的DNS服务器，建议配置运营商或者公共DNS。 DNSStubListener=no 是指不监听53端口。 配置完成后执行命令重启系统服务： <code>sudo systemctl daemon-reload</code> <code>sudo systemctl restart systemd-resolved</code> 查看/etc/resolv.conf 软链位置，执行命令 <code>ll /etc/resolv.conf</code>，如果软链显示如下，则不需要改动: <code>/etc/resolv.conf -&gt; /run/systemd/resolve/resolv.conf</code>，否则设置软链 <code>sudo ln -s -f /run/systemd/resolve/resolv.conf /etc/resolv.conf</code>。</p>
 <br/>
 <ol start="5">
 <li>设置开机自启动并启动 CoreDNS</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl enable coredns
-</span></span><span class="line"><span class="cl">systemctl start coredns
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="配置-exampleio-域名解析">配置 <code>example.io</code> 域名解析</h3>
+<pre tabindex="0"><code>systemctl enable coredns
+systemctl start coredns
+</code></pre><h3 id="配置-exampleio-域名解析">配置 <code>example.io</code> 域名解析</h3>
 <p><code>example.io</code> 这个域名并不存在，我们在本地给他一个解析结果。</p>
 <p>使用 <code>file</code> 插件自定义域名的解析.  <a href="https://coredns.io/plugins/file/" target="_blank" rel="noopener noreffer">file 插件</a></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">.</span><span class="p">:</span><span class="mi">53</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="n">bind</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span> <span class="p">::</span><span class="mi">1</span>
-</span></span><span class="line"><span class="cl">        <span class="n">errors</span>
-</span></span><span class="line"><span class="cl">        <span class="n">health</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="n">lameduck</span> <span class="mi">5</span><span class="n">s</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="n">ready</span>
-</span></span><span class="line"><span class="cl">        <span class="n">cache</span> <span class="mi">30</span>
-</span></span><span class="line"><span class="cl">        <span class="n">reload</span>
-</span></span><span class="line"><span class="cl">        <span class="n">loadbalance</span>
-</span></span><span class="line"><span class="cl">	<span class="n">forward</span> <span class="o">.</span> <span class="mf">223.5</span><span class="o">.</span><span class="mf">5.5</span> <span class="mf">119.29</span><span class="o">.</span><span class="mf">29.29</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">example</span><span class="o">.</span><span class="n">io</span><span class="p">:</span><span class="mi">53</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="n">bind</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>
-</span></span><span class="line"><span class="cl">	<span class="n">file</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">coredns</span><span class="o">/</span><span class="n">example</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">db</span> <span class="n">example</span><span class="o">.</span><span class="n">io</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>创建 <code>/etc/coredns/example.io.db</code>  文件。内容如下</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-dns" data-lang="dns"><span class="line"><span class="cl"><span class="na">$TTL</span><span class="w"> </span><span class="sc">3600</span><span class="w"> </span><span class="c">; 记录超时时间</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="na">$ORIGIN</span><span class="w"> </span><span class="py">example.io. </span><span class="c">; 指定 origin，下面的@符号可以作为他的别名，注意后面的.</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">; SOA 格式 [domain_name] IN SOA [域主服务器或主DNS服务器名] [管理员email] (时间信息)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nc">@</span><span class="w">           </span><span class="k">IN</span><span class="w">  </span><span class="k">SOA</span><span class="w">  </span><span class="py">ns1.example.io. admin.example.io. </span><span class="p">(</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">                     </span><span class="sc">2019071601</span><span class="w"> </span><span class="c">; Serial</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">                     </span><span class="sc">4</span><span class="err">H</span><span class="w">         </span><span class="c">; Refresh</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">                     </span><span class="sc">1</span><span class="err">H</span><span class="w">         </span><span class="c">; Retry</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">                     </span><span class="sc">7</span><span class="err">D</span><span class="w">         </span><span class="c">; Expire</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">                     </span><span class="sc">4</span><span class="err">H</span><span class="w"> </span><span class="p">)</span><span class="w">       </span><span class="c">; Negative Cache TTL</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">; 配置 DNS 记录，指向 ns1.example.io</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nc">@</span><span class="w">           </span><span class="k">IN</span><span class="w">  </span><span class="k">NS</span><span class="w">   </span><span class="err">ns1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">; 配置 ns1.example.io 的 A 记录, 指向coredns所在的机器</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nc">ns1</span><span class="w">         </span><span class="k">IN</span><span class="w">  </span><span class="k">A</span><span class="w">    </span><span class="mi">127.0.0.1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">; 配置 example.io 的 A 记录，指向网站或其他用途的机器</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nc">@</span><span class="w">           </span><span class="k">IN</span><span class="w">  </span><span class="k">A</span><span class="w">    </span><span class="mi">1.1.1.1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">; 配置泛域名，没有准确的三级子域名的域名全部指向此IPV4地址</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="err">*</span><span class="w">   	    </span><span class="k">IN</span><span class="w">  </span><span class="k">A</span><span class="w">    </span><span class="mi">5.5.5.5</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nc">cdn</span><span class="w"> 	    </span><span class="k">IN</span><span class="w">  </span><span class="k">CNAME</span><span class="w"> </span><span class="err">cname1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nc">cname1</span><span class="w">      </span><span class="k">IN</span><span class="w">  </span><span class="k">CNAME</span><span class="w"> </span><span class="err">cname2</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nc">cname2</span><span class="w">      </span><span class="k">IN</span><span class="w">  </span><span class="k">A</span><span class="w">   </span><span class="mi">1.2.3.4</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>尝试解析一下，看看效果</p>
+<pre tabindex="0"><code>.:53 {
+	bind 127.0.0.1 ::1
+        errors
+        health {
+            lameduck 5s
+        }
+        ready
+        cache 30
+        reload
+        loadbalance
+	forward . 223.5.5.5 119.29.29.29
+}
+
+example.io:53 {
+	bind 127.0.0.1
+	file /etc/coredns/example.io.db example.io
+}
+</code></pre><p>创建 <code>/etc/coredns/example.io.db</code>  文件。内容如下</p>
+<pre tabindex="0"><code>$TTL 3600 ; 记录超时时间
+$ORIGIN example.io. ; 指定 origin，下面的@符号可以作为他的别名，注意后面的.
+; SOA 格式 [domain_name] IN SOA [域主服务器或主DNS服务器名] [管理员email] (时间信息)
+@           IN  SOA  ns1.example.io. admin.example.io. (
+                     2019071601 ; Serial
+                     4H         ; Refresh
+                     1H         ; Retry
+                     7D         ; Expire
+                     4H )       ; Negative Cache TTL
+
+; 配置 DNS 记录，指向 ns1.example.io
+@           IN  NS   ns1
+; 配置 ns1.example.io 的 A 记录, 指向coredns所在的机器
+ns1         IN  A    127.0.0.1
+; 配置 example.io 的 A 记录，指向网站或其他用途的机器
+@           IN  A    1.1.1.1
+; 配置泛域名，没有准确的三级子域名的域名全部指向此IPV4地址
+*   	    IN  A    5.5.5.5
+cdn 	    IN  CNAME cname1
+cname1      IN  CNAME cname2
+cname2      IN  A   1.2.3.4
+</code></pre><p>尝试解析一下，看看效果</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1

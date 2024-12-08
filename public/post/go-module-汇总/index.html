@@ -38,7 +38,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "golang","wordcount":  528 ,
+                        }],"genre": "posts","keywords": "golang","wordcount":  527 ,
         "url": "http:\/\/localhost:1313\/post\/go-module-%E6%B1%87%E6%80%BB\/","datePublished": "2021-11-26T23:31:00+00:00","dateModified": "2021-11-26T23:31:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -120,7 +120,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Go Module 基本使用</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-11-26">2021-11-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;528 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-11-26">2021-11-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;527 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -275,15 +275,8 @@ go.mod 有四个指令 <code>module</code>, <code>require</code>, <code>replace<
 <li>手动添加</li>
 </ol>
 <p>如果新增了一个依赖，可以使用</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">go get github.com/pkg/xxx@master
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>@master 这里也可以指定特定版本，比如 @v1.0.1，或者 @latest 更新到最新版本。也可以指定特定的 commit id，比如 @aabbccdd。</p>
+<pre tabindex="0"><code>go get github.com/pkg/xxx@master
+</code></pre><p>@master 这里也可以指定特定版本，比如 @v1.0.1，或者 @latest 更新到最新版本。也可以指定特定的 commit id，比如 @aabbccdd。</p>
 <br/>
 <h2 id="go-mod-命令">go mod 命令</h2>
 <div class="highlight"><div class="chroma">

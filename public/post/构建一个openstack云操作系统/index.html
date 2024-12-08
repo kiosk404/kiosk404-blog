@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "openstack","wordcount":  5244 ,
+                        }],"genre": "posts","keywords": "openstack","wordcount":  5152 ,
         "url": "http:\/\/localhost:1313\/post\/%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AAopenstack%E4%BA%91%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F\/","datePublished": "2022-08-27T13:52:18+00:00","dateModified": "2022-08-29T11:26:27+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">构建一个 OpenStack 云操作系统</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud_computing/"><i class="far fa-folder fa-fw"></i>Cloud_computing</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-08-27">2022-08-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;5244 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-08-27">2022-08-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;5152 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;25 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -724,15 +724,8 @@
 <ol>
 <li>安装 glance</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apt install glance -y
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="2">
+<pre tabindex="0"><code>apt install glance -y
+</code></pre><ol start="2">
 <li>配置 /etc/glance/glance-api.conf</li>
 </ol>
 <div class="highlight"><div class="chroma">
@@ -841,23 +834,12 @@
 </blockquote>
 <h3 id="验证">验证</h3>
 <p>下载一个镜像，再传到 glance 服务上。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">wget</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">cirros</span><span class="o">-</span><span class="n">cloud</span><span class="o">.</span><span class="n">net</span><span class="o">/</span><span class="mf">0.4</span><span class="o">.</span><span class="mi">0</span><span class="o">/</span><span class="n">cirros</span><span class="o">-</span><span class="mf">0.4</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">disk</span><span class="o">.</span><span class="n">img</span>
-</span></span><span class="line"><span class="cl"><span class="n">glance</span> <span class="n">image</span><span class="o">-</span><span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="s2">&#34;cirros&#34;</span> \
-</span></span><span class="line"><span class="cl">  <span class="o">--</span><span class="n">file</span> <span class="n">cirros</span><span class="o">-</span><span class="mf">0.4</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">disk</span><span class="o">.</span><span class="n">img</span> \
-</span></span><span class="line"><span class="cl">  <span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="n">format</span> <span class="n">qcow2</span> <span class="o">--</span><span class="n">container</span><span class="o">-</span><span class="n">format</span> <span class="n">bare</span> \
-</span></span><span class="line"><span class="cl">  <span class="o">--</span><span class="n">visibility</span><span class="o">=</span><span class="n">public</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以使用<code>openstack image list或者glance image-list</code>查看镜像。</p>
+<pre tabindex="0"><code>wget http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
+glance image-create --name &#34;cirros&#34; \
+  --file cirros-0.4.0-x86_64-disk.img \
+  --disk-format qcow2 --container-format bare \
+  --visibility=public
+</code></pre><p>可以使用<code>openstack image list或者glance image-list</code>查看镜像。</p>
 <ul>
 <li>查看 image：glance image-show  IMAGE_ID</li>
 <li>下载 image：glance image-download &ndash;progress &ndash;file=./cloud.img IMAGE_ID</li>
@@ -946,47 +928,24 @@
 </div><ol start="2">
 <li>编辑 <code>/etc/placement/placement.conf</code> 文件</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># [placement_database] section 中，编辑访问数据库
-</span></span><span class="line"><span class="cl">[placement_database]
-</span></span><span class="line"><span class="cl">connection = mysql+pymysql://placement:PLACEMENT_DBPASS@controller/placement
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># [keystone_authtoken] 和 [api] section 中，编辑认证信息
-</span></span><span class="line"><span class="cl">[api]
-</span></span><span class="line"><span class="cl">auth_strategy = keystone
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">[keystone_authtoken]
-</span></span><span class="line"><span class="cl">auth_url = http://controller:5000/v3
-</span></span><span class="line"><span class="cl">memcached_servers = controller:11211
-</span></span><span class="line"><span class="cl">auth_type = password
-</span></span><span class="line"><span class="cl">project_domain_name = Default
-</span></span><span class="line"><span class="cl">user_domain_name = Default
-</span></span><span class="line"><span class="cl">project_name = service
-</span></span><span class="line"><span class="cl">username = placement
-</span></span><span class="line"><span class="cl">password = PLACEMENT_PASS  # 请替换
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="3">
+<pre tabindex="0"><code># [placement_database] section 中，编辑访问数据库
+[placement_database]
+connection = mysql+pymysql://placement:PLACEMENT_DBPASS@controller/placement
+
+# [keystone_authtoken] 和 [api] section 中，编辑认证信息
+[api]
+auth_strategy = keystone
+
+[keystone_authtoken]
+auth_url = http://controller:5000/v3
+memcached_servers = controller:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = placement
+password = PLACEMENT_PASS  # 请替换
+</code></pre><ol start="3">
 <li>填充数据库</li>
 </ol>
 <div class="highlight"><div class="chroma">
@@ -1284,60 +1243,26 @@
 </div><ol start="4">
 <li>注册 cell0 数据库</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">su -s /bin/sh -c &#34;nova-manage cell_v2 map_cell0&#34; nova
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="5">
+<pre tabindex="0"><code>su -s /bin/sh -c &#34;nova-manage cell_v2 map_cell0&#34; nova
+</code></pre><ol start="5">
 <li>创建 cell1 cell</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">su -s /bin/sh -c &#34;nova-manage cell_v2 create_cell --name=cell1 --verbose&#34; nova
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="6">
+<pre tabindex="0"><code>su -s /bin/sh -c &#34;nova-manage cell_v2 create_cell --name=cell1 --verbose&#34; nova
+</code></pre><ol start="6">
 <li>填充数据库</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">su -s /bin/sh -c &#34;nova-manage db sync&#34; nova
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="7">
+<pre tabindex="0"><code>su -s /bin/sh -c &#34;nova-manage db sync&#34; nova
+</code></pre><ol start="7">
 <li>验证 nova cell0 和 cell1 是否注册正确</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">su -s /bin/sh -c &#34;nova-manage cell_v2 list_cells&#34; nova
-</span></span><span class="line"><span class="cl">+-------+--------------------------------------+------------------------------------------+-------------------------------------------------+----------+
-</span></span><span class="line"><span class="cl">|  Name |                 UUID                 |              Transport URL               |               Database Connection               | Disabled |
-</span></span><span class="line"><span class="cl">+-------+--------------------------------------+------------------------------------------+-------------------------------------------------+----------+
-</span></span><span class="line"><span class="cl">| cell0 | 00000000-0000-0000-0000-000000000000 |                  none:/                  | mysql+pymysql://nova:****@controller/nova_cell0 |  False   |
-</span></span><span class="line"><span class="cl">| cell1 | 2c673c30-0a25-477d-a39b-0394bc2309be | rabbit://openstack:****@controller:5672/ |    mysql+pymysql://nova:****@controller/nova    |  False   |
-</span></span><span class="line"><span class="cl">+-------+--------------------------------------+------------------------------------------+-------------------------------------------------+----------+
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<pre tabindex="0"><code>su -s /bin/sh -c &#34;nova-manage cell_v2 list_cells&#34; nova
++-------+--------------------------------------+------------------------------------------+-------------------------------------------------+----------+
+|  Name |                 UUID                 |              Transport URL               |               Database Connection               | Disabled |
++-------+--------------------------------------+------------------------------------------+-------------------------------------------------+----------+
+| cell0 | 00000000-0000-0000-0000-000000000000 |                  none:/                  | mysql+pymysql://nova:****@controller/nova_cell0 |  False   |
+| cell1 | 2c673c30-0a25-477d-a39b-0394bc2309be | rabbit://openstack:****@controller:5672/ |    mysql+pymysql://nova:****@controller/nova    |  False   |
++-------+--------------------------------------+------------------------------------------+-------------------------------------------------+----------+
+</code></pre><blockquote>
 <p>configure bash shell script: <a href="http://s1.kiosk007.top/config_controller_nova.sh" target="_blank" rel="noopener noreffer">http://s1.kiosk007.top/config_controller_nova.sh</a></p>
 </blockquote>
 <br/>
@@ -1777,80 +1702,39 @@
 <ol>
 <li>安装 dashboard 可视化界面</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apt install openstack-dashboard
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="2">
+<pre tabindex="0"><code>apt install openstack-dashboard
+</code></pre><ol start="2">
 <li>配置文件 <strong>/etc/openstack-dashboard/local_settings.py</strong></li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">OPENSTACK_HOST = &#34;controller&#34;
-</span></span><span class="line"><span class="cl">ALLOWED_HOSTS = [&#39;*&#39;]
-</span></span><span class="line"><span class="cl">SESSION_ENGINE = &#39;django.contrib.sessions.backends.cache&#39;
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">CACHES = {
-</span></span><span class="line"><span class="cl">    &#39;default&#39;: {
-</span></span><span class="line"><span class="cl">         &#39;BACKEND&#39;: &#39;django.core.cache.backends.memcached.MemcachedCache&#39;,
-</span></span><span class="line"><span class="cl">         &#39;LOCATION&#39;: &#39;controller:11211&#39;,
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">}
-</span></span><span class="line"><span class="cl">OPENSTACK_KEYSTONE_URL = &#34;http://%s:5000/v3&#34; % OPENSTACK_HOST
-</span></span><span class="line"><span class="cl">OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
-</span></span><span class="line"><span class="cl">OPENSTACK_API_VERSIONS = {
-</span></span><span class="line"><span class="cl">    &#34;identity&#34;: 3,
-</span></span><span class="line"><span class="cl">    &#34;image&#34;: 2,
-</span></span><span class="line"><span class="cl">    &#34;volume&#34;: 3,
-</span></span><span class="line"><span class="cl">}
-</span></span><span class="line"><span class="cl">OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = &#34;Default&#34;
-</span></span><span class="line"><span class="cl">OPENSTACK_KEYSTONE_DEFAULT_ROLE = &#34;member&#34;
-</span></span><span class="line"><span class="cl">OPENSTACK_NEUTRON_NETWORK = {
-</span></span><span class="line"><span class="cl">    &#39;enable_router&#39;: False,
-</span></span><span class="line"><span class="cl">    &#39;enable_quotas&#39;: False,
-</span></span><span class="line"><span class="cl">    &#39;enable_ipv6&#39;: False,
-</span></span><span class="line"><span class="cl">    &#39;enable_distributed_router&#39;: False,
-</span></span><span class="line"><span class="cl">    &#39;enable_ha_router&#39;: False,
-</span></span><span class="line"><span class="cl">    &#39;enable_fip_topology_check&#39;: False
-</span></span><span class="line"><span class="cl">}
-</span></span><span class="line"><span class="cl">TIME_ZONE = &#34;Asia/Shanghai&#34;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>OPENSTACK_HOST = &#34;controller&#34;
+ALLOWED_HOSTS = [&#39;*&#39;]
+SESSION_ENGINE = &#39;django.contrib.sessions.backends.cache&#39;
+
+CACHES = {
+    &#39;default&#39;: {
+         &#39;BACKEND&#39;: &#39;django.core.cache.backends.memcached.MemcachedCache&#39;,
+         &#39;LOCATION&#39;: &#39;controller:11211&#39;,
+    }
+}
+OPENSTACK_KEYSTONE_URL = &#34;http://%s:5000/v3&#34; % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
+OPENSTACK_API_VERSIONS = {
+    &#34;identity&#34;: 3,
+    &#34;image&#34;: 2,
+    &#34;volume&#34;: 3,
+}
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = &#34;Default&#34;
+OPENSTACK_KEYSTONE_DEFAULT_ROLE = &#34;member&#34;
+OPENSTACK_NEUTRON_NETWORK = {
+    &#39;enable_router&#39;: False,
+    &#39;enable_quotas&#39;: False,
+    &#39;enable_ipv6&#39;: False,
+    &#39;enable_distributed_router&#39;: False,
+    &#39;enable_ha_router&#39;: False,
+    &#39;enable_fip_topology_check&#39;: False
+}
+TIME_ZONE = &#34;Asia/Shanghai&#34;
+</code></pre><br/>
 <h2 id="cinder">Cinder</h2>
 <p>Cinder 提供块存储功能，其实 Cinder 本不应该部署在 Compute 节点，块存储服务本应该是独立与 Openstack  Controller、Compute 节点的存在。</p>
 <p>其提供 Block Storage Service。其由 cinder-api、cinder-volume、cinder-scheduler 组成。</p>
@@ -2356,15 +2240,8 @@
 <ol>
 <li>安装 linuxbridge-agent</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">apt install neutron-linuxbridge-agent
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="2">
+<pre tabindex="0"><code>apt install neutron-linuxbridge-agent
+</code></pre><ol start="2">
 <li>编辑 <strong>/etc/neutron/neutron.conf</strong></li>
 </ol>
 <div class="highlight"><div class="chroma">
@@ -2613,71 +2490,36 @@
 </div>
 </div><br/>
 <h3 id="测试">测试</h3>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cinder create --display-name testVloume 2
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">+--------------------------------+--------------------------------------+
-</span></span><span class="line"><span class="cl">| Property                       | Value                                |
-</span></span><span class="line"><span class="cl">+--------------------------------+--------------------------------------+
-</span></span><span class="line"><span class="cl">| attachments                    | []                                   |
-</span></span><span class="line"><span class="cl">| availability_zone              | nova                                 |
-</span></span><span class="line"><span class="cl">| bootable                       | false                                |
-</span></span><span class="line"><span class="cl">| cluster_name                   | None                                 |
-</span></span><span class="line"><span class="cl">| consistencygroup_id            | None                                 |
-</span></span><span class="line"><span class="cl">...
-</span></span><span class="line"><span class="cl">| updated_at                     | 2022-09-04T09:23:07.000000           |
-</span></span><span class="line"><span class="cl">| user_id                        | aca26a682b4144989a20e4a3a6615279     |
-</span></span><span class="line"><span class="cl">| volume_type                    | __DEFAULT__                          |
-</span></span><span class="line"><span class="cl">| volume_type_id                 | 3bd8f104-0a6e-4d01-8834-161452566435 |
-</span></span><span class="line"><span class="cl">+--------------------------------+--------------------------------------+
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">cinder list
-</span></span><span class="line"><span class="cl">+--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
-</span></span><span class="line"><span class="cl">| ID                                   | Status    | Name       | Size | Consumes Quota | Volume Type | Bootable | Attached to |
-</span></span><span class="line"><span class="cl">+--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
-</span></span><span class="line"><span class="cl">| 539a7ef8-61e7-4531-b892-c2facafe28d9 | available | testVloume | 2    | True           | __DEFAULT__ | false    |             |
-</span></span><span class="line"><span class="cl">+--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># 查看卷
-</span></span><span class="line"><span class="cl">lvs
-</span></span><span class="line"><span class="cl">  LV                                          VG             Attr       LSize Pool                Origin Data%  Meta%  Move Log Cpy%Sync Convert
-</span></span><span class="line"><span class="cl">  cinder-volumes-pool                         cinder-volumes twi-aotz-- 4.75g                            0.00   10.64                           
-</span></span><span class="line"><span class="cl">  volume-539a7ef8-61e7-4531-b892-c2facafe28d9 cinder-volumes Vwi-a-tz-- 2.00g cinder-volumes-pool        0.00          
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>cinder create --display-name testVloume 2
+
++--------------------------------+--------------------------------------+
+| Property                       | Value                                |
++--------------------------------+--------------------------------------+
+| attachments                    | []                                   |
+| availability_zone              | nova                                 |
+| bootable                       | false                                |
+| cluster_name                   | None                                 |
+| consistencygroup_id            | None                                 |
+...
+| updated_at                     | 2022-09-04T09:23:07.000000           |
+| user_id                        | aca26a682b4144989a20e4a3a6615279     |
+| volume_type                    | __DEFAULT__                          |
+| volume_type_id                 | 3bd8f104-0a6e-4d01-8834-161452566435 |
++--------------------------------+--------------------------------------+
+
+cinder list
++--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
+| ID                                   | Status    | Name       | Size | Consumes Quota | Volume Type | Bootable | Attached to |
++--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
+| 539a7ef8-61e7-4531-b892-c2facafe28d9 | available | testVloume | 2    | True           | __DEFAULT__ | false    |             |
++--------------------------------------+-----------+------------+------+----------------+-------------+----------+-------------+
+
+# 查看卷
+lvs
+  LV                                          VG             Attr       LSize Pool                Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  cinder-volumes-pool                         cinder-volumes twi-aotz-- 4.75g                            0.00   10.64                           
+  volume-539a7ef8-61e7-4531-b892-c2facafe28d9 cinder-volumes Vwi-a-tz-- 2.00g cinder-volumes-pool        0.00          
+</code></pre><br/>
 <h1 id="launch-一个实例">Launch 一个实例</h1>
 <h2 id="1-创建keypair">1. 创建Keypair</h2>
 <img src="https://img1.kiosk007.top/static/images/blog/openstack_deploy5.png" alt="openstack_deploy5" style="zoom:67%;" />

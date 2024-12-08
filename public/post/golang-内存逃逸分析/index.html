@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "golang","wordcount":  413 ,
+                        }],"genre": "posts","keywords": "golang","wordcount":  406 ,
         "url": "http:\/\/localhost:1313\/post\/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90\/","datePublished": "2022-04-02T11:10:00+00:00","dateModified": "2022-04-02T11:10:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Golang 内存逃逸分析</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-04-02">2022-04-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;413 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-04-02">2022-04-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;406 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -236,34 +236,15 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>编译：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">$</span> <span class="n">gcc</span> <span class="n">main</span><span class="o">.</span><span class="n">c</span> 
-</span></span><span class="line"><span class="cl"><span class="n">main</span><span class="o">.</span><span class="n">c</span><span class="p">:</span> <span class="n">In</span> <span class="n">function</span> <span class="err">‘</span><span class="n">foo</span><span class="err">’</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl"><span class="n">main</span><span class="o">.</span><span class="n">c</span><span class="p">:</span><span class="mi">7</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span> <span class="n">warning</span><span class="p">:</span> <span class="n">function</span> <span class="n">returns</span> <span class="n">address</span> <span class="n">of</span> <span class="n">local</span> <span class="n">variable</span> <span class="p">[</span><span class="o">-</span><span class="n">Wreturn</span><span class="o">-</span><span class="n">local</span><span class="o">-</span><span class="n">addr</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">     <span class="k">return</span> <span class="o">&amp;</span><span class="n">foo_val</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="o">^~~~~~~~</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>出了一个警告，不管他，再运行</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ./a.out 
-</span></span><span class="line"><span class="cl">段错误 (核心已转储)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>程序崩溃.</p>
+<pre tabindex="0"><code>$ gcc main.c 
+main.c: In function ‘foo’:
+main.c:7:12: warning: function returns address of local variable [-Wreturn-local-addr]
+     return &amp;foo_val;
+            ^~~~~~~~
+</code></pre><p>出了一个警告，不管他，再运行</p>
+<pre tabindex="0"><code>$ ./a.out 
+段错误 (核心已转储)
+</code></pre><p>程序崩溃.</p>
 <p>如上C/C++编译器明确给出了警告，foo把一个局部变量的地址返回了</p>
 <p>我们知道程序运行是需要内存的，而内存空间包含两个最重要的区域：堆区(Heap)和栈区(Stack)。在C语言中，栈区存放函数参数，局部变量，堆也被称为动态内存分配，<strong>它是由程序员手动完成申请和释放的</strong>。</p>
 <br/>

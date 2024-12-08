@@ -38,7 +38,7 @@ Redis的持久化机制分为 AOF（Append Only File） 日志和 RDB 快照。"
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "redis","wordcount":  183 ,
+                        }],"genre": "posts","keywords": "redis","wordcount":  180 ,
         "url": "http:\/\/localhost:1313\/post\/redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6\/","datePublished": "2022-05-04T17:39:50+00:00","dateModified": "2022-05-04T17:39:50+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -120,7 +120,7 @@ Redis的持久化机制分为 AOF（Append Only File） 日志和 RDB 快照。"
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Redis持久化机制</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/nosql/"><i class="far fa-folder fa-fw"></i>Nosql</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-05-04">2022-05-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;183 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-05-04">2022-05-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;180 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;One minute&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -253,19 +253,10 @@ Redis的持久化机制分为 AOF（Append Only File） 日志和 RDB 快照。"
 <ol>
 <li><strong>自动触发</strong>： 上图配置文件中的save就是配置 Redis RDB 的持久化条件。</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">save 900 1：表示900 秒内如果至少有 1 个 key 的值变化，则保存
-</span></span><span class="line"><span class="cl">save 300 10：表示300 秒内如果至少有 10 个 key 的值变化，则保存
-</span></span><span class="line"><span class="cl">save 60 10000：表示60 秒内如果至少有 10000 个 key 的值变化，则保存
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="2">
+<pre tabindex="0"><code>save 900 1：表示900 秒内如果至少有 1 个 key 的值变化，则保存
+save 300 10：表示300 秒内如果至少有 10 个 key 的值变化，则保存
+save 60 10000：表示60 秒内如果至少有 10000 个 key 的值变化，则保存
+</code></pre><ol start="2">
 <li><strong>手动触发</strong>： 手动触发的方式有两种。
 <ol>
 <li>save：该命令会阻塞当前 Redis 服务器，执行 save 命令期间，Redis 不能处理其他命令，直到RDB过程结束</li>

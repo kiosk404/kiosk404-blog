@@ -38,7 +38,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "ai","wordcount":  1580 ,
+                        }],"genre": "posts","keywords": "ai","wordcount":  1544 ,
         "url": "http:\/\/localhost:1313\/post\/ollama-ai\/","datePublished": "2024-08-21T13:52:18+00:00","dateModified": "2024-08-22T11:26:27+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -120,7 +120,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">ollama 本地AI大模型</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/artificial-intelligence/"><i class="far fa-folder fa-fw"></i>Artificial Intelligence</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-08-21">2024-08-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1580 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-08-21">2024-08-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1544 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -187,45 +187,23 @@
 <br/>
 <h1 id="ollama-探索">ollama 探索</h1>
 <h2 id="linux-安装-ollama">Linux 安装 ollama</h2>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">curl</span> <span class="o">-</span><span class="n">fsSL</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">ollama</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">install</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">sh</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">Installing</span> <span class="n">ollama</span> <span class="n">to</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span>
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">Downloading</span> <span class="n">Linux</span> <span class="n">amd64</span> <span class="n">CLI</span>
-</span></span><span class="line"><span class="cl"><span class="c1">######################################################################## 100.0%#=#=-#  #                                                                  ######################################################################## 100.0%</span>
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">Making</span> <span class="n">ollama</span> <span class="n">accessible</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">PATH</span> <span class="ow">in</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span>
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">Creating</span> <span class="n">ollama</span> <span class="n">user</span><span class="o">...</span>
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">Adding</span> <span class="n">ollama</span> <span class="n">user</span> <span class="n">to</span> <span class="n">render</span> <span class="n">group</span><span class="o">...</span>
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">Adding</span> <span class="n">ollama</span> <span class="n">user</span> <span class="n">to</span> <span class="n">video</span> <span class="n">group</span><span class="o">...</span>
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">Adding</span> <span class="n">current</span> <span class="n">user</span> <span class="n">to</span> <span class="n">ollama</span> <span class="n">group</span><span class="o">...</span>
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">Creating</span> <span class="n">ollama</span> <span class="n">systemd</span> <span class="n">service</span><span class="o">...</span>
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">Enabling</span> <span class="ow">and</span> <span class="n">starting</span> <span class="n">ollama</span> <span class="n">service</span><span class="o">...</span>
-</span></span><span class="line"><span class="cl"><span class="n">Created</span> <span class="n">symlink</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">systemd</span><span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">default</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">wants</span><span class="o">/</span><span class="n">ollama</span><span class="o">.</span><span class="n">service</span> <span class="err">→</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">systemd</span><span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">ollama</span><span class="o">.</span><span class="n">service</span><span class="o">.</span>
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">The</span> <span class="n">Ollama</span> <span class="n">API</span> <span class="n">is</span> <span class="n">now</span> <span class="n">available</span> <span class="n">at</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mf">11434.</span>
-</span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">Install</span> <span class="n">complete</span><span class="o">.</span> <span class="n">Run</span> <span class="s2">&#34;ollama&#34;</span> <span class="n">from</span> <span class="n">the</span> <span class="n">command</span> <span class="n">line</span><span class="o">.</span>
-</span></span><span class="line"><span class="cl"><span class="n">WARNING</span><span class="p">:</span> <span class="n">No</span> <span class="n">NVIDIA</span><span class="o">/</span><span class="n">AMD</span> <span class="n">GPU</span> <span class="n">detected</span><span class="o">.</span> <span class="n">Ollama</span> <span class="n">will</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">CPU</span><span class="o">-</span><span class="n">only</span> <span class="n">mode</span><span class="o">.</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>curl -fsSL https://ollama.com/install.sh | sh
+
+&gt;&gt;&gt; Installing ollama to /usr/local
+&gt;&gt;&gt; Downloading Linux amd64 CLI
+######################################################################## 100.0%#=#=-#  #                                                                  ######################################################################## 100.0%
+&gt;&gt;&gt; Making ollama accessible in the PATH in /usr/local/bin
+&gt;&gt;&gt; Creating ollama user...
+&gt;&gt;&gt; Adding ollama user to render group...
+&gt;&gt;&gt; Adding ollama user to video group...
+&gt;&gt;&gt; Adding current user to ollama group...
+&gt;&gt;&gt; Creating ollama systemd service...
+&gt;&gt;&gt; Enabling and starting ollama service...
+Created symlink /etc/systemd/system/default.target.wants/ollama.service → /etc/systemd/system/ollama.service.
+&gt;&gt;&gt; The Ollama API is now available at 127.0.0.1:11434.
+&gt;&gt;&gt; Install complete. Run &#34;ollama&#34; from the command line.
+WARNING: No NVIDIA/AMD GPU detected. Ollama will run in CPU-only mode.
+</code></pre><br/>
 <blockquote>
 <p><a href="https://ollama.fan/getting-started/linux/#amd-radeon-gpu-support" target="_blank" rel="noopener noreffer">AMD Radeon GPU 支持</a></p>
 <p>虽然 AMD 已将 <code>amdgpu</code> 驱动程序上游贡献给官方 Linux 内核源代码，但该版本较旧，可能不支持所有 ROCm 功能。建议从 <a href="https://www.amd.com/en/support/linux-drivers" target="_blank" rel="noopener noreffer">AMD 官网</a> 安装最新驱动程序，以获得对您 Radeon GPU 的最佳支持。</p>
@@ -235,17 +213,9 @@
 <br/>
 <p>我这里个人使用的是 Linux Ubuntu (8C 16G)，直接下载安装包，安装即可，安装之后，运行软件。</p>
 <p>运行之后，项目默认监听 <code>11434</code> 端口，在终端执行如下命令可验证是否正常运行：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">✗ curl 127.0.0.1:11434 
-</span></span><span class="line"><span class="cl">Ollama is running%                   
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>此时只是相当于把一个架子，一个舞台搭好了, 就相当安装好了 Docker，要想要真正体验大模型，还需要拉下来一个模型。</p>
+<pre tabindex="0"><code>✗ curl 127.0.0.1:11434 
+Ollama is running%                   
+</code></pre><p>此时只是相当于把一个架子，一个舞台搭好了, 就相当安装好了 Docker，要想要真正体验大模型，还需要拉下来一个模型。</p>
 <br/>
 <h2 id="模型管理">模型管理</h2>
 <p>ollama 安装之后，其同时还是一个命令，与模型交互就是通过命令来进行的。</p>
@@ -377,67 +347,30 @@
 <ul>
 <li><strong>拉取模型</strong></li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ollama pull llama3
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<pre tabindex="0"><code>ollama pull llama3
+</code></pre><blockquote>
 <p>此命令也可以用于更新本地模型。只会拉取差异部分。</p>
 <p>ps: 模型的拉取速度能达到 11MB/s ，可见官方的支持力度是非常足的。带宽是下了血本了。</p>
 </blockquote>
 <ul>
 <li><strong>删除模型</strong></li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ollama rm llama3
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>ollama rm llama3
+</code></pre><ul>
 <li><strong>复制模型</strong></li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ollama cp llama3 my-model
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>ollama cp llama3 my-model
+</code></pre><ul>
 <li><strong>多模态模型</strong></li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; What&#39;s in this image? /Users/jmorgan/Desktop/smile.png
-</span></span><span class="line"><span class="cl">The image features a yellow smiley face, which is likely the central focus of the picture.
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<pre tabindex="0"><code>&gt;&gt;&gt; What&#39;s in this image? /Users/jmorgan/Desktop/smile.png
+The image features a yellow smiley face, which is likely the central focus of the picture.
+</code></pre><ul>
 <li><strong>作为参数传递提示</strong></li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">$</span> <span class="n">ollama</span> <span class="n">run</span> <span class="n">llama3</span> <span class="s2">&#34;Summarize this file: $(cat README.md)&#34;</span>
-</span></span><span class="line"><span class="cl"> <span class="n">Ollama</span> <span class="n">is</span> <span class="n">a</span> <span class="n">lightweight</span><span class="p">,</span> <span class="n">extensible</span> <span class="n">framework</span> <span class="k">for</span> <span class="n">building</span> <span class="ow">and</span> <span class="n">running</span> <span class="n">language</span> <span class="n">models</span> <span class="n">on</span> <span class="n">the</span> <span class="n">local</span> <span class="n">machine</span><span class="o">.</span> <span class="n">It</span> <span class="n">provides</span> <span class="n">a</span> <span class="n">simple</span> <span class="n">API</span> <span class="k">for</span> <span class="n">creating</span><span class="p">,</span> <span class="n">running</span><span class="p">,</span> <span class="ow">and</span> <span class="n">managing</span> <span class="n">models</span><span class="p">,</span> <span class="n">as</span> <span class="n">well</span> <span class="n">as</span> <span class="n">a</span> <span class="n">library</span> <span class="n">of</span> <span class="n">pre</span><span class="o">-</span><span class="n">built</span> <span class="n">models</span> <span class="n">that</span> <span class="n">can</span> <span class="n">be</span> <span class="n">easily</span> <span class="n">used</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">variety</span> <span class="n">of</span> <span class="n">applications</span><span class="o">.</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>$ ollama run llama3 &#34;Summarize this file: $(cat README.md)&#34;
+ Ollama is a lightweight, extensible framework for building and running language models on the local machine. It provides a simple API for creating, running, and managing models, as well as a library of pre-built models that can be easily used in a variety of applications.
+</code></pre><br/>
 <h2 id="简单交互">简单交互</h2>
 <p>执行 <code>ollama run llama3</code> 可以直接运行 llama 大模型。</p>
 <br/>
@@ -447,40 +380,18 @@
 <h3 id="rest-api">REST API</h3>
 <p>Ollama 有一个用于运行和管理模型的 REST API。</p>
 <h4 id="生成响应">生成响应</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">curl http://localhost:11434/api/generate -d &#39;{
-</span></span><span class="line"><span class="cl">  &#34;model&#34;: &#34;llama3&#34;,
-</span></span><span class="line"><span class="cl">  &#34;prompt&#34;:&#34;Why is the sky blue?&#34;
-</span></span><span class="line"><span class="cl">}&#39;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="与模型聊天">与模型聊天</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">curl http://localhost:11434/api/chat -d &#39;{
-</span></span><span class="line"><span class="cl">  &#34;model&#34;: &#34;llama3&#34;,
-</span></span><span class="line"><span class="cl">  &#34;messages&#34;: [
-</span></span><span class="line"><span class="cl">    { &#34;role&#34;: &#34;user&#34;, &#34;content&#34;: &#34;why is the sky blue?&#34; }
-</span></span><span class="line"><span class="cl">  ]
-</span></span><span class="line"><span class="cl">}&#39;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>查看 <a href="https://ollama.fan/reference/api/" target="_blank" rel="noopener noreffer">API 文档</a>了解所有端点。</p>
+<pre tabindex="0"><code>curl http://localhost:11434/api/generate -d &#39;{
+  &#34;model&#34;: &#34;llama3&#34;,
+  &#34;prompt&#34;:&#34;Why is the sky blue?&#34;
+}&#39;
+</code></pre><h4 id="与模型聊天">与模型聊天</h4>
+<pre tabindex="0"><code>curl http://localhost:11434/api/chat -d &#39;{
+  &#34;model&#34;: &#34;llama3&#34;,
+  &#34;messages&#34;: [
+    { &#34;role&#34;: &#34;user&#34;, &#34;content&#34;: &#34;why is the sky blue?&#34; }
+  ]
+}&#39;
+</code></pre><p>查看 <a href="https://ollama.fan/reference/api/" target="_blank" rel="noopener noreffer">API 文档</a>了解所有端点。</p>
 <br/>
 <h3 id="web-和桌面端">Web 和桌面端</h3>
 <p>这里基于颜值，我选择 webui-lite, 还有很多的 web 桌面端的开源选择，具体参考：<a href="https://ollama.fan/getting-started/#chat-with-a-model" target="_blank" rel="noopener noreffer">链接</a></p>
@@ -905,15 +816,8 @@
 </div>
 </div><br/>
 <p>为了将回答转成中文，这里拉下来一个翻译的 AI，让AI把答案翻译一下再回答。所以再需要拉一个翻译的 大模型。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ollama run llama2-chinese
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>对应翻译代码如下：</p>
+<pre tabindex="0"><code>ollama run llama2-chinese
+</code></pre><p>对应翻译代码如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1

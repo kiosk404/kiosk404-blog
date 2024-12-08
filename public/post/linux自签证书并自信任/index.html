@@ -36,7 +36,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "ssl","wordcount":  292 ,
+                        }],"genre": "posts","keywords": "ssl","wordcount":  287 ,
         "url": "http:\/\/localhost:1313\/post\/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB\/","datePublished": "2024-08-04T10:16:00+00:00","dateModified": "2024-08-04T10:16:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -118,7 +118,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Linux自签证书并自信任</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/nginx/"><i class="far fa-folder fa-fw"></i>Nginx</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-08-04">2024-08-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;292 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-08-04">2024-08-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;287 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -300,26 +300,12 @@
 </div><ol start="7">
 <li>使用 CA 证书签署服务器 kiosk.io 的 CSR</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">openssl x509 -req -in kiosk.io.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out kiosk.io.crt -days 365 -extensions v3_req -extfile openssl.cnf
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="8">
+<pre tabindex="0"><code>openssl x509 -req -in kiosk.io.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out kiosk.io.crt -days 365 -extensions v3_req -extfile openssl.cnf
+</code></pre><ol start="8">
 <li>验证证书</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">openssl verify -CAfile ca.crt kiosk.io.crt
-</span></span></code></pre></td></tr></table>
-</div>
-</div><br/>
+<pre tabindex="0"><code>openssl verify -CAfile ca.crt kiosk.io.crt
+</code></pre><br/>
 <h1 id="证书自信任">证书自信任</h1>
 <p>正常情况下，本地的 Chrome 浏览器是不信任的， 如下图</p>
 <img src="https://img1.kiosk007.top/static/images/blog//20240822231649-截图 2024-08-22 23-16-04.png" />
@@ -328,41 +314,20 @@
 <ol>
 <li>
 <p><strong>将CA证书复制到证书库目录</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo cp /path/to/your/ca.crt /usr/local/share/ca-certificates/
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里的<code>/path/to/your/ca.crt</code>是你的CA证书文件的路径。</p>
+<pre tabindex="0"><code>sudo cp /path/to/your/ca.crt /usr/local/share/ca-certificates/
+</code></pre><p>这里的<code>/path/to/your/ca.crt</code>是你的CA证书文件的路径。</p>
 </li>
 <li>
 <p><strong>更新证书库</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo update-ca-certificates
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这个命令会更新系统的证书库，并自动将新添加的证书包含进去。</p>
+<pre tabindex="0"><code>sudo update-ca-certificates
+</code></pre><p>这个命令会更新系统的证书库，并自动将新添加的证书包含进去。</p>
 </li>
 <li>
 <p>更新 Chrome 浏览器的根证书</p>
 </li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chrome -&gt; 设置 -&gt; 隐私设置和安全性 -&gt; 管理证书 -&gt; 导入
-</span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer" id="post-footer">
+<pre tabindex="0"><code>chrome -&gt; 设置 -&gt; 隐私设置和安全性 -&gt; 管理证书 -&gt; 导入
+</code></pre></div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">

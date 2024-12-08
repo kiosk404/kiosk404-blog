@@ -37,7 +37,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","wordcount":  1460 ,
+                        }],"genre": "posts","wordcount":  1454 ,
         "url": "http:\/\/localhost:1313\/post\/http-2-%E7%89%B9%E6%80%A7%E6%A6%82%E8%A7%88\/","datePublished": "2021-06-07T11:19:00+00:00","dateModified": "2021-06-07T11:19:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -119,7 +119,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">HTTP/2 特性概览</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-07">2021-06-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1460 words&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-06-07">2021-06-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1454 words&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -467,23 +467,12 @@
 <h3 id="静态字典">静态字典</h3>
 <p><a href="https://httpwg.org/specs/rfc7541.html#static.table.definition" target="_blank" rel="noopener noreffer">https://httpwg.org/specs/rfc7541.html#static.table.definition</a></p>
 <p>静态字典由 <code>index</code>、<code>header name</code>、<code>header value</code> 组成，比如字符2就可以直接代表 <code>:method : GET</code></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Index	Header Name	Header Value
-</span></span><span class="line"><span class="cl">1	:authority	
-</span></span><span class="line"><span class="cl">2	:method	GET
-</span></span><span class="line"><span class="cl">3	:method	POST
-</span></span><span class="line"><span class="cl">4	:path	/
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="https://img1.kiosk007.top/static/images/network/HTTP2/hpack.jpeg">
+<pre tabindex="0"><code>Index	Header Name	Header Value
+1	:authority	
+2	:method	GET
+3	:method	POST
+4	:path	/
+</code></pre><img src="https://img1.kiosk007.top/static/images/network/HTTP2/hpack.jpeg">
 <p>可以在静态表字典里查到的会直接引用，无法查到的会进行 <code>Huffman</code> 编码。</p>
 <p>静态表一共有61项，动态表采用先入先出的淘汰策略，大小由 <code>SETTINGS_HEADER_TABLE_SIZE</code> 控制。</p>
 <img src="https://img1.kiosk007.top/static/images/network/HTTP2/http2-hpack-table.png" >
@@ -827,15 +816,8 @@
 </div><h2 id="连接前言">连接前言</h2>
 <p>TLS 握手成功之后，客户端需要发送一个&quot;连接前言&rdquo;（connection preface），用来确认HTTP/2的连接。Magic被称为H2不可知的魔法。而PRISM，其实就是在暗讽2013年斯诺登事件爆出的“棱镜计划”。</p>
 <p>参考：https://blog.jgc.org/2015/11/the-secret-message-hidden-in-every.html</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Magic: PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
+<pre tabindex="0"><code>Magic: PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n
+</code></pre><p>参考：</p>
 <ul>
 <li></li>
 </ul></div><div class="post-footer" id="post-footer">

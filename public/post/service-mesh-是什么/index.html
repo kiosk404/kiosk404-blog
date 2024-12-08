@@ -42,7 +42,7 @@
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "posts","keywords": "service mesh","wordcount":  1713 ,
+                        }],"genre": "posts","keywords": "service mesh","wordcount":  1675 ,
         "url": "http:\/\/localhost:1313\/post\/service-mesh-%E6%98%AF%E4%BB%80%E4%B9%88\/","datePublished": "2021-09-19T11:40:25+00:00","dateModified": "2021-09-19T11:40:25+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kiosk007","logo": {
@@ -124,8 +124,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">Service Mesh 是什么？</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/k8s/"><i class="far fa-folder fa-fw"></i>K8s</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-09-19">2021-09-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1713 words&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;9 minutes&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-09-19">2021-09-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1675 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
                     <span>Contents</span>
@@ -211,86 +211,34 @@
 <li><strong>下载 istio</strong></li>
 </ul>
 <p>下载针对你操作系统的安装文件</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">$</span> <span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">istio</span><span class="o">/</span><span class="n">istio</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">release</span><span class="o">/</span><span class="n">downloadIstioCandidate</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">sh</span> <span class="o">-</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果想要指定版本、不同处理器体系则可以使用</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">$</span> <span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">istio</span><span class="o">/</span><span class="n">istio</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">release</span><span class="o">/</span><span class="n">downloadIstioCandidate</span><span class="o">.</span><span class="n">sh</span> <span class="o">|</span> <span class="n">ISTIO_VERSION</span><span class="o">=</span><span class="mf">1.6</span><span class="o">.</span><span class="mi">8</span> <span class="n">TARGET_ARCH</span><span class="o">=</span><span class="n">x86_64</span>  <span class="n">sh</span> <span class="o">-</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>转到istio的目录。例如 istio-1.11.2</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd istio-1.11.2
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>安装目录包含: <code>samples/</code> 目录下的示例应用程序 和 <code>bin/</code> 目录下的 <code>istioctl</code>客户端二进制工具。可将 <code>istioctl</code> 加入到 PATH 中。</p>
+<pre tabindex="0"><code>$ curl -L https://raw.githubusercontent.com/istio/istio/master/release/downloadIstioCandidate.sh | sh -
+</code></pre><p>如果想要指定版本、不同处理器体系则可以使用</p>
+<pre tabindex="0"><code>$ curl -L https://raw.githubusercontent.com/istio/istio/master/release/downloadIstioCandidate.sh | ISTIO_VERSION=1.6.8 TARGET_ARCH=x86_64  sh -
+</code></pre><p>转到istio的目录。例如 istio-1.11.2</p>
+<pre tabindex="0"><code>cd istio-1.11.2
+</code></pre><p>安装目录包含: <code>samples/</code> 目录下的示例应用程序 和 <code>bin/</code> 目录下的 <code>istioctl</code>客户端二进制工具。可将 <code>istioctl</code> 加入到 PATH 中。</p>
 <ul>
 <li><strong>安装 istio</strong></li>
 </ul>
 <p>istio本身提供不同模式的 <code>Configuration Profile</code></p>
 <img src="https://img1.kiosk007.top/static/images/service_mesh/configuration.png">
 <p>对于本次安装，我们选择 <code>demo</code> 模式，这个是专门为了展示和学习而准备的。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ istioctl install --set profile=demo -y
-</span></span><span class="line"><span class="cl">✔ Istio core installed                                                                                                                                                          
-</span></span><span class="line"><span class="cl">✔ Istiod installed                                                                                                                                                              
-</span></span><span class="line"><span class="cl">✔ Ingress gateways installed                                                                                                                                                    
-</span></span><span class="line"><span class="cl">✔ Egress gateways installed                                                                                                                                                     
-</span></span><span class="line"><span class="cl">✔ Installation complete                                                                                                                                                         
-</span></span><span class="line"><span class="cl">Thank you for installing Istio 1.11.  Please take a few minutes to tell us about your install/upgrade experience!  https://forms.gle/kWULBRjUv7hHci7T6
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>给 namespace 添加标签，指示istio在部署应用时自动注入 envoy sidecar 代理。可以简单的理解为当部署应用清单时，它会帮你改写清单，把具体的sidecar配置给你添加进去。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kubectl label namespace default istio-injection=enabled
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>查看istio部署的pods</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ kubectl get pods -n istio-system
-</span></span><span class="line"><span class="cl">NAME                                    READY   STATUS    RESTARTS   AGE
-</span></span><span class="line"><span class="cl">istio-egressgateway-6cb7bdc7fb-8h2n6    1/1     Running   0          6m15s
-</span></span><span class="line"><span class="cl">istio-ingressgateway-694d8d7656-z4ccc   1/1     Running   0          6m15s
-</span></span><span class="line"><span class="cl">istiod-6c68579c55-lmp8r                 1/1     Running   0          7m
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h1 id="部署-bookinfo-应用">部署 bookinfo 应用</h1>
+<pre tabindex="0"><code>$ istioctl install --set profile=demo -y
+✔ Istio core installed                                                                                                                                                          
+✔ Istiod installed                                                                                                                                                              
+✔ Ingress gateways installed                                                                                                                                                    
+✔ Egress gateways installed                                                                                                                                                     
+✔ Installation complete                                                                                                                                                         
+Thank you for installing Istio 1.11.  Please take a few minutes to tell us about your install/upgrade experience!  https://forms.gle/kWULBRjUv7hHci7T6
+</code></pre><p>给 namespace 添加标签，指示istio在部署应用时自动注入 envoy sidecar 代理。可以简单的理解为当部署应用清单时，它会帮你改写清单，把具体的sidecar配置给你添加进去。</p>
+<pre tabindex="0"><code>kubectl label namespace default istio-injection=enabled
+</code></pre><p>查看istio部署的pods</p>
+<pre tabindex="0"><code>$ kubectl get pods -n istio-system
+NAME                                    READY   STATUS    RESTARTS   AGE
+istio-egressgateway-6cb7bdc7fb-8h2n6    1/1     Running   0          6m15s
+istio-ingressgateway-694d8d7656-z4ccc   1/1     Running   0          6m15s
+istiod-6c68579c55-lmp8r                 1/1     Running   0          7m
+</code></pre><h1 id="部署-bookinfo-应用">部署 bookinfo 应用</h1>
 <p>bookinfo 是官方推荐的一个微服务案例。主要包含以下4个微服务，主页productpage服务是由python开发的，主要会调用评论和详细内容两个服务。评论服务有三个版本，reviews 微服务有 3 个版本：</p>
 <blockquote>
 <p>v1 版本不会调用 ratings 服务。
@@ -298,64 +246,30 @@ v2 版本会调用 ratings 服务，并使用 1 到 5 个黑色星形图标来�
 v3 版本会调用 ratings 服务，并使用 1 到 5 个红色星形图标来显示评分信息。</p>
 </blockquote>
 <img src="https://img1.kiosk007.top/static/images/service_mesh/bookinfo.png">
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
-</span></span><span class="line"><span class="cl">service/details created
-</span></span><span class="line"><span class="cl">serviceaccount/bookinfo-details created
-</span></span><span class="line"><span class="cl">deployment.apps/details-v1 created
-</span></span><span class="line"><span class="cl">service/ratings created
-</span></span><span class="line"><span class="cl">serviceaccount/bookinfo-ratings created
-</span></span><span class="line"><span class="cl">deployment.apps/ratings-v1 created
-</span></span><span class="line"><span class="cl">service/reviews created
-</span></span><span class="line"><span class="cl">serviceaccount/bookinfo-reviews created
-</span></span><span class="line"><span class="cl">deployment.apps/reviews-v1 created
-</span></span><span class="line"><span class="cl">deployment.apps/reviews-v2 created
-</span></span><span class="line"><span class="cl">deployment.apps/reviews-v3 created
-</span></span><span class="line"><span class="cl">service/productpage created
-</span></span><span class="line"><span class="cl">serviceaccount/bookinfo-productpage created
-</span></span><span class="line"><span class="cl">deployment.apps/productpage-v1 created
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>应用很快会起来，等到应用就绪后，istio 的sidecar 代理将一起被部署。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ kubectl get service
-</span></span><span class="line"><span class="cl">NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-</span></span><span class="line"><span class="cl">details       ClusterIP   10.80.140.94   &lt;none&gt;        9080/TCP   61s
-</span></span><span class="line"><span class="cl">kubernetes    ClusterIP   10.80.0.1      &lt;none&gt;        443/TCP    24d
-</span></span><span class="line"><span class="cl">productpage   ClusterIP   10.80.6.178    &lt;none&gt;        9080/TCP   61s
-</span></span><span class="line"><span class="cl">ratings       ClusterIP   10.80.32.218   &lt;none&gt;        9080/TCP   61s
-</span></span><span class="line"><span class="cl">reviews       ClusterIP   10.80.60.33    &lt;none&gt;        9080/TCP   61s
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>和</p>
+<pre tabindex="0"><code>$ kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
+service/details created
+serviceaccount/bookinfo-details created
+deployment.apps/details-v1 created
+service/ratings created
+serviceaccount/bookinfo-ratings created
+deployment.apps/ratings-v1 created
+service/reviews created
+serviceaccount/bookinfo-reviews created
+deployment.apps/reviews-v1 created
+deployment.apps/reviews-v2 created
+deployment.apps/reviews-v3 created
+service/productpage created
+serviceaccount/bookinfo-productpage created
+deployment.apps/productpage-v1 created
+</code></pre><p>应用很快会起来，等到应用就绪后，istio 的sidecar 代理将一起被部署。</p>
+<pre tabindex="0"><code>$ kubectl get service
+NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+details       ClusterIP   10.80.140.94   &lt;none&gt;        9080/TCP   61s
+kubernetes    ClusterIP   10.80.0.1      &lt;none&gt;        443/TCP    24d
+productpage   ClusterIP   10.80.6.178    &lt;none&gt;        9080/TCP   61s
+ratings       ClusterIP   10.80.32.218   &lt;none&gt;        9080/TCP   61s
+reviews       ClusterIP   10.80.60.33    &lt;none&gt;        9080/TCP   61s
+</code></pre><p>和</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
