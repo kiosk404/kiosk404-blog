@@ -841,8 +841,8 @@ enableEmoji = true
     objectFit = false
   [params.outdatedInfoWarning]
     enable = true
-    hint = 90     # Display hint if the last modified time is more than these days ago.    # 如果文章最后更新于这天数之前，显示提醒
-    warn = 180    # Display warning if the last modified time is more than these days ago.    # 如果文章最后更新于这天数之前，显示警告
+    hint = 180     # Display hint if the last modified time is more than these days ago.    # 如果文章最后更新于这天数之前，显示提醒
+    warn = 360     # Display warning if the last modified time is more than these days ago.    # 如果文章最后更新于这天数之前，显示警告
 
 
 # Markup related configuration in Hugo
