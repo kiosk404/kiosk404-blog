@@ -1,141 +1,226 @@
-{{ define "main" }}
-<div class="button-group">
-    <button class="filter-button" data-category="-">&nbsp;All&nbsp;</button>
-    <button class="filter-button" data-category="日常">#日常</button>
-    <button class="filter-button" data-category="风景">#风景</button>
-    <button class="filter-button" data-category="狗哥">#狗哥</button>
-    <button class="filter-button" data-category="赛">#赛</button>
-</div>
-<div class="gallery-photos page">
-  {{ range (sort (readDir "./static/photos") "Name" "desc")}}
-    {{ if ( .Name | findRE "\\.(gif|jpg|jpeg|tiff|png|bmp|webp|avif|jxl)") }}
-    <div class="gallery-photo">
-      <img class="photo-img" loading='lazy' decoding="async" src="/photos/{{ .Name }}" alt="{{ .Name }}" />
-      <span class="photo-title">{{ .Name | replaceRE "^[0-9 -]+(.*)[.].*" "$1"}}</span><span class="photo-time">{{ .Name | replaceRE "^([0-9-]+).*[.].*" "$1" }}</span>
-    </div>
-    {{ end }}
-  {{ end }}
-</div>
+{{- define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end -}}
 
-<style>
-.gallery-photos{width:100%;}
-.gallery-photo{width:24.9%;position: relative;visibility: hidden;overflow: hidden;}
-.gallery-photo.visible{visibility: visible;animation: fadeIn 2s;}
-.gallery-photo img{
-    display: block;
-    width:100%;
-    border-radius:20px;
-    padding:4px;
-    animation: fadeIn 1s;
-    cursor: pointer;
-    transition: all .4s ease-in-out;
-}
-.gallery-photo span.photo-title,.gallery-photo span.photo-time{
-    background: rgba(0, 0, 0, 0.3);
-    padding:0px 8px;
-    font-size:0.9rem;
-    color: #fff;
-    display:none;
-    animation: fadeIn 1s;
-}
-.gallery-photo span.photo-title{
-    position:absolute;
-    bottom:4px;
-    left:4px;
-    border-radius:10px;
-    background-color: #a3dfff;
-    color: #000000;
-    font-size:1.2rem
-}
-.gallery-photo span.photo-time{position:absolute;top:4px;left:4px;font-size:0.8rem;}
-.gallery-photo:hover span.photo-title{display:block;}
-.gallery-photo:hover img{transform: scale(1.1);}
-.button-group {
-                display: flex;
-                flex-direction: row;
-                gap: 18px;
-                justify-content: center;
+{{- define "content" -}}
+    {{- $photos := where .Site.RegularPages "Section" "photos" -}}
+    
+    <div class="page single special">
+        <h1 class="single-title animate__animated animate__pulse animate__faster">{{ .Title }}</h1>
+        
+        <div class="photo-gallery">
+            {{- range $photos -}}
+                {{- $pageTitle := .Title -}}
+                {{- $pageDesc := .Description | .RenderString -}}
+                {{- $albumID := .File.UniqueID -}}
+                {{- $images := .Params.images -}}
+                {{- if $images -}}
+                    <div class="photo-item" id="gallery-{{ $albumID }}">
+                        {{/* 第一张图片作为封面 */}}
+                        <div class="gallery-trigger" style="cursor: pointer;">
+                            <img src="{{ index $images 0 }}" 
+                                 alt="{{ $pageTitle }}"
+                                 loading="lazy"
+                                 class="gallery-image">
+                            <div class="photo-overlay">
+                                <h3 class="photo-title">{{ $pageTitle }}</h3>
+                            </div>
+                        </div>
+                        {{/* 所有图片（用于灯箱） */}}
+                        {{- range $images -}}
+                            <div 
+                                class="gallery-item"
+                                data-src="{{ . }}"
+                                data-sub-html="<h4>{{ $pageTitle }}</h4><div class='gallery-desc'>{{ $pageDesc }}</div>"
+                                data-thumb="{{ . }}"
+                                style="display: none;"
+                            >
+                            </div>
+                        {{- end -}}
+                    </div>
+                {{- end -}}
+            {{- end -}}
+        </div>
+    </div>
+
+    <style>
+        .page.single.special {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .photo-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            aspect-ratio: 3/2;
+            cursor: pointer;
+        }
+
+        .photo-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .photo-item:hover .photo-overlay {
+            transform: translateY(0);
+        }
+
+        .photo-title {
+            color: white;
+            margin: 0;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .photo-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
-            .filter-button {
-                padding: 8px 8px;
-                width: auto;
-                background-color: var(--card-background);
-                color: #57bd8f;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-            .filter-button:hover {
-                color: #5e88f7;
-            }
-            .selected-button {
-                background-color: #CCE8CF;
-                color: #000000;
-                /* 选中项的颜色 */
-            }
-@media screen and (max-width: 1280px) {
-	.gallery-photo{width:33.3%;}
-}
-@media screen and (max-width: 860px) {
-	.gallery-photo{width:49.9%;}
-}
-@media (max-width: 683px){
-	.photo-time{display: none;}
-}
-@keyframes fadeIn{
-	0% {opacity: 0;}
-   100% {opacity: 1;}
-}
-</style>
-<script src="https://immmmm.com/waterfall.min.js"></script>
-<script src="https://immmmm.com/imgStatus.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    imgStatus.watch('.photo-img', function(imgs) {
-      if(imgs.isDone()){
-        waterfall('.gallery-photos');
-        let pagePhoto = document.querySelectorAll('.gallery-photo');
-        for(var i=0;i < pagePhoto.length;i++){pagePhoto[i].className += " visible"};
-      }
-    });
-    window.addEventListener('resize', function () {
-      waterfall('.gallery-photos');
-    });
-});
-</script>
-<script src="https://immmmm.com/view-image.js"></script>
-<script src="https://immmmm.com/lately.min.js"></script>
-<script>
-  window.Lately && Lately.init({ target: '.photo-time'});
-  window.ViewImage && ViewImage.init('.gallery-photo img')
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-    const filterButtons = document.querySelectorAll('.filter-button');
-    const galleryPhotos = document.querySelectorAll('.gallery-photo');
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const category = button.getAttribute('data-category');
-            // 隐藏所有照片
-            galleryPhotos.forEach(photo => {
-                photo.style.visibility = 'hidden';
+        }
+
+        .lg-backdrop {
+            background-color: rgba(0, 0, 0, 0.85);
+        }
+
+        .lg-sub-html {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .lg-sub-html h4 {
+            color: #fff;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .lg-sub-html p {
+            color: #ddd;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .hidden-gallery {
+            display: none;
+        }
+
+        .lg-thumb-item {
+            border: 2px solid #FFF;
+            border-radius: 4px;
+        }
+
+        .lg-thumb-item.active,
+        .lg-thumb-item:hover {
+            border-color: #1a73e8;
+        }
+
+        .lg-outer .lg-thumb {
+            padding: 5px 0;
+        }
+
+        .lg-outer .lg-thumb-item img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+
+        .gallery-desc {
+            color: #ddd;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .gallery-desc a {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        .gallery-desc a:hover {
+            color: #1a73e8;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lg-zoom.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lg-thumbnail.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/lightgallery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/plugins/zoom/lg-zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script>
+
+    <script>
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.photo-item').forEach(function(element) {
+                const trigger = element.querySelector('.gallery-trigger');
+                const items = element.querySelectorAll('.gallery-item');
+                
+                // 初始化 lightGallery
+                const gallery = lightGallery(element, {
+                    dynamic: true,
+                    dynamicEl: Array.from(items).map(item => ({
+                        src: item.getAttribute('data-src'),
+                        thumb: item.getAttribute('data-thumb'),
+                        subHtml: item.getAttribute('data-sub-html')
+                    })),
+                    plugins: [lgZoom, lgThumbnail],
+                    speed: 500,
+                    download: false,
+                    counter: true,
+                    thumbnails: true,
+                    showZoomInOutIcons: true,
+                    actualSize: false,
+                    hideControlOnEnd: true,
+                    mousewheel: true,
+                    getCaptionFromTitleOrAlt: true,
+                    thumbWidth: 120,
+                    thumbHeight: 90,
+                    thumbMargin: 4,
+                    subHtmlSelectorRelative: true,
+                    html: true,
+                    // 添加事件处理
+                    afterAppendSubHtml: function(element) {
+                        const links = element.querySelector('.lg-sub-html').getElementsByTagName('a');
+                        Array.from(links).forEach(link => {
+                            link.onclick = function(e) {
+                                e.stopPropagation();
+                                window.open(this.href, '_blank');
+                            };
+                        });
+                    }
+                });
+
+                // 绑定点击事件
+                trigger.addEventListener('click', function() {
+                    gallery.openGallery(0);
+                });
             });
-            // 显示符合特定词语的照片
-            galleryPhotos.forEach(photo => {
-                const imageName = photo.querySelector('.photo-img').getAttribute('alt');
-                if (imageName.includes(category)) {
-                    photo.style.visibility = 'visible';
-                }
-            });
-            // 移除所有按钮的选中状态
-            filterButtons.forEach(btn => {
-                btn.classList.remove('selected-button');
-            });
-            // 将当前点击的按钮标记为选中状态
-            button.classList.add('selected-button');
         });
-    });
-});
-</script>
-{{ end }}
+    </script>
+{{- end -}}

@@ -1,0 +1,51 @@
+{{- define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end -}}
+
+{{- define "content" -}}
+    <div class="page single special">
+        <h1 class="single-title animate__animated animate__pulse animate__faster">{{ .Title }}</h1>
+        
+        <div class="album-gallery">
+            {{- with .Resources.ByType "image" -}}
+                {{- range . -}}
+                    <div class="album-item">
+                        <a href="{{ .RelPermalink }}" target="_blank">
+                            {{ $image := .Resize "800x" }}
+                            <img src="{{ $image.RelPermalink }}" 
+                                 alt="{{ .Name }}"
+                                 loading="lazy"
+                                 class="album-image">
+                        </a>
+                    </div>
+                {{- end -}}
+            {{- end -}}
+        </div>
+    </div>
+
+    <style>
+        .album-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .album-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .album-item:hover {
+            transform: scale(1.02);
+        }
+
+        .album-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+    </style>
+{{- end -}} 

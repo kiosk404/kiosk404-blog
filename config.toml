@@ -433,7 +433,7 @@ enableEmoji = true
   # 公共 git 仓库路径，仅在 enableGitInfo 设为 true 时有效
   gitRepo = "https://github.com/kiosk404/kiosk007.github.io"
   # which hash function used for SRI, when empty, no SRI is used ("sha256", "sha384", "sha512", "md5")
-  # 哪种哈希函数用来 SRI, 为空时表示不使用 SRI ("sha256", "sha384", "sha512", "md5")
+  # 哪���哈希函数用来 SRI, 为空时表示不使用 SRI ("sha256", "sha384", "sha512", "md5")
   fingerprint = ""
   # date format
   # 日期格式
@@ -502,7 +502,7 @@ enableEmoji = true
   # Section (所有文章) 页面配置
   [params.section]
     # special amount of posts in each section page
-    # section 页面每页显示文章数量
+    # section 页面每页显示文���数量
     paginate = 20
     # date format (month and day)
     # 日期格式 (月和日)
@@ -569,11 +569,13 @@ enableEmoji = true
     # Code config
     # 代码配置
     [params.page.code]
-      # whether to show the copy button of the code block
-      # 是否显示代码块的复制按钮
+      # 启用复制按钮
       copy = true
-      # the maximum number of lines of displayed code by default
-      # 默认展开显示的代码行数
+      # 显示行号
+      lineNos = true
+      # 代码块样式
+      style = "dracula"
+      # 最大显示行数
       maxShownLines = 100
     # KaTeX mathematical formulas config (KaTeX https://katex.org/)
     # KaTeX 数学公式配置 (KaTeX https://katex.org/)
@@ -603,7 +605,7 @@ enableEmoji = true
       # 浅色主题的地图样式
       lightStyle = "mapbox://styles/mapbox/light-v10?optimize=true"
       # style for the dark theme
-      # 深色主题的地图样式
+      # ���色主题的地图样式
       darkStyle = "mapbox://styles/mapbox/dark-v10?optimize=true"
       # whether to add NavigationControl (https://docs.mapbox.com/mapbox-gl-js/api/#navigationcontrol)
       # 是否添加 NavigationControl (https://docs.mapbox.com/mapbox-gl-js/api/#navigationcontrol)
@@ -703,7 +705,7 @@ enableEmoji = true
         appId = ""
         languageCode = ""
       # Telegram comments config (https://comments.app/)
-      # Telegram comments 评论系统设置 (https://comments.app/)
+      # Telegram comments 评论系统��置 (https://comments.app/)
       [params.page.comment.telegram]
         enable = false
         siteID = ""
