@@ -390,7 +390,7 @@ func PerfEventReader(errChan chan error, em *ebpf.Map, ctx context.Context) {
 
 最后看看效果吧，不加 --pid 参数的情况下可以追踪所有使用了 openssl 动态库的程序传输的加密数据。
 
-![ebpf_openssl_tracer](https://img1.kiosk007.top/static/images/blog/ebpf_openssl_tracer.png)
+<img src="https://img1.kiosk007.top/static/images/blog/ebpf_openssl_tracer.png"/>
 
 
 

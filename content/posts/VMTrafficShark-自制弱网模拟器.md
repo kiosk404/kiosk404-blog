@@ -284,12 +284,14 @@ iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT
 - 手机搜索 AP “Traffic Shark”
 - 密码 12345678
 
-<img src="https://img1.kiosk007.top/static/images/network/VMTrafficShark/wifi.png" style="height:550px">
-
+<img src="https://img1.kiosk007.top/static/images/network/VMTrafficShark/wifi.png" style="height:550px" alt="ebpf_tc" style="zoom: 50%;margin:auto;display:block;clear:both" />
 
 下行带宽可以达到93.35Mbps
 上行带宽可以达到30.50Mbps （主要还得看物理网卡和运营商猛不猛）
-<img src="https://img1.kiosk007.top/static/images/network/VMTrafficShark/traffic_test.png" style="height:550px">
+
+<img src="https://img1.kiosk007.top/static/images/network/VMTrafficShark/traffic_test.png" style="height:550px" alt="ebpf_tc" style="zoom: 50%;margin:auto;display:block;clear:both" />
+
+
 
 ## 弱网模拟使用
 - 弱网模拟使用的是tc
