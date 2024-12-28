@@ -1521,7 +1521,7 @@ systemctl restart cinder-volume
 
 ### 测试
 
-```
+``` bash
 cinder create --display-name testVloume 2
 
 +--------------------------------+--------------------------------------+
