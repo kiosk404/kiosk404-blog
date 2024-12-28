@@ -649,6 +649,18 @@ project_name = service
 username = nova
 password = NOVA_PASS  # 请替换
 
+[service_user]
+send_service_user_token = true
+auth_url = https://controller/identity
+auth_strategy = keystone
+auth_type = password
+project_domain_name = Default
+project_name = service
+user_domain_name = Default
+username = nova 
+password = NOVA_PASS # 请替换
+
+
 # [DEFAULT] 配置 my_ip 控制节点的IP
 [DEFAULT]
 my_ip = 192.168.100.10
