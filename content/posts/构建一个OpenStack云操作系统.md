@@ -403,7 +403,7 @@ su -s /bin/sh -c "glance-manage db_sync" glance
 
 下载一个镜像，再传到 glance 服务上。
 
-```
+```bash
 wget http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
 glance image-create --name "cirros" \
   --file cirros-0.4.0-x86_64-disk.img \
