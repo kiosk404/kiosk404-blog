@@ -482,7 +482,7 @@ apt install placement-api
 
 2. 编辑 `/etc/placement/placement.conf` 文件
 
-```
+``` bash
 # [placement_database] section 中，编辑访问数据库
 [placement_database]
 connection = mysql+pymysql://placement:PLACEMENT_DBPASS@controller/placement
@@ -687,25 +687,25 @@ su -s /bin/sh -c "nova-manage api_db sync" nova
 
 4. 注册 cell0 数据库
 
-```
+```bash
 su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
 ```
 
 5. 创建 cell1 cell
 
-```
+```bash
 su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
 ```
 
 6. 填充数据库
 
-```
+```bash
 su -s /bin/sh -c "nova-manage db sync" nova
 ```
 
 7. 验证 nova cell0 和 cell1 是否注册正确
 
-```
+```bash
 su -s /bin/sh -c "nova-manage cell_v2 list_cells" nova
 +-------+--------------------------------------+------------------------------------------+-------------------------------------------------+----------+
 |  Name |                 UUID                 |              Transport URL               |               Database Connection               | Disabled |
