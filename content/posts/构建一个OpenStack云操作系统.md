@@ -1004,13 +1004,13 @@ service neutron-l3-agent restart
 
 1. 安装 dashboard 可视化界面
 
-```
+```bash
 apt install openstack-dashboard
 ```
 
 2. 配置文件 **/etc/openstack-dashboard/local_settings.py**
 
-```
+```bash
 OPENSTACK_HOST = "controller"
 ALLOWED_HOSTS = ['*']
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
