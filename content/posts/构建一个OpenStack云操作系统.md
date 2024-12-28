@@ -54,7 +54,7 @@ Ubuntu 20.04 主机2台。
 ```bash
 ################## 安装 MySQL ##################
 apt install mysql-server python3-pymysql
-# 一旦安装完成，编辑配置文件 /etc/mysql/mysql.conf.d/mysql.cnf 
+# 一旦安装完成，编辑配置文件 /etc/mysql/mysql.conf.d/mysqld.cnf 
 [mysqld]
 bind-address = 0.0.0.0
 
