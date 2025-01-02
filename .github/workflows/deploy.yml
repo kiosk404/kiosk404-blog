@@ -66,15 +66,15 @@ jobs:
           remote_path: ${{ secrets.REMOTE_PATH }}
           remote_user: ${{ secrets.REMOTE_USER }}
           remote_key: ${{ secrets.REMOTE_KEY }}
-      
+
       # 将public目录下的所有内容同步到远程服务器的nginx站点路径，注意path参数的写法，'public'和'public/'是不同的
-      - name: Deploy Docs
+      - name: Deploy Docsify
         uses: burnett01/rsync-deployments@5.1
         with:
           switches: -avzr --delete
-          path: ./docs/
+          path: ./docsify/
           remote_host: ${{ secrets.REMOTE_HOST }}
           remote_port: ${{ secrets.REMOTE_PORT }}
-          remote_path: ${{ secrets.REMOTE_PATH }}
+          remote_path: ${{ secrets.REMOTE_PATH_DOCSIFY }}
           remote_user: ${{ secrets.REMOTE_USER }}
           remote_key: ${{ secrets.REMOTE_KEY }}
