@@ -1,0 +1,1 @@
+* [:black_nib: Kiosk's Blog](https://kiosk007.top)
