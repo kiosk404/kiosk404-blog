@@ -53,13 +53,21 @@ enableEmoji = true
         title = ""
         weight = 1
       [[languages.en.menu.main]]
+        identifier = "thematic"
+        pre = ""
+        post = ""
+        name = "Thematic"
+        url = "/thematic/"
+        title = ""
+        weight = 2
+      [[languages.en.menu.main]]
         identifier = "tags"
         pre = ""
         post = ""
         name = "Tags"
         url = "/tags/"
         title = ""
-        weight = 2
+        weight = 3
       [[languages.en.menu.main]]
         identifier = "categories"
         pre = ""
@@ -67,7 +75,7 @@ enableEmoji = true
         name = "Categories"
         url = "/categories/"
         title = ""
-        weight = 3
+        weight = 4
       [[languages.en.menu.main]]
         identifier = "express"
         pre = ""
@@ -75,7 +83,7 @@ enableEmoji = true
         name = "Express"
         url = "/Express"
         title = ""
-        weight = 4
+        weight = 5
       [[languages.en.menu.main]]
         identifier = "about"
         pre = ""
@@ -83,7 +91,7 @@ enableEmoji = true
         name = "About"
         url = "/about/"
         title = ""
-        weight = 5
+        weight = 6 
       [[languages.en.menu.main]]
         identifier = "github"
         pre = "<i class='fab fa-github fa-fw'></i>"
@@ -91,7 +99,7 @@ enableEmoji = true
         name = ""
         url = "https://github.com/kiosk404"
         title = "GitHub"
-        weight = 6
+        weight = 7
     [languages.en.params]
       # site description
       description = "Kiosk Stduio"

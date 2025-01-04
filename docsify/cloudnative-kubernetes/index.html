@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kiosk's Studio</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/themes/vue.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/prism-themes/themes/prism-base16-ateliersulphurpool.light.min.css">
+  <!--更多代码主题参考 https://npm.elemecdn.com/prism-themes/themes/  -->
+</head>
+<body>
+  <div id="app">Loading ...</div>
+  <script>                     // 配置项：https://docsify.js.org/#/zh-cn/configuration
+    window.$docsify = {
+      name: '<img src="/_media/k8s.svg"><p>深入 kubertnets</p>',
+      repo: '',
+      loadSidebar: true,    // 加载 _sidebar.md
+      loadNavbar: true,     // 加载 _navbar.md
+      hideSidebar: false,
+      subMaxLevel: 3,
+      // basePath: 'https://docsify.js.org/',
+      // logo: '/_media/k8s.svg',
+      themeColor: '#3F51B5',
+      autoHeader: false,      // Navbar 自动添加 Header
+      mergeNavbar: true,      // 小屏设备下合并导航栏到侧边栏。
+      formatUpdated: '{MM}/{DD} {HH}:{mm}',
+      onlyCover: true,
+      topMargin: 90,
+      count:{
+        countable:true,
+        fontsize:'0.9em',
+        color:'rgb(90,90,90)',
+        language:'chinese'
+      },
+      tabs: {                    // https://jhildenbiddle.github.io/docsify-tabs/#/
+        persist    : true,       // default
+        sync       : true,       // default
+        theme      : 'material', // default
+        tabComments: true,       // default
+        tabHeadings: true        // default
+      },
+      copyCode: {               // 代码块点击复制
+        buttonText : 'Copy',
+        errorText  : 'Error',
+        successText: 'Copied'
+      },
+      themeable: {
+          readyTransition : true, // default
+          responsiveTables: true  // default
+      }
+    }
+  </script>
+  <!-- Docsify v4 -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script type="text/javascript" src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/emoji-js/3.6.0/emoji.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-copy-code"></script>
+  <script type="text/javascript" src="https://unpkg.com/docsify-count/dist/countable.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-java.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-tabs@1.6.3/dist/docsify-tabs.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-go.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-bash.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-python.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-markdown.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-nginx.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-yaml.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-json.min.js"></script>
+
+</body>
+</html>
