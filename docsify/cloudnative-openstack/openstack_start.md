@@ -20,6 +20,22 @@
 
 <br/>
 
+下面是我们要创建的集群， Openstack 架构图
+
+![openstack_deploy_draw](https://img1.kiosk007.top/static/images/blog/20250104121503-openstack_deploy_draw.png)
+
+三种网络平面说明：
+
+管理网络（management/API网络）：
+提供系统管理相关功能，用于节点之间各服务组件内部通信以及对数据库服务的访问，所有节点都需要连接到管理网络，这里管理网络也承载了API网络的流量，将API网络和管理网络合并，OpenStack各组件通过API网络向用户暴露API服务。
+隧道网络（tunnel网络或self-service网络）：
+提供租户虚拟网络的承载网络（VXLAN or GRE）。openstack里面使用gre或者vxlan模式，需要有隧道网络；隧道网络采用了点到点通信协议代替了交换连接，在openstack里，这个tunnel就是虚拟机走网络数据流量用的。这个网络所承载的网络和官方文档Networking Option 2: Self-service networks相对应。
+
+外部网络(external网络或者provider网络)：
+openstack网络至少要包括一个外部网络，这个网络能够访问OpenStack安装环境之外的网络，并且非openstack环境中的设备能够访问openstack外部网络的某个IP。另外外部网络为OpenStack环境中的虚拟机提供浮动IP，实现openstack外部网络对内部虚拟机实例的访问。这个网络和官方文档Networking Option 1: Provider networks相对应。
+
+
+
 # 创建网络
 
 为配置Neutron时选择的网络选项创建虚拟网络。 如果您选择选项1，则只创建提供商网络。 如果您选择了选项2，请创建提供商和自助服务网络。
@@ -60,32 +76,7 @@ root@instance-vm00:~/env# openstack network create --share --external \
 | admin_state_up            | UP                                   |
 | availability_zone_hints   |                                      |
 | availability_zones        |                                      |
-| created_at                | 2024-12-29T05:57:24Z                 |
-| description               |                                      |
-| dns_domain                | None                                 |
-| id                        | fd5bb1e2-fec4-4bb2-904e-86f666f0af11 |
-| ipv4_address_scope        | None                                 |
-| ipv6_address_scope        | None                                 |
-| is_default                | False                                |
-| is_vlan_transparent       | None                                 |
-| mtu                       | 1500                                 |
-| name                      | provider                             |
-| port_security_enabled     | True                                 |
-| project_id                | e63b23475dbf4f23b650d0d69e4731dc     |
-| provider:network_type     | flat                                 |
-| provider:physical_network | provider                             |
-| provider:segmentation_id  | None                                 |
-| qos_policy_id             | None                                 |
-| revision_number           | 1                                    |
-| router:external           | External                             |
-| segments                  | None                                 |
-| shared                    | True                                 |
-| status                    | ACTIVE                               |
-| subnets                   |                                      |
-| tags                      |                                      |
-| tenant_id                 | e63b23475dbf4f23b650d0d69e4731dc     |
-| updated_at                | 2024-12-29T05:57:24Z                 |
-+---------------------------+--------------------------------------+
+...
 
 ```
 
@@ -153,27 +144,7 @@ root@instance-vm00:~/env# openstack subnet create --network provider \
 +----------------------+--------------------------------------+
 | allocation_pools     | 192.168.120.100-192.168.120.200      |
 | cidr                 | 192.168.120.0/24                     |
-| created_at           | 2024-12-29T06:08:39Z                 |
-| description          |                                      |
-| dns_nameservers      | 223.5.5.5                            |
-| dns_publish_fixed_ip | None                                 |
-| enable_dhcp          | True                                 |
-| gateway_ip           | 192.168.120.1                        |
-| host_routes          |                                      |
-| id                   | 5844a3c9-16e9-4e23-be14-03b272bcb5e4 |
-| ip_version           | 4                                    |
-| ipv6_address_mode    | None                                 |
-| ipv6_ra_mode         | None                                 |
-| name                 | provider                             |
-| network_id           | fd5bb1e2-fec4-4bb2-904e-86f666f0af11 |
-| project_id           | e63b23475dbf4f23b650d0d69e4731dc     |
-| revision_number      | 0                                    |
-| segment_id           | None                                 |
-| service_types        |                                      |
-| subnetpool_id        | None                                 |
-| tags                 |                                      |
-| updated_at           | 2024-12-29T06:08:39Z                 |
-+----------------------+--------------------------------------+
+...
 ```
 
 
@@ -292,32 +263,7 @@ root@instance-vm00:~/env# openstack network create selfservice1
 | admin_state_up            | UP                                   |
 | availability_zone_hints   |                                      |
 | availability_zones        |                                      |
-| created_at                | 2024-12-29T06:27:12Z                 |
-| description               |                                      |
-| dns_domain                | None                                 |
-| id                        | 1584f4ec-f5f0-411c-9e03-5c141ac22f48 |
-| ipv4_address_scope        | None                                 |
-| ipv6_address_scope        | None                                 |
-| is_default                | False                                |
-| is_vlan_transparent       | None                                 |
-| mtu                       | 1450                                 |
-| name                      | selfservice1                         |
-| port_security_enabled     | True                                 |
-| project_id                | e63b23475dbf4f23b650d0d69e4731dc     |
-| provider:network_type     | vxlan                                |
-| provider:physical_network | None                                 |
-| provider:segmentation_id  | 337                                  |
-| qos_policy_id             | None                                 |
-| revision_number           | 1                                    |
-| router:external           | Internal                             |
-| segments                  | None                                 |
-| shared                    | False                                |
-| status                    | ACTIVE                               |
-| subnets                   |                                      |
-| tags                      |                                      |
-| tenant_id                 | e63b23475dbf4f23b650d0d69e4731dc     |
-| updated_at                | 2024-12-29T06:27:13Z                 |
-+---------------------------+--------------------------------------+
+...
 
 ```
 
@@ -368,27 +314,7 @@ root@instance-vm00:~/env# openstack subnet create --network selfservice1 \
 +----------------------+--------------------------------------+
 | allocation_pools     | 10.0.0.2-10.0.0.254                  |
 | cidr                 | 10.0.0.0/24                          |
-| created_at           | 2024-12-29T06:32:51Z                 |
-| description          |                                      |
-| dns_nameservers      | 223.5.5.5                            |
-| dns_publish_fixed_ip | None                                 |
-| enable_dhcp          | True                                 |
-| gateway_ip           | 10.0.0.1                             |
-| host_routes          |                                      |
-| id                   | e358aae7-c108-44db-9202-2a495daf6742 |
-| ip_version           | 4                                    |
-| ipv6_address_mode    | None                                 |
-| ipv6_ra_mode         | None                                 |
-| name                 | selfservice1-net1                    |
-| network_id           | 1584f4ec-f5f0-411c-9e03-5c141ac22f48 |
-| project_id           | e63b23475dbf4f23b650d0d69e4731dc     |
-| revision_number      | 0                                    |
-| segment_id           | None                                 |
-| service_types        |                                      |
-| subnetpool_id        | None                                 |
-| tags                 |                                      |
-| updated_at           | 2024-12-29T06:32:51Z                 |
-+----------------------+--------------------------------------+
+...
 ```
 
 查看创建的子网：
@@ -718,33 +644,7 @@ root@instance-vm00:/var/log/nova# openstack server create --flavor m1.nano --ima
 | OS-EXT-AZ:availability_zone          |                                               |
 | OS-EXT-SRV-ATTR:host                 | None                                          |
 | OS-EXT-SRV-ATTR:hypervisor_hostname  | None                                          |
-| OS-EXT-SRV-ATTR:instance_name        |                                               |
-| OS-EXT-STS:power_state               | NOSTATE                                       |
-| OS-EXT-STS:task_state                | scheduling                                    |
-| OS-EXT-STS:vm_state                  | building                                      |
-| OS-SRV-USG:launched_at               | None                                          |
-| OS-SRV-USG:terminated_at             | None                                          |
-| accessIPv4                           |                                               |
-| accessIPv6                           |                                               |
-| addresses                            |                                               |
-| adminPass                            | nTD3n2TnY7ba                                  |
-| config_drive                         |                                               |
-| created                              | 2024-12-29T07:48:23Z                          |
-| flavor                               | m1.nano (0)                                   |
-| hostId                               |                                               |
-| id                                   | b709970b-b099-449b-9667-0c434a334ac9          |
-| image                                | cirros (62adec29-9cb1-4eda-84a4-6fd87861de30) |
-| key_name                             | mykey                                         |
-| name                                 | selfservice1-cirros1                          |
-| os-extended-volumes:volumes_attached | []                                            |
-| progress                             | 0                                             |
-| project_id                           | e63b23475dbf4f23b650d0d69e4731dc              |
-| properties                           |                                               |
-| security_groups                      | name='78d3f572-5e31-47ff-b383-490cb6d8e088'   |
-| status                               | BUILD                                         |
-| updated                              | 2024-12-29T07:48:23Z                          |
-| user_id                              | 5406c29ffb89473e9e56c43e9421e9ad              |
-+--------------------------------------+-----------------------------------------------+
+| OS-EXT-SRV-ATTR:instance_name        |                                 ...
 
 ```
 
@@ -805,23 +705,7 @@ root@instance-vm00:/var/log/nova# openstack floating ip create provider
 | created_at          | 2024-12-29T08:01:01Z                 |
 | description         |                                      |
 | dns_domain          | None                                 |
-| dns_name            | None                                 |
-| fixed_ip_address    | None                                 |
-| floating_ip_address | 192.168.120.105                      |
-| floating_network_id | fd5bb1e2-fec4-4bb2-904e-86f666f0af11 |
-| id                  | 64dd52ba-5bd2-420d-a8ac-c606aa836293 |
-| name                | 192.168.120.105                      |
-| port_details        | None                                 |
-| port_id             | None                                 |
-| project_id          | e63b23475dbf4f23b650d0d69e4731dc     |
-| qos_policy_id       | None                                 |
-| revision_number     | 0                                    |
-| router_id           | None                                 |
-| status              | DOWN                                 |
-| subnet_id           | None                                 |
-| tags                | []                                   |
-| updated_at          | 2024-12-29T08:01:01Z                 |
-+---------------------+--------------------------------------+
+...
 
 ```
 

@@ -1481,6 +1481,8 @@ apt install cinder-volume tgt
 ```bash
 [DEFAULT]
 my_ip = 172.10.0.30
+transport_url = rabbit://openstack:openstack@controller
+auth_strategy = keystone
 enabled_backends = lvm
 glance_api_servers = http://controller:9292
 
@@ -1488,8 +1490,7 @@ glance_api_servers = http://controller:9292
 [database]
 # ...
 connection = mysql+pymysql://cinder:CINDER_DBPASS@controller/cinder
-transport_url = rabbit://openstack:openstack@controller
-auth_strategy = keystone
+
 
 [lvm]
 # ...
