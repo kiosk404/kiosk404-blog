@@ -6,13 +6,162 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/themes/vue.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://npm.elemecdn.com/prism-themes/themes/prism-base16-ateliersulphurpool.light.min.css">
-  <!--更多代码主题参考 https://npm.elemecdn.com/prism-themes/themes/  -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+ 
+  <!-- 添加 highlight.js 的 GitHub 风格样式 -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" />
+
+<style>
+  /* 全局变量配置 */
+  :root {
+    --code-bg: #f6f8fa; /* GitHub 浅灰色背景 */
+    --code-text: #24292e; /* 默认文字颜色 */
+    --code-font: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace; /* GitHub 字体栈 */
+    --code-font-size: 12px; /* 字体大小，与 GitHub 代码块一致 */
+    --code-line-height: 1.45; /* 行高 */
+    --code-padding: 16px; /* 内边距 */
+    --code-border-radius: 6px; /* 圆角 */
+    --code-border-color: #d0d7de; /* 边框颜色 */
+    --code-max-height: 400px; /* 最大高度 */
+    --scrollbar-thumb: #b1bac4; /* 滚动条滑块颜色 */
+    --scrollbar-track: #f6f8fa; /* 滚动条轨道颜色 */
+    --button-bg: #f3f4f6; /* 按钮背景颜色 */
+    --button-hover-bg: #e1e4e8; /* 按钮悬停背景颜色 */
+    --button-text: #24292e; /* 按钮文字颜色 */
+  }
+
+  /* 代码块基础样式 */
+  .markdown-section pre {
+    background-color: var(--code-bg) !important;
+    border: 1px solid var(--code-border-color) !important;
+    border-radius: var(--code-border-radius) !important;
+    padding: var(--code-padding) !important;
+    margin: 1.5em 0;
+    font-family: var(--code-font);
+    font-size: var(--code-font-size);
+    line-height: var(--code-line-height);
+    color: var(--code-text);
+    overflow: auto;
+    box-shadow: 0 1px 3px rgba(27, 31, 35, 0.1);
+  }
+
+  .markdown-section pre > code {
+    display: block;
+    padding: 0;
+  }
+
+  /* 高亮样式 */
+  .hljs {
+    background: var(--code-bg) !important;
+    color: var(--code-text) !important;
+  }
+
+  .hljs-keyword { color: #d73a49 !important; font-weight: bold; } /* 关键字 */
+  .hljs-built_in, .hljs-literal { color: #005cc5 !important; } /* 内置类型、文字常量 */
+  .hljs-type { color: #6f42c1 !important; font-weight: bold; } /* 类型 */
+  .hljs-string { color: #032f62 !important; } /* 字符串 */
+  .hljs-number { color: #005cc5 !important; } /* 数字 */
+  .hljs-comment { color: #6a737d !important; font-style: italic; } /* 注释 */
+  .hljs-function { color: #6f42c1 !important; } /* 函数名 */
+  .hljs-variable { color: #e36209 !important; } /* 变量 */
+  .hljs-operator { color: #d73a49 !important; } /* 操作符 */
+  .hljs-meta { color: #d73a49 !important; font-style: italic; } /* 元信息 */
+  .hljs-attr { color: #005cc5 !important; } /* 属性 */
+
+  /* 滚动条样式 */
+  .markdown-section pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .markdown-section pre::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+  }
+
+  .markdown-section pre::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  /* 代码复制按钮 */
+  .docsify-copy-code-button {
+    background: var(--button-bg) !important;
+    border: 1px solid var(--code-border-color) !important;
+    border-radius: 4px !important;
+    color: var(--button-text) !important;
+    font-size: 0.85em !important;
+    padding: 6px 10px !important;
+    right: 12px !important;
+    top: 12px !important;
+    box-shadow: 0 1px 3px rgba(27, 31, 35, 0.1);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .docsify-copy-code-button:hover {
+    background: var(--button-hover-bg) !important;
+    box-shadow: 0 2px 4px rgba(27, 31, 35, 0.15);
+  }
+
+  /* 代码折叠相关样式 */
+  .markdown-section pre.long-code {
+    max-height: var(--code-max-height);
+    overflow: hidden;
+  }
+
+  .markdown-section pre.long-code.expanded {
+    max-height: none;
+  }
+
+  .code-expand-btn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, var(--code-bg) 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .code-expand-btn:hover {
+    background: linear-gradient(transparent, var(--button-hover-bg) 50%);
+  }
+
+  .code-expand-btn span {
+    background: var(--button-bg);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--code-text);
+    font-family: var(--code-font);
+  }
+
+  .code-expand-btn:hover span {
+    background: var(--button-hover-bg);
+  }
+
+  pre.expanded .code-expand-btn {
+    background: var(--code-bg);
+  }
+</style>
+
+
 </head>
 <body>
   <div id="app">Loading ...</div>
-  <script>                     // 配置项：https://docsify.js.org/#/zh-cn/configuration
+  <script>
+    // 代码配置选项
+    const codeConfig = {
+      maxLines: 50,           // 超过多少行折叠
+      maxHeight: '400px',     // 折叠时的最大高度
+      expandText: '展开代码', // 展开按钮文字
+      collapseText: '收起代码', // 收起按钮文字
+      showLineCount: true,    // 是否显示行数
+    };        
     window.$docsify = {
       name: '<img src="https://kiosk007.top/docsify-book/cloudnative-kubernetes/_media/k8s.svg"><p>深入 kubertnets</p>',
       repo: '',
@@ -20,55 +169,95 @@
       loadNavbar: true,     // 加载 _navbar.md
       hideSidebar: false,
       subMaxLevel: 3,
-      // basePath: 'https://docsify.js.org/',
-      // logo: '/_media/k8s.svg',
       themeColor: '#3F51B5',
-      autoHeader: false,      // Navbar 自动添加 Header
-      mergeNavbar: true,      // 小屏设备下合并导航栏到侧边栏。
+      sidebarDisplayLevel: 1,
+      loadNavbar: true,
+      coverpage: true,
+      onlyCover: false,
+      auto2top: true,
+      mergeNavbar: true,
       formatUpdated: '{MM}/{DD} {HH}:{mm}',
-      onlyCover: true,
-      topMargin: 90,
-      count:{
-        countable:true,
-        fontsize:'0.9em',
-        color:'rgb(90,90,90)',
-        language:'chinese'
+      externalLinkTarget: '_blank',
+      
+      // 代码复制配置
+      copyCode: {
+        buttonText: 'Copy',
+        errorText: 'Error',
+        successText: 'Copied!'
       },
-      tabs: {                    // https://jhildenbiddle.github.io/docsify-tabs/#/
-        persist    : true,       // default
-        sync       : true,       // default
-        theme      : 'material', // default
-        tabComments: true,       // default
-        tabHeadings: true        // default
-      },
-      copyCode: {               // 代码块点击复制
-        buttonText : 'Copy',
-        errorText  : 'Error',
-        successText: 'Copied'
-      },
-      themeable: {
-          readyTransition : true, // default
-          responsiveTables: true  // default
+      
+      // 代码高亮配置
+      markdown: {
+        smartypants: true,
+        renderer: {
+          code: function(code, lang) {
+            if (lang && hljs.getLanguage(lang)) {
+              try {
+                const highlighted = hljs.highlight(code, { language: lang, ignoreIllegals: true }).value;
+                const lines = code.split('\n').length;
+                const longCodeClass = lines > codeConfig.maxLines ? 'long-code' : '';
+                
+                let html = `<pre data-lang="${lang}" class="${longCodeClass}"><code class="hljs language-${lang}">${highlighted}</code>`;
+                
+                if (lines > codeConfig.maxLines) {
+                  const lineText = codeConfig.showLineCount ? ` (${lines} 行)` : '';
+                  html += `
+                    <div class="code-expand-btn">
+                      <span class="expand-text">${codeConfig.expandText}${lineText}</span>
+                    </div>
+                  `;
+                }
+                
+                html += '</pre>';
+                return html;
+              } catch (__) {}
+            }
+            return `<pre data-lang="text"><code class="hljs">${code}</code></pre>`;
+          }
+        }
       }
-    }
-  </script>
-  <!-- Docsify v4 -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
-  <script type="text/javascript" src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/emoji-js/3.6.0/emoji.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-copy-code"></script>
-  <script type="text/javascript" src="https://unpkg.com/docsify-count/dist/countable.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-java.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-tabs@1.6.3/dist/docsify-tabs.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-go.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-bash.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-python.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-markdown.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-nginx.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-yaml.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-json.min.js"></script>
+    };
+    
+    // 代码折叠功能
+    document.addEventListener('click', function(e) {
+      const target = e.target;
+      if (target.classList.contains('code-expand-btn') || target.parentElement.classList.contains('code-expand-btn')) {
+        const btn = target.classList.contains('code-expand-btn') ? target : target.parentElement;
+        const pre = btn.parentElement;
+        const expandText = btn.querySelector('.expand-text');
+        const lines = pre.querySelector('code').innerText.split('\n').length;
+        const lineText = codeConfig.showLineCount ? ` (${lines} 行)` : '';
+        
+        if (pre.classList.contains('expanded')) {
+          pre.classList.remove('expanded');
+          expandText.textContent = `${codeConfig.expandText}${lineText}`;
+          pre.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          pre.classList.add('expanded');
+          expandText.textContent = `${codeConfig.collapseText}${lineText}`;
+        }
+      }
+    });
+ 
+  
+ </script>
+  <!-- 先加载 highlight.js -->
+  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+  <!-- 添加需要的语言支持 -->
+  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/go.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/bash.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/yaml.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/dockerfile.min.js"></script>
+   <!-- Docsify v4 -->
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+   <script type="text/javascript" src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/emoji-js/3.6.0/emoji.min.js"></script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-copy-code"></script>
+   <script type="text/javascript" src="https://unpkg.com/docsify-count/dist/countable.js"></script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-java.min.js"></script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-tabs@1.6.3/dist/docsify-tabs.min.js"></script>
 
 </body>
 </html>
