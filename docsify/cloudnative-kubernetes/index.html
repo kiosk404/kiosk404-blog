@@ -6,152 +6,141 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontawesome-free-6.2.1@6.2.1/css/all.min.css">
+  <!-- 添加 highlight.js 的样式 -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/vs2015.min.css">
+  <!-- Themes (light + dark) -->
+  <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
  
-  <!-- 添加 highlight.js 的 GitHub 风格样式 -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" />
+  <style>
+    /* 全局变量配置 */
+    :root {
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+      --code-font: 'JetBrains Mono', Consolas, 'Courier New', monospace;
+      --code-font-size: 14px;
+      --code-line-height: 1.5;
+      --code-padding: 1em;
+      --code-border-radius: 6px;
+      --code-max-height: 400px;
+      --scrollbar-thumb: #4d4d4d;
+      --scrollbar-track: #1e1e1e;
+      --button-bg: #2d2d2d;
+      --button-hover-bg: #3d3d3d;
+    }
 
-<style>
-  /* 全局变量配置 */
-  :root {
-    --code-bg: #f6f8fa; /* GitHub 浅灰色背景 */
-    --code-text: #24292e; /* 默认文字颜色 */
-    --code-font: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace; /* GitHub 字体栈 */
-    --code-font-size: 12px; /* 字体大小，与 GitHub 代码块一致 */
-    --code-line-height: 1.45; /* 行高 */
-    --code-padding: 16px; /* 内边距 */
-    --code-border-radius: 6px; /* 圆角 */
-    --code-border-color: #d0d7de; /* 边框颜色 */
-    --code-max-height: 400px; /* 最大高度 */
-    --scrollbar-thumb: #b1bac4; /* 滚动条滑块颜色 */
-    --scrollbar-track: #f6f8fa; /* 滚动条轨道颜色 */
-    --button-bg: #f3f4f6; /* 按钮背景颜色 */
-    --button-hover-bg: #e1e4e8; /* 按钮悬停背景颜色 */
-    --button-text: #24292e; /* 按钮文字颜色 */
-  }
+    /* 代码块基础样式 */
+    .markdown-section pre {
+      background-color: var(--code-bg) !important;
+      border-radius: var(--code-border-radius) !important;
+      padding: var(--code-padding) !important;
+      position: relative;
+      margin: 1em 0;
+    }
 
-  /* 代码块基础样式 */
-  .markdown-section pre {
-    background-color: var(--code-bg) !important;
-    border: 1px solid var(--code-border-color) !important;
-    border-radius: var(--code-border-radius) !important;
-    padding: var(--code-padding) !important;
-    margin: 1.5em 0;
-    font-family: var(--code-font);
-    font-size: var(--code-font-size);
-    line-height: var(--code-line-height);
-    color: var(--code-text);
-    overflow: auto;
-    box-shadow: 0 1px 3px rgba(27, 31, 35, 0.1);
-  }
+    .markdown-section pre > code {
+      font-family: var(--code-font);
+      font-size: var(--code-font-size);
+      line-height: var(--code-line-height);
+      padding: var(--code-padding) 0;
+    }
 
-  .markdown-section pre > code {
-    display: block;
-    padding: 0;
-  }
+    /* VSCode 风格的代码高亮 */
+    .hljs {
+      background: var(--code-bg) !important;
+      color: var(--code-text) !important;
+    }
+    .hljs-keyword { color: #569cd6 !important; }
+    .hljs-built_in { color: #4ec9b0 !important; }
+    .hljs-type { color: #4ec9b0 !important; }
+    .hljs-literal { color: #569cd6 !important; }
+    .hljs-number { color: #b5cea8 !important; }
+    .hljs-string { color: #ce9178 !important; }
+    .hljs-comment { color: #6a9955 !important; }
+    .hljs-function { color: #dcdcaa !important; }
 
-  /* 高亮样式 */
-  .hljs {
-    background: var(--code-bg) !important;
-    color: var(--code-text) !important;
-  }
+    /* 代码复制按钮 */
+    .docsify-copy-code-button {
+      background: var(--button-bg) !important;
+      border-radius: calc(var(--code-border-radius) / 2) !important;
+      font-size: 0.8em !important;
+      padding: 8px 16px !important;
+      right: 8px !important;
+      top: 8px !important;
+    }
 
-  .hljs-keyword { color: #d73a49 !important; font-weight: bold; } /* 关键字 */
-  .hljs-built_in, .hljs-literal { color: #005cc5 !important; } /* 内置类型、文字常量 */
-  .hljs-type { color: #6f42c1 !important; font-weight: bold; } /* 类型 */
-  .hljs-string { color: #032f62 !important; } /* 字符串 */
-  .hljs-number { color: #005cc5 !important; } /* 数字 */
-  .hljs-comment { color: #6a737d !important; font-style: italic; } /* 注释 */
-  .hljs-function { color: #6f42c1 !important; } /* 函数名 */
-  .hljs-variable { color: #e36209 !important; } /* 变量 */
-  .hljs-operator { color: #d73a49 !important; } /* 操作符 */
-  .hljs-meta { color: #d73a49 !important; font-style: italic; } /* 元信息 */
-  .hljs-attr { color: #005cc5 !important; } /* 属性 */
+    .docsify-copy-code-button:hover {
+      background: var(--button-hover-bg) !important;
+    }
 
-  /* 滚动条样式 */
-  .markdown-section pre::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
+    /* 滚动条样式 */
+    .markdown-section pre::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
 
-  .markdown-section pre::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb);
-    border-radius: 4px;
-  }
+    .markdown-section pre::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: calc(var(--code-border-radius) / 2);
+    }
 
-  .markdown-section pre::-webkit-scrollbar-track {
-    background: var(--scrollbar-track);
-  }
+    .markdown-section pre::-webkit-scrollbar-track {
+      background: var(--scrollbar-track);
+    }
 
-  /* 代码复制按钮 */
-  .docsify-copy-code-button {
-    background: var(--button-bg) !important;
-    border: 1px solid var(--code-border-color) !important;
-    border-radius: 4px !important;
-    color: var(--button-text) !important;
-    font-size: 0.85em !important;
-    padding: 6px 10px !important;
-    right: 12px !important;
-    top: 12px !important;
-    box-shadow: 0 1px 3px rgba(27, 31, 35, 0.1);
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  }
+    /* 代码折叠相关样式 */
+    .markdown-section pre.long-code {
+      max-height: var(--code-max-height);
+      overflow: hidden;
+    }
 
-  .docsify-copy-code-button:hover {
-    background: var(--button-hover-bg) !important;
-    box-shadow: 0 2px 4px rgba(27, 31, 35, 0.15);
-  }
+    .markdown-section pre.long-code.expanded {
+      max-height: none;
+    }
 
-  /* 代码折叠相关样式 */
-  .markdown-section pre.long-code {
-    max-height: var(--code-max-height);
-    overflow: hidden;
-  }
+    .code-expand-btn {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: linear-gradient(transparent, var(--code-bg) 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
 
-  .markdown-section pre.long-code.expanded {
-    max-height: none;
-  }
+    .code-expand-btn:hover {
+      background: linear-gradient(transparent, var(--button-hover-bg) 50%);
+    }
 
-  .code-expand-btn {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    background: linear-gradient(transparent, var(--code-bg) 50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
+    .code-expand-btn span {
+      background: var(--button-bg);
+      padding: 4px 12px;
+      border-radius: calc(var(--code-border-radius) / 2);
+      font-size: 12px;
+      color: var(--code-text);
+      font-family: var(--code-font);
+    }
 
-  .code-expand-btn:hover {
-    background: linear-gradient(transparent, var(--button-hover-bg) 50%);
-  }
+    .code-expand-btn:hover span {
+      background: var(--button-hover-bg);
+    }
 
-  .code-expand-btn span {
-    background: var(--button-bg);
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    color: var(--code-text);
-    font-family: var(--code-font);
-  }
-
-  .code-expand-btn:hover span {
-    background: var(--button-hover-bg);
-  }
-
-  pre.expanded .code-expand-btn {
-    background: var(--code-bg);
-  }
-</style>
-
+    pre.expanded .code-expand-btn {
+      background: var(--code-bg);
+    }
+  </style>
 
 </head>
 <body>
+  <nav>
+    <a target="_self" href="https://kiosk007.top"><i class="fas fa-home"></i> Kiosk's Blog</a>
+  </nav>
   <div id="app">Loading ...</div>
   <script>
     // 代码配置选项
@@ -166,12 +155,11 @@
       name: '<img src="https://kiosk007.top/docsify-book/cloudnative-kubernetes/_media/k8s.svg"><p>深入 kubertnets</p>',
       repo: '',
       loadSidebar: true,    // 加载 _sidebar.md
-      loadNavbar: true,     // 加载 _navbar.md
+      loadNavbar: false,     // 加载 _navbar.md
       hideSidebar: false,
       subMaxLevel: 3,
       themeColor: '#3F51B5',
       sidebarDisplayLevel: 1,
-      loadNavbar: true,
       coverpage: true,
       onlyCover: false,
       auto2top: true,
@@ -248,6 +236,9 @@
   <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/bash.min.js"></script>
   <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/yaml.min.js"></script>
   <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/dockerfile.min.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/fontawesome-free-6.2.1@6.2.1/js/all.min.js"></script>
+  
    <!-- Docsify v4 -->
    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
@@ -261,3 +252,4 @@
 
 </body>
 </html>
+

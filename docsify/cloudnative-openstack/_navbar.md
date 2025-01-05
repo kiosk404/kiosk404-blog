@@ -1,1 +1,1 @@
-* [<i class="fas fa-home"></i> Kiosk's Blog](https://kiosk007.top)
+* [<i class="fas fa-home"></i> Kiosk](https://kiosk007.top)
