@@ -4,7 +4,6 @@
 
 本项目主要记录 Kubernets 相关云原生相关知识，并加以自己的分析与注解。
 
-
 # 内容更新
 - 本人博客: [**kiosk's Blog**](https://kiosk007.top) 
     - [ubuntu20.04 部署kubernets](https://kiosk007.top/post/ubuntu20-04-%E9%83%A8%E7%BD%B2-kubernetes-k8s/)
