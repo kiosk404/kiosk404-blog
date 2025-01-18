@@ -198,7 +198,9 @@ type PriorityQueue struct {
 }
 ```
 
-# Add
+<br/>
+
+## Add
 
 源码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/queue/scheduling_queue.go#L248
 
@@ -235,7 +237,11 @@ func (p *PriorityQueue) Add(pod *v1.Pod) error {
 }
 ```
 
-# AddUnschedulableIfNotPresent
+
+
+<br/>
+
+## AddUnschedulableIfNotPresent
 
 代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/queue/scheduling_queue.go#L297
 
@@ -282,7 +288,9 @@ func (p *PriorityQueue) AddUnschedulableIfNotPresent(pInfo *framework.QueuedPodI
 }
 ```
 
-# Pop
+<br/>
+
+## Pop
 
 代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/queue/scheduling_queue.go#L378
 
@@ -314,9 +322,9 @@ func (p *PriorityQueue) Pop() (*framework.QueuedPodInfo, error) {
 }
 ```
 
+<br/>
 
-
-# Update
+## Update
 
 代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/queue/scheduling_queue.go#L417
 
@@ -378,9 +386,11 @@ func (p *PriorityQueue) Update(oldPod, newPod *v1.Pod) error {
 }
 ```
 
+<br/>
+
+## Delete
 
 
-# Delete
 
 ```go
 func (p *PriorityQueue) Delete(pod *v1.Pod) error {
@@ -399,7 +409,9 @@ func (p *PriorityQueue) Delete(pod *v1.Pod) error {
 }
 ```
 
-# MoveAllToActiveOrBackoffQueue
+<br/>
+
+## MoveAllToActiveOrBackoffQueue
 
 代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/queue/scheduling_queue.go#L500
 
@@ -475,7 +487,9 @@ func (p *PriorityQueue) calculateBackoffDuration(podInfo *framework.QueuedPodInf
 }
 ```
 
-# PendingPods
+<br/>
+
+## PendingPods
 
 代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/queue/scheduling_queue.go#L560
 
@@ -501,9 +515,11 @@ func (p *PriorityQueue) PendingPods() []*v1.Pod {
 }
 ```
 
+<br/>
+
+## Run
 
 
-# Run
 
 代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/queue/scheduling_queue.go#L241
 
@@ -572,7 +588,9 @@ func (p *PriorityQueue) flushUnschedulableQLeftover() {
 }
 ```
 
-# AssignedPodAdded/AssignedPodUpdated
+<br/>
+
+## AssignedPodAdded/AssignedPodUpdated
 
 代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/queue/scheduling_queue.go#L482
 

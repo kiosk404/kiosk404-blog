@@ -10,7 +10,7 @@
 
 
 
-#### Cache 的定义
+# Cache 的定义
 
 1. Cache缓存了Pod和Node信息，并且Node信息聚合了运行在该Node上所有Pod的资源量和镜像信息；Node有虚实之分，已删除的Node，Cache不会立刻删除它，而是继续维护一个虚的Node，直到Node上的Pod清零后才会被删除；但是nodeTree中维护的是实际的Node，调度使用nodeTree就可以避免将Pod调度到虚Node上；
 2. kube-scheduler利用client-go监控(watch)Pod和Node状态，当有事件发生时调用Cache的AddPod，RemovePod，UpdatePod，AddNode，RemoveNode，UpdateNode更新Cache中Pod和Node的状态，这样kube-scheduler开始新一轮调度的时候可以获得最新的状态；
@@ -45,7 +45,7 @@
 
 
 
-#### Cache 的抽象
+# Cache 的抽象
 
 源码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/interface.go#L58
 
@@ -109,7 +109,7 @@ type Cache interface {
 
 从Cache的接口设计上可以看出，Cache只缓存了Pod和Node信息，而Pod和Node信息存储在etcd中(可以通过kubectl增删改查)，所以可以确认Cache缓存了etcd中的Pod和Node信息。
 
-#### NodeInfo 的定义
+# NodeInfo 的定义
 
 在SchedulingQueue中，调度队列定义了QueuedPodInfo类型，在Pod API基础上扩展了与调度队列相关的属性。同样的道理，Node API只是Node的公共属性，而Cache中的Node需要扩展与Cache相关的属性，所以就有了NodeInfo这个类型。源码连接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/framework/types.go#L189
 
@@ -146,7 +146,7 @@ type NodeInfo struct {
 
 
 
-#### nodeTree
+# nodeTree
 
 nodeTree是按照区域(zone)将Node组织成树状结构，当需要按区域列举或者全量列举按照区域排序，nodeTree就会用的上。为什么有这个需求，还是那句话，调度需要。举一个可能不恰当的例子：比如多个Pod的副本需要部署在同一个区域亦或是不同的区域。
 
@@ -165,7 +165,7 @@ type nodeTree struct {
 
 nodeTree只是把Node名字组织成树状，如果需要NodeInfo还需要根据Node的名字查找NodeInfo。
 
-#### 快照
+# 快照
 
 快照是对Cache某一时刻的复制，随着时间的推移，Cache的状态在持续更新，kube-scheduler在调度一个Pod的时候需要获取Cache的快照。相比于直接访问Cache，快照可以解决如下几个问题：
 
@@ -193,7 +193,7 @@ type Snapshot struct {
 }
 ```
 
-#### Cache 的实现
+# Cache 的实现
 
 前面铺垫了已经足够了，现在开始进入重点内容，先来看看Cache实现类schedulerCache的定义。源码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/cache.go#L57
 
@@ -250,7 +250,7 @@ type nodeInfoListItem struct {
 
 从schedulerCache的定义基本可以猜到大部分Cache接口的实现，本文对于比较简单的接口实现只做简要说明，将文字落在一些重点的函数上。PodCount和NodeCount两个函数因为用于单元测试使用，本文不做说明。
 
-#### AssumePod
+# AssumePod
 
 当kube-scheduler找到最优的Node调度Pod的时候会调用AssumePod假定Pod调度，在通过另一个协程异步Bind。假定其实就是预先占住资源，kube-scheduler调度下一个Pod的时候不会把这部分资源抢走，直到收到确认消息AddPod确认调度成功，亦或是Bind失败ForgetPod取消假定调度。代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/cache.go#L361
 
@@ -299,7 +299,7 @@ func (cache *schedulerCache) addPod(pod *v1.Pod) {
 }
 ```
 
-#### ForgetPod
+# ForgetPod
 
 假定Pod预先占用了一些资源，如果之后的操作(比如Bind)有什么错误，就需要取消假定调度，释放出资源。代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/cache.go#L406
 
@@ -366,7 +366,7 @@ func (cache *schedulerCache) removePod(pod *v1.Pod) error {
 
 
 
-#### FinishBinding
+# FinishBinding
 
 当假定Pod绑定完成后，需要调用FinishBinding通知Cache开始计时，直到假定Pod过期如果依然没有收到AddPod的请求，则将过期假定Pod删除。代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/cache.go#L382
 
@@ -399,7 +399,7 @@ func (cache *schedulerCache) finishBinding(pod *v1.Pod, now time.Time) error {
 }
 ```
 
-#### AddPod
+# AddPod
 
 当Pod Bind成功，kube-scheduler会收到消息，然后调用AddPod确认调度结果。代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/cache.go#L476
 
@@ -454,7 +454,7 @@ func (cache *schedulerCache) AddPod(pod *v1.Pod) error {
 
 
 
-#### RemovePod
+# RemovePod
 
 kube-scheduler收到删除Pod的请求，如果Pod在Cache中，就需要调用RemovePod。代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/cache.go#L541
 
@@ -498,7 +498,7 @@ func (cache *schedulerCache) RemovePod(pod *v1.Pod) error {
 
 
 
-#### AddNode
+# AddNode
 
 有新的Node添加到集群，kube-scheduler调用该接口通知Cache。代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/cache.go#L605
 
@@ -528,7 +528,7 @@ func (cache *schedulerCache) AddNode(node *v1.Node) error {
 }
 ```
 
-#### RemoveNode
+# RemoveNode
 
 Node从集群中删除，kube-scheduler调用该接口通知Cache。代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/cache.go#L648
 
@@ -563,7 +563,7 @@ func (cache *schedulerCache) RemoveNode(node *v1.Node) error {
 }
 ```
 
-#### 后期清理协程函数run
+# 后期清理协程函数run
 
 前文提到过，Cache有自己的协程，就是用来清理假定到期的Pod。代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/cache.go#L724
 
@@ -623,7 +623,7 @@ func (cache *schedulerCache) expirePod(key string, ps *podState) error {
 
 其实这里有一个比较严重的问题：如果假定过期的Pod资源刚刚会被释放，又有新Pod调度到了与刚刚假定过期Pod相同的Node上，此后Pod被AddPod添加回来，可能会让Node的资源过载。
 
-#### UpdateSnapshot
+# UpdateSnapshot
 
 好了，前文那么多的铺垫，都是为了UpdateSnapshot，因为Cache存在的核心目的就是给kube-scheduler提供Node镜像，让kube-scheduler根据Node的状态调度新的Pod。而Cache中的Pod是为了计算Node的资源状态存在的，毕竟二者在etcd中是两个路径。话不多说，直接上代码。代码链接：https://github.com/kubernetes/kubernetes/blob/release-1.20/pkg/scheduler/internal/cache/cache.go#L203
 
