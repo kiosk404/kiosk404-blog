@@ -1,7 +1,8 @@
 ---
 title: minikube 实践
 author: kiosk
-tags: []
+tags: 
+  - k8s
 categories:
   - k8s
 date: 2020-09-22 09:53:00

@@ -1,7 +1,8 @@
 ---
 title: kube-schedule 调度实现
 author: kiosk
-tags: []
+tags: 
+  - k8s
 categories:
   - k8s
 date: 2024-01-05 00:05:00
