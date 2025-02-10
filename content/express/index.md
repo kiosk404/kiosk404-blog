@@ -101,3 +101,4 @@ There are all kinds of mysterious portals here...
 ----
  ## Funny
 1. [red alert](https://game.chronodivide.com/)
+2. [red alert（new） ](https://ra2web.com/)

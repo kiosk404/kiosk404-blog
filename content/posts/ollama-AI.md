@@ -31,7 +31,7 @@ Ollama 是一个用于构建大型语言模型应用的工具，它提供了一�
 - 此文撰写时项目最新版本：[v0.3.6(opens new window)](https://github.com/ollama/ollama/releases/tag/v0.3.6)
 - 官方 logo 是一只可爱的羊驼
 
-<img src="https://img1.kiosk007.top/static/images/blog//20240821003113-ollama.png" alt="Ollama" style="display: block; margin: 0 auto; width: 10%; max-width: 10%; height: auto;">
+<img src="https://img1.kiosk007.top/static/images/blog/20240821003113-ollama.webp" alt="Ollama" style="display: block; margin: 0 auto; width: 10%; max-width: 10%; height: auto;">
 
 <br/>
 
@@ -47,7 +47,7 @@ Ollama 是一个用于构建大型语言模型应用的工具，它提供了一�
 
 官方还为此专门发布了一篇官方博客： https://ollama.com/blog/openai-compatibility (opens new window)，并配了如下一个可爱的图。
 
-<img src="https://img1.kiosk007.top/static/images/blog//20240821004719-1709995014383.webp" alt="Ollama" style="display: block; margin: 0 auto; width: 100%; max-width: 100%; height: auto;">
+<img src="https://img1.kiosk007.top/static/images/blog/20240821004719-1709995014383.png" alt="Ollama" style="display: block; margin: 0 auto; width: 100%; max-width: 100%; height: auto;">
 
 
 
