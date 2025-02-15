@@ -28,10 +28,10 @@
 
 管理网络（management/API网络）：
 提供系统管理相关功能，用于节点之间各服务组件内部通信以及对数据库服务的访问，所有节点都需要连接到管理网络，这里管理网络也承载了API网络的流量，将API网络和管理网络合并，OpenStack各组件通过API网络向用户暴露API服务。
-
+<br/>
 隧道网络（tunnel网络或self-service网络）：
 提供租户虚拟网络的承载网络（VXLAN or GRE）。openstack里面使用gre或者vxlan模式，需要有隧道网络；隧道网络采用了点到点通信协议代替了交换连接，在openstack里，这个tunnel就是虚拟机走网络数据流量用的。这个网络所承载的网络和官方文档Networking Option 2: Self-service networks相对应。
-
+<br/>
 外部网络(external网络或者provider网络)：
 openstack网络至少要包括一个外部网络，这个网络能够访问OpenStack安装环境之外的网络，并且非openstack环境中的设备能够访问openstack外部网络的某个IP。另外外部网络为OpenStack环境中的虚拟机提供浮动IP，实现openstack外部网络对内部虚拟机实例的访问。这个网络和官方文档Networking Option 1: Provider networks相对应。
 
