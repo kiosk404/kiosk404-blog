@@ -6,10 +6,6 @@
 
 在kube-scheduler中，有一种接口叫做ScheduleAlgorithm，就是负责在Node中为Pod选择一个最合适的Node。至于如何选择，肯定需要[调度框架](https://kiosk007.top/docsify-book/cloudnative-kubernetes/#/content/scheduler/framework)和[调度插件](https://kiosk007.top/docsify-book/cloudnative-kubernetes/#/content/scheduler/plugin)的支持，可以从 调度算法接口 定义看出一些端倪。本文引用源码为kubernetes的release-1.21分支。
 
-# ScheduleAlgorithm
-
-
-
 ## ScheduleAlgorithm定义
 
 
