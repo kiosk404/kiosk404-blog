@@ -1,9 +1,8 @@
 ---
 title: Kubernetes网络方案
 author: kiosk
-draft
-tags: 
-  - k8s
+draft: true
+tags: [k8s]
 categories:
   - k8s
 date: 2024-01-18 11:23:00
