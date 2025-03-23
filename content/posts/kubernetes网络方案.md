@@ -5,7 +5,7 @@ draft: true
 tags: [k8s]
 categories:
   - k8s
-date: 2024-01-18 11:23:00
+date: 2025-03-12 11:23:00
 ---
 
 Kubernetes 用来在集群上运行分布式系统。分布式系统的本质使得网络组件在 Kubernetes 中是至关重要也不可或缺的。
@@ -298,7 +298,176 @@ CoreDNS 的工作方式与 `kubedns` 类似，但是通过插件化的架构构�
 
 
 
-# CNI 插件
+# 搭建一个简单的 K8S 集群
+
+因为环境限制，这里我们使用 [minikube](https://minikube.sigs.k8s.io/docs/)  起一个三节点的 K8S 集群。
+
+```bash
+minikube start --nodes 3 --driver=kvm2 --image-mirror-country=cn 
+```
+
+> 建议下次启动加上 minikube start --registry-mirror=https://xxxxx.mirror.aliyuncs.com  ，不然即便minikube 启动起来了，但是里面的容器因为众所周知网络原因无法拉下来后续的镜像。
+
+启动完成之后，可以使用如下的命令查看, 1个控制节点，2个work节点。
+
+```bash
+kubectl get nodes
+NAME           STATUS   ROLES           AGE     VERSION
+minikube       Ready    control-plane   3m56s   v1.32.0
+minikube-m02   Ready    <none>          3m      v1.32.0
+minikube-m03   Ready    <none>          116s    v1.32.0
+```
+
+启用 dashboard 。
+
+```bash
+kubectl proxy --address='0.0.0.0' --disable-filter=true &
+minikube dashboard
+```
+
+
+
+
+
+minikube 默认使用的  kindnet (kubernetes in Docker) KinD 项目，这是一个利用 Docker 容器模拟 Kubernetes 节点，进而在本地快速搭建一个 kubernetes 的工具， 主要用于测试和开发的场景，kindnet 为 KinD 集群提供网络支持，确保 Pod 之间、Pod 与服务之间能够正常通信。
+
+
+
+1. 准备一个测试的 deployment，3个副本集， 一个 service ，用于暴露这个服务
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-echo-service
+spec:
+  selector:
+    app: demo-echo
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-echo-app
+  labels:
+    app: demo-echo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo-echo
+  template:
+    metadata:
+      labels:
+        app: demo-echo
+    spec:
+      containers:
+      - name: demo-echo
+        image: python:3.11-slim-buster
+        ports:
+        - containerPort: 8000
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            cat <<EOF > app.py
+            import http.server
+            import socketserver
+            import os
+
+            class MyHandler(http.server.SimpleHTTPRequestHandler):
+                def do_GET(self):
+                    self.send_response(200)
+                    self.send_header('Content-type', 'text/plain')
+                    self.end_headers()
+                    pod_name = os.getenv('POD_NAME', 'Unknown')
+                    pod_ip = os.getenv('POD_IP', 'Unknown')
+                    node_ip = os.getenv('NODE_IP', 'Unknown')
+                    message = f"POD Name: {pod_name}\nPOD IP: {pod_ip}\nNode IP: {node_ip}\n"
+                    self.wfile.write(message.encode())
+
+            PORT = 8000
+            with socketserver.TCPServer(("", PORT), MyHandler) as httpd:
+                print(f"Serving at port {PORT}")
+                httpd.serve_forever()
+            EOF
+            python app.py
+  
+```
+
+
+
+2. 验证网络的连通性
+
+```bash
+# 查找 pod 的 IP 地址
+$ kubectl get pods
+NAME           READY   STATUS    RESTARTS   AGE
+test-pod-m02   1/1     Running   0          3m10s
+test-pod-m03   1/1     Running   0          3m10s
+
+# 设置 POD 的 IP 地址
+$ POD_M02_IP=$(kubectl get pod test-pod-m02 -o jsonpath='{.status.podIP}')   # 10.224.1.4
+$ POD_M03_IP=$(kubectl get pod test-pod-m03 -o jsonpath='{.status.podIP}')   # 10.224.2.3
+
+# 从 pod2 ping pod3
+$ kubectl exec -it test-pod-m02 -- ping $POD_M03_IP
+
+PING 10.244.2.3 (10.244.2.3): 56 data bytes
+64 bytes from 10.244.2.3: seq=0 ttl=62 time=0.328 ms
+64 bytes from 10.244.2.3: seq=1 ttl=62 time=0.402 ms
+
+```
+
+
+
+3. 验证其 跨 POD 访问方式，其通过为每个节点设置静态路由 (NextHop 只想内部节点的IP) 来建立可达性，每 10 s 检查一次这些路由是否有变化。
+
+通过以下方式得到了验证
+
+```bash
+$ minikube node list 
+minikube       192.168.49.2
+minikube-m02   192.168.49.3
+minikube-m03   192.168.49.4
+
+$ minikube ssh -n minikube-m02
+$ docker@minikube-m02:~$ ip route show
+default via 192.168.49.1 dev eth0 proto static metric 100
+10.244.0.0/24 via 192.168.49.2 dev eth0
+10.244.1.2 dev veth0855796c scope host
+10.244.1.3 dev veth46d0113f scope host
+10.244.1.4 dev vethe6d0de64 scope host
+10.244.2.0/24 via 192.168.49.4 dev eth0   # 目标为 10.244.2.0/24 都直接发给了
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+192.168.49.0/24 dev eth0 proto kernel scope link src 192.168.49.3
+```
+
+
+
+https://www.tkng.io/cni/kindnet/
+
+<img src="https://img1.kiosk007.top/static/images/blog/20250316214947-kindnet.png">
+
+
+
+# CNI 插件实验
 
 ## cilium (基于 eBPF 的网络)
 
@@ -316,8 +485,6 @@ Cilium 为 Linux 容器框架（如 [**Docker**](https://www.docker.com/) 和 [*
 | Kube-Proxy 对 iptables 的依赖增加了显著的开销                |                                                              |
 
 
-
- **作为第一个通过ebpf实现了kube-proxy所有功能的网络插件**,那cilium到底有什么魔力呢?
 
 
 
@@ -345,11 +512,235 @@ Cilium 为 Linux 容器框架（如 [**Docker**](https://www.docker.com/) 和 [*
   - 与云网络路由器配合使用
   - 如果您已经在运行路由守护进程
 
-### 负载均衡
-
-应用程序容器和外部服务之间的流量的分布式负载均衡。负载均衡使用 [eBPF](https://jimmysong.io/kubernetes-handbook/GLOSSARY.html#ebpf) 实现，允许几乎无限的规模，并且如果未在源主机上执行负载均衡操作，则支持直接服务器返回（DSR）。
 
 
+Cilium 是一个基于 **eBPF 技术** 的 Kubernetes CNI 插件，提供以下核心网络特性：
+
+| 特性                          | 描述                                                         |
+| :---------------------------- | :----------------------------------------------------------- |
+| **服务发现与负载均衡**        | 支持 L3/L4 和 L7（如 HTTP、gRPC）的负载均衡，替代 kube-proxy |
+| **网络策略（NetworkPolicy）** | 基于身份（Identity）的策略，支持 L3-L7 的细粒度控制（例如限制 HTTP 路径） |
+| **多集群通信**                | 通过 Cluster Mesh 实现跨集群的服务发现和通信                 |
+| **透明加密**                  | 使用 WireGuard 或 IPsec 对 Pod 间通信自动加密                |
+| **可观测性**                  | 基于 Hubble 的流量监控，支持 Prometheus 和 Grafana 集成      |
+| **带宽管理**                  | 基于 eBPF 的带宽控制和 QoS                                   |
+| **IPv4/IPv6 双栈**            | 支持双协议栈网络                                             |
+
+
+
+### 验证安装
+
+1. **先清理现有的 CNI**
+
+首先清理当前Minikube集群正在使用的CNI插件，可以通过删除对应的 POD 来做，不过更简单的方式是删除并重建整个 minikube 环境。
+
+```bash
+minikube delete
+```
+
+2. **启动 minikube 集群**，不过在启动的时候，不使用默认的CNI插件，可以使用以下命令启动一个新的 Minikube 集群。
+
+```bash
+minikube start --nodes 3 --driver=kvm2 --cni=false --image-mirror-country=cn 
+```
+
+3. **添加 cilium Helm 仓库**
+
+使用 Helm 添加 Cilium 仓库，方便后续的安装
+
+```bash
+helm repo add cilium https://helm.cilium.io/
+
+# 添加完成后，更新一下
+helm repo update
+```
+
+4. **安装 cilium**
+
+``` bash
+helm install cilium cilium/cilium --version 1.17.2 \
+   --namespace kube-system \
+   --set hubble.relay.enabled=true \
+   --set hubble.ui.enabled=true \
+   --set kubeProxyReplacement=true \
+   --set hostServices.enabled=false \
+   --set externalIPs.enabled=true \
+   --set nodePort.enabled=true \
+   --set hostPort.enabled=true \
+   --set bpf.masquerade=false \
+   --set image.pullPolicy=IfNotPresent \
+   --set ipam.mode=kubernetes
+```
+
+5. **验证 Cilium 安装**
+
+安装完成后可以验证是否安装成功
+
+查看 Cilium Pod 状态
+
+```bash
+$ kubectl get pods -n kube-system -l k8s-app=cilium
+```
+
+或者使用 Cliium CLI 工具验证，安装 Cilium CLI 工具，使用以下命令验证
+
+```bash
+$ cilium status
+    /¯¯\
+ /¯¯\__/¯¯\    Cilium:             OK
+ \__/¯¯\__/    Operator:           OK
+ /¯¯\__/¯¯\    Envoy DaemonSet:    OK
+ \__/¯¯\__/    Hubble Relay:       disabled
+    \__/       ClusterMesh:        disabled
+
+DaemonSet              cilium                   Desired: 3, Ready: 3/3, Available: 3/3
+DaemonSet              cilium-envoy             Desired: 3, Ready: 3/3, Available: 3/3
+Deployment             cilium-operator          Desired: 2, Ready: 2/2, Available: 2/2
+Containers:            cilium                   Running: 3
+                       cilium-envoy             Running: 3
+                       cilium-operator          Running: 2
+                       clustermesh-apiserver
+                       hubble-relay
+Cluster Pods:          1/1 managed by Cilium
+Helm chart version:    1.17.2
+Image versions         cilium             quay.io/cilium/cilium:v1.17.2@sha256:3c4c9932b5d8368619cb922a497ff2ebc8def5f41c18e410bcc84025fcd385b1: 3
+                       cilium-envoy       quay.io/cilium/cilium-envoy:v1.31.5-1741765102-efed3defcc70ab5b263a0fc44c93d316b846a211@sha256:377c78c13d2731f3720f931721ee309159e782d882251709cb0fac3b42c03f4b: 3
+                       cilium-operator    quay.io/cilium/operator-generic:v1.17.2@sha256:81f2d7198366e8dec2903a3a8361e4c68d47d19c68a0d42f0b7b6e3f0523f249: 2
+```
+
+从 POD 中查看更详细的内容，这里可以看到 `Routing` 是基于 Vxlan 的。
+
+```bash
+$ kubectl exec -it cilium-f7qwr -n kube-system -- cilium status
+Defaulted container "cilium-agent" out of: cilium-agent, config (init), mount-cgroup (init), apply-sysctl-overwrites (init), mount-bpf-fs (init), clean-cilium-state (init), install-cni-binaries (init)
+KVStore:                 Disabled
+Kubernetes:              Ok         1.32 (v1.32.0) [linux/arm64]
+Kubernetes APIs:         ["EndpointSliceOrEndpoint", "cilium/v2::CiliumClusterwideNetworkPolicy", "cilium/v2::CiliumEndpoint", "cilium/v2::CiliumNetworkPolicy", "cilium/v2::CiliumNode", "cilium/v2alpha1::CiliumCIDRGroup", "core/v1::Namespace", "core/v1::Pods", "core/v1::Service", "networking.k8s.io/v1::NetworkPolicy"]
+KubeProxyReplacement:    True   [eth0   192.168.49.2 fe80::2c41:c5ff:fe9f:e465 (Direct Routing)]
+Host firewall:           Disabled
+SRv6:                    Disabled
+CNI Chaining:            none
+CNI Config file:         successfully wrote CNI configuration file to /host/etc/cni/net.d/05-cilium.conflist
+Cilium:                  Ok   1.17.2 (v1.17.2-fb3ab54f)
+NodeMonitor:             Listening for events on 2 CPUs with 64x4096 of shared memory
+Cilium health daemon:    Ok
+IPAM:                    IPv4: 3/254 allocated from 10.244.0.0/24,
+IPv4 BIG TCP:            Disabled
+IPv6 BIG TCP:            Disabled
+BandwidthManager:        Disabled
+Routing:                 Network: Tunnel [vxlan]   Host: Legacy
+Attach Mode:             TCX
+Device Mode:             veth
+Masquerading:            IPTables [IPv4: Enabled, IPv6: Disabled]
+Controller Status:       26/26 healthy
+Proxy Status:            OK, ip 10.244.0.6, 0 redirects active on ports 10000-20000, Envoy: external
+Global Identity Range:   min 256, max 65535
+Hubble:                  Ok              Current/Max Flows: 4095/4095 (100.00%), Flows/s: 1.50   Metrics: Disabled
+Encryption:              Disabled
+Cluster health:          3/3 reachable   (2025-03-19T15:41:27Z)
+Name                     IP              Node   Endpoints
+Modules Health:          Stopped(0) Degraded(0) OK(54)
+```
+
+
+
+<br/>
+
+
+
+### 基本特性(一) - 跨节点通信
+
+```bash
+$ kubectl get service
+NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+demo-echo-service   ClusterIP   10.110.229.85   <none>        80/TCP    3h26m
+kubernetes          ClusterIP   10.96.0.1       <none>        443/TCP   2d8h
+kiosk@ubuntuvm1:~$ minikube ssh      # 登录到 minikube 的宿主机上
+docker@minikube:~$ curl 10.110.229.85  # 访问 demo 的 cluster IP ，可以正常访问，访问的结果是负载均衡的
+POD Name: demo-echo-app-5d5558fcbd-mmpt4
+POD IP: 10.244.0.83
+Node IP: 192.168.49.2
+```
+
+登录到pod中查看
+
+```bash
+$ kubectl exec -it -n -kube-system cilium-559pk -- bash
+$ hubble observe --from-namespace default --follow=true
+```
+
+
+
+<img src="https://img1.kiosk007.top/static/images/blog/20250323232540-cilium-hubble-observe.webp">
+
+
+
+
+
+<br/>
+
+### 基本特性(二) - Hubble 可视化追踪
+
+Cilium 官方提供了一个流量测试的部署方案，可以直接使用官方部署的业务进行测试。
+
+执行命令 `cilium connectivity test`，Cilium 会自动创建 `cilium-test` 的 Namespace，同时在 cilium-test 下部署测试业务。
+
+```bash
+# kubectl get all -n cilium-test
+NAME                                  READY   STATUS    RESTARTS   AGE
+pod/client-7df6cfbf7b-z5t2j           1/1     Running   0          21s
+pod/client2-547996d7d8-nvgxg          1/1     Running   0          21s
+pod/echo-other-node-d79544ccf-hl4gg   2/2     Running   0          21s
+pod/echo-same-node-5d466d5444-ml7tc   2/2     Running   0          21s
+
+NAME                      TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+service/echo-other-node   NodePort   10.109.58.126   <none>        8080:32269/TCP   21s
+service/echo-same-node    NodePort   10.108.70.32    <none>        8080:32490/TCP   21s
+
+NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/client            1/1     1            1           21s
+deployment.apps/client2           1/1     1            1           21s
+deployment.apps/echo-other-node   1/1     1            1           21s
+deployment.apps/echo-same-node    1/1     1            1           21s
+
+NAME                                        DESIRED   CURRENT   READY   AGE
+replicaset.apps/client-7df6cfbf7b           1         1         1       21s
+replicaset.apps/client2-547996d7d8          1         1         1       21s
+replicaset.apps/echo-other-node-d79544ccf   1         1         1       21s
+replicaset.apps/echo-same-node-5d466d5444   1         1         1       21s
+```
+
+部署 Hubble Relay 后，Hubble 可以提供完整的集群范围的网络流量观测。
+
+- **配置端口转发**
+
+为了能正常访问 Hubble API，需要创建端口转发，将本地请求转发到 Hubble Service。可以执行 `kubectl port-forward deployment/hubble-relay -n kube-system 4245:4245` 命令，在当前终端开启端口转发。
+
+端口转发配置可以参考 [端口转发](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)。
+
+`kubectl port-forward` 命令不会返回，需要打开另一个终端来继续测试。
+
+配置完端口转发之后，在终端执行 `hubble status` 命令，如果有类似如下输出，则端口转发配置正确，可以使用命令行进行流量观测。
+
+```
+# hubble status
+Healthcheck (via localhost:4245): Ok
+Current/Max Flows: 8,190/8,190 (100.00%)
+Flows/s: 22.86
+Connected Nodes: 2/2
+```
+
+执行命令 `cilium hubble ui` 可以自动创建端口转发，将 `hubble-ui service` 映射到本地端口。 正常情况下，执行完命令后，会自动打开本地的浏览器，跳转到 Hubble UI 界面。如果没有自动跳转，在浏览器中输入 `http://localhost:12000` 打开 UI 观察界面。
+
+在界面左上角，选择 `cilium-test` namespace，查看 Cilium 提供的测试流量信息。
+
+<img src="https://img1.kiosk007.top/static/images/blog/20250323233419-cilium-test-ui.webp">
+
+
+
+### 基本特性(三) - 网络策略
+
+https://kube-ovn.readthedocs.io/zh-cn/latest/advance/cilium-networkpolicy/
 
 
 
@@ -358,6 +749,8 @@ Cilium 为 Linux 容器框架（如 [**Docker**](https://www.docker.com/) 和 [*
 
 
 - 参考：[最Cool Kubernetes网络方案Cilium入门](https://cilium.io/blog/2020/05/04/guest-blog-kubernetes-cilium/)
+
+- 参考: [Cilium 网络流量观测](https://kube-ovn.readthedocs.io/zh-cn/latest/advance/cilium-hubble-observe/)
 
 
 

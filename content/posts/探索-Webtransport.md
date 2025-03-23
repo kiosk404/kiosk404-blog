@@ -42,6 +42,51 @@ Webtransport draft 标明是支持TCP的， 但显然目前大家都在UDP上了
 
 <img src='https://img1.kiosk007.top/static/images/network/WebTransport/common_transport_requirements.png'>
 
+# WebTransport 与其他技术的关系
+
+## WebTransport 可以代替 Websockets 吗？
+
+也许可以，在某些互联网大厂的 IM、直播信令等应用其实已经在探索。
+
+Websocket 通信围绕着 单一、可靠、有序 的消息流建模，对于某些类型的通信需求来说很好。但是 WebTransport 的API 也可以提供相同的功能，相比之下，WebTransport 的数据报 API 可以提供低延迟交付。
+
+通过数据包 API ，多个 并发的 Stream API 实例使用 WebTransport，意味着不必担心[队列阻塞](https://en.wikipedia.org/wiki/Head-of-line_blocking) ，这可能是 WebSocket 的问题，此外，在建立新链接时还有性能优势，因为底层的[QUIC 握手](https://www.fastly.com/blog/quic-handshake-tls-compression-certificates-extension-study) 通过TLS启动TCP更快。
+
+> 举个例子，我一个直播应用有多个 消息类型需要发送，
+>
+> - 消息1. 表示有客户加入或退出
+> - 消息2. 表示有人私信
+> - 消息3. 表示有人发弹幕
+>
+> 很显然，这3类消息并不强相关，也就是3类消息不需要严格保序发送，WebTransport 可以为3类消息各开一个流然后发送，假设一个某消息因丢包无法及时发送到对端，但是并不影响其他类型的消息。  
+
+
+
+WebTransport 属于新草案规范，因此围绕客户端和服务器库的 WebSocket 生态系统目前更加强大。如果您需要具有通用服务器设置和广泛的 Web 客户端支持的“开箱即用”工具，WebSockets 是目前更好的选择。
+
+
+
+## Websocket Over QUIC 和 WebTransport 对比有什么区别？
+
+WebTransport 和 [Websocket Over QUIC](https://www.rfc-editor.org/rfc/rfc9220.html#name-websockets-upgrade-over-htt)  虽然都基于 QUIC 协议提升传输性能，但它们的设计理念、技术架构和应用场景存在本质差异。
+
+WebSocket over QUIC 是将 WebSocket 协议（基于 TCP 的全双工通信）封装在 QUIC 流中，属于 **应用层协议的传输层优化**。
+
+其底层利用的还是QUIC的一个 流，不是多个流，所以本质上没有利用QUIC的多路复用能力，IEEE 实验数据显示，在相同 QUIC 环境下，WebSocket over QUIC 的延迟和吞吐量与原生 WebSocket（基于 TCP）相比提升不足 10%，且在复杂网络条件下可能因协议叠加导致性能下降。
+
+
+
+### 与现有技术的对比
+
+| **技术**         | **传输协议** | **延迟** | **可靠性** | **适用场景**                |
+| ---------------- | ------------ | -------- | ---------- | --------------------------- |
+| **WebTransport** | QUIC + UDP   | 低       | 可选择     | 实时游戏、4K 视频流、物联网 |
+| **WebSocket**    | TCP          | 中       | 可靠       | 聊天、简单通知              |
+| **WebRTC**       | SRTP + DTLS  | 极低     | 可配置     | 视频会议、P2P 传输          |
+| **HTTP/3**       | QUIC         | 低       | 可靠       | 网页加载、API 调用          |
+
+
+
 # 探索
 
 当前的Webtransport 必须基于 QUIC draft-29 或更高版本。客户端主要以 chrome 浏览器为主，版本必须 >= 85 。服务端我们将基于 <a href="github.com/lucas-clemente/quic-go" style="color:#FF7F50"> github.com/lucas-clemente/quic-go </a>  go library 。因为是本地测试，我们还需要签发一个自签名证书。
@@ -139,7 +184,7 @@ func (s *WebTransportServerQuic) Run() error {
 <font style="color:#6495ED">QUIC使用流ID的最低两位指示流标识以下信息</font>
 1. 单向 or 双向流
 2. 由客户端 or 服务端发起。
-  
+
 ``` bash
                 +------+----------------------------------+
                 | Bits | Stream Type                      |
