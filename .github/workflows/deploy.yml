@@ -78,3 +78,4 @@ jobs:
           remote_path: ${{ secrets.REMOTE_PATH_DOCSIFY }}
           remote_user: ${{ secrets.REMOTE_USER }}
           remote_key: ${{ secrets.REMOTE_KEY }}
+
