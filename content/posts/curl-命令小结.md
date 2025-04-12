@@ -196,3 +196,48 @@ Upgrade via Alt-Svc:
 `curl --alt-svc altsvc.cache https://quic.aiortc.org/`
 
 See this list of [public HTTP/3 servers](https://bagder.github.io/HTTP3-test/)
+
+
+
+## ECH 
+
+不久前[CloudFlare](https://blog.cloudflare.com/new-standards/)正式为CDN全面启用了ECH(Encrypted Client Hello)功能，搭配DoH可以实现加密真实的SNI(Server Name Indication)，而明文显示Public Name。如经过CloudFlare CDN 并启用ECH后，明文SNI为`cloudflare-ech.com`
+
+<img src="https://img1.kiosk007.top/static/images/blog/20250412092114-curl-http3-ech.png">
+
+
+
+加密后的真实SNI至少在客户端和CloudFlare CDN之间是无法被第三方获知的，从而提供更强的隐私保障，并且由于不显示真实的SNI，根据SNI进行阻断连接的方法更加受到限制，除非将所有SNI为`cloudflare-ech.com`的连接一同阻断。
+
+我们可以使用 Curl 作为测试ECH和HTTP/3连接的工具，目前这些功能依然还处于测试过程中，并且实现了HTTP/3的ssl库非常多（如`openssl/openssl`, `quictls/openssl`, `cloudflare/quiche`等，[官方编译指南](https://curl.se/docs/http3.html)），但是貌似只有`cloudflare/quiche`同时支持ECH和HTTP/3。
+
+```bash
+sudo apt install git net-tools cmake build-essential libssl-dev zlib1g-dev libbrotli-dev libzstd-dev autoconf automake libtool libpsl-dev libnghttp2-dev pkg-config 
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+. "$HOME/.cargo/env"
+git clone --recursive -b 0.22.0 https://github.com/cloudflare/quiche
+git clone https://github.com/curl/curl
+cd quiche
+cargo build --package quiche --release --features ffi,pkg-config-meta,qlog
+ln -s libquiche.so target/release/libquiche.so.0
+mkdir quiche/deps/boringssl/src/lib
+ln -vnf $(find target/release -name libcrypto.a -o -name libssl.a) quiche/deps/boringssl/src/lib/
+cd ../curl
+autoreconf -fi
+./configure LDFLAGS="-Wl,-rpath,$PWD/../quiche/target/release" --with-openssl=$PWD/../quiche/quiche/deps/boringssl/src --with-quiche=$PWD/../quiche/target/release --enable-ech --with-zlib --with-brotli --with-zstd --enable-versioned-symbols
+make
+```
+
+执行命令验证：
+
+```bash
+curl  --http2 --ech true --doh-url https://dot.pub/dns-query https://tls-ech.dev -vv -o /dev/null
+```
+
+下面可以看到 TLS 的 client hello 上显示的是 `public.tls-ech.dev`, 但是下面实际通信的 Host 是  `tls-ech.dev`
+
+<img src="https://img1.kiosk007.top/static/images/blog/20250412093204-curl-http3-ech-11.png">
+
+
+
+编译的相关的文章链接：https://kabe.dev/%E7%BC%96%E8%AF%91curl/
