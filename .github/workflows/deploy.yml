@@ -28,7 +28,7 @@ jobs:
   # job名称为deploy
   deploy:
     # 使用GitHub提供的runner
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
       # 检出代码，包括submodules，保证主题文件正常
