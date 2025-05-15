@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kiosk's Studio</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontawesome-free-6.2.1@6.2.1/css/all.min.css">
+  <!-- 添加 highlight.js 的样式 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/vs2015.min.css">
+  <!-- 添加 docsify kitex 数学公式-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+  <!-- Adds the default breadcrumb styling -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-breadcrumb@latest/dist/breadcrumb.min.css">
+  <!-- fontawesome -->
+  <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@6.7.2/css/fontawesome.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@6.7.2/css/brands.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@6.7.2/css/regular.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@6.7.2/css/solid.css" />
+  <!-- terminal 风格 -->
+  <link rel="stylesheet" href="https://img1.kiosk007.top/static/css/termynal.css">
+  <link rel="stylesheet" href="https://img1.kiosk007.top/static/css/custom.css">
+  <!-- Q&A style -->
+  <link rel="stylesheet" href="https://unpkg.com/docsify-accordion/src/style.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/LIGMATV/docsify-theme-github/github.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/LIGMATV/docsify-vite-coverpage@main/docsify-vite-coverpage.css">
+  <style>
+   :root {
+      --dark-base-background: #222;
+      --dark-base-color: #bbc0c4;
+      --dark-theme-color: var(--theme-color, #42b983);
+      --dark-code-color: var(--dark-color);
+      --dark-heading-color: var(--dark-theme-color);
+      --dark-cover-background: #000000a8;
+      --dark-code-background: #303030;
+      --dark-tip-background: #2c0000;
+      --dark-warn-background: #005842;
+      --dark-icon-size: 15px;
+      --dark-icon-transition: .1s ease-in-out .1s;
+      --dark-moon-color: #000000;
+      --dark-sun-color: #ffffff;
+      --dark-moon-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'%3E%3Cpath fill='currentColor' d='M9.598 1.591a.749.749 0 0 1 .785-.175 7.001 7.001 0 1 1-8.967 8.967.75.75 0 0 1 .961-.96 5.5 5.5 0 0 0 7.046-7.046.75.75 0 0 1 .175-.786m1.616 1.945a7 7 0 0 1-7.678 7.678 5.499 5.499 0 1 0 7.678-7.678'/%3E%3C/svg%3E");
+      --dark-sun-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'%3E%3Cpath fill='currentColor' d='M8 12a4 4 0 1 1 0-8a4 4 0 0 1 0 8m0-1.5a2.5 2.5 0 1 0 0-5a2.5 2.5 0 0 0 0 5m5.657-8.157a.75.75 0 0 1 0 1.061l-1.061 1.06a.749.749 0 0 1-1.275-.326a.749.749 0 0 1 .215-.734l1.06-1.06a.75.75 0 0 1 1.06 0Zm-9.193 9.193a.75.75 0 0 1 0 1.06l-1.06 1.061a.75.75 0 1 1-1.061-1.06l1.06-1.061a.75.75 0 0 1 1.061 0M8 0a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V.75A.75.75 0 0 1 8 0M3 8a.75.75 0 0 1-.75.75H.75a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 3 8m13 0a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 16 8m-8 5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 8 13m3.536-1.464a.75.75 0 0 1 1.06 0l1.061 1.06a.75.75 0 0 1-1.06 1.061l-1.061-1.06a.75.75 0 0 1 0-1.061M2.343 2.343a.75.75 0 0 1 1.061 0l1.06 1.061a.751.751 0 0 1-.018 1.042a.751.751 0 0 1-1.042.018l-1.06-1.06a.75.75 0 0 1 0-1.06Z'/%3E%3C/svg%3E");
+    }
+  </style>
+
+</head>
+<body>
+  <nav>
+    <a target="_self" href="https://kiosk007.top"><i class="fas fa-home"></i> Kiosk's Blog</a>
+  </nav>
+  <div id="app">Loading ...</div>
+  <script>     
+    window.$docsify = {
+      name: '<img src="https://kiosk007.top/docsify-book/cloudnative-openstack/_media/shiba.svg"><p>专题</p>',
+      repo: '',
+      loadSidebar: true,    // 加载 _sidebar.md
+      loadNavbar: false,     // 加载 _navbar.md
+      subMaxLevel: 2,
+      themeColor: '#3F51B5',
+      sidebarDisplayLevel: 1,
+      coverpage: false,
+      onlyCover: false,
+      auto2top: true,
+      mergeNavbar: true,
+      formatUpdated: '{MM}/{DD} {HH}:{mm}',
+      externalLinkTarget: '_blank',
+      alias: {
+        "/.*/_sidebar.md": "/_sidebar.md",
+      },
+      
+      footer: {
+        copy: '<span> CC BY-NC 4.0 | 京ICP备20015006号-1 &copy; </span>',
+        auth: 'kiosk007',
+        pre: '<hr/>',
+        style: 'text-align: right;',
+        class: 'className',
+      },
+
+      // 字数统计
+      count: {
+          countable: true,
+          position: "top",
+          margin: "30px",
+          float: "right",
+          fontsize: "0.9em",
+          language: "chinese",
+          localization: {
+            words: "",
+            minute: "",
+          },
+          isExpected: true,
+      },
+
+      // 面包屑
+      breadcrumb: {
+        showHome: true,
+        homeText: 'Home',
+        separator: ' &rsaquo; ',
+        casing: 'capitalize',
+        linkColor: 'var(--theme-color, #42b983)',
+        size: 'small'
+      },
+
+      // 底部导航
+      pagination: {
+        previousText: "上一页",
+        nextText: "下一页",
+        crossChapter: true,
+        crossChapterText: true,
+      },
+
+      // 代码折叠
+      hideCode: {
+        scroll: false, // Enable scrolling
+        height: 800 // Max height
+      },      
+
+      markdown: {
+        renderer: {
+          code: function (code, lang) {
+            if (lang === 'drawio') {
+              if (window.drawioConverter) {
+                console.log('drawio 转化中')
+                return window.drawioConverter(code)
+              } else {
+                return `<div class='drawio-code'>${code}</div>`
+              }
+            } else {
+              return this.origin.code.apply(this, arguments);
+            }
+          }
+        }
+      },
+
+      plugins: [
+        function (hook, vm) {
+          /*termynal.js*/
+          hook.beforeEach(function(content){
+              return beforeEach(content);
+          })
+          hook.doneEach(function (){
+              setupTermynal();
+              showRandomAnnouncement('announce-left', 5000)
+              showRandomAnnouncement('announce-right', 10000)
+          });
+        }
+      ]
+    };
+  
+ </script>
+  <!-- 先加载 highlight.js -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+  <!-- 添加需要的语言支持 -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/go.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/bash.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/yaml.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/dockerfile.min.js"></script>
+  
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/fontawesome-free-6.2.1@6.2.1/js/all.min.js"></script>
+
+  <!-- 数学公式 -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-katex@latest/dist/docsify-katex.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/marked@4"></script>
+  
+  <!-- Docsify v4 -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-copy-code"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-tabs@1.6.3/dist/docsify-tabs.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-count@latest/dist/countable.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-hide-code/dist/docsify-hide-code.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/LIGMATV/docsify-dark-switcher@latest/docsify-dark-switcher.js"></script>
+  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/SDU-Little-River/docsify-fontsize@latest/fontsize.js"></script> -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/docsify-fontawesome@0.1.1/dist/docsify-fontawesome.min.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/docsify-footer-enh@0.1.0/dist/docsify-footer-enh.min.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/@rakutentech/docsify-code-inline@1.0.5/dist/index.min.js"></script>
+
+  <!--代码高亮-->
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-go.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-rust.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
+
+  <!-- terminal 样例：https://github.com/sxin0/docsify-termynal?tab=readme-ov-file -->
+  <script type="text/javascript" src="https://img1.kiosk007.top/static/js/custom.js"></script>   
+  <script type="text/javascript" src="https://img1.kiosk007.top/static/js/termynal.js"></script>
+  <!-- terminal 样例 https://github.com/dolanmiu/docsify-terminal-block -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-terminal-block@1.0.3"></script>
+  <!-- drawio 样例 https://github.com/KonghaYao/docsify-drawio-->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsify-drawio/viewer.min.js"></script>
+  <script type="text/javascript" src='https://cdn.jsdelivr.net/npm/docsify-drawio/drawio.js'></script>
+  <!-- Q&A 样例 https://github.com/isaozler/docsify-accordion -->
+  <script type="text/javascript" src="https://unpkg.com/docsify-accordion/src/index.js"></script>
+  
+</body>
+</html>
+
