@@ -5,7 +5,7 @@ author: kiosk
 tags:
   - openstack
 categories:
-  - cloud_computing
+  - Cloud Computing
 date: 2022-08-18 16:30:00
 ---
 

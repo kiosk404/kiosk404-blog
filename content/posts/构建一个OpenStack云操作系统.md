@@ -6,7 +6,7 @@ lastmod: 2022-08-29 11:26:27
 tags:
   - openstack
 categories:
-  - cloud_computing
+  - Cloud Computing
 ---
 
 在前面的 [文章](https://kiosk007.top/post/%E8%AE%A4%E8%AF%86-openstack/) 中认识了 OpenStack ，这篇文章会实际搭建一个 OpenStack 服务来更好的认识 OpenStack。OpenStack 本身能被定义为云操作系统，本身是比较复杂的，其是云计算的基石，虽然近些年已经有被 Kubernets 拍在沙滩上的意思，但是虚拟机相比于容器，其在腾讯云、华为云、阿里云等云厂商，还是主要对外的计算服务。

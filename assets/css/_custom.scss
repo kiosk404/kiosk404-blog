@@ -35,15 +35,37 @@
     text-rendering: optimizeLegibility;
 }
 
+@font-face {
+    font-family: 'Maple Mono Regular';
+    src: url('/lib/webfonts/MapleMonoNormal-Regular.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 600;
+    text-rendering: optimizeLegibility;
+}
+
 :root {
     --global-font-size: 16px;
     --global-font-color: #444;
-    --mono-font-stack: Roboto Mono, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
-    --font-stack: Roboto Mono, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
-    --global-line-height: 1.6em;
+    --global-line-height: 1.6em; /* 统一行高 */
     --page-width: 70em;
     --display-h1-decoration: 1;
-    --code-bg-color: #fff;
+
+    /* 字体栈：确保你定义的 font-family 名称 'Maple Mono Regular' 在这里 */
+    --mono-font-stack: 'Maple Mono Regular', Roboto Mono, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
+    --font-stack: 'Maple Mono Regular', 'Noto Sans SC', sans-serif; /* 建议这里引入一个中文 sans-serif 字体作为备用，确保中文显示兼容性 */
+
+    /* 代码块颜色相关变量 */
+    --code-block-background-light: #f6efef; /* 代码块背景色（亮色模式下） */
+    --code-text-color-light: #25272b; /* 代码文本颜色（亮色模式下） */
+    --code-inline-background-light: #f8f8f8; /* 行内代码背景色（亮色模式下） */
+    --code-inline-text-color-light: #634d3c; /* 行内代码文本颜色（亮色模式下） */
+
+    // 其他全局变量
+    --main-top-padding: 30px;
+    --card-border-radius: 25px;
+    --tag-border-radius: 8px;
+    --section-separation: 40px;
+    --article-font-size: 1.8rem;
 }
 
 @media only screen and (max-width: 850px) {
@@ -95,6 +117,7 @@ h6,
 .h5,
 .h6 {
     font-family: var(--font-stack);
+    font-weight: bold; 
     clear: both;
 }
 
@@ -331,33 +354,13 @@ figure {
   // ---------------------------------------
   // 代码块基础样式修改
   .highlight {
-    max-width: 102% !important;
-    background-color: var(--pre-background-color);
-    padding: var(--card-padding);
     position: relative;
-    border-radius: 20px;
-    margin-left: -7px !important;
-    margin-right: -12px;
-    box-shadow: var(--shadow-l1) !important;
-  
-    &:hover {
-      .copyCodeButton {
-        opacity: 1;
-      }
-    }
-  
-    // keep Codeblocks LTR
-    [dir="rtl"] & {
-      direction: ltr;
-    }
-  
-    pre {
-      margin: initial;
-      padding: 0;
-      margin: 0;
-      width: auto;
-    }
-  }
+    margin: 1.5rem 0; /* 保持外边距 */
+    border-radius: 8px; /* 统一圆角 */
+    background: var(--code-block-background-light); /* 使用变量 */
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
   
   // light模式下的代码块样式调整
   [data-scheme="light"] .article-content .highlight {

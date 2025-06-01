@@ -1,0 +1,283 @@
+/* 🔧 强制 docsify 页面内容区全宽 */
+
+
+/* 🌈 美化并撑满表格 */
+.markdown-section table {
+  width: 100%;
+  margin: 1.5em auto;
+  border-collapse: collapse;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
+  table-layout: fixed;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* 表头 */
+.markdown-section thead th {
+  background-color: #f6f8fa;
+  font-weight: 600;
+  color: #1f2328;
+  padding: 12px;
+  border: 1px solid #d0d7de;
+  text-align: left;
+}
+
+/* 表格单元格 */
+.markdown-section td {
+  padding: 12px;
+  border: 1px solid #d0d7de;
+  color: #24292f;
+  text-align: left;
+  word-break: break-word;
+}
+
+/* 斑马纹 */
+.markdown-section tbody tr:nth-child(even) td {
+  background-color: #f6f8fa;
+}
+
+/* Hover 效果 */
+.markdown-section tbody tr:hover td {
+  background-color: #eaeef2;
+}
+
+/* 圆角修复四个角 */
+.markdown-section table thead tr:first-child th:first-child {
+  border-top-left-radius: 8px;
+}
+.markdown-section table thead tr:first-child th:last-child {
+  border-top-right-radius: 8px;
+}
+.markdown-section table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+.markdown-section table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+/*
+ * style.css
+ *
+ * Custom CSS for Docsify to closely match the font, size, line-height,
+ * and letter-spacing of AI assistant's textual output.
+ *
+ * Place this file in your Docsify project's root directory (e.g., next to index.html).
+ * Ensure it is linked in your index.html AFTER Docsify's default theme CSS.
+ * Example in index.html: <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css">
+ * <link rel="stylesheet" href="/style.css">
+ */
+
+/* === Base Body and Global Typography === */
+/* This targets the entire document body for global font settings */
+body {
+  /* Font Family: Comprehensive system UI font stack for cross-platform consistency */
+  font-family:
+    -apple-system,         /* Apple system font on macOS/iOS */
+    BlinkMacSystemFont,    /* Another Apple system font */
+    "Segoe UI",           /* Windows system font */
+    Roboto,                /* Android/Google's font, also common on Linux */
+    Oxygen,                /* Common Linux font */
+    Ubuntu,                /* Ubuntu Linux font */
+    Cantarell,             /* Linux font */
+    "Fira Sans",           /* Popular open-source font, often on Linux */
+    "Droid Sans",          /* Android font */
+    "Helvetica Neue",      /* Older Apple font, good fallback */
+    Arial,                 /* Widely available generic sans-serif */
+    sans-serif,            /* Generic sans-serif fallback */
+    "Apple Color Emoji",   /* Emoji support for Apple devices */
+    "Segoe UI Emoji",     /* Emoji support for Windows */
+    "Segoe UI Symbol";    /* Emoji support for Windows */
+
+  /* Base Font Size: Standard comfortable reading size */
+  font-size: 16px;
+
+  /* Line Height: Precise value for good vertical spacing between lines */
+  line-height: 1.65; /* A common value for comfortable reading */
+
+  /* Letter Spacing: Very subtle adjustment for character spacing */
+  letter-spacing: 0.012em; /* Slightly open, but not too loose */
+
+  /* Text Color: Standard dark gray for optimal contrast */
+  color: #333;
+
+  /* Text Alignment: Ensure all text is left-aligned by default */
+  text-align: left;
+
+  /* Font Smoothing for better rendering on modern browsers */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga' on; /* Enable ligatures for better character connections */
+}
+
+/* === Markdown Content Section Specific Styles === */
+/* Target the main content area where Markdown is rendered */
+.markdown-section {
+  /* Ensure content wraps properly without overflowing */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  padding: 1.5em 2em; /* Restore some padding for content comfort */
+}
+
+/* Paragraphs */
+.markdown-section p {
+  font-size: 16px; /* Explicit size for paragraphs */
+  line-height: 1.7; /* Slightly more generous line height for paragraphs */
+  letter-spacing: 0.01em; /* Consistent letter spacing */
+  margin-top: 0;
+  margin-bottom: 1em; /* Space after paragraphs */
+  text-align: left;
+}
+
+/* Headings (H1 to H6) */
+.markdown-section h1,
+.markdown-section h2,
+.markdown-section h3,
+.markdown-section h4,
+.markdown-section h5,
+.markdown-section h6 {
+  font-family: inherit; /* Inherit font from body for consistency */
+  font-weight: bold; /* Make headings bold */
+  color: #2c3e50; /* A darker shade for headings */
+  line-height: 1.3; /* Tighter line height for headings */
+  letter-spacing: -0.01em; /* Slightly condensed letter spacing for headings */
+  text-align: left;
+  margin-top: 2.2em; /* More space above headings */
+  margin-bottom: 0.8em; /* Space below headings */
+}
+
+.markdown-section h1 { font-size: 2.2em; } /* Roughly 35px */
+.markdown-section h2 { font-size: 1.8em; } /* Roughly 29px */
+.markdown-section h3 { font-size: 1.5em; } /* Roughly 24px */
+.markdown-section h4 { font-size: 1.25em; } /* Roughly 20px */
+.markdown-section h5 { font-size: 1.1em; } /* Roughly 17.6px */
+.markdown-section h6 { font-size: 1em; }   /* Roughly 16px, can be bolded for emphasis */
+
+/* Lists (Unordered and Ordered) */
+.markdown-section ul,
+.markdown-section ol {
+  margin-top: 0;
+  margin-bottom: 1em;
+  padding-left: 2em; /* Indentation for lists */
+}
+
+.markdown-section li {
+  font-size: 16px; /* Consistent font size for list items */
+  line-height: 1.65; /* Consistent line height for list items */
+  letter-spacing: 0.01em; /* Consistent letter spacing */
+  margin-bottom: 0.4em; /* Small space between list items */
+  text-align: left;
+}
+
+/* Blockquotes */
+.markdown-section blockquote {
+  border-left: 4px solid #42b983; /* Docsify's green accent */
+  background-color: #f8f8f8; /* Light background for quotes */
+  color: #555; /* Muted text color for quotes */
+  padding: 1em 1.5em;
+  margin: 1.8em 0;
+  font-style: italic; /* Italic text for quotes */
+  line-height: 1.6;
+  text-align: left;
+  border-radius: 4px; /* Slightly rounded corners */
+}
+
+/* Code Blocks & Inline Code */
+.markdown-section pre,
+.markdown-section code {
+  /* Monospaced font specifically for code */
+  font-family:
+    'SFMono-Regular',      /* macOS system monospace */
+    'Consolas',            /* Windows system monospace */
+    'Liberation Mono',     /* Linux common monospace */
+    'Menlo',               /* macOS alternative */
+    'Courier New',         /* Widely available monospace fallback */
+    'monospace';           /* Generic monospace fallback */
+
+  font-size: 0.88em; /* Slightly smaller for code, relative to body */
+  line-height: 1.5; /* Code line height */
+  letter-spacing: 0; /* No letter spacing for code for consistent columns */
+}
+
+/* Code Blocks (e.g., ```go code here ```) */
+.markdown-section pre {
+  background-color: #f6f8fa; /* GitHub-like light background */
+  padding: 1em 1.2em;
+  margin: 1.5em 0;
+  border-radius: 6px;
+  overflow-x: auto; /* Horizontal scroll for long lines */
+  white-space: pre-wrap; /* Allows long lines to wrap */
+  word-wrap: break-word; /* Breaks words if necessary */
+}
+
+.markdown-section pre code {
+  background-color: transparent; /* Remove background from inner code tag */
+  padding: 0;
+  color: inherit; /* Inherit color from pre block */
+  border-radius: 0;
+}
+
+/* Inline Code (e.g., `some code`) */
+.markdown-section p code,
+.markdown-section li code,
+.markdown-section th code,
+.markdown-section td code {
+  background-color: rgba(0, 0, 0, 0.06); /* Slightly more visible background for inline code */
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-weight: normal; /* Inline code usually not bold */
+  color: #c7254e; /* A common distinct color for inline code */
+}
+
+/* Tables */
+.markdown-section table {
+  border-collapse: collapse; /* Collapsed borders for a minimal look */
+  width: 100%;
+  margin: 1.5em 0; /* Spacing around tables */
+  font-size: 0.9em; /* Table font slightly smaller than body */
+  font-family: inherit; /* Inherit body font */
+  text-align: left;
+}
+
+.markdown-section th,
+.markdown-section td {
+  padding: 0.8em 1.1em; /* Generous padding for cells */
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0; /* Very light bottom border for rows */
+}
+
+.markdown-section th {
+  background-color: #f7f7f7; /* Subtle background for headers */
+  font-weight: bold;
+  color: #555;
+  border-bottom: 2px solid #ccc; /* Stronger bottom border for header row */
+}
+
+/* Ensure last row has a clean bottom edge */
+.markdown-section tbody tr:last-child td {
+  border-bottom: 1px solid #ccc; /* Or `none` if you prefer no bottom border on the last row */
+}
+
+/* Optional: Subtle row striping for better readability */
+.markdown-section tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Links */
+.markdown-section a {
+  color: #0366d6; /* Standard web blue for links */
+  text-decoration: none; /* No underline by default */
+}
+
+.markdown-section a:hover {
+  text-decoration: underline; /* Underline on hover for interactivity */
+}
+
+/* Horizontal Rule */
+.markdown-section hr {
+  border: none;
+  border-top: 1px solid #eee; /* Light separator line */
+  margin: 2.5em 0; /* Ample spacing around rules */
+}
