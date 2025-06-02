@@ -166,3 +166,30 @@ h6,
 .content p {
     line-height: 2.3;
 }
+
+
+/* assets/css/_custom.scss */
+
+// 假设您的页眉高度是 70px，请替换为实际测量值
+$header-height: 70px;
+
+// 针对您的文章内容容器添加顶部内边距
+// 请根据您在浏览器开发者工具中找到的实际选择器来修改这里
+// LoveIt 主题的文章内容容器通常是 .single-page 或类似的
+.single-page { // 举例：如果您的文章内容容器是 .single-page
+    padding-top: $header-height;
+}
+
+// 如果页眉的高度不是固定不变的，或者您想给标题额外的空间
+// 您也可以考虑为文章的第一个标题添加一个顶部外边距
+// 假设文章标题是 h1 或 h2，并且在 .single-page 容器内
+.single-page h1:first-of-type,
+.single-page h2:first-of-type {
+    margin-top: calc($header-height + 20px); // 留出页眉高度再加 20px 的额外空间
+}
+
+// 或者，如果您的页眉是全局性的，并且内容区域是另一个统一的容器
+// 请根据实际情况选择或组合使用
+// body {
+//     padding-top: $header-height;
+// }
