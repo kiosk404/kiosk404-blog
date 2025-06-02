@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Golang 内存逃逸分析 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="Golang 内存逃逸分析">
+  <meta property="og:description" content="最近总是碰到有人讨论内存逃逸的问题，而且上升到装逼必备的地步，是时候了解一下什么叫内存逃逸了，于是在网上查了一下相关的资料。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-04-02T11:10:00+00:00">
+    <meta property="article:modified_time" content="2022-04-02T11:10:00+00:00">
+    <meta property="article:tag" content="Golang">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="Golang 内存逃逸分析">
+  <meta name="twitter:description" content="最近总是碰到有人讨论内存逃逸的问题，而且上升到装逼必备的地步，是时候了解一下什么叫内存逃逸了，于是在网上查了一下相关的资料。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" /><link rel="prev" href="http://localhost:1313/post/golang-gmp/" /><link rel="next" href="http://localhost:1313/post/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Golang 内存逃逸分析",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "golang","wordcount":  406 ,
+        "url": "http:\/\/localhost:1313\/post\/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90\/","datePublished": "2022-04-02T11:10:00+00:00","dateModified": "2022-04-02T11:10:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Golang 内存逃逸分析</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/programming/"><i class="far fa-folder fa-fw"></i>Programming</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-04-02">2022-04-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;406 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#什么是内存逃逸">什么是内存逃逸</a></li>
+        <li><a href="#go-内存分配">Go 内存分配</a></li>
+        <li><a href="#什么是逃逸分析">什么是逃逸分析</a></li>
+        <li><a href="#为什么要逃逸呢">为什么要逃逸呢？</a></li>
+        <li><a href="#如何分析逃逸呢">如何分析逃逸呢？</a></li>
+        <li><a href="#几个逃逸分析的例子">几个逃逸分析的例子</a></li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2022-04-02T11:10:00" title="April 2, 2022">April 2, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>最近总是碰到有人讨论内存逃逸的问题，而且上升到装逼必备的地步，是时候了解一下什么叫内存逃逸了，于是在网上查了一下相关的资料。</p>
+<h2 id="什么是内存逃逸">什么是内存逃逸</h2>
+<p>初次看到这个话题，我是懵逼的，只知道内存逃逸很高级。还是值得理解一下的。</p>
+<br/>
+<p><strong>先看一个C++ 和 Go 的例子</strong>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">foo</span><span class="p">(</span><span class="nx">arg_val</span> <span class="kt">int</span><span class="p">)(</span><span class="o">*</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">foo_val</span> <span class="kt">int</span> <span class="p">=</span> <span class="mi">11</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">foo_val</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">main_val</span> <span class="o">:=</span> <span class="nf">foo</span><span class="p">(</span><span class="mi">666</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">println</span><span class="p">(</span><span class="o">*</span><span class="nx">main_val</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>编译运行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="err">$</span> <span class="k">go</span> <span class="nx">run</span> <span class="nx">main</span><span class="p">.</span><span class="k">go</span>
+</span></span><span class="line"><span class="cl"><span class="mi">11</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>竟然没有报错，并且返回了11。了解 C/C++ 的同学应该知道，这是不被允许的，因为外部函数用了子函数的局部变量。因为子函数的 <code>foo_val</code> 会被销毁。如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="o">*</span><span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">arg_val</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">foo_val</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="o">&amp;</span><span class="n">foo_val</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="o">*</span><span class="n">main_val</span> <span class="o">=</span> <span class="nf">foo</span><span class="p">(</span><span class="mi">666</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="o">*</span><span class="n">main_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>编译：</p>
+<pre tabindex="0"><code>$ gcc main.c 
+main.c: In function ‘foo’:
+main.c:7:12: warning: function returns address of local variable [-Wreturn-local-addr]
+     return &amp;foo_val;
+            ^~~~~~~~
+</code></pre><p>出了一个警告，不管他，再运行</p>
+<pre tabindex="0"><code>$ ./a.out 
+段错误 (核心已转储)
+</code></pre><p>程序崩溃.</p>
+<p>如上C/C++编译器明确给出了警告，foo把一个局部变量的地址返回了</p>
+<p>我们知道程序运行是需要内存的，而内存空间包含两个最重要的区域：堆区(Heap)和栈区(Stack)。在C语言中，栈区存放函数参数，局部变量，堆也被称为动态内存分配，<strong>它是由程序员手动完成申请和释放的</strong>。</p>
+<br/>
+<p>C 语言中，函数不能返回局部变量<strong>地址</strong>（指存放在栈区的局部变量地址），这是因为函数调用完毕之后，局部变量会随函数一起被释放掉。其地址指向的内容可能没变也可能被改变。所以想要返回函数局部变量的地址，必须是动态分配的，也就是堆上的数据。</p>
+<p>但是Go是一门自带GC的语言，真正解放了程序员，不需要程序员手动管理内存，内存管理交给了编译器，编译器会经过逃逸分析把变量合理的分配到&quot;正确&quot;的地方。</p>
+<p>所以内存逃逸可以理解如下：</p>
+<p>在一段程序中，每一个函数都会有自己的内存区域存放自己的局部变量、返回地址等，这些内存会由编译器在栈中进行分配，每一个函数都会分配一个栈桢，在函数运行结束后进行销毁，但是有些变量我们想在函数运行结束后仍然使用它，那么就需要把这个变量在堆上分配，这种从&quot;栈&quot;上逃逸到&quot;堆&quot;上的现象就成为内存逃逸。</p>
+<h2 id="go-内存分配">Go 内存分配</h2>
+<p>Go 语言的编译期会自动决定把一个变量放在栈还是堆上，编译器会做<strong>逃逸分析（escape analysis）</strong>，<strong>当发现变量的作用域没有跑出函数范围</strong>，<strong>就可以在栈上</strong>，<strong>反之则必须分配在堆</strong>。</p>
+<br/>
+<p>Go 是自带GC的，程序员可以随意在函数内返回局部变量的地址，而不用关心内存的释放问题。Go 的编译器会自行决定变量分配在堆上还是分配在栈上。一般来说Go编译器将为该函数的栈中的函数分配局部变量。但是，如果编译器在函数返回后无法证明变量未被引用，则编译器必须在垃圾收集堆上分配变量以避免悬空指针错误。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">GetWares</span><span class="p">()</span> <span class="o">*</span><span class="nx">Wares</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">budget</span> <span class="kt">int</span> 
+</span></span><span class="line"><span class="cl">  <span class="nx">budget</span> <span class="p">=</span> <span class="nx">dbFactory</span><span class="p">.</span><span class="nf">GetBudget</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="nx">budget</span> <span class="p">&gt;</span> <span class="mi">100</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">reutrn</span> <span class="o">&amp;</span><span class="nx">Wares</span><span class="p">{</span><span class="nx">name</span><span class="p">:</span> <span class="s">&#34;篮球&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">budget</span> <span class="p">&gt;</span> <span class="mi">50</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">Wares</span><span class="p">{</span><span class="nx">name</span><span class="p">:</span> <span class="s">&#34;足球&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上面简单的例子可以看出局部变量 <code>budget</code> 只在函数内有使用，所以budget是分配在栈上。</p>
+<p><code>&amp;Wares</code> 被分配到了堆上。</p>
+<h2 id="什么是逃逸分析">什么是逃逸分析</h2>
+<p>在编译程序优化理论中，逃逸分析是一种确定指针动态范围的方法，简单来说就是分析在程序的哪些地方可以访问到该指针</p>
+<p>通俗地讲，逃逸分析就是确定一个变量要放堆上还是栈上，规则如下：</p>
+<ol>
+<li>是否有在其他地方（非局部）被引用。只要<strong>有可能</strong>被引用了，那么它<strong>一定</strong>分配到堆上。否则分配到栈上</li>
+<li>即使没有被外部引用，但对象过大，无法存放在栈区上。依然有可能分配到堆上</li>
+</ol>
+<h2 id="为什么要逃逸呢">为什么要逃逸呢？</h2>
+<p>这个问题其实可以反过来想，如果变量全部分配到堆上会发生甚么样的情况呢？</p>
+<ul>
+<li>垃圾回收（GC）的压力不断的变大</li>
+<li>申请、分配、回收内存的开销增大</li>
+<li>动态分配内存产生很多碎片</li>
+</ul>
+<p>总的来说，频繁的再堆上申请、分配内存是有代价的。会影响程序的运行效率。间接的影响到整个系统。</p>
+<h2 id="如何分析逃逸呢">如何分析逃逸呢？</h2>
+<p>第一：通过编译器的命令，就可以看到详细的逃逸过程。指令集<code>-gcflags</code>用于将标识参数传递给Go编译器，涉及如下：</p>
+<ul>
+<li><code>-m</code> 会打印出逃逸分析的优化策略，可以使用4个<code>-m</code>, 实际上用一个就可以了</li>
+<li><code>-l</code> 会禁用函数内联，禁掉inline可以更好观察逃逸情况，减少干扰</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ go build -gcflags <span class="s1">&#39;-m -l&#39;</span> main.go
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>第二：反编译</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ go tool compile -S main.go
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="几个逃逸分析的例子">几个逃逸分析的例子</h2>
+<p><strong>逃逸案例</strong></p>
+<ul>
+<li>案例一：指针</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ID</span>     <span class="kt">int64</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Name</span>   <span class="kt">string</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">GetUserInfo</span><span class="p">()</span> <span class="o">*</span><span class="nx">User</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">User</span><span class="p">{</span><span class="nx">ID</span><span class="p">:</span> <span class="mi">394244</span><span class="p">,</span> <span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Kiosk007&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">_</span> <span class="p">=</span> <span class="nf">GetUserInfo</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>执行如下命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ go build -gcflags <span class="s1">&#39;-m -l&#39;</span> main.go
+</span></span><span class="line"><span class="cl"><span class="c1"># command-line-arguments</span>
+</span></span><span class="line"><span class="cl">./main.go:10:54: <span class="p">&amp;</span>User literal escapes to heap
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过分析可知，<code>&amp;User</code> 逃逸到了堆上，这是因为 <code>GetUserInfo()</code> 返回的是一个指针对象，引用返回到了方法之外，因此编译器会将该对象分配到堆上， 而不是栈上。</p>
+<ul>
+<li>案例二： 未确定类型</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">str</span> <span class="o">:=</span> <span class="s">&#34;Kiosk007&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>执行如下命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ go build -gcflags <span class="s1">&#39;-m -l&#39;</span> main.go
+</span></span><span class="line"><span class="cl"><span class="c1"># command-line-arguments</span>
+</span></span><span class="line"><span class="cl">./main.go:8:13: ... argument does not escape
+</span></span><span class="line"><span class="cl">./main.go:8:13: str escapes to heap
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过分析可知 <code>str</code> 变量逃逸到了堆上，也就是该对象在堆上分配，这是因为当形参是 <code>internal</code>类型时，在编译阶段编译器无法确定其类型，因此会产生逃逸</p>
+<ul>
+<li>案例三：泄露参数</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ID</span>     <span class="kt">int64</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Name</span>   <span class="kt">string</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">GetUserInfo</span><span class="p">(</span><span class="nx">u</span> <span class="o">*</span><span class="nx">User</span><span class="p">)</span> <span class="o">*</span><span class="nx">User</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">u</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">_</span> <span class="p">=</span> <span class="nf">GetUserInfo</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">User</span><span class="p">{</span><span class="nx">ID</span><span class="p">:</span> <span class="mi">394244</span><span class="p">,</span> <span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Kiosk007&#34;</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>执行如下命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ go build -gcflags <span class="s1">&#39;-m -l&#39;</span> main.go
+</span></span><span class="line"><span class="cl"><span class="c1"># command-line-arguments</span>
+</span></span><span class="line"><span class="cl">./main.go:9:18: leaking param: u to result ~r1 <span class="nv">level</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl">./main.go:14:63: main <span class="p">&amp;</span>User literal does not escape
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上述代码说明变量 <code>u</code>是一个泄露的参数，结合代码可得知其传给 <code>GetUserInfo</code> 方法后，没有做任何引用之类的涉及变量的动作，直接就把这个变量返回出去了。因此这个变量实际上并没有逃逸，</p>
+<h2 id="总结">总结</h2>
+<ul>
+<li>逃逸分析在编译阶段确定哪些变量可以分配在栈中，哪些变量分配在堆上</li>
+<li>逃逸分析减轻了<code>GC</code>压力，提高程序的运行速度</li>
+<li>栈上内存使用完毕不需要<code>GC</code>处理，堆上内存使用完毕会交给<code>GC</code>处理</li>
+<li>函数传参时对于需要修改原对象值，或占用内存比较大的结构体，选择传指针。对于只读的占用内存较小的结构体，直接传值能够获得更好的性能</li>
+<li>根据代码具体分析，尽量减少逃逸代码，减轻<code>GC</code>压力，提高性能</li>
+</ul>
+<p>参考：</p>
+<p><a href="https://studygolang.com/articles/20593" target="_blank" rel="noopener noreffer">我要在栈上。不，你应该在堆上</a></p>
+<p><a href="https://segmentfault.com/a/1190000040450335" target="_blank" rel="noopener noreffer">详解Go语言中的内存逃逸</a></p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-04-02</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" data-title="Golang 内存逃逸分析"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" data-title="Golang 内存逃逸分析"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/golang-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/golang/">Golang</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/golang-gmp/" class="prev" rel="prev" title="Golang GMP模型"><i class="fas fa-angle-left fa-fw"></i>Golang GMP模型</a>
+            <a href="/post/%E5%86%8D%E8%A7%81hexo%E4%BD%A0%E5%A5%BDhugo/" class="next" rel="next" title="再见Hexo，你好Hugo">再见Hexo，你好Hugo<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>OpenStack网络组件-Neutron - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="OpenStack网络组件-Neutron">
+  <meta property="og:description" content="Neutron 的设计目标是实现“网络即服务（Networking as a Service）”。为了达到这一目标，在设计上遵循了基于 SDN 实现网络虚拟化的原则，在实现上充分利用了 Linux 系统上的各种网络相关的技术。
+SDN 模式服务— NeutronSDN( 软件定义网络 ), 通过使用它，网络管理员和云计算操作员可以通过程序来动态定义虚拟网络设备。Openstack 网络中的 SDN 组件就是 Quantum.但因为版权问题而改名为Neutron 。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-09-06T11:23:00+00:00">
+    <meta property="article:modified_time" content="2022-09-06T11:23:00+00:00">
+    <meta property="article:tag" content="Openstack">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="OpenStack网络组件-Neutron">
+  <meta name="twitter:description" content="Neutron 的设计目标是实现“网络即服务（Networking as a Service）”。为了达到这一目标，在设计上遵循了基于 SDN 实现网络虚拟化的原则，在实现上充分利用了 Linux 系统上的各种网络相关的技术。
+SDN 模式服务— NeutronSDN( 软件定义网络 ), 通过使用它，网络管理员和云计算操作员可以通过程序来动态定义虚拟网络设备。Openstack 网络中的 SDN 组件就是 Quantum.但因为版权问题而改名为Neutron 。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron/" /><link rel="prev" href="http://localhost:1313/post/redis%E5%9F%BA%E7%A1%80/" /><link rel="next" href="http://localhost:1313/post/cloud-vm-lifecycle/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "OpenStack网络组件-Neutron",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "openstack","wordcount":  826 ,
+        "url": "http:\/\/localhost:1313\/post\/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron\/","datePublished": "2022-09-06T11:23:00+00:00","dateModified": "2022-09-06T11:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">OpenStack网络组件-Neutron</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud-computing/"><i class="far fa-folder fa-fw"></i>Cloud Computing</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-09-06">2022-09-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;826 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#基本概念">基本概念</a>
+      <ul>
+        <li><a href="#network">Network</a></li>
+        <li><a href="#subnet">Subnet</a></li>
+        <li><a href="#port">Port</a></li>
+        <li><a href="#虚拟路由器virtual-router">虚拟路由器（Virtual router）</a></li>
+      </ul>
+    </li>
+    <li><a href="#neutron-组成">Neutron 组成</a>
+      <ul>
+        <li><a href="#插件">插件</a></li>
+        <li><a href="#ml2-core-plugin">ML2 Core Plugin</a></li>
+        <li><a href="#service-plugin--agent">Service Plugin / Agent</a></li>
+      </ul>
+    </li>
+    <li><a href="#网络模式">网络模式</a>
+      <ul>
+        <li><a href="#provider-network">Provider network</a></li>
+        <li><a href="#self-service-network">self-service network</a></li>
+      </ul>
+    </li>
+    <li><a href="#东西流量-vs-南北流量">东西流量 VS 南北流量</a>
+      <ul>
+        <li><a href="#东西流量">东西流量</a></li>
+        <li><a href="#南北流量">南北流量</a></li>
+      </ul>
+    </li>
+    <li><a href="#常用操作">常用操作</a>
+      <ul>
+        <li><a href="#网络子网路由端口管理">网络、子网、路由、端口管理</a></li>
+        <li><a href="#防火墙管理">防火墙管理</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2022-09-06T11:23:00" title="September 6, 2022">September 6, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>Neutron 的设计目标是实现“网络即服务（Networking as a Service）”。为了达到这一目标，在设计上遵循了基于 SDN 实现网络虚拟化的原则，在实现上充分利用了 Linux 系统上的各种网络相关的技术。</p>
+<p>SDN 模式服务— NeutronSDN( 软件定义网络 ), 通过使用它，网络管理员和云计算操作员可以通过程序来动态定义虚拟网络设备。Openstack 网络中的 SDN 组件就是 Quantum.但因为版权问题而改名为Neutron 。</p>
+<h1 id="基本概念">基本概念</h1>
+<h2 id="network">Network</h2>
+<p>Network 是一个隔离的二层广播域。Neutron 支持多种类型的 Network，包含 Local、Flat、VLAN、Vxlan 和 GRE 。</p>
+<ol>
+<li><strong>Local</strong>： 网络与其他物理机节点网络不连通。</li>
+<li><strong>Flat</strong>：无 Vlan tagging 的网络，Flat 网络下的 instance 可以跨物理节点通信</li>
+<li><strong>VLAN</strong>：具有 802.1q tagging 的网络，是一个二层的广播域，同一 vlan 中的instance 可以通信。不同 vlan 的通信只能通过 router 进行。vlan 可以跨节点通信。</li>
+<li><strong>Vxlan</strong>：Vxlan是基于隧道技术的 overlay 网络，其通过一个 segmentation ID （VNI）与其他 Vxlan 网络区分，Vxlan 中数据包会通过 VNI 封装成 UDP 包进行传输，因为二层的包通过封装在三层传输，能够克服 VLAN 和物理网络基础设施的限制。</li>
+<li><strong>GRE</strong>：与 Vxlan 类似的一种 overlay 网络。主要区别在于使用 IP 包而非 UDP 进行封装。</li>
+</ol>
+<br>
+<h2 id="subnet">Subnet</h2>
+<p>是一个 IPv4 或者 IPv6 地址段。Instance 的 IP 从 Subnet 中分配。每个 Subnet 需要定义 IP 地址的范围和掩码。</p>
+<p>同一个Network 的 Subnet 可以是不同的 IP 段，但CIDR不能重叠。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 有效配置</span>
+</span></span><span class="line"><span class="cl">networkA 
+</span></span><span class="line"><span class="cl">subnetA-a：10.0.1.0/24  10.0.1.1 - 10.0.1.50
+</span></span><span class="line"><span class="cl">subnetB-b：10.0.2.0/24  10.0.2.1 - 10.0.2.50
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 无效配置</span>
+</span></span><span class="line"><span class="cl">networkB
+</span></span><span class="line"><span class="cl">subnetB-a：10.0.1.0/24  10.0.1.1 - 10.0.1.50
+</span></span><span class="line"><span class="cl">subnetB-b：10.0.1.0/24  10.0.1.51- 10.0.1.100
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h2 id="port">Port</h2>
+<p>虚拟交换机上的一个端口，Port 上定义了Mac地址和IP地址，当 instance 的虚拟网卡 VIF（Virtual Interface）绑定到 Port 时，Port 会将 Mac 和 IP 分配给 VIF</p>
+<br/>
+<h2 id="虚拟路由器virtual-router">虚拟路由器（Virtual router）</h2>
+<p>一个 Virtual router 提供不同网段之间的 IP 包路由功能，本质是一个 Namespace，每个Namespace中维护一张路由表。由 Nuetron L3 agent 负责管理。</p>
+<br/>
+<h1 id="neutron-组成">Neutron 组成</h1>
+<p>Neutron 本身只是负责网络抽象的 API，充分采用了<strong>插件化</strong>的设计，只要可以实现 Neutron 网络API就可以，非常灵活。</p>
+<h2 id="插件">插件</h2>
+<p>插件总体分为两类：<strong>Core Plugin</strong> 和 <strong>Service Plugin</strong> 。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/neutron1.png" alt="neutron1" style="zoom:43%;display:block;clear:both;margin:auto;" />
+<ul>
+<li>
+<p>Core Plugin：实现了 Core Plugin API，在数据库中维护 network, subnet 和 port 的状态，并负责调用相应的 agent 在 network provider 上执行相关操作，比如创建 network。</p>
+</li>
+<li>
+<p>Service Plugin：实现了 Extension Plugin API，在数据库中维护 router, load balance, security group 等资源的状态，并负责调用相应的 agent 在 network provider 上执行相关操作，比如创建 router。</p>
+</li>
+</ul>
+<br/>
+<h2 id="ml2-core-plugin">ML2 Core Plugin</h2>
+<p>Moduler Layer 2 （ML2）：是 Neutron 在 Havana 版本实现的一个新的 core plugin，用于替代原有的 linux bridge plugin 和 openvswitch plugin。它提供了一个框架，允许在 OpenStack 的网络中使用多种 Layer 2 网络技术，不同的节点可以使用不同的网络实现机制。</p>
+<blockquote>
+<p>Core Plugin/Agent 负责管理核心的实体， net、subnet 和 port。</p>
+</blockquote>
+<br/>
+<p>ML2 对二层网络进行了抽象和建模，引入了 <strong>type driver</strong> 和 <strong>mechansim driver</strong>。这两类 driver 解耦了 Neutron 所支持的所有网络类型 （type）与访问这些网络类型的机制（mechansim），使得ML2具有非常好的弹性，易于扩展，能够灵活支持多种 type 和 mechanism 。</p>
+<ul>
+<li><strong>Type Driver</strong>：Neutron 支持的每一种网络类型都有一个对应的 ML2 type driver。type driver 负责维护网络类型的状态，执行验证，创建网络等。ML2 支持的网络类型包括 local、flat、vlan、vxlan、gre。</li>
+<li><strong>Mechansim Driver</strong>：Neutron 支持的每一种网络机制都有一个对应的 ML2 Mechansim Driver，Mechanism Driver 负责获取由 type driver 维护的网络状态，并确保在相应的网络设备（虚拟或物理）上正确实现这些状态。
+<ul>
+<li>Agent-Based 类型：包括 Linux Bridge、OpenvSwitch 等</li>
+<li>Controller-Based 类型：包括 OpenDaylight、VMWare NSX等</li>
+<li>基于物理交换机：包括 Cisco Nexus、Arista、Mellanox 等</li>
+</ul>
+</li>
+</ul>
+<img src="https://img1.kiosk007.top/static/images/blog/neutron3.png" alt="neutron3" style="zoom:43%;display:block;clear:both;margin:auto;" />
+<br/>
+<h2 id="service-plugin--agent">Service Plugin / Agent</h2>
+<p>Service Plugin 及其 Agent 提供更丰富的扩展能力，包括Router、Load Balance、Firewall 等等。其负责在 agent 上的 network provider  执行相关的操作，比如创建路由。</p>
+<ol>
+<li>
+<p>DHCP：dhcp agent 通过 dnsmasq 为 instance 提供 DHCP 服务</p>
+</li>
+<li>
+<p>Routing：L3 agent 可以为 Project（租户）创建 router，提供 subnet 之间的路由服务。而路由功能默认由 iptables 实现。</p>
+</li>
+<li>
+<p>Firewall：L3 agent 可以在router 上配置防火墙策略，提供网络安全防护，另外也提供 Security Group，其本质也是 iptables 实现。</p>
+</li>
+<li>
+<p>Load Balance：Neutron 通过 HAProxy 为 project 中的多个 instance 提供 Load Balance 服务。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/neutron4.png" alt="neutron4" style="zoom:43%;display:block;clear:both;margin:auto;" />
+</li>
+</ol>
+<br/>
+<h1 id="网络模式">网络模式</h1>
+<p>在部署openstack 网络组件 neutron 时会看到有两种网络方案，一种是 <a href="https://docs.openstack.org/neutron/yoga/install/controller-install-option1-ubuntu.html" target="_blank" rel="noopener noreffer">provider 模式</a>，一种是 <a href="https://docs.openstack.org/neutron/yoga/install/controller-install-option2-ubuntu.html" target="_blank" rel="noopener noreffer">self-service 模式</a> 。</p>
+<p>在<a href="https://docs.openstack.org/install-guide/overview.html#networking" target="_blank" rel="noopener noreffer">官网</a>的介绍中有两张图，可以看到 self-service 模式主要是在控制节点（旧版本的网络节点，新版本将网络节点和控制节点部署在了一起），多了一个 L3 agent。顾名思义，self-service 的三层路由服务由 openstack 提供，而 provider 的三层服务是由物理交换机提供。</p>
+<br/>
+<h2 id="provider-network">Provider network</h2>
+<p>provider network 又称为运营商网络，self-service network 又称为租户网络。</p>
+<p>对 neutron 而言，<strong>provider 这种网络类型</strong> “<strong>没有</strong>” <strong>三层路由功能</strong>，<strong>或者说没有自主的路由功能</strong>。他需要借助外部的网络，才能完成不同网络之间的路由，也就是说他的路由器或者三层网络服务是由 openstack 之外的力量提供，因此被称之为 provider 。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/network1-connectivity.png" alt="network1-connectivity" style="zoom:73%;display:block;clear:both;margin:auto;" />
+<p>provider是一个半虚拟化的二层网络架构，只能通过桥接的方式实现，处于provider网络模式下vm获取到的ip地址与物理网络在同一网段，可以看成是物理网络的扩展，在该模式下，控制节点不需要安装L3 agent，也不需要网络节点，vm直接通过宿主机的NIC与物理网络通信,provider网络只支持flat和vlan两种模式。</p>
+<br/>
+<p>其网络的 <a href="https://docs.openstack.org/neutron/yoga/install/controller-install-option1-ubuntu.html" target="_blank" rel="noopener noreffer">配置文件</a> 就可以看到一些区别。</p>
+<p>在 <em>/etc/neutron/neutron.conf</em> 中，可以看到</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>DEFAULT<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">core_plugin</span> <span class="o">=</span> ml2
+</span></span><span class="line"><span class="cl"><span class="nv">service_plugins</span> <span class="o">=</span> 
+</span></span><span class="line"><span class="cl"><span class="nv">allow_overlapping_ips</span> <span class="o">=</span> <span class="nb">false</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 <em>/etc/neutron/plugins/ml2/ml2_conf.ini</em> 中，可以看到</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># </span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>ml2<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">type_drivers</span> <span class="o">=</span> flat,vlan
+</span></span><span class="line"><span class="cl"><span class="nv">tenant_network_types</span> <span class="o">=</span> 
+</span></span><span class="line"><span class="cl"><span class="nv">mechanism_drivers</span> <span class="o">=</span> linuxbridge
+</span></span><span class="line"><span class="cl"><span class="nv">extension_drivers</span> <span class="o">=</span> port_security
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>ml2_type_flat<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">flat_networks</span> <span class="o">=</span> provider
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>securitygroup<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">enable_ipset</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 <em>/etc/neutron/plugins/ml2/linuxbridge_agent.ini</em> 可以看到</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 这里将 provider映射到具体的物理网卡，也就是创建的租户vlan从计算节点路由ens33出，</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 而后进入ens33背后的网络设备，在那里进行路由和交换。</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>linux_bridge<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">physical_interface_mappings</span> <span class="o">=</span> provider:PROVIDER_INTERFACE_NAME
+</span></span><span class="line"><span class="cl"><span class="c1"># 关闭 vxlan</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>vxlan<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">enable_vxlan</span> <span class="o">=</span> <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>securitygroup<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">enable_security_group</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="cl"><span class="nv">firewall_driver</span> <span class="o">=</span> neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+</span></span></code></pre></td></tr></table>
+</div>
+</div></br>
+<h2 id="self-service-network">self-service network</h2>
+<p>self-service 就是 neutron 不依赖外部的网络和三层路由，租户自己通过 ovs 或者 Linux bridge 创建虚拟的交换机来进行互通。</p>
+<p>self-service 模式允许租户自己创建网络，最终租户创建的网络借助 provider 网络以 NAT 方式访问外网，所以self-service模式可以看成是网络层级的延伸。要实现self-service模式必须先创建provider网络。self-service网络支持flat、vlan、vxlan、gre模式。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/network2-connectivity.png" alt="network2-connectivity" style="zoom:73%;display:block;clear:both;margin:auto;" />
+<p>vm 从 self-service获取到的IP地址称为fix ip，vm 从provider 网络获取到的IP地址称为floating IP。不管租户创建的网络类型为 vxlan 或者 vlan，租户的vm 之间通过 fix ip 之间互访的流量称为<strong>东西走向</strong> ，当vm需要通过 SNAT 访问外网或者通过 floating IP 访问vm时，此时的流量称之为<strong>南北走向</strong>。</p>
+<br/>
+<p>其网络的 <a href="https://docs.openstack.org/neutron/yoga/install/controller-install-option2-ubuntu.html" target="_blank" rel="noopener noreffer">配置文件</a> 就可以看到一些区别。</p>
+<p>在 <em>/etc/neutron/neutron.conf</em> 中，可以看到</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>DEFAULT<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">core_plugin</span> <span class="o">=</span> ml2
+</span></span><span class="line"><span class="cl"><span class="nv">service_plugins</span> <span class="o">=</span> router   <span class="c1"># service_plugin 加载了 路由</span>
+</span></span><span class="line"><span class="cl"><span class="nv">allow_overlapping_ips</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 <em>/etc/neutron/plugins/ml2/ml2_conf.ini</em> 中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>ml2<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">type_drivers</span> <span class="o">=</span> flat,vlan,vxlan
+</span></span><span class="line"><span class="cl"><span class="nv">tenant_network_types</span> <span class="o">=</span> vxlan
+</span></span><span class="line"><span class="cl"><span class="nv">mechanism_drivers</span> <span class="o">=</span> linuxbridge,l2population
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>ml2_type_flat<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">flat_networks</span> <span class="o">=</span> provider
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>ml2_type_vxlan<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">vni_ranges</span> <span class="o">=</span> 1:1000
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 <em>/etc/neutron/plugins/ml2/linuxbridge_agent.ini</em> 中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>linux_bridge<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">physical_interface_mappings</span> <span class="o">=</span> provider:PROVIDER_INTERFACE_NAME
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>vxlan<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">enable_vxlan</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> OVERLAY_INTERFACE_IP_ADDRESS
+</span></span><span class="line"><span class="cl"><span class="nv">l2_population</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 <em>/etc/neutron/l3_agent.ini</em> 中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>DEFAULT<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">interface_driver</span> <span class="o">=</span> linuxbridge
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="东西流量-vs-南北流量">东西流量 VS 南北流量</h1>
+<p>一个 tenant 可以创建多个 subnet，此时 vm 之间的通信就分为同一个 subnet 和不同subnet 之间两种情况，区别是不同的subnet之间的通信需要经过网关，而同 subnet 之间的通信不需要经过网络节点。</p>
+<br/>
+<h2 id="东西流量">东西流量</h2>
+<ul>
+<li><strong>不同 subnet 之间的通信</strong></li>
+</ul>
+<p>无论 tenant 创建的网络是 隧道(vxlan\gre) 还是 vlan，不同的subnet之间的通信必须借助 L3 Agent 完成，而在集中式网络节点架构中，只有网络节点部署了该角色，vm 之间的流量如下：</p>
+<p>（红线是隧道的通信方式、绿线是 vlan）</p>
+<img src="https://img1.kiosk007.top/static/images/blog/neutron5.png" alt="neutron5" style="zoom:150%;" />
+<ol>
+<li>vm1 向 vm2 发送通信请求，根据目的IP地址得知 vm2 和自己不再同一个网段，故将数据包发送到网关。</li>
+<li>数据包经过 linux bridge 通过其上的 iptables 安全策略检查，送往 br-int 并打上内部的 vlan 号</li>
+<li>数据包脱掉 br-int的内部vlan号，进入 br-tun</li>
+<li>进入 br-tun 的数据包此时的vxlan封装并打上 vni 号，通过NIC离开 compute 1</li>
+<li>数据包进入网络节点，经过br-tun的数据包完成vxlan的解封装去掉vni号。</li>
+<li>数据包进入br-int打上内部 vlan 号</li>
+<li>进入 router namespace路由空间寻找网关，vm1 的网关配置在路由器接口 qr-1 上</li>
+<li>数据包路由到vm2的网关 qr-2 上，送回 br-int并打上内部vlan号</li>
+<li>数据包脱掉br-int的内部vlan号进入 br-tun/br-vlan</li>
+<li>进入 br-tun 的数据包此时的vxlan封装并打上 vni 号，进入 br-vlan 的数据包此时打上外部 vlan 号，通过 nic 离开 network node</li>
+<li>数据包进入 compute 2 ，经过 br-tun 的数据包完成 vxlan 的解封装去掉vni号</li>
+<li>数据包进入br-int，此时被打上内部vlan号</li>
+<li>数据包离开br-int并去掉内部vlan号，送往linux brdge 通过其上的 iptables 安全策略检查</li>
+<li>最后数据包送到vm2</li>
+</ol>
+<br/>
+<ul>
+<li><strong>相同subnet之间通信</strong></li>
+</ul>
+<p>相同的subnet之间通信不需要借助 L3 Agent ，vm之间的流量如下图所示</p>
+<img src="https://img1.kiosk007.top/static/images/blog/neutron6.png" alt="neutron6" style="zoom:150%;" />
+<ol>
+<li>vm1 向 vm2 发起请求，通过目的IP地址得知vm2 与自己在同一个网段。</li>
+<li>数据包经过 linux bridge,进行安全策略检查，进入 br-int 打上内部 vlan 号</li>
+<li>数据包脱掉br-int的内部vlan号进入 br-tun。</li>
+<li>进入 br-tun 的数据包此时 vxlan 封装并打上 vni 号，进入 br-vlan 的数据包此时打上外部vlan号，通过 nic 离开 compute 1</li>
+<li>数据包进入compute2 ，经过 br-tun 的数据包完成 vxlan 的解封去掉 vni 号</li>
+<li>数据包进入 br-int,此时打上内部 vlan 号</li>
+<li>数据包经过离开br-int并去掉内部vlan号，送往 linux bridge 通过其上的 iptables 安全策略检查</li>
+<li>最后数据包送到 vm2</li>
+</ol>
+<br/>
+<h2 id="南北流量">南北流量</h2>
+<p>南北流量分为 floating ip 和无 floating ip （fix ip）两种情况，唯一的区别在于 vm 最终离开 network node 访问internet 时，有 floating ip的vm源地址为 floating ip ，而使用 fix ip 的vm通过 snat 方式，源地址为 network node 的ip。vm 南北流量如下图所示：</p>
+<img src="https://img1.kiosk007.top/static/images/blog/neutron8.png" alt="neutron8" style="zoom:150%;" />
+<ol>
+<li>vm1 向公网发出通信请求，数据包被送往网关</li>
+<li>数据包经过 linux bridge 通过其上的 iptables 安全策略检查，送往 br-int并打上内部vlan号</li>
+<li>数据包脱掉内部的vlan号经过 br-tun，br-tun 的数据包经过vxlan封装打上vni号</li>
+<li>数据包进入网络节点，经过br-tun的数据包完成vxlan的解封装去掉vni号。再送往br-int,此时打上内部的vlan号。</li>
+<li>进入 router namespace 路由空间查询路由表项，vm1 的网关配置在此路由器的 qr 接口上</li>
+<li>数据包在路由器内完成地址转换，源地址变成 qg 口 network node 节点的外网地址（floating ip 在 qg 口使用的是给vm分配的外网地址，需要提前将 fix ip 和 floating ip 绑定），送回br-int并打上内部vlan号。</li>
+<li>数据包离开 br-int 进入 br-ex，脱掉内部的vlan号，打上外网ip的vlan号</li>
+<li>最后借助 provider 的网络访问公网，此处也印成了 provider 网络只能是vlan 或者 flat 类型。</li>
+</ol>
+<br/>
+<h1 id="常用操作">常用操作</h1>
+<h2 id="网络子网路由端口管理">网络、子网、路由、端口管理</h2>
+<img src="https://img1.kiosk007.top/static/images/blog/neutron9.png" alt="neutron9" style="zoom:150%;" />
+<br/>
+<h2 id="防火墙管理">防火墙管理</h2>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/blog/neutron10.png"
+        data-srcset="https://img1.kiosk007.top/static/images/blog/neutron10.png, https://img1.kiosk007.top/static/images/blog/neutron10.png 1.5x, https://img1.kiosk007.top/static/images/blog/neutron10.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/blog/neutron10.png"
+        title="neutron10" />
+   <div class="post-img-view">
+      <a data-fancybox="gallery" href="https://img1.kiosk007.top/static/images/blog/neutron10.png">
+         <img src="https://img1.kiosk007.top/static/images/blog/neutron10.png" alt="neutron10"  />
+      </a>
+   </div>
+
+
+</p>
+<br/>
+<br/>
+<br/>
+<p>参考:</p>
+<ul>
+<li>
+<p><a href="https://www.cnblogs.com/mh20131118/p/12954641.html" target="_blank" rel="noopener noreffer">OpenStack的Neutron组件详解</a></p>
+</li>
+<li>
+<p><a href="https://blog.51cto.com/arkling/2406590" target="_blank" rel="noopener noreffer">讲清楚说明白openstack中vm流量走向之1——集中式网络节点</a></p>
+</li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-09-06</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron/" data-title="OpenStack网络组件-Neutron"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron/" data-title="OpenStack网络组件-Neutron"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/openstack%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6-neutron/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/redis%E5%9F%BA%E7%A1%80/" class="prev" rel="prev" title="Redis基础"><i class="fas fa-angle-left fa-fw"></i>Redis基础</a>
+            <a href="/post/cloud-vm-lifecycle/" class="next" rel="next" title="【译】虚拟机生命周期">【译】虚拟机生命周期<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

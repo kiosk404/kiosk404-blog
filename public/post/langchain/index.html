@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>LLM大模型 - langchain应用技术介绍 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/langchain/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="LLM大模型 - langchain应用技术介绍">
+  <meta property="og:description" content="一个本地大模型，ChatGPT3.5 或 ChatGPT 4 都有这样一些问题。
+数据缺少及时性，不能直接帮我们编辑 Word 或者 PDF 文件。大模型目前主要还是基于文本的交互等。
+这样的场景非常多，因为大模型的核心能力是 意图理解与文本生成，而在我们实际应用过程中，输入数据和输出数据不仅仅是纯文本等。
+针对大型语言模型效果不好的问题，之前人们主要关注大模型再训练、大模型微调、大模型的Prompt增强，但对于专有、快速更新的数据却并没有较好的解决方法，为此检索增强生成（RAG）的出现，弥合了LLM常识和专有数据之间的差距。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-08-21T13:52:18+00:00">
+    <meta property="article:modified_time" content="2024-08-29T11:26:27+00:00">
+    <meta property="article:tag" content="Ai">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="LLM大模型 - langchain应用技术介绍">
+  <meta name="twitter:description" content="一个本地大模型，ChatGPT3.5 或 ChatGPT 4 都有这样一些问题。
+数据缺少及时性，不能直接帮我们编辑 Word 或者 PDF 文件。大模型目前主要还是基于文本的交互等。
+这样的场景非常多，因为大模型的核心能力是 意图理解与文本生成，而在我们实际应用过程中，输入数据和输出数据不仅仅是纯文本等。
+针对大型语言模型效果不好的问题，之前人们主要关注大模型再训练、大模型微调、大模型的Prompt增强，但对于专有、快速更新的数据却并没有较好的解决方法，为此检索增强生成（RAG）的出现，弥合了LLM常识和专有数据之间的差距。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/langchain/" /><link rel="prev" href="http://localhost:1313/post/ollama-ai/" /><link rel="next" href="http://localhost:1313/post/rag/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "LLM大模型 - langchain应用技术介绍",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/langchain\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "ai","wordcount":  901 ,
+        "url": "http:\/\/localhost:1313\/post\/langchain\/","datePublished": "2024-08-21T13:52:18+00:00","dateModified": "2024-08-29T11:26:27+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/langchain/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">LLM大模型 - langchain应用技术介绍</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/artificial-intelligence/"><i class="far fa-folder fa-fw"></i>Artificial Intelligence</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-08-21">2024-08-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;901 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#ai-agent">AI Agent</a></li>
+    <li><a href="#langchain-介绍">LangChain 介绍</a>
+      <ul>
+        <li><a href="#langchain-技术架构">LangChain 技术架构</a></li>
+        <li><a href="#架构">架构</a></li>
+        <li><a href="#lcel">LCEL</a>
+          <ul>
+            <li><a href="#runnable-接口">Runnable 接口</a></li>
+            <li><a href="#runnablelambda-函数算子">RunnableLambda 函数算子</a></li>
+            <li><a href="#sequence-串行执行--上一步的输出作为下一步的输入">Sequence 串行执行 | 上一步的输出作为下一步的输入</a></li>
+            <li><a href="#parallel-并行执行">Parallel 并行执行</a></li>
+            <li><a href="#fallback-默认逻辑回退逻辑">Fallback 默认逻辑/回退逻辑</a></li>
+            <li><a href="#remoterunnable-将-langserve-当做本地的-langchain-运行">RemoteRunnable 将 LangServe 当做本地的 LangChain 运行</a></li>
+          </ul>
+        </li>
+        <li><a href="#model-io-模型交互">Model I/O 模型交互</a>
+          <ul>
+            <li><a href="#prompt">Prompt</a></li>
+            <li><a href="#llm">LLM</a></li>
+            <li><a href="#parser">Parser</a></li>
+          </ul>
+        </li>
+        <li><a href="#agents">Agents</a>
+          <ul>
+            <li><a href="#agent-的工作过程">Agent 的工作过程</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#用langchain-实现">用LangChain 实现</a></li>
+    <li><a href="#其他">其他</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition question open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwquestion"></i>Question<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2024-08-29T11:26:27" title="August 29, 2024">August 29, 2024</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>一个本地大模型，ChatGPT3.5 或 ChatGPT 4  都有这样一些问题。</p>
+<p>数据缺少及时性，不能直接帮我们编辑 Word 或者 PDF 文件。大模型目前主要还是基于文本的交互等。</p>
+<p>这样的场景非常多，因为大模型的核心能力是 意图理解与文本生成，而在我们实际应用过程中，输入数据和输出数据不仅仅是纯文本等。</p>
+<p>针对大型语言模型效果不好的问题，之前人们主要关注大模型再训练、大模型微调、大模型的Prompt增强，但对于专有、快速更新的数据却并没有较好的解决方法，为此检索增强生成（RAG）的出现，弥合了LLM常识和专有数据之间的差距。</p>
+<br/>
+<h1 id="ai-agent">AI Agent</h1>
+<p>AI Agent是人工智能代理（Artificial Intelligence Agent）的概念，是以大语言模型为核心控制器的一套代理系统。它是一种能够感知环境、进行决策和执行动作的智能实体，通常基于机器学习和人工智能技术，<strong>具备自主性和自适应性，在特定任务或领域中能够自主地进行学习和改进</strong>。一个更完整的Agent，一定是与环境充分交互的，它包括两部分——<strong>一是Agent的部分，二是环境的部分</strong>。</p>
+<br/>
+<p>一个 <strong>Agent(智能体)</strong> 主要包含以下3个部分：</p>
+<p>(1) Perception：感知，主要就是信息的输入，比如文本，语言等信息。</p>
+<p>(2) Brain：这个是核心，基于llm，根据输入信息，制定任务计划等。</p>
+<p>(3) Action：执行，根据计划执行对应的任务，比如调用第三方api，从工具集(tools)选中合适的tool执行任务。</p>
+<br/>
+
+<link rel="stylesheet" href=/css/hugo-easy-gallery.css />
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="https://img1.kiosk007.top/static/images/blog/20240829231745-landscape-latest.png" />
+    </div>
+    <a href="https://img1.kiosk007.top/static/images/blog/20240829231745-landscape-latest.png" itemprop="contentUrl"></a>
+      <figcaption><h4>RAG  处理流程</h4>
+      </figcaption>
+  </figure>
+</div>
+
+<br/>
+<p>目前比较流行的 Agent 工具，著有有 Auto Gen、LangChain 等，因为 LangChain 即是开源的，又提供一整套围绕大模型的 Agent 工具，可以说使用起来非常方便，而且从设计到构建、部署、运维等多方面都提供支持。</p>
+<br/>
+<h1 id="langchain-介绍">LangChain 介绍</h1>
+<p><strong>LangChain</strong> 是一个用于开发由语言模型驱动的应用程序的框架。它使得应用程序能够：</p>
+<ul>
+<li><strong>具有上下文感知能力</strong>：将语言模型连接到上下文来源（提示指令，少量的示例，需要回应的内容等）</li>
+<li><strong>具有推理能力</strong>：依赖语言模型进行推理（根据提供的上下文如何回答，采取什么行动等）</li>
+</ul>
+<p>起初，LangChain 只是一个技术框架，使用这个框架可以快速开发 AI 应用程序，开发人员不需要储备太多算法层面的知识，只需要知道如何和模型进行交互，也就是熟练掌握模型暴露的 API 接口和参数，就可以利用 LangChain 进行应用开发接口。</p>
+<p>LangChain 发展到今天，已经不再是一个纯粹的 AI 应用开发框架，而是成为了一个 AI 应用程序开发平台，它包含 4 大组件。</p>
+<ul>
+<li><a href="https://www.langchain.com/langchain" target="_blank" rel="noopener noreffer">LangChain</a>：大模型应用开发框架。</li>
+<li><a href="https://www.langchain.com/langsmith" target="_blank" rel="noopener noreffer">LangSmith</a>：统一的 DevOps 平台，用于开发、协作、测试、部署和监控大模型应用程序，同时，LangSmith 是一套 Agent DevOps 规范，不仅可以用于 LangChain 应用程序，还可以用在其他框架下的应用程序中。</li>
+<li><a href="https://www.langchain.com/langgraph" target="_blank" rel="noopener noreffer">LangGraph</a>：一个用于使用大模型构建有状态、多参与者应用程序的库，是 2024 年 1 月份推出的。</li>
+</ul>
+<br/>
+<h2 id="langchain-技术架构">LangChain 技术架构</h2>
+<p>LangChain 是一个用于开发由语言模型驱动的应用程序的框架。</p>
+<br/>
+<h2 id="架构">架构</h2>
+<img src="https://img1.kiosk007.top/static/images/blog/20240922105925-llm-langchain.png" />
+<br/>
+<ul>
+<li><strong>Agent</strong>: 负责规划，定义Plan，根据输入返回要执行哪个 Agent Action 或者结束迭代。</li>
+<li><strong>LLMs</strong>: 大模型，子类需要实现 generate 方法，目前已集成的 LLM 有 80+ 个</li>
+<li><strong>Tools</strong>: 可以理解为一个 动作 Action，比如创建韵味东，调用API，发邮件等，定义run方法，目前有 80+ 个 Tool 集成，例如 github 、 gitlab 等api工具</li>
+<li><strong>Memory</strong>: 为大模型提供上下文，定义 load 方法，为 Prompt 添加上下文使得 Agent 带有状态，LangChain Memory 的实现逻辑有8种。</li>
+<li><strong>Retrieval</strong>：Retrieval 是 DocumentLoader、Transformer、Embedding 等文档提取工具的总称。</li>
+</ul>
+<img src="https://img1.kiosk007.top/static/images/blog/20240831104443-65cb60ead7ea69f8fa623383_langchain-gif.gif" />
+<br/>
+<h2 id="lcel">LCEL</h2>
+<p>LangChain 表达式，前面我们介绍 Chains（链）的时候讲过，LCEL 是用来构建 Chains 的。</p>
+<p>以下是一个官方的例子。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain_core.output_parsers</span> <span class="kn">import</span> <span class="n">StrOutputParser</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain_core.prompts</span> <span class="kn">import</span> <span class="n">ChatPromptTemplate</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain_openai</span> <span class="kn">import</span> <span class="n">ChatOpenAI</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">prompt</span> <span class="o">=</span> <span class="n">ChatPromptTemplate</span><span class="o">.</span><span class="n">from_template</span><span class="p">(</span><span class="s2">&#34;tell me a short joke about </span><span class="si">{topic}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&#34;gpt-4&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">output_parser</span> <span class="o">=</span> <span class="n">StrOutputParser</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">chain</span> <span class="o">=</span> <span class="n">prompt</span> <span class="o">|</span> <span class="n">model</span> <span class="o">|</span> <span class="n">output_parser</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">chain</span><span class="o">.</span><span class="n">invoke</span><span class="p">({</span><span class="s2">&#34;topic&#34;</span><span class="p">:</span> <span class="s2">&#34;ice cream&#34;</span><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这就是 Chain，和Linux里的管道很像，通过特殊字符 <code>|</code> 来连接不同的组建，构成复杂链条，以实现特定的功能。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">chain</span> <span class="o">=</span> prompt <span class="p">|</span> model <span class="p">|</span> output_parser
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>每个组建的输出会作为下一个组建的输入，直到最后一个组建执行完毕，当然也可以通过 LCEL 将多个链条关联在一起。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">chain1</span> <span class="o">=</span> prompt1 <span class="p">|</span> model <span class="p">|</span> StrOutputParser<span class="o">()</span>
+</span></span><span class="line"><span class="cl"><span class="nv">chain2</span> <span class="o">=</span> <span class="o">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">{</span><span class="s2">&#34;city&#34;</span>: chain1, <span class="s2">&#34;language&#34;</span>: itemgetter<span class="o">(</span><span class="s2">&#34;language&#34;</span><span class="o">)}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">|</span> prompt2
+</span></span><span class="line"><span class="cl">    <span class="p">|</span> model
+</span></span><span class="line"><span class="cl">    <span class="p">|</span> StrOutputParser<span class="o">()</span>
+</span></span><span class="line"><span class="cl"><span class="o">)</span>
+</span></span><span class="line"><span class="cl">chain2.invoke<span class="o">({</span><span class="s2">&#34;person&#34;</span>: <span class="s2">&#34;obama&#34;</span>, <span class="s2">&#34;language&#34;</span>: <span class="s2">&#34;spanish&#34;</span><span class="o">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h3 id="runnable-接口">Runnable 接口</h3>
+<p>为了实现 LCEL Chain，定义 Runnable ，它有一些同步和异步的接口，并且支持组合为一个新的 Runnable。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Runnable</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">Input</span><span class="p">,</span> <span class="n">Output</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 同步版本的接口</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">stream</span><span class="p">():</span> <span class="n">block</span> <span class="c1"># 流式返回 block</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">invoke</span><span class="p">()</span> <span class="c1"># 调用</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">batch</span><span class="p">():</span> <span class="c1"># 批量调用</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 异步版本的接口</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">astream</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">ainvoke</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">abatch</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">astream_log</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 所有 Runnable 都支持以 | 进行组合</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__or__</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">RunnableSequence</span><span class="p">(</span><span class="n">first</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="n">coerce_to_runnable</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__ror__</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">RunnableSequence</span><span class="p">(</span><span class="n">first</span><span class="o">=</span><span class="n">coerce_to_runnable</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="n">last</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>Runnable 是一个泛型接口，不同的实现中，InputType 和 OutputType 都是不一样的，下面是一些例子：</p>
+<blockquote>
+<p>schema:</p>
+<p><a href="https://python.langchain.com/docs/expression_language/interface#input-schema" target="_blank" rel="noopener noreffer">https://python.langchain.com/docs/expression_language/interface#input-schema</a></p>
+<p><a href="https://python.langchain.com/docs/expression_language/interface#output-schema" target="_blank" rel="noopener noreffer">https://python.langchain.com/docs/expression_language/interface#output-schema</a></p>
+</blockquote>
+<br/>
+<h3 id="runnablelambda-函数算子">RunnableLambda 函数算子</h3>
+<p>用于将 python 函数转成 Runnable</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Python" data-lang="Python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">runnable</span> <span class="o">=</span> <span class="n">RunnableLambda</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">runnable</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># returns 2</span>
+</span></span><span class="line"><span class="cl"><span class="n">runnable</span><span class="o">.</span><span class="n">batch</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="c1"># returns [2, 3, 4]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Async is supported by default by delegating to the sync implementation</span>
+</span></span><span class="line"><span class="cl"><span class="k">await</span> <span class="n">runnable</span><span class="o">.</span><span class="n">ainvoke</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># returns 2</span>
+</span></span><span class="line"><span class="cl"><span class="k">await</span> <span class="n">runnable</span><span class="o">.</span><span class="n">abatch</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="c1"># returns [2, 3, 4]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h3 id="sequence-串行执行--上一步的输出作为下一步的输入">Sequence 串行执行 | 上一步的输出作为下一步的输入</h3>
+<p><code>RunnableSequence</code> 类 LCEL 中最关键的一个类，用于创建一个可运行的对象，每个对象的输出作为下一个对象的输入。几乎用于所有的 chain 中。</p>
+<p>可以使用 <code>|</code> 运算符来实例化，<code>|</code> 运算符的左侧或右侧（或两侧）必须是可运行对象。这个也是 Composition 组合的前提（上面那个架构图中）。</p>
+<p>任何 <code>RunnableSequence</code> 自动支持同步、异步和批处理操作。</p>
+<p>例子：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Python" data-lang="Python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">mul_two</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">runnable_1</span> <span class="o">=</span> <span class="n">RunnableLambda</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">runnable_2</span> <span class="o">=</span> <span class="n">RunnableLambda</span><span class="p">(</span><span class="n">mul_two</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sequence</span> <span class="o">=</span> <span class="n">runnable_1</span> <span class="o">|</span> <span class="n">runnable_2</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 等价于</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># sequence = RunnableSequence(first=runnable_1, last=runnable_2)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sequence</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># (x+1)*2 = 4</span>
+</span></span><span class="line"><span class="cl"><span class="k">await</span> <span class="n">runnable</span><span class="o">.</span><span class="n">ainvoke</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sequence</span><span class="o">.</span><span class="n">batch</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="c1"># [4, 6, 8]</span>
+</span></span><span class="line"><span class="cl"><span class="k">await</span> <span class="n">sequence</span><span class="o">.</span><span class="n">abatch</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h3 id="parallel-并行执行">Parallel 并行执行</h3>
+<p>RunnableParallel 接受一个 Runnable 的 map，然后并行的执行他们，返回一个 map。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Python" data-lang="Python"><span class="line"><span class="cl"><span class="n">sequence</span> <span class="o">=</span> <span class="n">RunnableLambda</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;mul_2&#39;</span><span class="p">:</span> <span class="n">RunnableLambda</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;mul_5&#39;</span><span class="p">:</span> <span class="n">RunnableLambda</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">sequence</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># {&#39;mul_2&#39;: 4, &#39;mul_5&#39;: 10}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="fallback-默认逻辑回退逻辑">Fallback 默认逻辑/回退逻辑</h3>
+<p>有 2 种使用方式：</p>
+<ul>
+<li>在 chain 上调用 <code>with_fallbacks</code> 函数注入一个 Runnable 列表，会返回一个新的 Runnable：<code>RunnableWithFallbacks</code></li>
+<li>直接使用 RunnableWithFallbacks: <code>RunnableWithFallbacks(runnable=x, fallbacks=[a, b, c], ...)</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Python" data-lang="Python"><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">ChatAnthropic</span><span class="p">()</span><span class="o">.</span><span class="n">with_fallbacks</span><span class="p">([</span><span class="n">ChatOpenAI</span><span class="p">()])</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 大部分情况下使用 ChatAnthropic, 在 ChatAnthropic 无法工作的情况下使用 ChatOpenAI</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">when_all_is_lost</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span><span class="s2">&#34;Looks like our LLM providers are down. &#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;Here&#39;s a nice 🦜️ emoji for you instead.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 在整个 chain 失败的情况下, 返回固定字符串</span>
+</span></span><span class="line"><span class="cl"><span class="n">chain_with_fallback</span> <span class="o">=</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">PromptTemplate</span><span class="o">.</span><span class="n">from_template</span><span class="p">(</span><span class="s1">&#39;Tell me a joke about </span><span class="si">{topic}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="o">|</span> <span class="n">model</span>
+</span></span><span class="line"><span class="cl">    <span class="o">|</span> <span class="n">StrOutputParser</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span><span class="o">.</span><span class="n">with_fallbacks</span><span class="p">([</span><span class="n">RunnableLambda</span><span class="p">(</span><span class="n">when_all_is_lost</span><span class="p">)])</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h3 id="remoterunnable-将-langserve-当做本地的-langchain-运行">RemoteRunnable 将 LangServe 当做本地的 LangChain 运行</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Python" data-lang="Python"><span class="line"><span class="cl"><span class="c1"># 一个普通的 chain</span>
+</span></span><span class="line"><span class="cl"><span class="n">chain</span> <span class="o">=</span> <span class="n">prompt_template</span> <span class="o">|</span> <span class="n">model</span> <span class="o">|</span> <span class="n">parser</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="n">title</span><span class="o">=</span><span class="s2">&#34;LangChain Server&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">version</span><span class="o">=</span><span class="s2">&#34;1.0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">description</span><span class="o">=</span><span class="s2">&#34;A simple API server using LangChain&#39;s Runnable interfaces&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 这里可以直接将这个 chain 作为 REST api 启动</span>
+</span></span><span class="line"><span class="cl"><span class="n">add_routes</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">chain</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">path</span><span class="o">=</span><span class="s2">&#34;/chain&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">import</span> <span class="nn">uvicorn</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langserve</span> <span class="kn">import</span> <span class="n">RemoteRunnable</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 然后在客户端，可以使用 RemoteRunnable 运行上面那个 chain</span>
+</span></span><span class="line"><span class="cl"><span class="n">remote_chain</span> <span class="o">=</span> <span class="n">RemoteRunnable</span><span class="p">(</span><span class="s2">&#34;http://localhost:8000/chain/&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">remote_chain</span><span class="o">.</span><span class="n">invoke</span><span class="p">({</span><span class="s2">&#34;language&#34;</span><span class="p">:</span> <span class="s2">&#34;italian&#34;</span><span class="p">,</span> <span class="s2">&#34;text&#34;</span><span class="p">:</span> <span class="s2">&#34;hi&#34;</span><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h2 id="model-io-模型交互">Model I/O 模型交互</h2>
+<p>Model I/O 简单理解就是负责和 LM 语言模型交互。</p>
+<p>Model I/O 由三部分组成：prompt、LM、parser，通过 LCEL，可以非常简单的将这三部分组成一个 chain：</p>
+<blockquote>
+<p>这里注意，PromptTemplate.<strong>or</strong> 继承了 Runnable.<strong>or</strong> 的默认实现，返回了 RunnableSequence，所以可以通过 | 组合，并且返回的是一个 chain</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Python" data-lang="Python"><span class="line"><span class="cl"><span class="n">prompt</span> <span class="o">=</span> <span class="n">PromptTemplate</span><span class="o">.</span><span class="n">from_template</span><span class="p">(</span><span class="s2">&#34;What is a good name for a company that makes </span><span class="si">{product}</span><span class="s2">?&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">chain</span> <span class="o">=</span> <span class="n">prompt</span> <span class="o">|</span> <span class="n">ChatOpenAI</span><span class="p">()</span> <span class="o">|</span> <span class="n">StrOutputParser</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">chain</span><span class="o">.</span><span class="n">invoke</span><span class="p">({</span><span class="s2">&#34;product&#34;</span><span class="p">:</span> <span class="s2">&#34;apple&#34;</span><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h3 id="prompt">Prompt</h3>
+<p>调用 LLM 前，对 prompt 进行处理，抽象了 PromptTemplate 组件。PromptTemplate 是一个 Runnable，所以继承了 LCEL 语言的特点。</p>
+<ul>
+<li>Message 类型：text 纯文本，和 ChatMessage</li>
+<li>ChatMessage：这里分了角色 role，包含 human，system，ai
+<ul>
+<li>human 就是用户发的消息</li>
+<li>system 是人格定义部分</li>
+<li>ai 是 LLM 返回的</li>
+</ul>
+</li>
+</ul>
+<br/>
+<h3 id="llm">LLM</h3>
+<p>也就是 GPT3.5，GPT4，Seed 这些语言模型。</p>
+<p>LLM 也是 Runnable，拥有 LCEL 语言的特点。</p>
+<br/>
+<h3 id="parser">Parser</h3>
+<p>对 LLM 输出的处理，抽象了 BaseOutputParser 能力</p>
+<ul>
+<li>比如说格式化字符串、字符串转列表、解析 json、解析 markdown 等等</li>
+</ul>
+<br/>
+<h2 id="agents">Agents</h2>
+<p>以LangChain为例，如果没有代理人，就要把一系列的动作和逻辑“硬编码”到代码之中，也就是LangChain的“链条”之中。这种“硬编码”方法无法充分发挥大语言模型（LLM）的推理能力，或者说智商。</p>
+<p>而有了代理人（Agent）之后，大语言模型（LLM）就可以成为一个“推理引擎”，不光是可以跟我们进行“问答”交互，还可以调用一些列的工具，API（程序接口）等，这样就能完成一些更加复杂的任务，并且由大预言模型（LLM）自己去决定调用的顺序，灵活了很多。</p>
+<p>为了后续行文方便，这里引入一些常用概念和术语：</p>
+<ul>
+<li>
+<p><strong>Tool</strong>：工具</p>
+</li>
+<li>
+<p><strong>Toolkit</strong>：工具包</p>
+</li>
+<li>
+<p><strong>AgentExcutor</strong>：调度器，调度逻辑全靠它</p>
+</li>
+</ul>
+<br/>
+<h3 id="agent-的工作过程">Agent 的工作过程</h3>
+<p>他的基本行为模式还是由一串提示词（Prompt）和大预言模型交互，然后再去执行任务的。通常Agent可以有一个“角色”，也可以陈述任务的背景，还可以指定执行逻辑的策略。</p>
+<h1 id="用langchain-实现">用LangChain 实现</h1>
+<p>用Python和LangChain来演绎一段Agent的实际任务：就是让Agent自己去网上搜索“北京的面积”和“纽约的面积”，然后计算出来两者的差值。</p>
+<p>虽然这个任务非常简单，用提示词+大模型本身就有可能可以得到答案，但是通过这个简单的任务，可以展示Agent的工作流程。</p>
+<pre tabindex="0"><code>import os
+
+from langchain.agents import load_tools
+from langchain.agents import initialize_agent
+from langchain.agents import AgentType
+from langchain.llms import Tongyi
+
+from langchain.tools import DuckDuckGoSearchRun
+
+# duck duck search
+search = DuckDuckGoSearchRun()
+
+res = search.run(&#34;北京的面积有多大？&#34;)
+print(res)
+
+res = search.run(&#34;纽约的面积有多大？&#34;)
+print(res)
+
+
+os.environ[&#34;DASHSCOPE_API_KEY&#34;] = &#34;sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&#34;
+
+llm = Tongyi()
+
+tools = load_tools([&#34;ddg-search&#34;, &#34;llm-math&#34;], llm=llm)
+
+agent = initialize_agent(
+    tools,
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=True)
+
+agent.run(&#34;北京的面积和纽约的面积差是多少？&#34;)
+</code></pre><br/>
+<h1 id="其他">其他</h1>
+<p><a href="https://tmc.github.io/langchaingo/docs/" target="_blank" rel="noopener noreffer">langchaingo</a> 是 langchain 的 golang 实现，不过还有很多缺陷。相比官方支持的 Python 版本还有非常大的差距。</p>
+<p>以下是我深刻体验到的 langchaingo 的问题</p>
+<br/>
+<ul>
+<li><strong>langchaingo 的 PDF 读取能力很弱</strong></li>
+</ul>
+<p>golang 的 PDF 文字提取技术的三方库用起来比较稀烂，其实 PDF 的文字提取技术本身就是比较复杂的。</p>
+<p>langchaingo 的实现在 PDF 文本提取上做的明显性能差很多也是能理解的。因为PDF本质上类似于一张打印了文本的纸。只记载形态而不记载含义。很多的三方库的实现都是基于 OCR 读取的。</p>
+<p>langchaingo 用的 PDF 读取库 <a href="github.com/signintech/gopdf" rel="">github.com/signintech/gopdf</a> , 在和 Python 的 PDF 三方库读取能力上</p>
+<br/>
+<p>详见B站UP主 DingTalk科技 的讲解。<a href="https://www.bilibili.com/video/BV1PCHjeNEjx" target="_blank" rel="noopener noreffer">PDF转Word为什么会变成乱码?技术壁垒有多高？</a></p>
+<br/>
+<p>参考：</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/665223637" target="_blank" rel="noopener noreffer">AI 大语言模型链 LangChain 实战 （三）—— Agent 初探</a></li>
+</ul>
+<hr>
+<br/>
+<p>参考:</p>
+<ul>
+<li>
+<p><a href="https://docs.langchain.com.cn/docs/introduction/" target="_blank" rel="noopener noreffer">LangChain 框架介绍</a></p>
+</li>
+<li>
+<p><a href="https://python.langchain.com.cn/docs/get_started/quickstart" target="_blank" rel="noopener noreffer">LangChain 中文网</a></p>
+</li>
+<li>
+<p><a href="https://www.langchain.asia/" target="_blank" rel="noopener noreffer">LangChain 中文网 - 二</a></p>
+</li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2024-08-29</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/langchain/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/langchain/" data-title="LLM大模型 - langchain应用技术介绍"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/langchain/" data-title="LLM大模型 - langchain应用技术介绍"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/langchain/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ai/">Ai</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/ollama-ai/" class="prev" rel="prev" title="ollama 本地AI大模型"><i class="fas fa-angle-left fa-fw"></i>ollama 本地AI大模型</a>
+            <a href="/post/rag/" class="next" rel="next" title="LLM大模型 - RAG">LLM大模型 - RAG<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

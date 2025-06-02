@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>操作系统知识汇总 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="操作系统知识汇总">
+  <meta property="og:description" content="最常见的指标有可能是最容易遗漏和忽视的，以前面试的过程中经常被问到一些问题定位排查的运维问题，但是一些经常耳熟能详的名词被深究问下去就不知所以了。 比如：1. 系统负载如何查看？系统负载高的原因都有可能是哪些？ 什么是系统负载？ 2. swap 是什么？为什么kubernetes建议禁用 swap 等。
+下面做一些总结">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-02-05T08:50:00+00:00">
+    <meta property="article:modified_time" content="2022-02-05T08:50:00+00:00">
+    <meta property="article:tag" content="Devops">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="操作系统知识汇总">
+  <meta name="twitter:description" content="最常见的指标有可能是最容易遗漏和忽视的，以前面试的过程中经常被问到一些问题定位排查的运维问题，但是一些经常耳熟能详的名词被深究问下去就不知所以了。 比如：1. 系统负载如何查看？系统负载高的原因都有可能是哪些？ 什么是系统负载？ 2. swap 是什么？为什么kubernetes建议禁用 swap 等。
+下面做一些总结">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" /><link rel="prev" href="http://localhost:1313/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" /><link rel="next" href="http://localhost:1313/post/http-2-0-header-compression/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "操作系统知识汇总",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "devops","wordcount":  645 ,
+        "url": "http:\/\/localhost:1313\/post\/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB\/","datePublished": "2022-02-05T08:50:00+00:00","dateModified": "2022-02-05T08:50:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">操作系统知识汇总</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-02-05">2022-02-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;645 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#cpu-性能篇">CPU 性能篇</a>
+      <ul>
+        <li><a href="#平均负载">平均负载</a></li>
+        <li><a href="#上下文切换">上下文切换</a></li>
+        <li><a href="#cpu-使用率">CPU 使用率</a></li>
+        <li><a href="#僵尸进程">僵尸进程</a></li>
+        <li><a href="#守护进程">守护进程</a></li>
+      </ul>
+    </li>
+    <li><a href="#mem-性能篇">MEM 性能篇</a>
+      <ul>
+        <li><a href="#内存分配与回收">内存分配与回收</a></li>
+        <li><a href="#swap">swap</a></li>
+        <li><a href="#swapd-占用-cpu-过高怎么办">swapd 占用 CPU 过高怎么办？</a></li>
+      </ul>
+    </li>
+    <li><a href="#io-性能篇">IO 性能篇</a>
+      <ul>
+        <li><a href="#iops">IOPS</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2022-02-05T08:50:00" title="February 5, 2022">February 5, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>最常见的指标有可能是最容易遗漏和忽视的，以前面试的过程中经常被问到一些问题定位排查的运维问题，但是一些经常耳熟能详的名词被深究问下去就不知所以了。
+比如：1. 系统负载如何查看？系统负载高的原因都有可能是哪些？ 什么是系统负载？ 2. swap 是什么？为什么kubernetes建议禁用 swap 等。</p>
+<p>下面做一些总结</p>
+<h1 id="cpu-性能篇">CPU 性能篇</h1>
+<h2 id="平均负载">平均负载</h2>
+<p><strong>平均负载</strong>是指单位时间内，系统处于 <font color="#FF7F50">可运行状态</font> 和 <font color="#FF7F50">不可中断状态</font> 的平均进程数，也就是平均活跃进程数，它和 CPU 使用率并没有直接关系。</p>
+<p><font color="#FF7F50"> 可运行状态的进程 </font>：是指正在使用 CPU 或者正在等待 CPU 的进程，也就是我们常用 ps 命令看到的，处于 R 状态（Running 或 Runnable）的进程。</p>
+<p><font color="#FF7F50"> 不可中断状态的平均进程数 </font>：正处于内核态关键流程中的进程，并且这些流程是不可打断的，比如最常见的是等待硬件设备的 I/O 响应，也就是我们在 ps 命令中看到的 D 状态（Uninterruptible Sleep，也称为 Disk Sleep）的进程。</p>
+</br>
+<p>举个例子：进程读取的磁盘设备是一个远程的NFS，若网络出现异常，则读取数据的进程将处于D状态。</p>
+<p>常见的 CPU 指标排查工具, <code>top</code>、<code>mpstat</code>、<code>pidstat</code>、<code>uptime</code></p>
+<ul>
+<li><code>mpstat</code> 是一个常用的多核 CPU 性能分析工具，用来实时查看每个 CPU 的性能指标，以及所有 CPU 的平均指标</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># -P ALL 表示监控所有CPU，后面数字5表示间隔5秒后输出一组数据</span>
+</span></span><span class="line"><span class="cl">$ mpstat -P ALL <span class="m">5</span>
+</span></span><span class="line"><span class="cl">Linux 5.4.0-81-generic <span class="o">(</span>XPS-13<span class="o">)</span> 	2022年02月05日 	_x86_64_	<span class="o">(</span><span class="m">8</span> CPU<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">09时07分33秒  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+</span></span><span class="line"><span class="cl">09时07分34秒  all    1.98    0.00    9.64    0.00    0.00    1.85    0.00    0.00    0.00   86.53
+</span></span><span class="line"><span class="cl">09时07分34秒    <span class="m">0</span>    0.95    0.00    7.62    0.00    0.00    7.62    0.00    0.00    0.00   83.81
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>pidstat</code> 是一个常用的进程性能分析工具，用来实时查看进程的 CPU、内存、I/O 以及上下文切换等性能指标。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pidstat -u <span class="m">1</span> <span class="m">3</span>
+</span></span><span class="line"><span class="cl">Linux 5.4.0-81-generic <span class="o">(</span>XPS-13<span class="o">)</span> 	2022年02月05日 	_x86_64_	<span class="o">(</span><span class="m">8</span> CPU<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">09时10分01秒   UID       PID    %usr %system  %guest   %wait    %CPU   CPU  Command
+</span></span><span class="line"><span class="cl">09时10分02秒     <span class="m">0</span>      <span class="m">1129</span>   10.89    4.95    0.00    0.00   15.84     <span class="m">2</span>  Xorg
+</span></span><span class="line"><span class="cl">09时10分02秒 <span class="m">65534</span>      <span class="m">1451</span>    0.00    0.99    0.00    0.00    0.99     <span class="m">1</span>  dnsmasq
+</span></span><span class="line"><span class="cl">09时10分02秒  <span class="m">1000</span>      <span class="m">2222</span>    8.91    1.98    0.00    0.00   10.89     <span class="m">3</span>  budgie-wm
+</span></span></code></pre></td></tr></table>
+</div>
+</div></br>
+<h2 id="上下文切换">上下文切换</h2>
+<p>CPU <strong>上下文切换</strong>，是保证 Linux 系统正常工作的核心功能之一，一般情况下不需要我们特别关注。但过多的上下文切换，会把 CPU 时间消耗在寄存器、内核栈以及虚拟内存等数据的保存和恢复上，从而缩短进程真正运行的时间，导致系统的整体性能大幅下降。</p>
+<p>举个例子：一个进程从磁盘上读取文件，需要经历以下几个步骤。1. 进程调用read函数，这次系统调用，进程从用户态切换到内核态。2. 内核将文件从磁盘copy至PageCache 3. 内核态将文件从PageCache Copy至用户态缓冲区并从内核态退出至应用态。</p>
+<p>过程进行了2次上下文切换，上述上下文切换的成本并不小，虽然一次切换仅消耗几十纳秒到几微秒，但高并发服务会放大这类时间的消耗。</p>
+</br>
+<p>常见的上下文切换排查工具, <code>vmstate</code>、<code>pidstat</code>、<code>dstat</code></p>
+<ul>
+<li><code>vmstat</code> 是一个常用的系统性能分析工具，主要用来分析系统的内存使用情况，也常用来分析 CPU 上下文切换和中断的次数。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ vmstat <span class="m">1</span>
+</span></span><span class="line"><span class="cl">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+</span></span><span class="line"><span class="cl"> r  b 交换 空闲 缓冲 缓存   si   so    bi    bo   in   cs us sy id wa st
+</span></span><span class="line"><span class="cl"> <span class="m">0</span>  <span class="m">0</span> <span class="m">1892716</span> <span class="m">501456</span> <span class="m">451344</span> <span class="m">7964228</span>    <span class="m">0</span>    <span class="m">1</span>    <span class="m">22</span>    <span class="m">53</span>    <span class="m">0</span>    <span class="m">9</span>  <span class="m">4</span>  <span class="m">9</span> <span class="m">87</span>  <span class="m">0</span>  <span class="m">0</span>
+</span></span><span class="line"><span class="cl"> <span class="m">0</span>  <span class="m">0</span> <span class="m">1892716</span> <span class="m">442916</span> <span class="m">451344</span> <span class="m">8022548</span>    <span class="m">0</span>    <span class="m">0</span>    <span class="m">16</span>     <span class="m">0</span> <span class="m">4518</span> <span class="m">9028</span>  <span class="m">5</span> <span class="m">11</span> <span class="m">84</span>  <span class="m">0</span>  <span class="m">0</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<ul>
+<li><code>cs（context switch）</code>是每秒上下文切换的次数。</li>
+<li><code>in（interrupt）</code>则是每秒中断的次数。</li>
+<li><code>r（Running or Runnable）</code>是就绪队列的长度，也就是正在运行和等待 CPU 的进程数。</li>
+<li><code>b（Blocked）</code>则是处于不可中断睡眠状态的进程数。</li>
+</ul>
+</blockquote>
+<p><code>pidstat</code> 加上 <code>-w</code> 参数，可以显示自愿上下文切换和非自愿上下文切换。(查看线程的上下文切换时添加参数 <code>-t</code>)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ pidstat -w   
+</span></span><span class="line"><span class="cl">Linux 5.4.0-81-generic <span class="o">(</span>XPS-13<span class="o">)</span> 	2021年08月28日 	_x86_64_	<span class="o">(</span><span class="m">8</span> CPU<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">17时08分16秒   UID       PID   cswch/s nvcswch/s  Command
+</span></span><span class="line"><span class="cl">17时08分16秒     <span class="m">0</span>         <span class="m">1</span>      0.28      0.05  systemd
+</span></span><span class="line"><span class="cl">17时08分16秒     <span class="m">0</span>         <span class="m">2</span>      0.02      0.00  kthreadd
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<ul>
+<li><strong>自愿上下文切换</strong>，是指进程无法获取所需资源，导致的上下文切换。比如说， I/O、内存等系统资源不足时，就会发生自愿上下文切换。</li>
+<li><strong>非自愿上下文切换</strong>，则是指进程由于时间片已到等原因，被系统强制调度，进而发生的上下文切换。比如说，大量进程都在争抢 CPU 时，就容易发生非自愿上下文切换。</li>
+</ul>
+</blockquote>
+<h2 id="cpu-使用率">CPU 使用率</h2>
+<p><strong>CPU 使用率</strong>，就是除了空闲时间外的其他时间占总 CPU 时间的百分比。</p>
+<p>常见的CPU使用率查看工具：<code>top</code>、<code>perf</code>、<code>ps</code></p>
+<ul>
+<li><code>top</code>: 显示了系统总体的 CPU 和内存使用情况，以及各个进程的资源使用情况</li>
+<li><code>perf</code>: Linux 2.6.31 以后内置的性能分析工具。它以性能事件采样为基础，不仅可以分析系统的各种事件和内核性能，还可以用来分析指定应用程序的性能问题。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># -g开启调用关系分析，-p指定php-fpm的进程号21515</span>
+</span></span><span class="line"><span class="cl">$ perf top -g -p <span class="m">21515</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="僵尸进程">僵尸进程</h2>
+<p><strong>僵尸进程</strong>表示进程已经退出，但它的父进程还没有回收子进程占用的资源。短暂的僵尸状态我们通常不必理会，但进程长时间处于僵尸状态，就应该注意了，可能有应用程序没有正常处理子进程的退出。</p>
+<p>解决僵尸进程的方法。既然僵尸进程是因为父进程没有回收子进程的资源而出现的，那么，要解决掉它们，就要找到它们的根儿，<strong>也就是找出父进程，然后在父进程里解决。</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># -a 表示输出命令行选项</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># p表PID</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># s表示指定进程的父进程   (如下图是查看 Nginx worker进程 父进程的方法)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ pstree -aps <span class="m">1090</span>
+</span></span><span class="line"><span class="cl">systemd,1 splash
+</span></span><span class="line"><span class="cl">  └─nginx,1086
+</span></span><span class="line"><span class="cl">      └─nginx,1090 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="守护进程">守护进程</h2>
+<p><strong>守护进程</strong>(<strong>daemon</strong>)是生存期长的一种进程，没有控制终端。它们常常在系统引导装入时启动，仅在系统关闭时才终止。UNIX系统有很多守护进程，守护进程程序的名称通常以字母“d”结尾：例如，syslogd 就是指管理系统日志的守护进程。</p>
+<h1 id="mem-性能篇">MEM 性能篇</h1>
+<h2 id="内存分配与回收">内存分配与回收</h2>
+<p><code>malloc()</code> 是 C 标准库提供的<strong>内存分配函数</strong>，对应到系统调用上，有两种实现方式，即 <code>brk()</code> 和 <code>mmap()</code>。</p>
+<ul>
+<li>对小块内存（小于 128K），C 标准库使用 brk() 来分配，也就是通过移动堆顶的位置来分配内存。这些内存释放后并不会立刻归还系统，而是被缓存起来，这样就可以重复使用。</li>
+<li>大块内存（大于 128K），则直接使用内存映射 mmap() 来分配，也就是在文件映射段找一块空闲内存分配出去。</li>
+</ul>
+<p>当这两种调用发生后，其实并没有真正分配内存。这些内存，都只在首次访问时才分配，也就是通过缺页异常进入内核中，再由内核来分配内存。</p>
+<p>整体来说，Linux 使用 <strong>伙伴系统(buddy system)</strong> 来管理内存分配。伙伴系统也一样以页为单位来管理内存，并且会通过相邻页的合并，减少内存碎片化（比如 brk 方式造成的内存碎片）。在内核空间，Linux 则通过 <strong>slab 分配器</strong> 来管理小内存。你可以把 slab 看成构建在伙伴系统上的一个缓存，主要作用就是分配并释放内核中的小对象。</p>
+<p>系统也不会任由某个进程用完所有内存。在发现内存紧张时，系统就会通过一系列机制来回收内存，比如下面这三种方式：</p>
+<ul>
+<li>回收缓存，比如使用 LRU（Least Recently Used）算法，回收最近使用最少的内存页面；</li>
+<li>回收不常访问的内存，把不常用的内存通过交换分区直接写到磁盘中；</li>
+<li>杀死进程，内存紧张时系统还会通过 OOM（Out of Memory），直接杀掉占用大量内存的进程。</li>
+</ul>
+<p>操作系统中内存的类型</p>
+<ul>
+<li><strong>文件页</strong>： 系统释放掉可以回收的内存，比如缓存和缓冲区，就属于可回收内存。它们在内存管理中，通常被叫做<code>文件页（File-backed Page）</code>。</li>
+<li><strong>脏页</strong>：大部分文件页，都可以直接回收，以后有需要时，再从磁盘重新读取就可以了。而那些被应用程序修改过，并且暂时还没写入磁盘的数据（也就是脏页），就得先写入磁盘，然后才能进行内存释放。</li>
+<li><strong>匿名页</strong>: 应用程序动态分配的堆内存</li>
+</ul>
+<h2 id="swap">swap</h2>
+<p><strong>Swap</strong> 就是把一块磁盘空间或者一个本地文件（以下讲解以磁盘为例），当成内存来使用。</p>
+<p>有新的大块内存分配请求，但是剩余内存不足。这个时候系统就需要回收一部分内存（比如前面提到的缓存），进而尽可能地满足新内存请求。这个过程通常被称为<strong>直接内存回收</strong>。</p>
+<p>除了直接内存回收，还有一个专门的内核线程用来定期回收内存，也就是 <strong>kswapd0</strong>。为了衡量内存的使用情况，kswapd0 定义了三个内存阈值（watermark，也称为水位），分别是页最小阈值（pages_min）、页低阈值（pages_low）和页高阈值（pages_high）。剩余内存，则使用 pages_free 表示。</p>
+<p>kswapd0 定期扫描内存的使用情况，并根据剩余内存落在这三个阈值的空间位置，进行内存的回收操作。</p>
+<blockquote>
+<ul>
+<li>剩余内存小于<strong>页最小阈值</strong>，说明进程可用内存都耗尽了，只有内核才可以分配内存。</li>
+<li>剩余内存落在<strong>页最小阈值</strong>和<strong>页低阈值中间</strong>，说明内存压力比较大，剩余内存不多了。这时 kswapd0 会执行内存回收，直到剩余内存大于高阈值为止。</li>
+<li>剩余内存落在<strong>页低阈值</strong>和<strong>页高阈值中间</strong>，说明内存有一定压力，但还可以满足新内存请求。</li>
+<li>剩余内存大于<strong>页高阈值</strong>，说明剩余内存比较多，没有内存压力。</li>
+</ul>
+</blockquote>
+<ol>
+<li>对文件页的回收，当然就是直接回收缓存，或者把脏页写回磁盘后再回收。</li>
+<li>对匿名页的回收，其实就是通过 Swap 机制，把它们写入磁盘后再释放内存。</li>
+</ol>
+<p>Linux 提供了一个  <code>/proc/sys/vm/swappiness</code> 选项，用来调整使用 Swap 的积极程度。但是即便设置为0也不是关闭 swap 的意思，真正的关闭swap需要设置 <code>swapoff -a</code> 和在 <code>/etc/fstab</code> 中注释掉swap分区的挂载。</p>
+<h2 id="swapd-占用-cpu-过高怎么办">swapd 占用 CPU 过高怎么办？</h2>
+<p>场景： 本人打开 chrome 浏览器，大约10个tab，新打开 bilibili 网站时，笔记本的电脑的CPU呼呼的转，瞬间电脑卡死了，终端很难调起来。另外chrome浏览器直接卡崩溃了。</p>
+<p>下意识的以为是一些后台更新程序占用CPU导致的，</p>
+<p>执行 <code>htop</code> 看到 chrome 进程耗CPU 140% 稍微有些高，但我是8核CPU。140% 应该不算什么。其余可能就 vmware 的虚拟机进程耗费CPU稍微高一些了。</p>
+<p>执行 <code>mpstat</code> 命令。这下知道是什么原因了。系统进程耗费CPU高？另外 iowait 也不高</p>
+<img src="https://img1.kiosk007.top/static/images/operating_systems/kswap_2.png ">
+<p>执行 <code>pidstat -u 1</code> ，看到了是什么进程在耗费CPU，罪魁祸首就是 <code>swapd</code> 进程。</p>
+<img src="https://img1.kiosk007.top/static/images/operating_systems/kswap_0.png">
+<p>原来 swap 已经满了。但是，可以看到我的空闲内存还有 4个G , 但这并不影响操作系统把swap用满，我猜测是 chrome 浏览器长时间不用，相关的匿名页给我换进swap里了，突然猛的打开chrome浏览器，又是播放 4K 视频，就给我卡死了。</p>
+<img src="https://img1.kiosk007.top/static/images/operating_systems/kswap_1.png">
+<p>即便我的 swapness 设置的是 0 ,</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ cat /proc/sys/vm/swappiness 
+</span></span><span class="line"><span class="cl"><span class="m">0</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查看swap中都是哪些进程在用的内存。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> file in /proc/*/status <span class="p">;</span> <span class="k">do</span> awk <span class="s1">&#39;/VmSwap|Name|^Pid/{printf $2 &#34; &#34; $3}END{ print &#34;&#34;}&#39;</span> <span class="nv">$file</span><span class="p">;</span> <span class="k">done</span> <span class="p">|</span> sort -k <span class="m">3</span> -n -r <span class="p">|</span> head
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>解决方式，直接关了swap 。不过我执行了下面的命令，电脑直接卡死重启了。。。。</p>
+<pre tabindex="0"><code>swapoff -a &amp;&amp; swapon -a
+</code></pre><h1 id="io-性能篇">IO 性能篇</h1>
+<p>要介绍 IO 性能的相关问题，需要先知道Linux 的文件系统是怎样工作的。</p>
+<p>同 CPU、内存一样，磁盘和文件系统的管理，也是操作系统最核心的功能。</p>
+<ul>
+<li>磁盘为系统提供了最基本的持久化存储。</li>
+<li>文件系统则在磁盘的基础上，提供了一个用来管理文件的树状结构。</li>
+</ul>
+<p>文件系统，本身是对存储设备上的文件，进行组织管理的机制。组织方式不同，就会形成不同的文件系统。</p>
+<p>一个操作系统由 引导块(Boot Blocks)、<a href="https://unix.stackexchange.com/questions/4402/what-is-a-superblock-inode-dentry-and-a-file" target="_blank" rel="noopener noreffer">超级块(Super Blocks)</a>、索引节点（Index List）和数据块（Data）组成。</p>
+<img src="https://img1.kiosk007.top/static/images/operating_systems/R-C.png">
+<p>其中我们超级块是存储文件系统的元数据，我们无需关心， Linux 文件系统为每个文件都分配两个数据结构，索引节点（index node）和目录项（directory entry）。它们主要用来记录文件的元信息和目录结构。这个是重点。</p>
+<ul>
+<li>索引节点，简称为 inode，用来记录文件的元数据，比如 inode 编号、文件大小、访问权限、修改日期、数据的位置等。索引节点和文件一一对应，它跟文件内容一样，都会被持久化存储到磁盘中。所以记住，索引节点同样占用磁盘空间。</li>
+<li>目录项，简称为 dentry，用来记录文件的名字、索引节点指针以及与其他目录项的关联关系。多个关联的目录项，就构成了文件系统的目录结构。不过，<strong>不同于索引节点，目录项是由内核维护的一个内存数据结构，所以通常也被叫做目录项缓存</strong>。</li>
+</ul>
+<p>目录项、索引节点、逻辑块以及超级块，构成了 Linux 文件系统的四大基本要素。不过，为了支持各种不同的文件系统，Linux 内核在用户进程和文件系统的中间，又引入了一个抽象层，也就是虚拟文件系统 VFS（Virtual File System）。</p>
+<p>VFS 定义了一组所有文件系统都支持的数据结构和标准接口。这样，用户进程和内核中的其他子系统，只需要跟 VFS 提供的统一接口进行交互就可以了，而不需要再关心底层各种文件系统的实现细节。</p>
+<img src="https://img1.kiosk007.top/static/images/operating_systems/vfs.webp">
+<p>把文件系统挂载到挂载点后，你就能通过挂载点，再去访问它管理的文件了。VFS 提供了一组标准的文件访问接口。这些接口以系统调用的方式，提供给应用程序使用。</p>
+<p>回到之前的问题，磁盘IO会有什么情况的瓶颈呢？</p>
+<h2 id="iops">IOPS</h2>
+<p>IOPS（Input/Output Per Second），是指每秒的 I/O 请求数。 常见的磁盘IO的性能问题都和这个有关。过多的IO读写可能会导致读写变缓慢。</p>
+<p>使用命令 iotop 可以观察到整体系统的io情况，也可以看到是哪个进程的io占比比较高。</p>
+<pre tabindex="0"><code>
+$ iotop
+Total DISK READ :       0.00 B/s | Total DISK WRITE :       7.85 K/s 
+Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       0.00 B/s 
+  TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO&gt;    COMMAND 
+15055 be/3 root        0.00 B/s    7.85 K/s  0.00 %  0.00 % systemd-journald 
+</code></pre></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-02-05</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" data-title="操作系统知识汇总"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" data-title="操作系统知识汇总"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/devops/">Devops</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/%E7%AE%97%E6%B3%95-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" class="prev" rel="prev" title="算法 - (动态规划)"><i class="fas fa-angle-left fa-fw"></i>算法 - (动态规划)</a>
+            <a href="/post/http-2-0-header-compression/" class="next" rel="next" title="HTTP/2.0 Header Compression">HTTP/2.0 Header Compression<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

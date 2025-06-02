@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>消息队列基础 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="消息队列基础">
+  <meta property="og:description" content="随着业务的快速发展，各层业务之间调用关系越来越复杂，对系统的可用性以及扩展性要求也越来越高。消息队列作为分布式架构中的重要一环，提供了消息传递和消息排队的模型，被应用在系统解耦、异步处理、流量削峰 等多个场景，有着举足轻重的地位。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-04-04T11:23:00+00:00">
+    <meta property="article:modified_time" content="2023-04-04T11:23:00+00:00">
+    <meta property="article:tag" content="Rocketmq">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="消息队列基础">
+  <meta name="twitter:description" content="随着业务的快速发展，各层业务之间调用关系越来越复杂，对系统的可用性以及扩展性要求也越来越高。消息队列作为分布式架构中的重要一环，提供了消息传递和消息排队的模型，被应用在系统解耦、异步处理、流量削峰 等多个场景，有着举足轻重的地位。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/" /><link rel="prev" href="http://localhost:1313/post/%E5%85%A5%E9%97%A8%E6%91%84%E5%BD%B1/" /><link rel="next" href="http://localhost:1313/post/gomap%E6%80%8E%E4%B9%88%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "消息队列基础",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "rocketmq","wordcount":  183 ,
+        "url": "http:\/\/localhost:1313\/post\/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80\/","datePublished": "2023-04-04T11:23:00+00:00","dateModified": "2023-04-04T11:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">消息队列基础</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2023-04-04">2023-04-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;183 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#messagequeue-基本概念">MessageQueue 基本概念</a>
+      <ul>
+        <li><a href="#mq-场景">MQ 场景</a></li>
+        <li><a href="#mq-特点">MQ 特点</a>
+          <ul>
+            <li><a href="#应用解耦">应用解耦</a></li>
+            <li><a href="#异步处理">异步处理</a></li>
+            <li><a href="#流量削峰">流量削峰</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#mq-模式">MQ 模式</a>
+      <ul>
+        <li><a href="#点对点模式">点对点模式</a></li>
+        <li><a href="#topic-模式发布订阅模式">Topic 模式，发布/订阅模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#引入mq带来的问题">引入MQ带来的问题</a></li>
+    <li><a href="#rmq-基础篇">RMQ 基础篇</a>
+      <ul>
+        <li><a href="#基本概念">基本概念</a>
+          <ul>
+            <li><a href="#1-消息模型message-model">1. 消息模型（Message Model）</a></li>
+            <li><a href="#2-消息生产者producer">2. 消息生产者（Producer）</a></li>
+            <li><a href="#3-消息消费者consumer">3. 消息消费者（Consumer）</a></li>
+            <li><a href="#4-主题topic">4. 主题（Topic）</a></li>
+            <li><a href="#5-代理服务器broker-server">5. 代理服务器（Broker Server）</a></li>
+            <li><a href="#6-生产者组producer-group">6. 生产者组（Producer Group）</a></li>
+            <li><a href="#7-消费者组consumer-group">7. 消费者组（Consumer Group）</a></li>
+            <li><a href="#8-集群消费clustering">8. 集群消费（Clustering）</a></li>
+            <li><a href="#9-广播消费broadcasting">9. 广播消费（Broadcasting）</a></li>
+            <li><a href="#10-普通顺序消息normal-ordered-message">10. 普通顺序消息（Normal Ordered Message）</a></li>
+            <li><a href="#11-严格顺序消息strictly-ordered-message">11. 严格顺序消息（Strictly Ordered Message）</a></li>
+          </ul>
+        </li>
+        <li><a href="#rmq-原理篇">RMQ 原理篇</a>
+          <ul>
+            <li><a href="#1-推送式--拉取式-consumer">1. 推送式 &amp; 拉取式 Consumer</a></li>
+            <li><a href="#2-事务消息">2. 事务消息</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2023-04-04T11:23:00" title="April 4, 2023">April 4, 2023</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>随着业务的快速发展，各层业务之间调用关系越来越复杂，对系统的可用性以及扩展性要求也越来越高。消息队列作为分布式架构中的重要一环，提供了消息传递和消息排队的模型，被应用在<strong>系统解耦、异步处理、流量削峰</strong> 等多个场景，有着举足轻重的地位。</p>
+<h1 id="messagequeue-基本概念">MessageQueue 基本概念</h1>
+<h2 id="mq-场景">MQ 场景</h2>
+<p>不需要立即获得结果，又需要对并发量进行控制，生产者-消费者模型。</p>
+<br/>
+<h2 id="mq-特点">MQ 特点</h2>
+<h3 id="应用解耦">应用解耦</h3>
+<img src="https://img1.kiosk007.top/static/images/blog/2023-03-18_21-08.png" alt="2023-03-18_21-08" style="zoom:67%;" />
+<img src="https://img1.kiosk007.top/static/images/blog/2023-03-19_21-09.png" alt="2023-03-19_21-09" style="zoom:67%;" />
+<ul>
+<li>多应用间通过消息队列对同一消息进行处理，避免调用接口失败导致整个过程失败（非事务逻辑）</li>
+<li>发布-订阅模式可以让上游修改不修改代码，减少上游服务发布频率。</li>
+</ul>
+<br/>
+<h3 id="异步处理">异步处理</h3>
+<img src="https://img1.kiosk007.top/static/images/blog/2023-03-19_21-35_1.png" alt="2023-03-19_21-35_1" style="zoom: 50%;clear:both; display:block; margin: auto;" />
+<img src="https://img1.kiosk007.top/static/images/blog/2023-03-19_21-35.png" alt="2023-03-19_21-35" style="zoom: 50%;clear:both; display:block; margin: auto;" />
+<ul>
+<li>多应用对消息队列中同一消息进行处理，应用间并发处理消息，相比串行处理，减少总处理时间、也加快了上游服务响应。</li>
+<li>相比服务自身线程池，减少任务管理逻辑，MQ有存储和消费ACK确认，使服务本身无状态。</li>
+</ul>
+<br/>
+<h3 id="流量削峰">流量削峰</h3>
+<img src="https://img1.kiosk007.top/static/images/blog/2023-03-19_21-49.png" alt="2023-03-19_21-49" style="zoom:50%;clear:both; display:block; margin: auto;" />
+<ul>
+<li>避免瞬时流量过大导致应用系统挂掉的情况。</li>
+<li>且不同于限流降级的立即失败策略，MQ把请求“积蓄”了，消费者后续能处理到每个请求。</li>
+<li>长远时间段内，需要生产量≤消费量，堆积是不正常的</li>
+</ul>
+<br/>
+<h1 id="mq-模式">MQ 模式</h1>
+<h2 id="点对点模式">点对点模式</h2>
+<p>生产者 - MQ - 消费者</p>
+<img src="https://img1.kiosk007.top/static/images/blog/e703bf80-dd53-4b4f-afa9-44541dbfd07b.png" alt="e703bf80-dd53-4b4f-afa9-44541dbfd07b" style="zoom:67%;clear:both; display:block; margin: auto;" />
+<img src="https://img1.kiosk007.top/static/images/blog/8a0b7d29-4caa-4b9e-b55e-60fd85b59610.png" alt="8a0b7d29-4caa-4b9e-b55e-60fd85b59610" style="zoom:67%;clear:both; display:block; margin: auto;" />
+<ul>
+<li>每个消息只有一个 Consumer，一旦被消费，消息就不再在消息队列中</li>
+<li>发送者和接收者间没有依赖性，发送者发送消息之后，不管有没有接收者在运行，都不会影响到发送者下次发送消息</li>
+<li>接收者在成功接收消息之后需向队列应答成功，以便消息队列删除当前接收的消息</li>
+</ul>
+<br/>
+<h2 id="topic-模式发布订阅模式">Topic 模式，发布/订阅模式</h2>
+<p>发布者 - MQ - 订阅者</p>
+<img src="https://img1.kiosk007.top/static/images/blog/f47ea960-9956-406c-b29c-aaa5e32b33b7.png" alt="f47ea960-9956-406c-b29c-aaa5e32b33b7" style="zoom:67%;clear:both; display:block; margin: auto;" />
+<img src="https://img1.kiosk007.top/static/images/blog/229d42da-882d-4084-9988-ce6334e91d7e.png" alt="229d42da-882d-4084-9988-ce6334e91d7e" style="zoom:67%;clear:both; display:block; margin: auto;" />
+<ul>
+<li>每个消息可以有多个订阅者</li>
+<li>发布者和订阅者之间有时间上的依赖性。针对某个 Topic 的订阅者，它必须创建一个订阅者之后，才能消费发布者的消息</li>
+<li>为了消费消息，订阅者需要提前订阅该角色主题，并保持在线运行</li>
+</ul>
+<br/>
+<h1 id="引入mq带来的问题">引入MQ带来的问题</h1>
+<ul>
+<li>系统可用性
+<ul>
+<li>MQ 不可用时降级方案</li>
+</ul>
+</li>
+<li>复杂性
+<ul>
+<li>重复消费</li>
+<li>消息丢失</li>
+<li>非顺序消费</li>
+</ul>
+</li>
+<li>数据一致性
+<ul>
+<li>分布式事务</li>
+</ul>
+</li>
+</ul>
+<br/>
+<h1 id="rmq-基础篇">RMQ 基础篇</h1>
+<h2 id="基本概念">基本概念</h2>
+<img src="https://img1.kiosk007.top/static/images/blog/44aa008e-e625-44f4-9131-40a75b46aae3.png" alt="44aa008e-e625-44f4-9131-40a75b46aae3" style="zoom:67%;clear:both; display:block; margin: auto;" />
+<h3 id="1-消息模型message-model">1. 消息模型（Message Model）</h3>
+<p>RocketMQ主要由 Producer、Broker、Consumer 三部分组成，其中Producer 负责生产消息，Consumer 负责消费消息，Broker 负责存储消息。Broker 在实际部署过程中对应一台服务器，每个 Broker 可以存储多个Topic的消息，每个Topic的消息也可以分片存储于不同的 Broker。Message Queue 用于存储消息的物理地址，每个Topic中的消息地址存储于多个 Message Queue 中。ConsumerGroup 由多个Consumer 实例构成。</p>
+<br/>
+<h3 id="2-消息生产者producer">2. 消息生产者（Producer）</h3>
+<p>负责生产消息，一般由业务系统负责生产消息。一个消息生产者会把业务应用系统里产生的消息发送到broker服务器。RocketMQ提供多种发送方式，同步发送、异步发送、顺序发送、单向发送。同步和异步方式均需要Broker返回确认信息，单向发送不需要。</p>
+<br/>
+<h3 id="3-消息消费者consumer">3. 消息消费者（Consumer）</h3>
+<p>负责消费消息，一般是后台系统负责异步消费。一个消息消费者会从Broker服务器拉取消息、并将其提供给应用程序。从用户应用的角度而言提供了两种消费形式：拉取式消费、推动式消费。</p>
+<br/>
+<h3 id="4-主题topic">4. 主题（Topic）</h3>
+<p>表示一类消息的集合，每个主题包含若干条消息，每条消息只能属于一个主题，是RocketMQ进行消息订阅的基本单位。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/f7491f0b-ab99-4c21-bcc9-73e9b02543e4.png" alt="f7491f0b-ab99-4c21-bcc9-73e9b02543e4" style="zoom:67%;clear:both; display:block; margin: auto;" />
+<br/>
+<h3 id="5-代理服务器broker-server">5. 代理服务器（Broker Server）</h3>
+<p>消息中转角色，负责存储消息、转发消息。代理服务器在RocketMQ系统中负责接收从生产者发送来的消息并存储、同时为消费者的拉取请求作准备。代理服务器也存储消息相关的元数据，包括消费者组、消费进度偏移和主题和队列消息等。</p>
+<br/>
+<h3 id="6-生产者组producer-group">6. 生产者组（Producer Group）</h3>
+<p>同一类Producer的集合，这类Producer发送同一类消息且发送逻辑一致。如果发送的是事务消息且原始生产者在发送之后崩溃，则Broker服务器会联系同一生产者组的其他生产者实例以提交或回溯消费。<br/></p>
+<h3 id="7-消费者组consumer-group">7. 消费者组（Consumer Group）</h3>
+<p>同一类Consumer的集合，这类Consumer通常消费同一类消息且消费逻辑一致。消费者组使得在消息消费方面，实现负载均衡和容错的目标变得非常容易。要注意的是，消费者组的消费者实例必须订阅完全相同的Topic。RocketMQ 支持两种消息模式：集群消费（Clustering）和广播消费（Broadcasting）。</p>
+<br/>
+<h3 id="8-集群消费clustering">8. 集群消费（Clustering）</h3>
+<p>集群消费模式下，相同的 Consumer Group 的每个Consumer实例平均分摊消息。</p>
+<ul>
+<li>
+<p>每条消息只需要被处理一次，broken 只会把消息发送给消费集群中的一个消费者</p>
+</li>
+<li>
+<p>在消息重投时，不能保证路由到一台机器上</p>
+</li>
+<li>
+<p>消费状态由 broker 维护</p>
+</li>
+</ul>
+<br/>
+<h3 id="9-广播消费broadcasting">9. 广播消费（Broadcasting）</h3>
+<p>广播消费模式下，相同 Consumer Group 的每个Consumer实例都接受全量的消息。</p>
+<ul>
+<li>消费进度由 consumer 维护</li>
+<li>保证每个消费者都消费一次消息</li>
+<li>失败的消息不会重复投递</li>
+</ul>
+<br/>
+<h3 id="10-普通顺序消息normal-ordered-message">10. 普通顺序消息（Normal Ordered Message）</h3>
+<p>普通顺序消费模式下，消费者通过同一个消息队列（Topic 分区，称为 Message Queue） 收到的消息是有顺序的，不同消息队列收到消息则可能是无顺序的。</p>
+<br/>
+<h3 id="11-严格顺序消息strictly-ordered-message">11. 严格顺序消息（Strictly Ordered Message）</h3>
+<p>严格顺序消息模式下，消费者收到的所有消息均是有顺序的</p>
+<br/>
+<h2 id="rmq-原理篇">RMQ 原理篇</h2>
+<h3 id="1-推送式--拉取式-consumer">1. 推送式 &amp; 拉取式 Consumer</h3>
+<ul>
+<li>推模式</li>
+</ul>
+<p>推模式指的是消息从 Broker 推向 Consumer，即 Consumer 被动的接收消息，由 Broker 来主导消息的发送。</p>
+<p>Good：消息实时性高， Broker 接受完消息之后可以立马推送给 Consumer。对于消费者使用来说更简单，等着，有消息就会推过来。</p>
+<p>Bad：推送速率难以适应消费速率，推模式的目标就是以最快的速度推送消息，当生产者往 Broker 发送消息的速率大于消费者消费消息的速率时，随着时间的增长消费者那边可能就“爆仓”了，因为根本消费不过来。甚至有可能造成攻击一般的推送流量</p>
+<ul>
+<li>拉模式</li>
+</ul>
+<p>拉模式指的是 Consumer 主动向 Broker 请求拉取消息，即 Broker 被动的发送消息给 Consumer。</p>
+<p>Good：拉模式主动权就在消费者身上了，消费者可以根据自身的情况来发起拉取消息的请求。假设当前消费者觉得自己消费不过来了，它可以根据一定的策略停止拉取，或者间隔拉取都行。</p>
+<p>Bad：消息延迟，毕竟是消费者去拉取消息，但是消费者怎么知道消息到了呢？所以它只能不断地拉取，但是又不能很频繁地请求，太频繁了就变成消费者在攻击 Broker 了。因此需要降低请求的频率，比如隔个 2 秒请求一次，你看着消息就很有可能延迟 2 秒了。</p>
+<br/>
+<blockquote>
+<p>RocketMQ 和 Kafka 都选择了拉模式，都是利用“长轮询”来实现拉模式</p>
+</blockquote>
+<h3 id="2-事务消息">2. 事务消息</h3>
+<p>​       注册系统和邮件通知系统之间通过消息队列进行异步处理。注册系统将注册信息写入注册系统之后，发送一条注册成功的消息到消息队列RocketMQ版，邮件通知系统订阅消息队列RocketMQ版的注册消息，做相应的业务处理，发送注册成功或者失败的邮件。</p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2023-04-04</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/" data-title="消息队列基础"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/" data-title="消息队列基础"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9F%BA%E7%A1%80/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/rocketmq/">Rocketmq</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/%E5%85%A5%E9%97%A8%E6%91%84%E5%BD%B1/" class="prev" rel="prev" title="入门摄影 (Photography)"><i class="fas fa-angle-left fa-fw"></i>入门摄影 (Photography)</a>
+            <a href="/post/gomap%E6%80%8E%E4%B9%88%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE/" class="next" rel="next" title="Golang Map怎么并发访问">Golang Map怎么并发访问<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

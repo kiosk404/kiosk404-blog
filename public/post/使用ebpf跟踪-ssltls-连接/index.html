@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>使用eBPF跟踪 SSL/TLS 连接 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="使用eBPF跟踪 SSL/TLS 连接">
+  <meta property="og:description" content="前面的文章介绍了 eBPF 的入门知识，这篇算是一个实战吧，使用 eBPF 来跟踪 TLS加密连接。TLS 是目前互联网上的一个标准工具了，可用于加密的通信。本文尝试使用 eBPF 技术将加密的密文还原为明文。当然这并不意味着TLS不再安全，想干坏事的人可以在中间代理服务器、网关设备上偷听。因为eBPF 所实现的追踪明文一定是要建立在真正去做ssl 明文转密文写入操作的。
+关于eBPF基础知识请查看
+认识eBPF
+如何使用eBPF进行追踪
+简介 BPF 可用于对内核函数、用户态函数进行插桩进而实现观测的需求。当然一个有趣的应用就是跟踪网络流量。虽然TLS 流量通过网卡时是密文的，但是我们可以利用 eBPF在加密前进行跟踪。eBPF 的事件追踪并不局限于 kprobes，uprobes也可以用来追踪应用程序代码到达某个指令时触发 BPF 程序。
+TLS Tracing (openssl) 通过上图，我们可以知道TLS库的数据读写是 SSL_write 和 SSL_read 函数。跟踪这些调用就可以在加密之前或者解密之后的流量。
+查询跟踪函数 其实上面的图已经说明了我们要追踪的函数是 SSL_write 和 SSL_read ，但是这里也聊一下这两个函数是如何查找的吧。一般来说，我们可以使用 readelf 命令。输出的结果，排除一些明显和加密过程相关的函数之外，映入眼帘的便是 SSL_read
+1 2 3 4 $ readelf -Ws /usr/lib/x86_64-linux-gnu/libssl.so |grep -i &#39;ssl_read&#39; 658: 0000000000032ce0 126 FUNC GLOBAL DEFAULT 15 SSL_read@@OPENSSL_3.0.0 762: 0000000000038cf0 414 FUNC GLOBAL DEFAULT 15 SSL_read_early_data@@OPENSSL_3.0.0 811: 0000000000032d60 25 FUNC GLOBAL DEFAULT 15 SSL_read_ex@@OPENSSL_3.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-05-15T16:30:00+00:00">
+    <meta property="article:modified_time" content="2022-05-15T16:30:00+00:00">
+    <meta property="article:tag" content="EBPF">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="使用eBPF跟踪 SSL/TLS 连接">
+  <meta name="twitter:description" content="前面的文章介绍了 eBPF 的入门知识，这篇算是一个实战吧，使用 eBPF 来跟踪 TLS加密连接。TLS 是目前互联网上的一个标准工具了，可用于加密的通信。本文尝试使用 eBPF 技术将加密的密文还原为明文。当然这并不意味着TLS不再安全，想干坏事的人可以在中间代理服务器、网关设备上偷听。因为eBPF 所实现的追踪明文一定是要建立在真正去做ssl 明文转密文写入操作的。
+关于eBPF基础知识请查看
+认识eBPF
+如何使用eBPF进行追踪
+简介 BPF 可用于对内核函数、用户态函数进行插桩进而实现观测的需求。当然一个有趣的应用就是跟踪网络流量。虽然TLS 流量通过网卡时是密文的，但是我们可以利用 eBPF在加密前进行跟踪。eBPF 的事件追踪并不局限于 kprobes，uprobes也可以用来追踪应用程序代码到达某个指令时触发 BPF 程序。
+TLS Tracing (openssl) 通过上图，我们可以知道TLS库的数据读写是 SSL_write 和 SSL_read 函数。跟踪这些调用就可以在加密之前或者解密之后的流量。
+查询跟踪函数 其实上面的图已经说明了我们要追踪的函数是 SSL_write 和 SSL_read ，但是这里也聊一下这两个函数是如何查找的吧。一般来说，我们可以使用 readelf 命令。输出的结果，排除一些明显和加密过程相关的函数之外，映入眼帘的便是 SSL_read
+1 2 3 4 $ readelf -Ws /usr/lib/x86_64-linux-gnu/libssl.so |grep -i &#39;ssl_read&#39; 658: 0000000000032ce0 126 FUNC GLOBAL DEFAULT 15 SSL_read@@OPENSSL_3.0.0 762: 0000000000038cf0 414 FUNC GLOBAL DEFAULT 15 SSL_read_early_data@@OPENSSL_3.0.0 811: 0000000000032d60 25 FUNC GLOBAL DEFAULT 15 SSL_read_ex@@OPENSSL_3.">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/" /><link rel="prev" href="http://localhost:1313/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA/" /><link rel="next" href="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "使用eBPF跟踪 SSL/TLS 连接",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "eBPF","wordcount":  1110 ,
+        "url": "http:\/\/localhost:1313\/post\/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5\/","datePublished": "2022-05-15T16:30:00+00:00","dateModified": "2022-05-15T16:30:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">使用eBPF跟踪 SSL/TLS 连接</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-05-15">2022-05-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1110 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;6 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#简介">简介</a>
+      <ul>
+        <li><a href="#查询跟踪函数">查询跟踪函数</a></li>
+      </ul>
+    </li>
+    <li><a href="#ebpf-代码">eBPF 代码</a>
+      <ul>
+        <li><a href="#框架选择">框架选择</a></li>
+      </ul>
+    </li>
+    <li><a href="#前期梳理"><strong>前期梳理</strong></a></li>
+    <li><a href="#功能开发">功能开发</a>
+      <ul>
+        <li><a href="#bpf-程序">BPF 程序</a></li>
+        <li><a href="#用户空间追踪器">用户空间追踪器</a></li>
+        <li><a href="#效果">效果</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2022-05-15T16:30:00" title="May 15, 2022">May 15, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>前面的文章介绍了 eBPF 的入门知识，这篇算是一个实战吧，使用 eBPF 来跟踪 TLS加密连接。<a href="https://kiosk007.top/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" target="_blank" rel="noopener noreffer">TLS</a> 是目前互联网上的一个标准工具了，可用于加密的通信。本文尝试使用 eBPF 技术将加密的密文还原为明文。当然这并不意味着TLS不再安全，想干坏事的人可以在中间代理服务器、网关设备上偷听。因为eBPF 所实现的追踪明文一定是要建立在真正去做ssl 明文转密文写入操作的。</p>
+<br>
+<p>关于eBPF基础知识请查看</p>
+<ul>
+<li>
+<p><a href="https://kiosk007.top/post/%E8%AE%A4%E8%AF%86ebpf/" target="_blank" rel="noopener noreffer">认识eBPF</a></p>
+</li>
+<li>
+<p><a href="https://kiosk007.top/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA/" target="_blank" rel="noopener noreffer">如何使用eBPF进行追踪</a></p>
+</li>
+</ul>
+<h1 id="简介">简介</h1>
+<p>BPF 可用于对内核函数、用户态函数进行插桩进而实现观测的需求。当然一个有趣的应用就是跟踪网络流量。虽然TLS 流量通过网卡时是密文的，但是我们可以利用 eBPF在加密前进行跟踪。eBPF 的事件追踪并不局限于 kprobes，uprobes也可以用来追踪应用程序代码到达某个指令时触发 BPF 程序。</p>
+<figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/bpf-tls-tracing.svg" title="https://img1.kiosk007.top/static/images/blog/bpf-tls-tracing.svg" data-thumbnail="https://img1.kiosk007.top/static/images/blog/bpf-tls-tracing.svg" data-sub-html="<h2>TLS Tracing (openssl)</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/bpf-tls-tracing.svg"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/bpf-tls-tracing.svg, https://img1.kiosk007.top/static/images/blog/bpf-tls-tracing.svg 1.5x, https://img1.kiosk007.top/static/images/blog/bpf-tls-tracing.svg 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/bpf-tls-tracing.svg" />
+    </a><figcaption class="image-caption">TLS Tracing (<code>openssl</code>)</figcaption>
+    </figure>
+<p>通过上图，我们可以知道TLS库的数据读写是 <code>SSL_write</code> 和 <code>SSL_read</code> 函数。跟踪这些调用就可以在加密之前或者解密之后的流量。</p>
+<h2 id="查询跟踪函数">查询跟踪函数</h2>
+<p>其实上面的图已经说明了我们要追踪的函数是 <code>SSL_write</code> 和 <code>SSL_read</code> ，但是这里也聊一下这两个函数是如何查找的吧。一般来说，我们可以使用 <code>readelf</code> 命令。输出的结果，排除一些明显和加密过程相关的函数之外，映入眼帘的便是 <code>SSL_read</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="p">$</span> <span class="n">readelf</span> <span class="n">-Ws</span> <span class="p">/</span><span class="n">usr</span><span class="p">/</span><span class="n">lib</span><span class="p">/</span><span class="nb">x86_64-linux</span><span class="n">-gnu</span><span class="p">/</span><span class="n">libssl</span><span class="p">.</span><span class="py">so</span> <span class="p">|</span><span class="n">grep</span> <span class="n">-i</span> <span class="s1">&#39;ssl_read&#39;</span>
+</span></span><span class="line"><span class="cl">   <span class="mf">658</span><span class="err">:</span> <span class="n">0000000000032ce0</span>   <span class="mf">126</span> <span class="n">FUNC</span>    <span class="n">GLOBAL</span> <span class="k">DEFAULT</span>   <span class="mf">15</span> <span class="n">SSL_read</span><span class="nv">@@OPENSSL_3</span><span class="p">.</span><span class="py">0</span><span class="p">.</span><span class="py">0</span>
+</span></span><span class="line"><span class="cl">   <span class="mf">762</span><span class="err">:</span> <span class="n">0000000000038cf0</span>   <span class="mf">414</span> <span class="n">FUNC</span>    <span class="n">GLOBAL</span> <span class="k">DEFAULT</span>   <span class="mf">15</span> <span class="n">SSL_read_early_data</span><span class="nv">@@OPENSSL_3</span><span class="p">.</span><span class="py">0</span><span class="p">.</span><span class="py">0</span>
+</span></span><span class="line"><span class="cl">   <span class="mf">811</span><span class="err">:</span> <span class="n">0000000000032d60</span>    <span class="mf">25</span> <span class="n">FUNC</span>    <span class="n">GLOBAL</span> <span class="k">DEFAULT</span>   <span class="mf">15</span> <span class="n">SSL_read_ex</span><span class="nv">@@OPENSSL_3</span><span class="p">.</span><span class="py">0</span><span class="p">.</span><span class="py">0</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>也可以使用 bpftrace 或者 nm 命令进行相关追踪。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="p">$</span> <span class="n">sudo</span> <span class="n">bpftrace</span> <span class="n">-l</span> <span class="s1">&#39;uprobe:/usr/lib/x86_64-linux-gnu/libssl.so:*&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">$</span> <span class="n">nm</span> <span class="p">-</span><span class="n">-dynamic</span> <span class="p">/</span><span class="n">usr</span><span class="p">/</span><span class="n">lib</span><span class="p">/</span><span class="nb">x86_64-linux</span><span class="n">-gnu</span><span class="p">/</span><span class="n">libssl</span><span class="p">.</span><span class="n">so</span><span class="p">|</span><span class="n">grep</span> <span class="n">read</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>有了追踪点，就可以开始完成一次 openssl  的追踪了。</p>
+<h1 id="ebpf-代码">eBPF 代码</h1>
+<p>当设计到选择库和工具来与 eBPF 进行交互时，会有些让人困惑，有基于 <a href="https://github.com/iovisor/bcc" target="_blank" rel="noopener noreffer">Python 的 BCC 框架</a> 、基于 C 的 <a href="https://github.com/libbpf/libbpf" target="_blank" rel="noopener noreffer">lbbpf</a> 和一系列基于 Go 的 <a href="https://github.com/dropbox/goebpf" target="_blank" rel="noopener noreffer">Dropbox</a>、<a href="https://github.com/cilium/ebpf" target="_blank" rel="noopener noreffer">Cilium</a>、<a href="https://github.com/aquasecurity/tracee/tree/main/libbpfgo" target="_blank" rel="noopener noreffer">Aqua</a> 和 <a href="https://github.com/projectcalico/calico/tree/master/felix/bpf" target="_blank" rel="noopener noreffer">Calico</a> 等选择。</p>
+<p>我们知道，eBPF库主要协助实现了两个功能。</p>
+<ul>
+<li>将 eBPF 程序和Map载入内核并执行加载，通过其文件描述符将 eBPF 程序与正确的 Map 进行关联。</li>
+<li>与 eBPF Map 交互，允许对存储在Map中的键/值对进行标准的 CRUD 操作。</li>
+</ul>
+<br>
+<h2 id="框架选择">框架选择</h2>
+<p>我们选择 Golang 作为我们的 eBPF 交互部分的开发语言。每个库都有各自的范围和限制。</p>
+<ul>
+<li><a href="https://github.com/projectcalico/calico/tree/master/felix/bpf" target="_blank" rel="noopener noreffer">Calico</a>：用 bpftool 和 iproute2 实现的 CLI 命令基础上用 Go 封装了一层。</li>
+<li><a href="https://github.com/aquasecurity/tracee/tree/main/libbpfgo" target="_blank" rel="noopener noreffer">Aqua</a>：对 libbpf C 库的一层封装。</li>
+<li><a href="https://github.com/dropbox/goebpf" target="_blank" rel="noopener noreffer">Dropbox</a>：支持了一小部分程序，但有一个方便的用户API</li>
+<li><a href="https://github.com/iovisor/bcc" target="_blank" rel="noopener noreffer">iovisor</a>：是BCC 框架的 Go 语言绑定，更注重于跟踪和性能分析。</li>
+<li><a href="https://github.com/cilium/ebpf" target="_blank" rel="noopener noreffer">Cilium</a>：是 Cilium 和 Cloudflare 公司维护的一个<a href="https://linuxplumbersconf.org/event/4/contributions/449/attachments/239/529/A_pure_Go_eBPF_library.pdf" target="_blank" rel="noopener noreffer">纯Go编写的库</a> ，将所有的 eBPF 系统调用抽象在一个本地的 Go 接口后面。</li>
+</ul>
+<p>参考 <a href="https://www.ebpf.top/post/ebpf_go/" target="_blank" rel="noopener noreffer">使用Go语言管理和分发ebpf程序</a>可以看到 <code>cilium/ebpf</code> 更加活跃，本文也选择基于 <code>cilium/ebpf</code> 来开发，因为其纯Go语言编写，<strong>从而实现了程序最小依赖</strong>，与此同时其还提供了 <code>epf2go</code> 小工具，可以用来将 eBPF 程序编译成为 Go 语言的一部分，使得交互变得更加方便，后续如果配合 CO_RE 功能则更加 &#x1f402; &#x1f37b; ​</p>
+<br>
+<h1 id="前期梳理"><strong>前期梳理</strong></h1>
+<p>我们需要一个可以按照应用过滤的 SSL 解密器。需要实现这个功能就必须按照 PID 进行追踪。在<a href="https://github.com/iovisor/bcc" target="_blank" rel="noopener noreffer">BCC</a>项目中有不少程序都是直接使用 bpf_get_current_pid_tgid() 直接与用户空间传入的 pid 进行对比的。<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> 但是BCC项目中大多是 Python 语言开发，也可以通过加载 BPF 程序时添加编译参数的形式传入用户空间的 PID 数据<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>，但是我们用的是 Go 语言，且使用 cilium 开发相关功能，所以需要一些脚手架。</p>
+<p>这里比较推荐 <a href="https://github.com/ehids/ebpfmanager" target="_blank" rel="noopener noreffer">https://github.com/ehids/ebpfmanager</a> 这个项目，ebpfmanager参照datadog/ebpf/manager包的思想，基于cilium/ebpf实现的ebpf类库封装。</p>
+<p>(另外有一个比较重要的点是因为他注入变量方便一些)</p>
+<br>
+<h1 id="功能开发">功能开发</h1>
+<p>可以在 <a href="https://github.com/kiosk404/openssl_tracer" target="_blank" rel="noopener noreffer">此处</a> 找到完整的 Openssl 跟踪器，运行请参考 <a href="https://github.com/kiosk404/openssl_tracer" target="_blank" rel="noopener noreffer">README</a> 。</p>
+<p>项目中的主要目录如下：</p>
+<ul>
+<li><strong>bpf</strong> : 包含 bpf 探针C程序和依赖的头文件</li>
+<li><strong>uprobe_tracing</strong> : 用户空间追踪器</li>
+<li><strong>ssl_client_server</strong> : Python 的 openssl 通信 Demo 运行样例，可以无限产生 ssl 通信数据。</li>
+</ul>
+<h2 id="bpf-程序">BPF 程序</h2>
+<p>开发前需要先导入必要的头文件，这个在 <a href="https://github.com/kiosk404/openssl_tracer/blob/master/bpf/openssl_trace.bpf.h" target="_blank" rel="noopener noreffer">bpf/openssl_trace.bpf.h</a> , 其中的 vmlinux.h 是生成的，可以使用 bpftool btf dump file /sys/kernel/btf/vmlinux format c &gt; vmlinux.h 命令生成。其余的头文件是安装 libbpf-dev 获取到的。</p>
+<p>BPF uprobes 的主要目的是跟踪 <code>SSL_write</code> 和 <code>SSL_read</code> 函数并捕获数据，这意味着我们需要跟踪这些函数的入口和出口。目前，用户态探针有两种类型： uprobes 和 uretprobes（也叫 return 探针）。可以在应用程序的虚拟地址空间的任意指令上插入 uprobe 。 当用户函数返回的时候触发 return 探针。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">功能</th>
+<th style="text-align:center">探测操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">int SSL_write(SSL *ssl, const void *buf, int num);</td>
+<td style="text-align:center">将写数据记录到BPF映射中</td>
+</tr>
+<tr>
+<td style="text-align:center">int SSL_read(SSL *ssl, void *buf, int num);</td>
+<td style="text-align:center">将读的数据记录到BPF映射中</td>
+</tr>
+</tbody>
+</table>
+</br>
+<p>下面介绍详细的 BPF 代码前需要强调的是， libbpf 的程序方式会定义一些宏。在编译时，通过 SEC() 宏定义的数据结构交互。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="kt">ssl_data_event_t</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">enum</span> <span class="n">ssl_data_event_type</span> <span class="n">type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u64</span> <span class="n">timestamp_ns</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u32</span> <span class="n">pid</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u32</span> <span class="n">tid</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">data</span><span class="p">[</span><span class="n">MAX_DATA_SIZE_OPENSSL</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="n">s32</span> <span class="n">data_len</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">comm</span><span class="p">[</span><span class="n">TASK_COMM_LEN</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u32</span> <span class="n">fd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// BPF programs are limited to a 512-byte stack. We store this value per CPU
+</span></span></span><span class="line"><span class="cl"><span class="c1">// and use it as a heap allocated value.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">__uint</span><span class="p">(</span><span class="n">type</span><span class="p">,</span> <span class="n">BPF_MAP_TYPE_PERCPU_ARRAY</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">__type</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">u32</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">__type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="k">struct</span> <span class="kt">ssl_data_event_t</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">__uint</span><span class="p">(</span><span class="n">max_entries</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">data_buffer_heap</span> <span class="nf">SEC</span><span class="p">(</span><span class="s">&#34;.maps&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br>
+<p>这里的 BPF_MAP_TYPE_PERCPU_ARRAY 是每个 CPU的另一个 BPF 映射。我们将其用作临时的暂存空间。因为不能将太多的数据复制到BPF堆栈上。我们创建了多个数据结构来存储通信过程产生的数据。</p>
+<p><strong>libbpf_register_prog_handler()</strong> 注册一个自定义 BPF 程序 SEC() 处理程序。</p>
+<p>接下来，将展示探针代码 SSL_write 函数的追踪，所有的 BPF 程序提供的功能都需要通过 SEC() (来自 bpf_helpers.h) 宏来定义 section 名称</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Function signature being probed:
+</span></span></span><span class="line"><span class="cl"><span class="c1">// int SSL_write(SSL *ssl, const void *buf, int num);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">SEC</span><span class="p">(</span><span class="s">&#34;uprobe/SSL_write&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">probe_entry_SSL_write</span><span class="p">(</span><span class="k">struct</span> <span class="n">pt_regs</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u64</span> <span class="n">current_pid_tgid</span> <span class="o">=</span> <span class="nf">bpf_get_current_pid_tgid</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u32</span> <span class="n">pid</span> <span class="o">=</span> <span class="n">current_pid_tgid</span> <span class="o">&gt;&gt;</span> <span class="mi">32</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#ifndef KERNEL_LESS_5_2
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="c1">// if target_ppid is 0 then we target all pids
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">target_pid</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">target_pid</span> <span class="o">!=</span> <span class="n">pid</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span><span class="o">*</span> <span class="n">ssl</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="nf">PT_REGS_PARM1</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// https://github.com/openssl/openssl/blob/OpenSSL_1_1_1-stable/crypto/bio/bio_local.h
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">struct</span> <span class="n">ssl_st</span> <span class="n">ssl_info</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">bpf_probe_read_user</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ssl_info</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ssl_info</span><span class="p">),</span> <span class="n">ssl</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">BIO</span> <span class="n">bio_w</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">bpf_probe_read_user</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bio_w</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">bio_w</span><span class="p">),</span> <span class="n">ssl_info</span><span class="p">.</span><span class="n">wbio</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// get fd ssl-&gt;wbio-&gt;num
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">u32</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">bio_w</span><span class="p">.</span><span class="n">num</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//    debug_bpf_printk(&#34;openssl uprobe SSL_write FD:%d\n&#34;, fd);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">buf</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="nf">PT_REGS_PARM2</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">active_ssl_buf</span> <span class="kt">active_ssl_buf_t</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">__builtin_memset</span><span class="p">(</span><span class="o">&amp;</span><span class="kt">active_ssl_buf_t</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">active_ssl_buf_t</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">active_ssl_buf_t</span><span class="p">.</span><span class="n">fd</span> <span class="o">=</span> <span class="n">fd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">active_ssl_buf_t</span><span class="p">.</span><span class="n">buf</span> <span class="o">=</span> <span class="n">buf</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">bpf_map_update_elem</span><span class="p">(</span><span class="o">&amp;</span><span class="n">active_ssl_write_args_map</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">current_pid_tgid</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="o">&amp;</span><span class="kt">active_ssl_buf_t</span><span class="p">,</span> <span class="n">BPF_ANY</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br>
+<ol>
+<li>
+<p>入口函数中，先获取当前进程的 PID 并对比是不是感兴趣的PID，如果没有 target_pid 没有定义的话，则默认监控所有的 ssl 通信。如果是感兴趣的目标PID，则探测器会读取缓冲区指针并将值存储在全局PID 中 active_ssl_write_args_map 。</p>
+</li>
+<li>
+<p>通过 PT_REGS_PARM1 获取 int SSL_write(SSL *ssl, const void *buf, int num);  函数中的第一个参数 ssl 。再通过 bpf_probe_read_user 辅助函数将ssl里的信息读入到 ssl结构体里。读ssl结构体主要是为了取到 fd ，后面用作关联。</p>
+</li>
+<li>
+<p>第二个参数 buf 是实际的明文数据，是写入加密前的明文数据。再将数据通过辅助函数 <a href="https://prototype-kernel.readthedocs.io/en/latest/bpf/ebpf_maps.html#interacting-with-maps" target="_blank" rel="noopener noreffer">bpf_map_update_elem() </a> 将BPF映射中的数据修改。</p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">SEC</span><span class="p">(</span><span class="s">&#34;uretprobe/SSL_write&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">probe_ret_SSL_write</span><span class="p">(</span><span class="k">struct</span> <span class="n">pt_regs</span><span class="o">*</span> <span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u64</span> <span class="n">current_pid_tgid</span> <span class="o">=</span> <span class="nf">bpf_get_current_pid_tgid</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u32</span> <span class="n">pid</span> <span class="o">=</span> <span class="n">current_pid_tgid</span> <span class="o">&gt;&gt;</span> <span class="mi">32</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#ifndef KERNEL_LESS_5_2
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="c1">// if target_ppid is 0 then we target all pids
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">target_pid</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">target_pid</span> <span class="o">!=</span> <span class="n">pid</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="c1">//    debug_bpf_printk(&#34;openssl uretprobe/SSL_write pid :%d\n&#34;, pid);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">struct</span> <span class="n">active_ssl_buf</span><span class="o">*</span> <span class="kt">active_ssl_buf_t</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">bpf_map_lookup_elem</span><span class="p">(</span><span class="o">&amp;</span><span class="n">active_ssl_write_args_map</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">current_pid_tgid</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="kt">active_ssl_buf_t</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">buf</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">u32</span> <span class="n">fd</span> <span class="o">=</span> <span class="kt">active_ssl_buf_t</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">bpf_probe_read</span><span class="p">(</span><span class="o">&amp;</span><span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">),</span> <span class="o">&amp;</span><span class="kt">active_ssl_buf_t</span><span class="o">-&gt;</span><span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">process_SSL_data</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">current_pid_tgid</span><span class="p">,</span> <span class="n">kSSLWrite</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">fd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">bpf_map_delete_elem</span><span class="p">(</span><span class="o">&amp;</span><span class="n">active_ssl_write_args_map</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">current_pid_tgid</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br>
+<p>等待函数退出后，通过 process_SSL_data 函数并最终在该函数中通过 bpf_perf_event_output 将 tls_events 内容推送到 perf 缓冲区，用户空间跟踪程序会在被唤醒时打印到屏幕。</p>
+<h2 id="用户空间追踪器">用户空间追踪器</h2>
+<p>用户空间程序最大的作用就是从 BPF 映射的缓冲区中读取数据。</p>
+<p>用户态程序使用 go 语言开发，基于cilium 的 goebpf ，这里用 <a href="https://github.com/ehids/ebpfmanager" target="_blank" rel="noopener noreffer">https://github.com/ehids/ebpfmanager</a> 封装了一下。ebpfmanager参照datadog/ebpf/manager包的思想，实现了配置化、自动加载，我选择这个的最大原因，其对用户态程序向 BPF 程序传递参数的封装做的比较好。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">const</span> <span class="nx">binaryPath</span> <span class="p">=</span> <span class="s">&#34;/lib/x86_64-linux-gnu/libssl.so&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">m</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">manager</span><span class="p">.</span><span class="nx">Manager</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Probes</span><span class="p">:</span> <span class="p">[]</span><span class="o">*</span><span class="nx">manager</span><span class="p">.</span><span class="nx">Probe</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Section</span><span class="p">:</span>          <span class="s">&#34;uprobe/SSL_write&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">EbpfFuncName</span><span class="p">:</span>     <span class="s">&#34;probe_entry_SSL_write&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">AttachToFuncName</span><span class="p">:</span> <span class="s">&#34;SSL_write&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">BinaryPath</span><span class="p">:</span>       <span class="nx">binaryPath</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Section</span><span class="p">:</span>          <span class="s">&#34;uretprobe/SSL_write&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">EbpfFuncName</span><span class="p">:</span>     <span class="s">&#34;probe_ret_SSL_write&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">AttachToFuncName</span><span class="p">:</span> <span class="s">&#34;SSL_write&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">BinaryPath</span><span class="p">:</span>       <span class="nx">binaryPath</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Section</span><span class="p">:</span>          <span class="s">&#34;uprobe/SSL_read&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">EbpfFuncName</span><span class="p">:</span>     <span class="s">&#34;probe_entry_SSL_read&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">AttachToFuncName</span><span class="p">:</span> <span class="s">&#34;SSL_read&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">BinaryPath</span><span class="p">:</span>       <span class="nx">binaryPath</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Section</span><span class="p">:</span>          <span class="s">&#34;uretprobe/SSL_read&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">EbpfFuncName</span><span class="p">:</span>     <span class="s">&#34;probe_ret_SSL_read&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">AttachToFuncName</span><span class="p">:</span> <span class="s">&#34;SSL_read&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">BinaryPath</span><span class="p">:</span>       <span class="nx">binaryPath</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span>
+</span></span><span class="line"><span class="cl">	<span class="p">},</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Maps</span><span class="p">:</span> <span class="p">[]</span><span class="o">*</span><span class="nx">manager</span><span class="p">.</span><span class="nx">Map</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;tls_events&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span>
+</span></span><span class="line"><span class="cl">	<span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br>
+<p>这里我们需要定义探测器，一个函数入口一个函数返回。 manager.Map 定义了要读取的perf 事件，由上面介绍的 BPF 推送而来。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">EBPFManagerOption</span><span class="p">(</span><span class="nx">pid</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">manager</span><span class="p">.</span><span class="nx">Options</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">manager</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">DefaultKProbeMaxActive</span><span class="p">:</span> <span class="mi">512</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nx">VerifierOptions</span><span class="p">:</span> <span class="nx">ebpf</span><span class="p">.</span><span class="nx">CollectionOptions</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Programs</span><span class="p">:</span> <span class="nx">ebpf</span><span class="p">.</span><span class="nx">ProgramOptions</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">LogSize</span><span class="p">:</span> <span class="mi">2097152</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nx">RLimit</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">unix</span><span class="p">.</span><span class="nx">Rlimit</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Cur</span><span class="p">:</span> <span class="nx">math</span><span class="p">.</span><span class="nx">MaxUint64</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Max</span><span class="p">:</span> <span class="nx">math</span><span class="p">.</span><span class="nx">MaxUint64</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ConstantEditors</span><span class="p">:</span> <span class="nf">constantEditor</span><span class="p">(</span><span class="nx">pid</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">constantEditor</span><span class="p">(</span><span class="nx">pid</span> <span class="kt">int</span><span class="p">)</span> <span class="p">[]</span><span class="nx">manager</span><span class="p">.</span><span class="nx">ConstantEditor</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">editor</span> <span class="p">=</span> <span class="p">[]</span><span class="nx">manager</span><span class="p">.</span><span class="nx">ConstantEditor</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Name</span><span class="p">:</span>  <span class="s">&#34;target_pid&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Value</span><span class="p">:</span> <span class="nb">uint64</span><span class="p">(</span><span class="nx">pid</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">FailOnMissing</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">},</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">pid</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">logrus</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;target all process. \n&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">logrus</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;target PID:%d \n&#34;</span><span class="p">,</span> <span class="nx">pid</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">editor</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br>
+<p>这里的 Manager.ConstantEditor 中可以实现对 target_pid 的修改，并且可以传递给 BPF 程序。</p>
+<p>封装下的 cilium 已经非常简单了。到此初始化部分基本完成，还剩下 <a href="https://github.com/kiosk404/openssl_tracer/blob/master/uprobe_tracing/event.go" target="_blank" rel="noopener noreffer">event.go</a>（tls_events 事件结构的定义）和 <a href="https://github.com/kiosk404/openssl_tracer/blob/master/uprobe_tracing/user.go" target="_blank" rel="noopener noreffer">user.go</a> (读取BPF映射数据) 中的东西。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">PerfEventReader</span><span class="p">(</span><span class="nx">errChan</span> <span class="kd">chan</span> <span class="kt">error</span><span class="p">,</span> <span class="nx">em</span> <span class="o">*</span><span class="nx">ebpf</span><span class="p">.</span><span class="nx">Map</span><span class="p">,</span> <span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">rd</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">perf</span><span class="p">.</span><span class="nf">NewReader</span><span class="p">(</span><span class="nx">em</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getpagesize</span><span class="p">()</span><span class="o">*</span><span class="mi">64</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">errChan</span> <span class="o">&lt;-</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;creating %s reader dns: %s&#34;</span><span class="p">,</span> <span class="nx">em</span><span class="p">.</span><span class="nf">String</span><span class="p">(),</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">defer</span> <span class="nx">rd</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">//判断ctx是不是结束
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">select</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nx">_</span> <span class="p">=</span> <span class="o">&lt;-</span> <span class="nx">ctx</span><span class="p">.</span><span class="nf">Done</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">logrus</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;readEvent received close signal from context.Done.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span>
+</span></span><span class="line"><span class="cl">		<span class="k">default</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nx">record</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rd</span><span class="p">.</span><span class="nf">Read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">perf</span><span class="p">.</span><span class="nx">ErrClosed</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">errChan</span> <span class="o">&lt;-</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;reading from perf event reader: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">record</span><span class="p">.</span><span class="nx">LostSamples</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">logrus</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;perf event ring buffer full, dropped %d samples&#34;</span><span class="p">,</span> <span class="nx">record</span><span class="p">.</span><span class="nx">LostSamples</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="k">continue</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="kd">var</span> <span class="nx">sslEvent</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">SSLDataEvent</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span> <span class="p">=</span> <span class="nx">sslEvent</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">RawSample</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;decode error:%v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="k">continue</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// 打印数据
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">str</span> <span class="o">:=</span> <span class="nx">sslEvent</span><span class="p">.</span><span class="nf">String</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过 perf.NewReader 方法将 BPF 映射中的 tls_events 事件读出，再经过 event.go 文件中</p>
+<h2 id="效果">效果</h2>
+<p>最后看看效果吧，不加 &ndash;pid 参数的情况下可以追踪所有使用了 openssl 动态库的程序传输的加密数据。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/ebpf_openssl_tracer.png"/>
+<p>这里把 curl 的内容也可以打印。但是加密库不止 openssl.so 这一种。还有 boringssl ，不过追踪方法大同小异。</p>
+<br>
+<p>文章参考：</p>
+<ul>
+<li><a href="https://blog.px.dev/ebpf-openssl-tracing/" target="_blank" rel="noopener noreffer">ebpf-openssl-tracing</a></li>
+<li><a href="https://houmin.cc/posts/adca5ae5/" target="_blank" rel="noopener noreffer">使用 Go 语言开发 ebpf 程序</a></li>
+</ul>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://www.ebpf.top/post/ebpf_prog_pid_filter/" target="_blank" rel="noopener noreffer">https://www.ebpf.top/post/ebpf_prog_pid_filter/</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://github.com/pixie-io/pixie-demos/blob/main/openssl-tracer/openssl_tracer.cc#L107" target="_blank" rel="noopener noreffer">https://github.com/pixie-io/pixie-demos/blob/main/openssl-tracer/openssl_tracer.cc#L107</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-05-15</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/" data-title="使用eBPF跟踪 SSL/TLS 连接"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/" data-title="使用eBPF跟踪 SSL/TLS 连接"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E4%BD%BF%E7%94%A8ebpf%E8%B7%9F%E8%B8%AA-ssltls-%E8%BF%9E%E6%8E%A5/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ebpf/">EBPF</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ebpf%E8%BF%9B%E8%A1%8C%E8%BF%BD%E8%B8%AA/" class="prev" rel="prev" title="如何使用eBPF进行追踪"><i class="fas fa-angle-left fa-fw"></i>如何使用eBPF进行追踪</a>
+            <a href="/post/%E4%BD%BF%E7%94%A8ebpf%E8%A7%82%E6%B5%8Bhttp2/" class="next" rel="next" title="使用eBPF观测HTTP2">使用eBPF观测HTTP2<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

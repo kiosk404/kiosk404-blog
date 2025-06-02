@@ -1,0 +1,587 @@
+# ubuntu20.04 部署 Kubernetes (k8s)
+
+Kubernetes（k8s）是一个免费的开源容器编排工具。它用于部署，扩展和管理基于容器的应用程序。在这篇文章中，这里将演示如何安装Kubernetes集群的Ubuntu 20.04 LTS服务器使用（Focal Fossa）kubeadm。在实验室设置中，我使用了三台Ubuntu 20.04 LTS服务器。
+<!--more-->
+
+----
+
+以下为搭建环境。
+- ubuntu 20.04 TLS Server
+- Minimum of 2 GB RAM
+- 10 GB Free Space on /var
+- Privileged user with sudo rights
+
+结构：
+- Machine 1 (Ubuntu 20.04 LTS Server) – K8s-master – 172.16.101.131
+- Machine 1 (Ubuntu 20.04 LTS Server) – K8s-node0 – 172.16.101.132
+- Machine 1 (Ubuntu 20.04 LTS Server) – K8s-node1 – 172.16.101.133
+
+<img src='/images/k8s/k8s.png' />
+
+
+# 安装 kubernetes
+## 前置步骤
+### Step1) 设置 hostname && 增加解析 /etc/hosts
+
+使用 <font color=Blue>hostnamectl </font> 为每一个节点命令设置 hostname , 示例如下:
+
+```
+$ sudo hostnamectl set-hostname "k8s-master"     // Run this command on master node
+$ sudo hostnamectl set-hostname "k8s-node0"     // Run this command on node-0
+$ sudo hostnamectl set-hostname "k8s-node1"     // Run this command on node-1
+```
+
+在 <font color=Blue> /etc/hosts </font> 下添加如下内容：
+
+```
+172.16.101.131 k8s-master
+172.16.101.132 k8s-node0
+172.16.101.132 k8s-node1
+
+172.16.101.131 api-server.k8s.top  # kube API Server Lb
+```
+
+### Step2) 确保禁止掉swap分区 && 确保时间对齐 && 开启ip转发
+K8s的要求，在每个宿主机上关闭 swap，swap会将不活跃匿名页写入磁盘，降低应用程序的性能。使用 <font color='blue'> swapoff -a </font> 来关掉 swap
+``` 
+swapoff -a
+
+vim /etc/fstab
+# /swap.img      none    swap    sw      0       0
+```
+每个宿主机上都要确保时区和时间是正确的。如果时区不正确，请使用下面的命令来修改：
+```
+timedatectl set-timezone Asia/Shanghai
+```
+
+永久开启ip转发功能，编辑 "<font color='blue'> /etc/sysctl.d/k8s.conf </font>" 添加 “**net.ipv4.ip_forward=1**” ，加载 “**br_netfilter**” 模块。
+
+```
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sudo sysctl --system
+```
+
+### Step3）安装 docker (Container Runtime) 到三个节点
+在三台机器分别执行如下命令。Ubuntu 20.04 提供的这个包也很新（目前是docker 19.03）。
+``` bash
+apt update
+apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker.service --now
+
+# 检查 docker 运行状态，docker 版本
+systemctl status docker
+docker info
+
+```
+
+文件驱动默认由`systemd`改成`cgroupfs`.而我们安装的docker使用的文件驱动是systemd, 造成不一致, 导致镜像无法启动
+
+修改或创建 <font color='blue'> /etc/docker/daemon.json </font>，加入下面的内容：
+```
+{
+  "exec-opts": ["native.cgroupdriver=systemd"]
+}
+```
+重启docker `systemctl restart docker`.
+
+> 不然会遇到 failed to create kubelet: misconfiguration: kubelet cgroup driver: "cgroupfs" is different from docker cgroup driver: "systemd" 错误
+
+参考：https://www.cnblogs.com/hongdada/p/9771857.html
+
+
+
+## 安装k8s master
+以下的操作只在master宿主机上执行，适合中国大陆地区使用（因为弃用谷歌的源和repo，转而使用阿里云的镜像）：
+### Step1）安装kubeadm kubeadm kubectl
+``` bash
+apt-get update && sudo apt-get install -y ca-certificates curl software-properties-common apt-transport-https curl
+
+curl -s https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | sudo apt-key add -
+
+tee /etc/apt/sources.list.d/kubernetes.list <<EOF 
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
+
+apt-get update
+apt-get install -y kubelet kubeadm kubectl
+# 标记该软件包不被自动更新
+apt-mark hold kubelet kubeadm kubectl
+```
+### Step2）通过 kubeadm Kubernetes 初始化集群 (from master node)
+
+查看完整配置选项 https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2
+
+<p class='div-border green'>kubernetes 的版本最好和 kubelet 的版本一致, kubelet --version 查看版本，本文写的时候，版本是 v1.18.6</p>
+
+
+```
+vim ./kubeadm-config.yaml
+
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+kubernetesVersion: v1.18.6
+imageRepository: registry.aliyuncs.com/k8sxio
+controlPlaneEndpoint: "api-server.k8s.top:6443"
+apiServer:
+  certSANs:
+  - "k8s-master"
+  - "api-server.k8s.top"
+  - "172.16.101.131"
+networking:
+  serviceSubnet: "10.96.0.0/16"
+  podSubnet: "10.100.0.1/16"
+  dnsDomain: "cluster.local"
+controllerManagerExtraArgs:  
+  horizontal-pod-autoscaler-use-rest-clients: "true"  
+  horizontal-pod-autoscaler-sync-period: "10s"  
+  node-monitor-grace-period: "10s"
+apiServerExtraArgs:  
+  runtime-config: "api/all=true"
+
+
+# kubeadm init
+# 根据您服务器网速的情况，您需要等候 3 - 10 分钟
+kubeadm init --config=kubeadm-config.yaml --upload-certs -v 6
+
+
+# Kubernetes 集群默认需要加密方式访问。
+# 所以，这几条命令，就是将刚刚部署生成的 Kubernetes 集群的安全配置文件，保存到当前用户的.kube 目录下，
+# kubectl 默认会使用这个目录下的授权信息访问 Kubernetes 集群。如果不这么做的话，我们每次都需要通过 
+# export KUBECONFIG 环境变量告诉 kubectl 这个安全配置文件的位置。
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+```
+
+- `podSubnet: Kubernetes` 容器组所在的网段，该网段安装完成后，由 kubernetes 创建，事先并不存在于您的物理网络中
+- 
+`horizontal-pod-autoscaler-use-rest-clients: "true": ` kube-controller-manager 能够使用自定义资源（Custom Metrics）进行自动水平扩展。
+- `controlPlaneEndpoint` 负载均衡器的地址始终与kubeadm相连接（方便kubeapi-server 横向扩展），既然是lb，那么最好不要填 k8s-master的hostname了，这里我写的是 <font color='red'>api-server.k8s.top:6443 </font> 
+- `upload-certs` 将控制平面证书上传到 kubeadm-certs Secret。
+- `-v 6` 更可能输出详细的日志，建议开启。
+
+
+初始化完成之后
+```
+You can now join any number of the control-plane node running the following command on each as root:
+
+  kubeadm join api-server.k8s.top:6443 --token km8rml.3mnits2sbfh2srex \
+    --discovery-token-ca-cert-hash sha256:4005adc5c09d7aaa6a5693acf36402eb0273f009a9ce83b8bb208686ed73abd3 \
+    --control-plane --certificate-key 619272158ec6c0a14c0539e032f5686df4d6c5576aa549412098ca50592315e6
+
+Please note that the certificate-key gives access to cluster sensitive data, keep it secret!
+As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you can use
+"kubeadm init phase upload-certs --upload-certs" to reload certs afterward.
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join api-server.k8s.top:6443 --token km8rml.3mnits2sbfh2srex \
+    --discovery-token-ca-cert-hash sha256:4005adc5c09d7aaa6a5693acf36402eb0273f009a9ce83b8bb208686ed73abd3 
+
+```
+
+**查看Master节点的初始化状态 （only exec on master）**
+执行<font color='blue'> kubectl get nodes -o wide </font> 可以看到我们的容器当前属于 NotReady 状态。NodeNotReady 的原因在于，我们尚未部署任何网络插件。通过 kubectl 检查这个节点上各个系统 Pod 的状态。可以看到，CoreDNS、kube-controller-manager 等依赖于网络的 Pod 都处于 Pending 状态，即调度失败。这当然是符合预期的：因为这个 Master 节点的网络尚未就绪。
+```
+# kubectl get nodes -o wide
+NAME         STATUS     ROLES    AGE   VERSION   INTERNAL-IP      EXTERNAL-IP   OS-IMAGE           KERNEL-VERSION     CONTAINER-RUNTIME
+k8s-master   NotReady   master   22m   v1.18.6   172.16.101.131   <none>        Ubuntu 20.04 LTS   5.4.0-42-generic   docker://19.3.8
+
+# kubectl get pod -n kube-system -o wide
+NAME                                 READY   STATUS    RESTARTS   AGE   IP               NODE         NOMINATED NODE   READINESS GATES
+coredns-66db54ff7f-s4696             0/1     Pending   0          26m   <none>           <none>       <none>           <none>
+coredns-66db54ff7f-xxtvz             0/1     Pending   0          26m   <none>           <none>       <none>           <none>
+etcd-k8s-master                      1/1     Running   1          26m   172.16.101.131   k8s-master   <none>           <none>
+kube-apiserver-k8s-master            1/1     Running   0          26m   172.16.101.131   k8s-master   <none>           <none>
+kube-controller-manager-k8s-master   1/1     Running   2          26m   172.16.101.131   k8s-master   <none>           <none>
+kube-proxy-lvrkh                     1/1     Running   0          26m   172.16.101.131   k8s-master   <none>           <none>
+kube-scheduler-k8s-master            1/1     Running   2          26m   172.16.101.131   k8s-master   <none>           <none>
+```
+
+
+**安装网络插件**</br>
+安装 calico 网络插件</br>
+参考文档 https://docs.projectcalico.org/v3.13/getting-started/kubernetes/self-managed-onprem/onpremises
+```
+wget https://kuboard.cn/install-script/calico/calico-3.13.1.yaml
+kubectl apply -f calico-3.13.1.yaml
+```
+
+
+## 安装k8s Worker
+
+Kubernetes 的 Worker 节点跟 Master 节点几乎是相同的，它们运行着的都是一个 kubelet 组件。唯一的区别在于，在 kubeadm init 的过程中，kubelet 启动后，Master 节点上还会自动运行 kube-apiserver、kube-scheduler、kube-controller-manger 这三个系统 Pod。
+
+所以，相比之下，部署 Worker 节点反而是最简单的，只需要两步即可完成。</br>
+第一步，在所有 Worker 节点(node0 node1)上执行“安装 kubeadm”。</br>
+第二步，执行部署 Master 节点时生成的 kubeadm join 指令：</br>
+
+操作在 worker 节点（k8s-node0 k8s-node1）之上：
+```
+# 第一步骤：安装
+curl -s https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | sudo apt-key add -
+
+
+tee /etc/apt/sources.list.d/kubernetes.list <<EOF 
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
+
+
+apt-get install -y kubeadm
+apt-mark hold kubeadm
+
+
+# 第二步： 加入（初始化完成时的输出）
+
+kubeadm join api-server.k8s.top:6443 --token n9ksnt.zgxthovqoyl2weyq     --discovery-token-ca-cert-hash sha256:4005adc5c09d7aaa6a5693acf36402eb0273f009a9ce83b8bb208686ed73abd3
+
+
+# 第三步： 添加环境变量
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/kubelet.conf $HOME/.kube/config
+
+```
+
+> 不记得安装后的输出的话可以在 master节点执行 <font color='blue' >kubeadm token create --print-join-command</font> 查看，该 token 的有效时间为 2 个小时，2小时内，您可以使用此 token 初始化任意数量的 worker 节点。
+
+
+参考：
+
+- [使用kubeadm安装kubernetes_v1.18.x](https://www.kuboard.cn/install/install-k8s.html)
+- [基于Ubuntu 20.04安装Kubernetes 1.18](https://zhuanlan.zhihu.com/p/138554103)
+- [Kubernetes v1.18 参考指南](https://www.bookstack.cn/read/k8s-1.18-reference/e8ce7efca72fde85.md)
+
+
+## 部署插件
+### 部署 Dashboard 可视化插件
+#### 安装
+
+由于 Dashboard 是一个 Web Server，很多人经常会在自己的公有云上无意地暴露 Dashboard 的端口，从而造成安全隐患。所以，1.7 版本之后的 Dashboard 项目部署完成后，默认只能通过 Proxy 的方式在本地访问。具体的操作，你可以查看 [Dashboard](https://github.com/kubernetes/dashboard) 项目的官方文档。
+
+
+Dashboard 向 Kubernetes 集群部署容器化应用诊断容器化应用的问题
+- 管理集群的资源
+- 查看集群上所运行的应用程序
+- 创建、修改Kubernetes 上的资源（例如 Deployment、Job、DaemonSet等）
+- 展示集群上发生的错误
+
+
+```
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.3/aio/deploy/recommended.yaml
+
+```
+然后可以使用 `kubectl get pods` 命令来查看部署状态：
+```
+kubectl get pods --all-namespaces
+NAMESPACE              NAME                                         READY   STATUS    RESTARTS   AGE
+...
+kubernetes-dashboard   dashboard-metrics-scraper-6b4884c9d5-gs97j   1/1     Running   0          100m
+kubernetes-dashboard   kubernetes-dashboard-7f99b75bf4-h576c        1/1     Running   0          100m
+
+```
+
+#### 创建用户
+
+首先创建一个叫 <font color='blue' > admin-user </font> 的服务账号，并放在 <font color='blue' >kubernetes-dashboard</font> 名称空间下：
+
+```
+# admin-user.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+```
+
+执行 <font color='blue' > kubectl create </font> 命令：
+```
+kubectl create -f admin-user.yaml
+```
+
+#### 绑定角色
+
+默认情况下，kubeadm 创建集群时已经创建了admin角色，我们直接绑定即可：
+```
+# admin-user-role-binding.yaml
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+```
+执行 <font color='blue' >kubectl create </font>命令：
+```
+kubectl create -f  admin-user-role-binding.yaml
+
+```
+#### 获取token
+
+们需要找到新创建的用户的Token，以便用来登录dashboard：
+
+```
+kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+
+```
+
+#### 访问
+Kubernetes API服务器是公开的，并可以从外部访问，那我们可以直接使用API Server的方式来访问，也是比较推荐的方式。
+
+可以通过 proxy + Nginx 的方式访问
+```
+kubectl proxy --port=8888 --accept-hosts='^*$' --address=0.0.0.0
+```
+再将 Nginx 反向代理 8888 端口即可
+
+Dashboard的访问地址为：https://172.16.101.131:6443/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/node/k8s-node1?namespace=default
+
+但是直接访问会是403
+```
+{
+  "kind": "Status",
+  "apiVersion": "v1",
+  "metadata": {
+    
+  },
+  "status": "Failure",
+  "message": "services \"https:kubernetes-dashboard:\" is forbidden: User \"system:anonymous\" cannot get services/proxy in the namespace \"kube-system\"",
+  "reason": "Forbidden",
+  "details": {
+    "name": "https:kubernetes-dashboard:",
+    "kind": "services"
+  },
+  "code": 403
+}
+```
+
+这是因为最新版的k8s默认启用了RBAC，并为未认证用户赋予了一个默认的身份：<font color='blue'>anonymous</font>
+对于API Server来说，它是使用证书进行认证的，我们需要先创建一个客户端证书：
+```
+# 生成client-certificate-data
+grep 'client-certificate-data' ~/.kube/config | head -n 1 | awk '{print $2}' | base64 -d >> kubecfg.crt
+
+# 生成client-key-data
+grep 'client-key-data' ~/.kube/config | head -n 1 | awk '{print $2}' | base64 -d >> kubecfg.key
+
+# 生成p12
+openssl pkcs12 -export -clcerts -inkey kubecfg.key -in kubecfg.crt -out kubecfg.p12 -name "kubernetes-client"
+```
+<img src='https://img1.kiosk007.top/static/images/k8s/k8s_dashboard.png' />
+
+
+也可以通过 kube proxy 暴露8888端口，使用Nginx代理访问。
+```
+kubectl proxy --port=8888 --accept-hosts='^*$' --address=0.0.0.0
+```
+
+
+
+参考：
+- [kubernetes-dashboard(1.8.3)部署与踩坑](https://www.cnblogs.com/RainingNight/p/deploying-k8s-dashboard-ui.html)
+
+### 部署持久化存储插件 rock
+
+Rook 项目是一个基于 Ceph 的 Kubernetes 存储插件（它后期也在加入对更多存储实现的支持）。不过，不同于对 Ceph 的简单封装，Rook 在自己的实现中加入了水平扩展、迁移、灾难备份、监控等大量的企业级功能，使得这个项目变成了一个完整的、生产级别可用的容器存储插件。
+
+> 友情提示，这玩意巨占空间，如果是本地虚拟机搭建的话需要磁盘稍微再大点。
+
+``` bash
+
+$ kubectl apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/common.yaml
+
+$ kubectl apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/operator.yaml
+
+$ kubectl apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/cluster.yaml
+```
+
+
+## 通过 Taint/Toleration 调整 Master 执行 Pod 的策略 (附加)
+
+默认情况下 Master 节点是不允许运行用户 Pod 的。而 Kubernetes 做到这一点，依靠的是 Kubernetes 的 Taint/Toleration 机制。
+
+原理非常简单：一旦某个节点被加上了一个 Taint，即被“打上了污点”，那么所有 Pod 就都不能在这个节点上运行，因为 Kubernetes 的 Pod 都有“洁癖”。除非，有个别的 Pod 声明自己能“容忍”这个“污点”，即声明了 Toleration，它才可以在这个节点上运行。
+
+```
+# 创建 taint
+kubectl taint nodes k8s-nodeXX foo=bar:NoSchedule
+
+# 删除 taint
+kubectl taint nodes k8s-nodeXX foo=bar:NoSchedule-
+```
+
+master 默认已经有了一个 taint。即<font color='blue'> role.kubernetes.io/master:NoSchedule</font> 
+```
+kubectl describe node k8s-master
+Name:               k8s-master
+Roles:              master
+...
+CreationTimestamp:  Sat, 25 Jul 2020 09:44:07 +0800
+Taints:             node-role.kubernetes.io/master:NoSchedule
+
+```
+
+
+
+# 创建 k8s容器化应用
+
+这里创建一个Nginx, 准备一个 <font color='blue'> nginx-deployment.yaml </font> 文件，
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.19.1
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: "/usr/share/nginx/html"
+          name: nginx-vol
+      volumes:
+      - name: nginx-vol
+        hostPath:
+          path: "/root/data"
+```
+
+- `spec.replicas`：Pod 副本个数 ：2
+- `spec.containers.image`: 容器镜像 ：Nginx:latest
+- `containerPort`: 容器端口：80
+- `volumes.emptyDir`: 不显式声明宿主机目录的 Volume。所以，Kubernetes 也会在宿主机上创建一个临时目录，这个目录将来就会被绑定挂载到容器所声明的 Volume 目录上。当然，Kubernetes 也提供了显式的 Volume 定义，它叫作 hostPath。比如下面的这个 YAML 文件：
+```
+ ...   
+    volumes:
+      - name: nginx-vol
+        hostPath: 
+          path:  " /var/data"
+```
+
+使用 kubectl create 创建这个容器。
+
+```
+kubectl create -f nginx-deployment.yaml
+```
+
+查看运行状态
+```
+kubectl get pods -l app=nginx
+NAME                               READY   STATUS    RESTARTS   AGE
+nginx-deployment-d4544f9cb-b24wq   1/1     Running   0          5m13s
+nginx-deployment-d4544f9cb-f88bk   1/1     Running   0          5m13s
+
+# 查看一个 API 对象的细节，通过 Events 字段
+kubectl describe pod nginx-deployment-d4544f9cb-b24wq
+```
+
+查看API对象细节
+```
+kubectl describe pod nginx-deployment-57f45cfc58-9fpzt
+Name:         nginx-deployment-57f45cfc58-9fpzt
+Namespace:    default
+Priority:     0
+Node:         k8s-node1/172.16.101.133
+Start Time:   Sat, 25 Jul 2020 18:00:01 +0800
+Labels:       app=nginx
+              pod-template-hash=57f45cfc58
+...
+```
+在 kubectl describe 命令返回的结果中，可以看到这个 Pod 的详细信息，比如它的 IP 地址等等。其中，有一个部分值得你特别关注，就是 **Events（事件）**。
+
+在 Kubernetes 执行的过程中，对 API 对象的所有重要操作，都会被记录在这个对象的 Events 里，并且显示在 kubectl describe 指令返回的结果中。
+
+
+如果 pod 信息有改变，比如想要将Nginx的版本换成1.18。修改完 yaml 文件后，只需要执行`kubectl apply -f nginx-deployment.yaml` 即可。
+
+**进入到pod中，即这个namesapce中**
+```
+kubectl exec -it  nginx-deployment-57f45cfc58-9fpzt -- /bin/bash
+```
+
+**从 Kubernetes 集群中删除这个 Nginx Deployment **
+```
+kubectl delete -f nginx-deployment.yaml
+```
+
+# k8s 的最小调度单元 pod
+
+前面已经完全搭建起来了一个 k8s 集群，并跑起来了第一个Nginx服务。但是这距离线上的生成环境还差的很远。
+
+试想一下，Nginx 假设需要为静态资源前端文件提供服务部署能力，那么该如何实现呢？将前端文件内容和Nginx绑定部署？这显然是不合适的。
+
+Linux 下的很多服务其实也是多个进程相互协作的，比如两个进程是通过本地socket通信的，那么就必须让两个进程处于同一个 namespace中，而在docker的世界，容器即进程，也就是一个容器跑着一个进程。
+
+> 再次强调一下：容器的“单进程模型”，并不是指容器里只能运行“一个”进程，而是指容器没有管理多个进程的能力。这是因为容器里 PID=1 的进程就是应用本身，其他的进程都是这个 PID=1 进程的子进程。可是，用户编写的应用，并不能够像正常操作系统里的 init 进程或者 systemd 那样拥有进程管理的功能。比如，你的应用是一个 Java Web 程序（PID=1），然后你执行 docker exec 在后台启动了一个 Nginx 进程（PID=3）。可是，当这个 Nginx 进程异常退出的时候，你该怎么知道呢？这个进程退出后的垃圾收集工作，又应该由谁去做呢？
+
+这就需要多个容器组成一个pod，pod里的容器可以共享namespace，比如共享`network namespace`或者共享volume的`mnt namesapce`。这就像 `docker run --net=B --volumes-from=B --name=A image-A ...`这样的联盟式容器一样的操作。
+
+在k8s中，需要有一个初始的容器来提供初始化的环境，这个容器（k8s.grc.io/pause）会最先启动,并提供初始的各种namesapce环境，infra容器所占用的资源是最小的。**k8s.gcr.io/pause** 这个镜像是一个用汇编语言编写的、永远处于“暂停”状态的容器，解压后的大小也只有 100~200 KB 左右。
+<img src="/images/k8s/k8s_infra.png" style='height:400px'/>
+
+
+如果要开发容器的网络插件，也就是针对这个infra容器的，而不是应用本身的容器。
+
+在web场景中经常即需要war包也需要运行war包的tomcat web服务器。web包需要放在tomcat的webapp下运行。
+如果用容器去可能的2个实现方法是。
+1. 把 WAR 包直接放在 Tomcat 镜像的 webapps 目录下，做成一个新的镜像运行起来。可是，这时候，如果你要更新 WAR 包的内容，或者要升级 Tomcat 镜像，就要重新制作一个新的发布镜像，非常麻烦。
+2. 压根儿不管 WAR 包，永远只发布一个 Tomcat 容器。不过，这个容器的 webapps 目录，就必须声明一个 hostPath 类型的 Volume，从而把宿主机上的 WAR 包挂载进 Tomcat 容器当中运行起来。不过，这样你就必须要解决一个问题，即：如何让每一台宿主机，都预先准备好这个存储有 WAR 包的目录呢？这样来看，你只能独立维护一套分布式存储系统了。
+
+有了 Pod 之后，这样的问题就很容易解决了。我们可以把 WAR 包和 Tomcat 分别做成镜像，然后把它们作为一个 Pod 里的两个容器“组合”在一起。
+这里定义了2个容器 `war` 和 `tomcat`。war容器只专心提供war包，而tomcat基
+本不变。不过，`war` 容器的类型不再是一个普通容器，而是一个 **Init Container** 类型的容器。Init Container 类型的 WAR 包容器启动后，执行了`cp /sample.war /app`，把应用的 WAR 包拷贝到 /app 目录下，然后退出。
+
+- 这种组合即“sidecar”，sidecar 指的就是我们可以在一个 Pod 中，启动一个辅助容器，来完成一些独立于主进程（主容器）之外的工作。
+
+> Init Container 定义的容器，都会比 spec.containers 定义的用户容器先启动。并且，Init Container 容器会按顺序逐一启动，而直到它们都启动并且退出了，用户容器才会启动。
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: javaweb-2
+spec:
+  initContainers:
+  - image: geektime/sample:v2
+    name: war
+    command: ["cp", "/sample.war", "/app"]
+    volumeMounts:
+    - mountPath: /app
+      name: app-volume
+  containers:
+  - image: geektime/tomcat:7.0
+    name: tomcat
+    command: ["sh","-c","/root/apache-tomcat-7.0.42-v2/bin/start.sh"]
+    volumeMounts:
+    - mountPath: /root/apache-tomcat-7.0.42-v2/webapps
+      name: app-volume
+    ports:
+    - containerPort: 8080
+      hostPort: 8001 
+  volumes:
+  - name: app-volume
+    emptyDir: {}
+
+```

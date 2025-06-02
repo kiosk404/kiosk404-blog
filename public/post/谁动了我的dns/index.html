@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>网速变慢？你可能需要先设置好 DNS - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="网速变慢？你可能需要先设置好 DNS">
+  <meta property="og:description" content="有没有觉得 kiosk007.top 最近访问变快了？没错，我的主站最近接入了 腾讯云的 EO(EdegeOne)，当然只是14天体验版，体验过后还是会改会直连模式，毕竟是要收费的。不过能使得访问质量得到加速，第一个重要原因就是我们的请求被指向了就近节点，实现了就近访问。其中就依赖一个重要的底层技术 - DNS。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-10-24T16:08:00+00:00">
+    <meta property="article:modified_time" content="2024-06-18T19:16:20+00:00">
+    <meta property="article:tag" content="Web">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="网速变慢？你可能需要先设置好 DNS">
+  <meta name="twitter:description" content="有没有觉得 kiosk007.top 最近访问变快了？没错，我的主站最近接入了 腾讯云的 EO(EdegeOne)，当然只是14天体验版，体验过后还是会改会直连模式，毕竟是要收费的。不过能使得访问质量得到加速，第一个重要原因就是我们的请求被指向了就近节点，实现了就近访问。其中就依赖一个重要的底层技术 - DNS。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/" /><link rel="prev" href="http://localhost:1313/post/rag/" /><link rel="next" href="http://localhost:1313/post/go%E5%B9%B6%E6%B3%95%E6%A8%A1%E5%BC%8F/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "网速变慢？你可能需要先设置好 DNS",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "web","wordcount":  2515 ,
+        "url": "http:\/\/localhost:1313\/post\/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns\/","datePublished": "2024-10-24T16:08:00+00:00","dateModified": "2024-06-18T19:16:20+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">网速变慢？你可能需要先设置好 DNS</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-10-24">2024-10-24</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2515 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;12 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#dns网络世界的指南针">DNS：网络世界的指南针</a></li>
+        <li><a href="#智能解析">智能解析</a></li>
+        <li><a href="#胶水记录glue-record">胶水记录（Glue Record）</a></li>
+        <li><a href="#cname-记录打平-cname-flattening">CNAME 记录打平 (CNAME Flattening)</a></li>
+        <li><a href="#aname">ANAME</a></li>
+        <li><a href="#dns-解析优化调优">DNS 解析优化调优</a>
+          <ul>
+            <li><a href="#全球加速dns解析优化">全球加速DNS解析优化</a></li>
+            <li><a href="#多层cname-解析加速">多层CNAME 解析加速</a></li>
+          </ul>
+        </li>
+        <li><a href="#coredns-验证">CoreDNS 验证</a>
+          <ul>
+            <li><a href="#croedns-部署">CroeDNS 部署</a></li>
+            <li><a href="#配置-exampleio-域名解析">配置 <code>example.io</code> 域名解析</a></li>
+            <li><a href="#尝试实现-cname-flattening">尝试实现 CNAME Flattening</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition question open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwquestion"></i>Question<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2024-06-18T19:16:20" title="June 18, 2024">June 18, 2024</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>有没有觉得 <code>kiosk007.top</code> 最近访问变快了？没错，我的主站最近接入了 腾讯云的 <a href="https://console.cloud.tencent.com/edgeone" target="_blank" rel="noopener noreffer">EO(EdegeOne)</a>，当然只是14天体验版，体验过后还是会改会直连模式，毕竟是要收费的。不过能使得访问质量得到加速，第一个重要原因就是我们的请求被指向了就近节点，实现了就近访问。其中就依赖一个重要的底层技术 - <strong>DNS</strong>。</p>
+<br/>
+<h2 id="dns网络世界的指南针">DNS：网络世界的指南针</h2>
+<p>DNS，英文全称「Domain Name Server」，中文全称「域名服务器」。这种服务器不像网站使用的服务器为用户提供内容，而是将人类易于理解的「域名」转换为机器易于理解的「IP 地址」。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># dig kiosk007.top +short</span>
+</span></span><span class="line"><span class="cl">kiosk007.top.eo.dnse1.com.
+</span></span><span class="line"><span class="cl">101.72.224.113 
+</span></span><span class="line"><span class="cl">119.188.123.202
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这块的逻辑大家应该有基础网络知识的应该都了解。这里就不多做介绍了。</p>
+<p>具体还可以参考: <a href="https://ruanyifeng.com/blog/2016/06/dns.html" target="_blank" rel="noopener noreffer">DNS 原理入门</a></p>
+<br/>
+<h2 id="智能解析">智能解析</h2>
+<p>DNS（Domain Name System）智能解析是一种更高级的域名解析技术。它可以根据用户的地理位置、网络运营商、访问时间等多种因素，智能地将域名解析到不同的 IP 地址。传统的 DNS 解析通常是将域名固定地解析到一个或几个 IP 地址，而智能解析能够动态地调整解析结果，以优化用户的访问体验。</p>
+<br/>
+<p>举个例子，本站 kiosk007.top 接入了 腾讯云 EO。</p>
+<p>从 <a href="boce.aliyun.com" rel="">boce.aliyun.com</a> 上可以看到 kiosk007.top 这个域名从不同地方解析到的结果是不一样的。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/20241127095934-dnszhinengjiexi.png" />
+<ul>
+<li>在贵阳移动解析到了 <a href="https://ipinfo.io/221.178.3.68" target="_blank" rel="noopener noreffer">221.178.3.68</a> 和 <a href="https://ipinfo.io/36.147.62.154" target="_blank" rel="noopener noreffer">36.147.64.154</a> ，从  <a href="https://ipinfo.io/" target="_blank" rel="noopener noreffer">ipinfo.io</a> 可以查看到两个IP都是重庆移动的IP，在地理位置上都属于 西南省份。</li>
+<li>在 甘肃移动解析出的 2个IP 分别属于 宁夏移动和甘肃移动的，在地理位置上都属于 西北省份。</li>
+</ul>
+</br>
+<p>用 edns 可以看到使用不同的客户端IP访问，效果是不一样的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># dig kiosk007.top @223.5.5.5 +subnet=114.249.170.11 +short</span>
+</span></span><span class="line"><span class="cl">kiosk007.top.eo.dnse1.com.
+</span></span><span class="line"><span class="cl">101.72.224.113
+</span></span><span class="line"><span class="cl">119.188.123.202
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># dig kiosk007.top @223.5.5.5 +subnet=111.229.108.83 +short</span>
+</span></span><span class="line"><span class="cl">kiosk007.top.eo.dnse1.com.
+</span></span><span class="line"><span class="cl">116.207.185.121
+</span></span><span class="line"><span class="cl">61.160.209.235
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>能做到这点，其实是因为 EO 动态加速将域名做到了就近接入。</p>
+<p>kiosk007.top 被 CNAME 到了 <code>kiosk007.top.eo.dnse1.com.</code> , 最后再解析出真正的 IP 。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/20241127100012-kioskdnseo.png"/>
+<p>其实 CNAME 是大多数厂家用做调度的核心技术。这里以一个网上找到一个域名的调度说起，从 boce.aliyun.com 可以得出，这个域名是有接入动态加速技术的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dig mon.snssdk.com
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu &lt;&lt;&gt;&gt; mon.snssdk.com
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">40247</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr rd ra<span class="p">;</span> QUERY: 1, ANSWER: 8, AUTHORITY: 0, ADDITIONAL: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> OPT PSEUDOSECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span> EDNS: version: 0, flags:<span class="p">;</span> udp: <span class="m">65494</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span>mon.snssdk.com.			IN	A
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> ANSWER SECTION:
+</span></span><span class="line"><span class="cl">mon.snssdk.com.		227	IN	CNAME	mon.snssdk.com.bytedns1.com.
+</span></span><span class="line"><span class="cl">mon.snssdk.com.bytedns1.com. 33	IN	CNAME	mon.snssdk.com.c.dsa.cdnbuild.net.
+</span></span><span class="line"><span class="cl">mon.snssdk.com.c.dsa.cdnbuild.net. <span class="m">106</span> IN CNAME	l7-online-self-max-v6.s.dsa.cdnbuild.net.
+</span></span><span class="line"><span class="cl">l7-online-self-max-v6.s.dsa.cdnbuild.net. <span class="m">17</span> IN	A 111.161.204.165
+</span></span><span class="line"><span class="cl">l7-online-self-max-v6.s.dsa.cdnbuild.net. <span class="m">17</span> IN	A 111.161.204.160
+</span></span><span class="line"><span class="cl">l7-online-self-max-v6.s.dsa.cdnbuild.net. <span class="m">17</span> IN	A 111.161.204.161
+</span></span><span class="line"><span class="cl">l7-online-self-max-v6.s.dsa.cdnbuild.net. <span class="m">17</span> IN	A 111.161.204.162
+</span></span><span class="line"><span class="cl">l7-online-self-max-v6.s.dsa.cdnbuild.net. <span class="m">17</span> IN	A 111.161.204.164
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">10</span> msec
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 127.0.0.53#53<span class="o">(</span>127.0.0.53<span class="o">)</span> <span class="o">(</span>UDP<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Wed Nov <span class="m">27</span> 09:50:27 CST <span class="m">2024</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">246</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里有 三层 CNAME ，分别是</p>
+<p><code>mon.snssdk.com.bytedns1.com.</code>                          &ndash; 接入调度</p>
+<p><code>mon.snssdk.com.c.dsa.cdnbuild.net.</code>              &ndash;  内部调度管理</p>
+<p><code>l7-online-self-max-v6.s.dsa.cdnbuild.net.</code>  &ndash; 调度域</p>
+<br/>
+<p>前2层一般是调度的内部管理CNAME，最后一层是 调度域名。动态加速厂商管理的一般是调度域。很多域名可以统一 CNAME 到调度域名。</p>
+<br/>
+<p>回到 kiosk007.top ，这里只有一层 CNAME ，我怀疑是 EO 将 调度域隐藏了，这可以通过 <a href="https://blog.cloudflare.com/introducing-cname-flattening-rfc-compliant-cnames-at-a-domains-root/" target="_blank" rel="noopener noreffer">CNAME Flattening</a> 来实现, 后面会再说。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dig kiosk007.top +short  
+</span></span><span class="line"><span class="cl">kiosk007.top.eo.dnse1.com.
+</span></span><span class="line"><span class="cl">119.188.123.202
+</span></span><span class="line"><span class="cl">101.72.224.113
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>下面就借此机会说一下 DNS 都有哪些特性，如果希望网络优化从 DNS 入手，都还有哪些手段。</p>
+<br/>
+<h2 id="胶水记录glue-record">胶水记录（Glue Record）</h2>
+<p>胶水记录是一种特殊的记录类型，来对比下它和普通的 DNS 记录有什么差别</p>
+<ul>
+<li>普通的 DNS 记录是保存在权威服务器上的
+<ul>
+<li>权威服务器一般由域名注册商提供，当然也有由第三方提供的独立解析服务。</li>
+<li>用户通过域名解析后台设置解析记录，值是保存在权威服务器上的。</li>
+</ul>
+</li>
+<li>胶水记录保存在注册局的DNS服务器上
+<ul>
+<li>注册局（Domain Registry）是管理某个后缀所有域名的机构。</li>
+<li>用户通过域名注册商后台设置胶水记录时，值是保存到注册局的服务器上的。</li>
+</ul>
+</li>
+</ul>
+<p>详细介绍之前先回顾一下 DNS 查询过程。</p>
+<p>我们查询 DNS 的时候一般是 递归查询 PublicDNS 或者 LocalDNS 。它们会直接输出 DNS解析结果 ，而 LocalDNS 或者 PublicDNS 会做迭代查询，层层迭代直到查到结果，当然有缓存的话直接返回结果。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/blog/20241201123531-ABUIABAEGAAg94nTjAYo-Ya5kwQwtwU4nQM!600x600.png"
+        data-srcset="https://img1.kiosk007.top/static/images/blog/20241201123531-ABUIABAEGAAg94nTjAYo-Ya5kwQwtwU4nQM!600x600.png, https://img1.kiosk007.top/static/images/blog/20241201123531-ABUIABAEGAAg94nTjAYo-Ya5kwQwtwU4nQM!600x600.png 1.5x, https://img1.kiosk007.top/static/images/blog/20241201123531-ABUIABAEGAAg94nTjAYo-Ya5kwQwtwU4nQM!600x600.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/blog/20241201123531-ABUIABAEGAAg94nTjAYo-Ya5kwQwtwU4nQM!600x600.png"
+        title="ABUIABAEGAAg94nTjAYo-Ya5kwQwtwU4nQM!600x600" />
+   <div class="post-img-view">
+      <a data-fancybox="gallery" href="https://img1.kiosk007.top/static/images/blog/20241201123531-ABUIABAEGAAg94nTjAYo-Ya5kwQwtwU4nQM!600x600.png">
+         <img src="https://img1.kiosk007.top/static/images/blog/20241201123531-ABUIABAEGAAg94nTjAYo-Ya5kwQwtwU4nQM!600x600.png" alt="ABUIABAEGAAg94nTjAYo-Ya5kwQwtwU4nQM!600x600"  />
+      </a>
+   </div>
+
+
+</p>
+<blockquote>
+<p>LocalDNS 一般由 DHCP 分发的 DNS Server</p>
+<p>PublicDNS 是一些公共大厂的DNS Server，常见的有 <a href="https://www.dnspod.cn/products/publicdns" target="_blank" rel="noopener noreffer">119.29.29.29</a> (腾讯云的PublicDNS) 、<a href="https://alidns.com/" target="_blank" rel="noopener noreffer">223.5.5.5</a> (阿里云的PublicDNS)、<a href="https://www.volcengine.com/docs/6758/177901" target="_blank" rel="noopener noreffer">180.184.1.1</a>  (火山引擎的 PublicDNS)</p>
+</blockquote>
+<p>以查询 <code>www.qq.com</code> 为例。我们直接查询可以看到有1层 CNAME ，3个IP。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># dig www.qq.com +short</span>
+</span></span><span class="line"><span class="cl">ins-r23tsuuf.ias.tencent-cloud.net.
+</span></span><span class="line"><span class="cl">221.198.70.47
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其实我们会以 递归服务器的工作方式来逐级查询 DNS 记录。</p>
+<p><strong>一、获取根服务器列表</strong></p>
+<p>因为所有域名的 DNS 记录查询入口都在这里，就好像你要进入一个多级的目录，你得一级一级地进入，而根服务器就是入口。</p>
+<p>全球共有 13 组公认的 DNS 服务器，可在 IANA 网站上查询到：</p>
+<p><a href="https://www.iana.org/domains/root/servers" target="_blank" rel="noopener noreffer">https://www.iana.org/domains/root/servers</a></p>
+<br/>
+<p><strong>二、向根服务器发送查询</strong></p>
+<p>下面的过程是这样的：</p>
+<p>Public DNS：“www.qq.com 的地址你有吗？”</p>
+<p>root权威DNS：“没有，我只有 .com 顶级域的 权威地址， 你可以找他们问, .com 顶级域权威DNS是 d.gtld-servers.net. 等 , 对了他们的地址我也有，就是 192.5.6.30  这些”</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># dig qq.com @m.root-servers.net</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu &lt;&lt;&gt;&gt; qq.com @m.root-servers.net
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">50679</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr rd<span class="p">;</span> QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: <span class="m">27</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> OPT PSEUDOSECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span> EDNS: version: 0, flags:<span class="p">;</span> udp: <span class="m">1232</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span>qq.com.				IN	A
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> AUTHORITY SECTION:
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	h.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	l.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	j.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	f.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	b.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	e.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	m.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	d.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	k.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	a.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	c.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	i.gtld-servers.net.
+</span></span><span class="line"><span class="cl">com.			172800	IN	NS	g.gtld-servers.net.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> ADDITIONAL SECTION:
+</span></span><span class="line"><span class="cl">m.gtld-servers.net.	172800	IN	A	192.55.83.30
+</span></span><span class="line"><span class="cl">l.gtld-servers.net.	172800	IN	A	192.41.162.30
+</span></span><span class="line"><span class="cl">k.gtld-servers.net.	172800	IN	A	192.52.178.30
+</span></span><span class="line"><span class="cl">j.gtld-servers.net.	172800	IN	A	192.48.79.30
+</span></span><span class="line"><span class="cl">i.gtld-servers.net.	172800	IN	A	192.43.172.30
+</span></span><span class="line"><span class="cl">h.gtld-servers.net.	172800	IN	A	192.54.112.30
+</span></span><span class="line"><span class="cl">g.gtld-servers.net.	172800	IN	A	192.42.93.30
+</span></span><span class="line"><span class="cl">f.gtld-servers.net.	172800	IN	A	192.35.51.30
+</span></span><span class="line"><span class="cl">e.gtld-servers.net.	172800	IN	A	192.12.94.30
+</span></span><span class="line"><span class="cl">d.gtld-servers.net.	172800	IN	A	192.31.80.30
+</span></span><span class="line"><span class="cl">c.gtld-servers.net.	172800	IN	A	192.26.92.30
+</span></span><span class="line"><span class="cl">b.gtld-servers.net.	172800	IN	A	192.33.14.30
+</span></span><span class="line"><span class="cl">a.gtld-servers.net.	172800	IN	A	192.5.6.30
+</span></span><span class="line"><span class="cl">m.gtld-servers.net.	172800	IN	AAAA	2001:501:b1f9::30
+</span></span><span class="line"><span class="cl">l.gtld-servers.net.	172800	IN	AAAA	2001:500:d937::30
+</span></span><span class="line"><span class="cl">k.gtld-servers.net.	172800	IN	AAAA	2001:503:d2d::30
+</span></span><span class="line"><span class="cl">j.gtld-servers.net.	172800	IN	AAAA	2001:502:7094::30
+</span></span><span class="line"><span class="cl">i.gtld-servers.net.	172800	IN	AAAA	2001:503:39c1::30
+</span></span><span class="line"><span class="cl">h.gtld-servers.net.	172800	IN	AAAA	2001:502:8cc::30
+</span></span><span class="line"><span class="cl">g.gtld-servers.net.	172800	IN	AAAA	2001:503:eea3::30
+</span></span><span class="line"><span class="cl">f.gtld-servers.net.	172800	IN	AAAA	2001:503:d414::30
+</span></span><span class="line"><span class="cl">e.gtld-servers.net.	172800	IN	AAAA	2001:502:1ca1::30
+</span></span><span class="line"><span class="cl">d.gtld-servers.net.	172800	IN	AAAA	2001:500:856e::30
+</span></span><span class="line"><span class="cl">c.gtld-servers.net.	172800	IN	AAAA	2001:503:83eb::30
+</span></span><span class="line"><span class="cl">b.gtld-servers.net.	172800	IN	AAAA	2001:503:231d::2:30
+</span></span><span class="line"><span class="cl">a.gtld-servers.net.	172800	IN	AAAA	2001:503:a83e::2:30
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">74</span> msec
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 202.12.27.33#53<span class="o">(</span>m.root-servers.net<span class="o">)</span> <span class="o">(</span>UDP<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sun Dec <span class="m">01</span> 12:23:50 CST <span class="m">2024</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">831</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>三、向 .com 权威服务器发送查询</strong></p>
+<p>这里选了一个 .com 的权威服务器查询。下面的对话过程如下：</p>
+<p>PublicDNS ：“你有 <a href="https://www.qq.com" target="_blank" rel="noopener noreffer">www.qq.com</a> 的记录吗?”</p>
+<p>.com 权威：“没有，但我知道 qq.com 的权威DNS是 ns1.qq.com. 他应该有 <a href="https://www.qq.com" target="_blank" rel="noopener noreffer">www.qq.com</a> 的记录，对了 ns1.qq.com 权威地址的 结尾是 .com ，他的地址，你就不必问我了， 我这里也有，顺便给你哦， 是 101.227.218.144 等”</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dig www.qq.com @192.55.83.30
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu &lt;&lt;&gt;&gt; www.qq.com @a.gtld-servers.net
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">35510</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr rd<span class="p">;</span> QUERY: 1, ANSWER: 0, AUTHORITY: 4, ADDITIONAL: <span class="m">17</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> OPT PSEUDOSECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span> EDNS: version: 0, flags:<span class="p">;</span> udp: <span class="m">4096</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span>www.qq.com.			IN	A
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> AUTHORITY SECTION:
+</span></span><span class="line"><span class="cl">qq.com.			172800	IN	NS	ns1.qq.com.
+</span></span><span class="line"><span class="cl">qq.com.			172800	IN	NS	ns2.qq.com.
+</span></span><span class="line"><span class="cl">qq.com.			172800	IN	NS	ns3.qq.com.
+</span></span><span class="line"><span class="cl">qq.com.			172800	IN	NS	ns4.qq.com.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> ADDITIONAL SECTION:
+</span></span><span class="line"><span class="cl">ns1.qq.com.		172800	IN	A	101.227.218.144
+</span></span><span class="line"><span class="cl">ns1.qq.com.		172800	IN	A	14.116.136.7
+</span></span><span class="line"><span class="cl">ns1.qq.com.		172800	IN	A	157.255.246.101
+</span></span><span class="line"><span class="cl">ns1.qq.com.		172800	IN	A	203.205.220.251
+</span></span><span class="line"><span class="cl">ns1.qq.com.		172800	IN	AAAA	2402:4e00:8030::111
+</span></span><span class="line"><span class="cl">ns2.qq.com.		172800	IN	A	111.230.158.42
+</span></span><span class="line"><span class="cl">ns2.qq.com.		172800	IN	A	211.100.32.218
+</span></span><span class="line"><span class="cl">ns2.qq.com.		172800	IN	AAAA	240e:9f:c600::8
+</span></span><span class="line"><span class="cl">ns2.qq.com.		172800	IN	A	43.129.131.210
+</span></span><span class="line"><span class="cl">ns3.qq.com.		172800	IN	A	112.60.1.69
+</span></span><span class="line"><span class="cl">ns3.qq.com.		172800	IN	A	117.184.232.216
+</span></span><span class="line"><span class="cl">ns3.qq.com.		172800	IN	A	49.51.76.77
+</span></span><span class="line"><span class="cl">ns4.qq.com.		172800	IN	A	170.106.32.66
+</span></span><span class="line"><span class="cl">ns4.qq.com.		172800	IN	A	218.68.91.143
+</span></span><span class="line"><span class="cl">ns4.qq.com.		172800	IN	A	58.144.154.100
+</span></span><span class="line"><span class="cl">ns4.qq.com.		172800	IN	A	59.36.132.142
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">333</span> msec
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 192.5.6.30#53<span class="o">(</span>a.gtld-servers.net<span class="o">)</span> <span class="o">(</span>UDP<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sun Dec <span class="m">01</span> 12:25:40 CST <span class="m">2024</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">391</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>.com</code> 权威服务器告诉PublicDNS，<code>qq.com</code> 由 <code>ns*.qq.com</code> 这组服务器管理，并且还顺便告诉了他们的 IP 地址。</p>
+<p><strong>第四步：向 qq.com 域名权威服务器发送查询</strong></p>
+<p>Public 选择了 ns1.qq.com. 这个权威的地址，并使用 101.227.218.144 这个IP访问.</p>
+<p>下面是和 qq.com 的权威服务器 ns1.qq.com 进行查询的对话：</p>
+<p>PublicDNS: &ldquo;你这里有 <a href="https://www.qq.com" target="_blank" rel="noopener noreffer">www.qq.com</a> 的地址吗？&rdquo;</p>
+<p>qq.com 的权威：&ldquo;没有，但我知道 <a href="https://www.qq.com" target="_blank" rel="noopener noreffer">www.qq.com</a> 的权威是 ns-cnc1.qq.com. 对了 ns-cnc1.qq.com 的地址, 我也有，拿去就是 157.255.6.102 &quot;</p>
+<blockquote>
+<p>题外话：为什么这里由出现一层权威？？？ 原因是 <a href="https://www.qq.com" target="_blank" rel="noopener noreffer">www.qq.com</a> 不是直接有 A 记录的，他有一层 CNAME ，所以这里由有一个 NS 。</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dig www.qq.com @101.227.218.144 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu &lt;&lt;&gt;&gt; www.qq.com @101.227.218.144
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">13872</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr rd ad<span class="p">;</span> QUERY: 1, ANSWER: 0, AUTHORITY: 2, ADDITIONAL: <span class="m">7</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> OPT PSEUDOSECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span> EDNS: version: 0, flags:<span class="p">;</span> udp: <span class="m">4304</span>
+</span></span><span class="line"><span class="cl"><span class="p">;</span> COOKIE: fe39971c695d1887 <span class="o">(</span>echoed<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span>www.qq.com.			IN	A
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> AUTHORITY SECTION:
+</span></span><span class="line"><span class="cl">www.qq.com.		86400	IN	NS	ns-cnc1.qq.com.
+</span></span><span class="line"><span class="cl">www.qq.com.		86400	IN	NS	ns-cnc2.qq.com.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> ADDITIONAL SECTION:
+</span></span><span class="line"><span class="cl">ns-cnc1.qq.com.		3600	IN	A	157.255.6.102
+</span></span><span class="line"><span class="cl">ns-cnc1.qq.com.		3600	IN	A	218.68.91.139
+</span></span><span class="line"><span class="cl">ns-cnc1.qq.com.		3600	IN	A	140.207.180.96
+</span></span><span class="line"><span class="cl">ns-cnc1.qq.com.		3600	IN	AAAA	240e:e1:aa00:2002::3
+</span></span><span class="line"><span class="cl">ns-cnc2.qq.com.		3600	IN	A	157.255.6.102
+</span></span><span class="line"><span class="cl">ns-cnc2.qq.com.		3600	IN	A	218.68.91.139
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">35</span> msec
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 101.227.218.144#53<span class="o">(</span>101.227.218.144<span class="o">)</span> <span class="o">(</span>UDP<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sun Dec <span class="m">01</span> 12:47:46 CST <span class="m">2024</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">203</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>余下步骤</strong>:</p>
+<p>看来解析出一个域名真的是太麻烦了，下面的流程不再详细赘述了，我通过解析操作展示</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">1. 问 ns-cnc1.qq.com 询问结果
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># dig www.qq.com @157.255.6.102       </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu &lt;&lt;&gt;&gt; www.qq.com @157.255.6.102
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">54329</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr aa rd ad<span class="p">;</span> QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> OPT PSEUDOSECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span> EDNS: version: 0, flags:<span class="p">;</span> udp: <span class="m">4304</span>
+</span></span><span class="line"><span class="cl"><span class="p">;</span> COOKIE: cbd86af4a7b28ff0 <span class="o">(</span>echoed<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span>www.qq.com.			IN	A
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> ANSWER SECTION:
+</span></span><span class="line"><span class="cl">www.qq.com.		300	IN	CNAME	ins-r23tsuuf.ias.tencent-cloud.net.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">43</span> msec
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 157.255.6.102#53<span class="o">(</span>157.255.6.102<span class="o">)</span> <span class="o">(</span>UDP<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sun Dec <span class="m">01</span> 13:01:34 CST <span class="m">2024</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">99</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查询 ins-r23tsuuf.ias.tencent-cloud.net. 又要经历上述一层逻辑，这里我们直接给出结果吧。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dig ins-r23tsuuf.ias.tencent-cloud.net +short
+</span></span><span class="line"><span class="cl">221.198.70.47
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h2 id="cname-记录打平-cname-flattening">CNAME 记录打平 (CNAME Flattening)</h2>
+<p>CNAME 记录打平最早 CloudFlare  有一篇文章记录 <a href="https://blog.cloudflare.com/introducing-cname-flattening-rfc-compliant-cnames-at-a-domains-root/" target="_blank" rel="noopener noreffer">Introducing CNAME Flattening: RFC-Compliant CNAMEs at a Domain&rsquo;s Root</a></p>
+<br/>
+<p>这篇文章介绍了Cloudflare推出的一项新功能——CNAME Flattening。以下是文章的主要内容总结：</p>
+<ol>
+<li>
+<p><strong>背景和问题</strong>：</p>
+<ul>
+<li>传统上，域名的根记录（即没有子域名的顶级域名，如<code>example.com</code>）需要指向一个IP地址（使用A记录）。这限制了使用基于云的服务，因为将服务绑定到IP地址可能会导致资源共享和性能问题。</li>
+<li>CNAME记录允许一个域名指向另一个域名（最终会解析为A记录和IP地址），这为子域名（如<code>www.example.com</code>）提供了灵活性，但在根记录中使用CNAME存在问题，因为DNS规范不允许根记录使用CNAME。</li>
+</ul>
+</li>
+<li>
+<p><strong>CNAME的优势</strong>：</p>
+<ul>
+<li>CNAME作为别名，提供了灵活性，允许服务在不改变DNS设置的情况下动态调整IP地址。</li>
+<li>通过使用CNAME，可以避免因资源过载而导致的性能问题，并且可以轻松地将流量从一个IP地址转移到另一个IP地址。</li>
+</ul>
+</li>
+<li>
+<p><strong>DNS规范和问题</strong>：</p>
+<ul>
+<li>
+<p>DNS规范规定根记录不能是CNAME，因为根记录通常需要与其他记录（如MX记录用于邮件，NS记录用于域名服务器）关联。</p>
+</li>
+<li>
+<p>遵循这一规范的大多数权威DNS服务器不允许在根记录中包含CNAME记录。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>CNAME Flattening的解决方案</strong>：</p>
+<ul>
+<li>
+<p>Cloudflare通过扩展其权威DNS基础设施，实现了一种在遵循RFC的同时支持根记录使用CNAME的方法。当根记录中有CNAME时，Cloudflare会递归地解析CNAME链，直到找到A记录，然后返回与A记录关联的IP地址，这个过程称为“CNAME Flattening”。</p>
+</li>
+<li>
+<p>这种方法遵循DNS规范，对任何与Cloudflare DNS交互的服务都是透明的，并且解决了之前遇到的边缘情况问题，如Microsoft Exchange邮件服务器的问题。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>好处</strong>：</p>
+<ul>
+<li>
+<p>CNAME Flattening允许在不违反DNS规范的情况下在根记录中使用CNAME，提供了灵活性。</p>
+</li>
+<li>
+<p>通过缓存CNAME响应，Cloudflare减少了CNAME解析时间，平均减少了约30%。</p>
+</li>
+<li>
+<p>Cloudflare已经开始在更广泛的范围内测试CNAME Flattening，包括内部使用的CNAME。</p>
+</li>
+</ul>
+</li>
+</ol>
+<br/>
+<p>当然&hellip; dnspod 是做了特殊支持的，支持 MX 记录和 CNAME 记录共存。</p>
+<h2 id="aname">ANAME</h2>
+<p>和 CNAME Flattening 相似。</p>
+<p>假设本站的域名 img1.kiosk007.top . 有 2层CNAME ，而且通过CNAME 一眼就看出用的是 七牛云。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># dig img1.kiosk007.top +short</span>
+</span></span><span class="line"><span class="cl">img1-kiosk007-top-idvf0pq.qiniudns.com.
+</span></span><span class="line"><span class="cl">allcdn.china.qiniu.qnydns.com.
+</span></span><span class="line"><span class="cl">allcdn.lv2.qnydns.com.
+</span></span><span class="line"><span class="cl">111.45.28.78
+</span></span><span class="line"><span class="cl">112.16.229.53
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>能不能隐藏 我用了 七牛云 这个事实呢？也就是说需要消除掉 中间的CNAME 从而直接给出 A 记录，从原理上是可以实现的，这就需要引入 ANAME 了，</p>
+<p>这篇文章分享了什么是 <a href="https://dnsmadeeasy.com/post/what-is-an-aname-record" target="_blank" rel="noopener noreffer">ANAME</a></p>
+<br/>
+<img src="https://img1.kiosk007.top/static/images/blog/20241207172323-6232264c785939d94e06c0b6_ANAME_RECORD_EXAMPLE.png" />
+<br/>
+<ol>
+<li><strong>ANAME记录的定义</strong>：
+<ul>
+<li>ANAME记录是一种能够在域名根上使用的记录，类似于CNAME，但没有CNAME的限制。它可以被视为一个转变为CNAME的A记录。</li>
+</ul>
+</li>
+<li><strong>ANAME记录的用途</strong>：
+<ul>
+<li>ANAME记录允许你将裸域名（无子域名的顶级域名）指向一个主机名或完全限定域名（FQDN）。</li>
+<li>它们适用于需要频繁更新和/或最精确的GeoDNS解析的关键系统，尤其是对于内容分发网络（CDN）来说非常有用。</li>
+</ul>
+</li>
+<li><strong>ANAME记录的工作原理</strong>：
+<ul>
+<li>当查询ANAME记录时，权威名称服务器实际上会解析存储在ANAME记录中的主机或FQDN。</li>
+<li>如果ANAME记录无法解析，服务器将返回最近缓存的IP地址，确保用户仍然可以接收内容，避免不必要的停机时间。</li>
+</ul>
+</li>
+<li><strong>ANAME记录的历史</strong>：
+<ul>
+<li>DNS Made Easy的创始人之一是ANAME技术的创新者之一。在ANAME存在之前，他们使用API调用来实现相同的结果，后来开发了自己的记录，并将其命名为“ANAME记录”。</li>
+</ul>
+</li>
+<li><strong>ANAME记录示例</strong>：
+<ul>
+<li>文章提供了一个ANAME记录的示例，展示了如何将dnsmadeeasy.com的ANAME记录指向一个FQDN（例如127.1.1.1）。</li>
+<li>与A记录和CNAME记录相比，ANAME记录结合了两者的功能，并消除了CNAME记录的限制。</li>
+</ul>
+</li>
+<li><strong>ANAME记录的优势</strong>：
+<ul>
+<li>ANAME记录可以以多种方式集成到组织的DNS策略中，允许你绕过某些记录限制，定制DNS配置以适应你的域名。</li>
+</ul>
+</li>
+</ol>
+<h2 id="dns-解析优化调优">DNS 解析优化调优</h2>
+<h3 id="全球加速dns解析优化">全球加速DNS解析优化</h3>
+<p>众所周知的原因，海外用户访问国内的网络质量是非常差的，所以如果一个域名希望是全球访问时，那么这个域名的权威NS 应该设置在哪里呢？</p>
+<p>如果设置在国内，那么海外访问会比较慢，如果设置在海外，那么国内访问会比较慢。</p>
+<p>对于一个云厂商，想要加速DNS阶段的解析速度，其中重要一点就是需要做的就是优化其NS访问速度。</p>
+<p>聪明的做法应该是给权威DNS做一次智能解析。国内用国内的权威DNS地址，海外用海外的权威DNS地址。</p>
+<br/>
+<blockquote>
+<p>知识补充：</p>
+<p>我们知道想要使用一家云厂商的 加速域名，需要将我们自己的域名 CNAME 过去，</p>
+<p>阿里云的常见 CNAME 的二级域名常见的有：</p>
+<ul>
+<li>queniurc.com.</li>
+<li>queniuaa.com.</li>
+</ul>
+<p>七牛云的二级域：</p>
+<ul>
+<li>qiniudns.com.</li>
+</ul>
+</blockquote>
+<br/>
+<p><strong>不错，阿里云的CNAME 的权威就是这么做的~</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># dig xxxxx.queniuaa.com @m.gtld-servers.net.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu &lt;&lt;&gt;&gt; xxxxx.queniuaa.com @m.gtld-servers.net.
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">32001</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr rd<span class="p">;</span> QUERY: 1, ANSWER: 0, AUTHORITY: 2, ADDITIONAL: <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> OPT PSEUDOSECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span> EDNS: version: 0, flags:<span class="p">;</span> udp: <span class="m">4096</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span>xxxxx.queniuaa.com.		IN	A
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> AUTHORITY SECTION:
+</span></span><span class="line"><span class="cl">queniuaa.com.		172800	IN	NS	vipns6.queniudns.net.
+</span></span><span class="line"><span class="cl">queniuaa.com.		172800	IN	NS	vipns7.queniudns.net.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">251</span> msec
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 192.55.83.30#53<span class="o">(</span>m.gtld-servers.net.<span class="o">)</span> <span class="o">(</span>UDP<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sat Dec <span class="m">07</span> 15:08:50 CST <span class="m">2024</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">102</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们看下 阿里云的 DNS 智能解析效果。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># dig vipns6.queniudns.net. +subnet=114.114.11.1 +short   # (114.114.11.1 是一个国内IP)</span>
+</span></span><span class="line"><span class="cl">47.240.195.220      <span class="o">(</span>这些结果解析出的都是 国内的IP<span class="o">)</span>
+</span></span><span class="line"><span class="cl">121.40.6.145      
+</span></span><span class="line"><span class="cl">47.108.110.113
+</span></span><span class="line"><span class="cl">203.107.13.55
+</span></span><span class="line"><span class="cl">47.88.250.116
+</span></span><span class="line"><span class="cl">47.254.165.60
+</span></span><span class="line"><span class="cl">47.120.230.155
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># dig vipns6.queniudns.net. +subnet=1.1.1.1 +short    # (1.1.1.1 是一个海外IP)</span>
+</span></span><span class="line"><span class="cl">47.89.91.91			（解析的结果是美国 Aliyun）
+</span></span><span class="line"><span class="cl">205.204.111.111
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>但实际效果不然，如果我们自己建权威的话会发现，智能解析没有效果？国内的权威还是会收到大量的海外解析请求。为什么？智能解析失效了吗？不是的，这是因为胶水记录。</p>
+<br/>
+<p><strong>这里再举个阿里云动态加速的反例</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># dig cdngslb.com.  @i.gtld-servers.net.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu &lt;&lt;&gt;&gt; cdngslb.com. @i.gtld-servers.net.
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">43709</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr rd<span class="p">;</span> QUERY: 1, ANSWER: 0, AUTHORITY: 2, ADDITIONAL: <span class="m">15</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> OPT PSEUDOSECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span> EDNS: version: 0, flags:<span class="p">;</span> udp: <span class="m">4096</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span>cdngslb.com.			IN	A
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> AUTHORITY SECTION:
+</span></span><span class="line"><span class="cl">cdngslb.com.		172800	IN	NS	ns1.cdngslb.com.
+</span></span><span class="line"><span class="cl">cdngslb.com.		172800	IN	NS	ns2.cdngslb.com.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> ADDITIONAL SECTION:
+</span></span><span class="line"><span class="cl">ns1.cdngslb.com.	172800	IN	A	106.11.35.19
+</span></span><span class="line"><span class="cl">ns1.cdngslb.com.	172800	IN	A	106.11.41.157
+</span></span><span class="line"><span class="cl">ns1.cdngslb.com.	172800	IN	A	140.205.103.192
+</span></span><span class="line"><span class="cl">ns1.cdngslb.com.	172800	IN	A	140.205.122.66
+</span></span><span class="line"><span class="cl">ns1.cdngslb.com.	172800	IN	AAAA	2401:b180:4100::14
+</span></span><span class="line"><span class="cl">ns1.cdngslb.com.	172800	IN	A	47.241.207.18
+</span></span><span class="line"><span class="cl">ns1.cdngslb.com.	172800	IN	A	47.88.74.38
+</span></span><span class="line"><span class="cl">ns2.cdngslb.com.	172800	IN	A	106.11.35.18
+</span></span><span class="line"><span class="cl">ns2.cdngslb.com.	172800	IN	A	106.11.41.158
+</span></span><span class="line"><span class="cl">ns2.cdngslb.com.	172800	IN	A	140.205.103.194
+</span></span><span class="line"><span class="cl">ns2.cdngslb.com.	172800	IN	A	140.205.122.77
+</span></span><span class="line"><span class="cl">ns2.cdngslb.com.	172800	IN	AAAA	2401:b180:4100::15
+</span></span><span class="line"><span class="cl">ns2.cdngslb.com.	172800	IN	A	47.241.207.16
+</span></span><span class="line"><span class="cl">ns2.cdngslb.com.	172800	IN	A	47.88.74.36
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">201</span> msec
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 192.43.172.30#53<span class="o">(</span>i.gtld-servers.net.<span class="o">)</span> <span class="o">(</span>UDP<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sat Dec <span class="m">07</span> 16:22:44 CST <span class="m">2024</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">324</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>看到了吗？胶水记录将 Aliyun 全球加速CNAME 权威的所有A记录全部返回了，也就是虽然 cdngslb.com 是全球加速的，且做了智能解析，国内的用国内的权威，海外的用海外的，但是!!!!  <code>.com</code> 权威服务器将 <code>cdngslb.com</code> 的全部NS服务器的A记录记录都返回了。这会导致 智能解析失效&hellip;</p>
+<br/>
+<p><strong>所以 ！！！ 胶水记录用不好的话在全球加速这种场景下就是个副作用。</strong></p>
+<p>那如何避免胶水记录呢?????</p>
+<p>就像 case 1 中的一样，将 CNAME 和 CNAME 权威的根域设置不一样就可以了。</p>
+<p>比如 CNAME 是 <code>.com</code> 结尾的，CNAME 的权威是 <code>.net</code> 结尾的。这样就可以防止出现胶水记录了，在全球加速的场景下是有优势的。</p>
+<br/>
+<h3 id="多层cname-解析加速">多层CNAME 解析加速</h3>
+<p>假设你的域名 CNAME 套了好多层，那么就意味着需要很多层的递归才能解析出最终的 A 记录。</p>
+<p>CNAME 是 为了满足 复杂的调度和管理需求的，但是其实可以做到在 多层 CNAME 的基础之上，保证解析的效率。</p>
+<p>比如 DNS Pod 推出的 CNAME 加速。</p>
+<p>文章连接： <a href="https://docs.dnspod.com/dns/cname-flattening-zh/" target="_blank" rel="noopener noreffer">https://docs.dnspod.com/dns/cname-flattening-zh/</a></p>
+<br/>
+<p>假设 <code>a.com</code>，<code>b.com</code>，<code>c.com</code> 都是在 DNSPod 解析的域名：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">域名</th>
+<th style="text-align:left">记录类型</th>
+<th style="text-align:left">记录值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.a.com" target="_blank" rel="noopener noreffer">www.a.com</a></td>
+<td style="text-align:left">CNAME</td>
+<td style="text-align:left"><a href="https://www.b.com" target="_blank" rel="noopener noreffer">www.b.com</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.b.com" target="_blank" rel="noopener noreffer">www.b.com</a></td>
+<td style="text-align:left">CNAME</td>
+<td style="text-align:left"><a href="https://www.c.com" target="_blank" rel="noopener noreffer">www.c.com</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.c.com" target="_blank" rel="noopener noreffer">www.c.com</a></td>
+<td style="text-align:left">A</td>
+<td style="text-align:left">1.2.3.4</td>
+</tr>
+</tbody>
+</table>
+<p>一般情况下，递归需要到授权服务器请求三次才能得到 <code>www.a.com</code> 的 IP 地址，如下图所示：</p>
+<img src="https://img1.kiosk007.top/static/images/blog/20241207172148-dns_cname_flattening_1.png" />
+<br/>
+<p>启用 CNAME 加速功能，授权服务器会把 CNAME 记录和最终的 A 记录一次返回给递归，递归服务器由请求三次授权服务器，减小到请求一次，如下图所示：</p>
+<img src="https://img1.kiosk007.top/static/images/blog/20241207172215-dns_cname_flattening_2.png" />
+<p>这样就极大地减少了请求和应答中网络通信消耗的时间，让解析变得更快，特别是在设置多条 CNAME 解析记录的情况下，加速效果更明显。</p>
+<br/>
+<h2 id="coredns-验证">CoreDNS 验证</h2>
+<blockquote>
+<p>CoreDNS是一个灵活、可扩展的开源DNS服务器，它支持多种协议和后端存储，使其成为构建现代、可定制的DNS基础设施的理想选择。下面将介绍如何安装和配置CoreDNS，以便你可以快速搭建一个强大而稳定的DNS服务。</p>
+</blockquote>
+<h3 id="croedns-部署">CroeDNS 部署</h3>
+<br/>
+<ol>
+<li>下载 CoreDNS 的二进制文件，放置到 bin 文件夹下。</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://github.com/coredns/coredns/releases/download/v1.12.0/coredns_1.12.0_linux_amd64.tgz
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">tar -xvf coredns_1.12.0_linux_amd64.tgz -C .
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo cp coredns /usr/local/bin/coredns
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<ol start="2">
+<li>创建system文件，使用 systemd 管理</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vi /etc/systemd/system/coredns.service
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>内容如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>Unit<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">Description</span><span class="o">=</span>CoreDNS DNS server
+</span></span><span class="line"><span class="cl"><span class="nv">Documentation</span><span class="o">=</span>https://coredns.io
+</span></span><span class="line"><span class="cl"><span class="nv">After</span><span class="o">=</span>network.target
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>Service<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">PermissionsStartOnly</span><span class="o">=</span><span class="nb">true</span>
+</span></span><span class="line"><span class="cl"><span class="nv">LimitNOFILE</span><span class="o">=</span><span class="m">1048576</span>
+</span></span><span class="line"><span class="cl"><span class="nv">LimitNPROC</span><span class="o">=</span><span class="m">512</span>
+</span></span><span class="line"><span class="cl"><span class="nv">CapabilityBoundingSet</span><span class="o">=</span>CAP_NET_BIND_SERVICE
+</span></span><span class="line"><span class="cl"><span class="nv">AmbientCapabilities</span><span class="o">=</span>CAP_NET_BIND_SERVICE
+</span></span><span class="line"><span class="cl"><span class="nv">NoNewPrivileges</span><span class="o">=</span><span class="nb">true</span>
+</span></span><span class="line"><span class="cl"><span class="nv">User</span><span class="o">=</span>root
+</span></span><span class="line"><span class="cl"><span class="nv">WorkingDirectory</span><span class="o">=</span>~
+</span></span><span class="line"><span class="cl"><span class="nv">ExecStart</span><span class="o">=</span>/usr/local/bin/coredns -conf<span class="o">=</span>/etc/coredns/Corefile
+</span></span><span class="line"><span class="cl"><span class="nv">ExecReload</span><span class="o">=</span>/bin/kill -SIGUSR1 
+</span></span><span class="line"><span class="cl"><span class="nv">Restart</span><span class="o">=</span>on-failure
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>Install<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>保存完成后重载 systemd 配置：<code>systemctl daemon-reload</code></p>
+<br/>
+<ol start="3">
+<li>创建配置文件</li>
+</ol>
+<p>首先创建文件夹用于存放配置文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir /etc/coredns
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>新建配置文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim /etc/coredns/Corefile
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是一个简单的配置:</p>
+<pre tabindex="0"><code>.:53 {
+	bind 127.0.0.1 ::1
+        errors
+        health {
+            lameduck 5s
+        }
+        ready
+	forward . 223.5.5.5 129.29.29.29
+        cache 30
+        reload
+        loadbalance
+    }   
+</code></pre><br/>
+<ol start="4">
+<li>确保 53 端口未被占用</li>
+</ol>
+<pre tabindex="0"><code>lsof -i :53
+</code></pre><p>systemd-resolved 占用53端口（Ubuntu Server常见） 首先修改 /etc/systemd/resolved.conf,内容如下:</p>
+<pre tabindex="0"><code>[Resolve]
+DNS=114.114.114.114
+DNSStubListener=no
+</code></pre><p>DNS 是配置本机指向的DNS服务器，建议配置运营商或者公共DNS。 DNSStubListener=no 是指不监听53端口。 配置完成后执行命令重启系统服务： <code>sudo systemctl daemon-reload</code> <code>sudo systemctl restart systemd-resolved</code> 查看/etc/resolv.conf 软链位置，执行命令 <code>ll /etc/resolv.conf</code>，如果软链显示如下，则不需要改动: <code>/etc/resolv.conf -&gt; /run/systemd/resolve/resolv.conf</code>，否则设置软链 <code>sudo ln -s -f /run/systemd/resolve/resolv.conf /etc/resolv.conf</code>。</p>
+<br/>
+<ol start="5">
+<li>设置开机自启动并启动 CoreDNS</li>
+</ol>
+<pre tabindex="0"><code>systemctl enable coredns
+systemctl start coredns
+</code></pre><h3 id="配置-exampleio-域名解析">配置 <code>example.io</code> 域名解析</h3>
+<p><code>example.io</code> 这个域名并不存在，我们在本地给他一个解析结果。</p>
+<p>使用 <code>file</code> 插件自定义域名的解析.  <a href="https://coredns.io/plugins/file/" target="_blank" rel="noopener noreffer">file 插件</a></p>
+<pre tabindex="0"><code>.:53 {
+	bind 127.0.0.1 ::1
+        errors
+        health {
+            lameduck 5s
+        }
+        ready
+        cache 30
+        reload
+        loadbalance
+	forward . 223.5.5.5 119.29.29.29
+}
+
+example.io:53 {
+	bind 127.0.0.1
+	file /etc/coredns/example.io.db example.io
+}
+</code></pre><p>创建 <code>/etc/coredns/example.io.db</code>  文件。内容如下</p>
+<pre tabindex="0"><code>$TTL 3600 ; 记录超时时间
+$ORIGIN example.io. ; 指定 origin，下面的@符号可以作为他的别名，注意后面的.
+; SOA 格式 [domain_name] IN SOA [域主服务器或主DNS服务器名] [管理员email] (时间信息)
+@           IN  SOA  ns1.example.io. admin.example.io. (
+                     2019071601 ; Serial
+                     4H         ; Refresh
+                     1H         ; Retry
+                     7D         ; Expire
+                     4H )       ; Negative Cache TTL
+
+; 配置 DNS 记录，指向 ns1.example.io
+@           IN  NS   ns1
+; 配置 ns1.example.io 的 A 记录, 指向coredns所在的机器
+ns1         IN  A    127.0.0.1
+; 配置 example.io 的 A 记录，指向网站或其他用途的机器
+@           IN  A    1.1.1.1
+; 配置泛域名，没有准确的三级子域名的域名全部指向此IPV4地址
+*   	    IN  A    5.5.5.5
+cdn 	    IN  CNAME cname1
+cname1      IN  CNAME cname2
+cname2      IN  A   1.2.3.4
+</code></pre><p>尝试解析一下，看看效果</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># dig cdn.example.io  @127.0.0.1 +short</span>
+</span></span><span class="line"><span class="cl">cname1.example.io.
+</span></span><span class="line"><span class="cl">cname2.example.io.
+</span></span><span class="line"><span class="cl">1.2.3.4
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h3 id="尝试实现-cname-flattening">尝试实现 CNAME Flattening</h3>
+<p>这里使用 CoreDNS 的 <a href="https://github.com/litobro/flatten" target="_blank" rel="noopener noreffer">Flatten插件</a></p>
+<p>这里需要自己手动重新编译一个 coredns ，coredns 是golang 实现的，而本人的 golang 环境是现成的，就不介绍 golang 环境的搭建了。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/coredns/coredns.git
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 在 plugin.cfg 文件中添加</span>
+</span></span><span class="line"><span class="cl">vim plugin.cfg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">...   <span class="c1"># 添加一条</span>
+</span></span><span class="line"><span class="cl">flatten:github.com/litobro/flatten
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 开始编译</span>
+</span></span><span class="line"><span class="cl">go generate
+</span></span><span class="line"><span class="cl">go build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo cp coredns /usr/local/bin
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对配置文件做如下的修改</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">.:53 <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">bind</span> 127.0.0.1 ::1
+</span></span><span class="line"><span class="cl">        errors
+</span></span><span class="line"><span class="cl">        health <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            lameduck 5s
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        ready
+</span></span><span class="line"><span class="cl">        cache <span class="m">30</span>
+</span></span><span class="line"><span class="cl">        reload
+</span></span><span class="line"><span class="cl">        loadbalance
+</span></span><span class="line"><span class="cl">        forward . 223.5.5.5 119.29.29.29
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kiosk.io:53 <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">bind</span> 127.0.0.1
+</span></span><span class="line"><span class="cl">        log
+</span></span><span class="line"><span class="cl">        flatten kiosk.io cdn.example.io 127.0.0.1:53
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">example.io:53 <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">bind</span> 127.0.0.1
+</span></span><span class="line"><span class="cl">        log
+</span></span><span class="line"><span class="cl">        file /etc/coredns/example.io.db example.io
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>启动 coreDNS:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># /usr/local/bin/coredns -conf=/etc/coredns/Corefile </span>
+</span></span><span class="line"><span class="cl">.:53 on 127.0.0.1
+</span></span><span class="line"><span class="cl">example.io.:53 on 127.0.0.1
+</span></span><span class="line"><span class="cl">kiosk.io.:53 on 127.0.0.1
+</span></span><span class="line"><span class="cl">.:53 on ::1
+</span></span><span class="line"><span class="cl"><span class="o">[</span>INFO<span class="o">]</span> plugin/reload: Running configuration <span class="nv">SHA512</span> <span class="o">=</span> be58f721ab98e4affc5464a859492153ee35d2aaa3b558eb2c623258f9bbc3d7f3ba998af7b1973673179cb625550c0aa065111fbcab4f7aa49896cc8d1fc5d0
+</span></span><span class="line"><span class="cl">CoreDNS-1.11.3
+</span></span><span class="line"><span class="cl">linux/amd64, go1.23.0, 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>验证效果:</p>
+<p>kiosk.io 这个域名被 转移映射到 example.io 上</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># dig kiosk.io @127.0.0.1 </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;</span> &lt;&lt;&gt;&gt; DiG 9.18.28-0ubuntu0.24.04.1-Ubuntu &lt;&lt;&gt;&gt; kiosk.io @127.0.0.1
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> global options: +cmd
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Got answer:
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">38076</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> flags: qr aa rd<span class="p">;</span> QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WARNING: recursion requested but not available
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> OPT PSEUDOSECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span> EDNS: version: 0, flags:<span class="p">;</span> udp: <span class="m">1232</span>
+</span></span><span class="line"><span class="cl"><span class="p">;</span> COOKIE: a4084560500f58f9 <span class="o">(</span>echoed<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> QUESTION SECTION:
+</span></span><span class="line"><span class="cl"><span class="p">;</span>kiosk.io.			IN	A
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> ANSWER SECTION:
+</span></span><span class="line"><span class="cl">kiosk.io.		3600	IN	CNAME	cname1.example.io.
+</span></span><span class="line"><span class="cl">kiosk.io.		3600	IN	CNAME	cname2.example.io.
+</span></span><span class="line"><span class="cl">kiosk.io.		3600	IN	A	1.2.3.4
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> Query time: <span class="m">0</span> msec
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> SERVER: 127.0.0.1#53<span class="o">(</span>127.0.0.1<span class="o">)</span> <span class="o">(</span>UDP<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> WHEN: Sat Dec <span class="m">07</span> 19:51:05 CST <span class="m">2024</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> MSG SIZE  rcvd: <span class="m">151</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2024-06-18</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/" data-title="网速变慢？你可能需要先设置好 DNS"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/" data-title="网速变慢？你可能需要先设置好 DNS"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84dns/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/web/">Web</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/rag/" class="prev" rel="prev" title="LLM大模型 - RAG"><i class="fas fa-angle-left fa-fw"></i>LLM大模型 - RAG</a>
+            <a href="/post/go%E5%B9%B6%E6%B3%95%E6%A8%A1%E5%BC%8F/" class="next" rel="next" title="Go 并发模式">Go 并发模式<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

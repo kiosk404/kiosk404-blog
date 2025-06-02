@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Golang - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/topic/interview/golang/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="Golang">
+  <meta property="og:description" content="Based on google
+sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Golang Slice interface{}变量和nil做比较 go中 import/const/var/init/main 的执行顺序 defer的执行顺序 什么是 go 的内存逃逸 medium Golang 的内存管理 Go 是如何分配内存的 Golang 的GC过程 什么是强弱三色不变式 GC的时机是什么时候 GMP 协程阻塞，调度器会怎么做？ M的流转状态 一个goroute会占用多少内存，假设多个goroute一直占用资源会怎样 一个 goroute 发生OOM 会怎样？ 若干个 goroute，其中一个 panic，会发生什么，defer可以捕获子goroute的panic吗？ 反射 反射如何获取字段tag 如何通过反射修改值 锁 golang 的锁机制 Mutex的锁有哪几种模式 Mutex锁底层如何实现 Mutex是悲观锁还是乐观锁 RWMutex(读写锁)适用于什么场景 channel channel 的内部实现是怎么样的? 读一个已关闭的channel会怎样、没初始化的channel写会怎样 已关闭的channel写数据会怎样，如何判断一个channel已关闭 select case 中有2个case 读channel，其中一个关闭，读数据会怎样 golang如何限制并发 context golang中的context有什么用 context.Background的意义 WithCancel() 和 WithTimeout() 可以通知多个goroutine, 如何实现的 map map 为什么是不安全的？ sample new 和 make 的区别？ Go语言中 new 和 make 是两个内置函数，主要用来创建并分配类型的内存。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="topic">
+    <meta property="article:published_time" content="2022-06-08T23:41:26+00:00">
+    <meta property="article:modified_time" content="2024-07-21T22:11:52+08:00">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="Golang">
+  <meta name="twitter:description" content="Based on google
+sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Golang Slice interface{}变量和nil做比较 go中 import/const/var/init/main 的执行顺序 defer的执行顺序 什么是 go 的内存逃逸 medium Golang 的内存管理 Go 是如何分配内存的 Golang 的GC过程 什么是强弱三色不变式 GC的时机是什么时候 GMP 协程阻塞，调度器会怎么做？ M的流转状态 一个goroute会占用多少内存，假设多个goroute一直占用资源会怎样 一个 goroute 发生OOM 会怎样？ 若干个 goroute，其中一个 panic，会发生什么，defer可以捕获子goroute的panic吗？ 反射 反射如何获取字段tag 如何通过反射修改值 锁 golang 的锁机制 Mutex的锁有哪几种模式 Mutex锁底层如何实现 Mutex是悲观锁还是乐观锁 RWMutex(读写锁)适用于什么场景 channel channel 的内部实现是怎么样的? 读一个已关闭的channel会怎样、没初始化的channel写会怎样 已关闭的channel写数据会怎样，如何判断一个channel已关闭 select case 中有2个case 读channel，其中一个关闭，读数据会怎样 golang如何限制并发 context golang中的context有什么用 context.Background的意义 WithCancel() 和 WithTimeout() 可以通知多个goroutine, 如何实现的 map map 为什么是不安全的？ sample new 和 make 的区别？ Go语言中 new 和 make 是两个内置函数，主要用来创建并分配类型的内存。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s">
+<meta name="referrer" content="no-referrer" /><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/topic/interview/golang/" /><link rel="next" href="http://localhost:1313/topic/interview/devops/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Golang",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/topic\/interview\/golang\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "topic","wordcount":  809 ,
+        "url": "http:\/\/localhost:1313\/topic\/interview\/golang\/","datePublished": "2022-06-08T23:41:26+00:00","dateModified": "2024-07-21T22:11:52+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk007"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script>(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/categories/documentation/"> Docs </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/dillonzq/LoveIt" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/categories/documentation/" title="">Docs</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/dillonzq/LoveIt" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="page single special"><h1 class="single-title animate__animated animate__pulse animate__faster">Golang</h1><h2 class="single-subtitle">Build fast, reliable, and efficient software at scale</h2><div class="content" id="content"><blockquote>
+<p>Based on google</p>
+</blockquote>
+<ul>
+<li><a href="/topic/interview/golang/#sample" rel="">sample</a>
+<ul>
+<li><a href="/topic/interview/golang/#new-%e5%92%8c-make-%e7%9a%84%e5%8c%ba%e5%88%ab" rel="">new 和 make 的区别？</a></li>
+<li><a href="/topic/interview/golang/#golang-%e7%9a%84%e5%8f%82%e6%95%b0%e5%80%bc%e4%bc%a0%e9%80%92%e8%bf%98%e6%98%af%e5%bc%95%e7%94%a8%e4%bc%a0%e9%80%92" rel="">Golang 的参数值传递还是引用传递?</a></li>
+<li><a href="/topic/interview/golang/#golang-slice" rel="">Golang Slice</a></li>
+<li><a href="/topic/interview/golang/#interface%7b%7d%e5%8f%98%e9%87%8f%e5%92%8cnil%e5%81%9a%e6%af%94%e8%be%83" rel="">interface{}变量和nil做比较</a></li>
+<li><a href="/topic/interview/golang/#go%e4%b8%ad-importconstvarinitmain-%e7%9a%84%e6%89%a7%e8%a1%8c%e9%a1%ba%e5%ba%8f" rel="">go中 import/const/var/init/main 的执行顺序</a></li>
+<li><a href="/topic/interview/golang/#defer%e7%9a%84%e6%89%a7%e8%a1%8c%e9%a1%ba%e5%ba%8f" rel="">defer的执行顺序</a></li>
+<li><a href="/topic/interview/golang/#%e4%bb%80%e4%b9%88%e6%98%afgo%e7%9a%84%e5%86%85%e5%ad%98%e9%80%83%e9%80%b8" rel="">什么是 go 的内存逃逸</a></li>
+</ul>
+</li>
+<li><a href="/topic/interview/golang/#medium" rel="">medium</a>
+<ul>
+<li><a href="/topic/interview/golang/#golang-%e7%9a%84%e5%86%85%e5%ad%98%e7%ae%a1%e7%90%86" rel="">Golang 的内存管理</a>
+<ul>
+<li><a href="/topic/interview/golang/#go-%e6%98%af%e5%a6%82%e4%bd%95%e5%88%86%e9%85%8d%e5%86%85%e5%ad%98%e7%9a%84" rel="">Go 是如何分配内存的</a></li>
+<li><a href="/topic/interview/golang/#golang-%e7%9a%84-gc-%e8%bf%87%e7%a8%8b" rel="">Golang 的GC过程</a></li>
+<li><a href="/topic/interview/golang/#%e4%bb%80%e4%b9%88%e6%98%af%e5%bc%ba%e5%bc%b1%e4%b8%89%e8%89%b2%e4%b8%8d%e5%8f%98%e5%bc%8f" rel="">什么是强弱三色不变式</a></li>
+<li><a href="/topic/interview/golang/#gc%e7%9a%84%e6%97%b6%e6%9c%ba%e6%98%af%e4%bb%80%e4%b9%88%e6%97%b6%e5%80%99" rel="">GC的时机是什么时候</a></li>
+</ul>
+</li>
+<li><a href="topic/interview/golang/#gmp" rel="">GMP</a>
+<ul>
+<li><a href="topic/interview/golang/#%e5%8d%8f%e7%a8%8b%e9%98%bb%e5%a1%9e%e8%b0%83%e5%ba%a6%e5%99%a8%e4%bc%9a%e6%80%8e%e4%b9%88%e5%81%9a" rel="">协程阻塞，调度器会怎么做？</a></li>
+<li><a href="/topic/interview/golang/#m%e7%9a%84%e6%b5%81%e8%bd%ac%e7%8a%b6%e6%80%81" rel="">M的流转状态</a></li>
+<li><a href="/topic/interview/golang/#%e4%b8%80%e4%b8%aagoroute%e4%bc%9a%e5%8d%a0%e7%94%a8%e5%a4%9a%e5%b0%91%e5%86%85%e5%ad%98%e5%81%87%e8%ae%be%e5%a4%9a%e4%b8%aagoroute%e4%b8%80%e7%9b%b4%e5%8d%a0%e7%94%a8%e8%b5%84%e6%ba%90%e4%bc%9a%e6%80%8e%e6%a0%b7" rel="">一个goroute会占用多少内存，假设多个goroute一直占用资源会怎样</a></li>
+<li><a href="/topic/interview/golang/#%e4%b8%80%e4%b8%aa-goroute-%e5%8f%91%e7%94%9foom-%e4%bc%9a%e6%80%8e%e6%a0%b7" rel="">一个 goroute 发生OOM 会怎样？</a></li>
+<li><a href="/topic/interview/golang/#%e8%8b%a5%e5%b9%b2%e4%b8%aa-goroute-%e5%85%b6%e4%b8%ad%e4%b8%80%e4%b8%aa-panic-%e4%bc%9a%e5%8f%91%e7%94%9f%e4%bb%80%e4%b9%88defer-%e5%8f%af%e4%bb%a5%e6%8d%95%e8%8e%b7%e5%ad%90-goroute-%e7%9a%84panic-%e5%90%97" rel="">若干个 goroute，其中一个 panic，会发生什么，defer可以捕获子goroute的panic吗？</a></li>
+</ul>
+</li>
+<li><a href="/topic/interview/golang/#%e5%8f%8d%e5%b0%84" rel="">反射</a>
+<ul>
+<li><a href="/topic/interview/golang/#%e5%8f%8d%e5%b0%84%e5%a6%82%e4%bd%95%e8%8e%b7%e5%8f%96%e5%ad%97%e6%ae%b5-tag" rel="">反射如何获取字段tag</a></li>
+<li><a href="/topic/interview/golang/#%e5%a6%82%e4%bd%95%e9%80%9a%e8%bf%87%e5%8f%8d%e5%b0%84%e4%bf%ae%e6%94%b9%e5%80%bc" rel="">如何通过反射修改值</a></li>
+</ul>
+</li>
+<li><a href="/topic/interview/golang/#%e9%94%81" rel="">锁</a>
+<ul>
+<li><a href="/topic/interview/golang/#golang-%e7%9a%84%e9%94%81%e6%9c%ba%e5%88%b6" rel="">golang 的锁机制</a></li>
+<li><a href="/topic/interview/golang/#mutex%e7%9a%84%e9%94%81%e6%9c%89%e5%93%aa%e5%87%a0%e7%a7%8d%e6%a8%a1%e5%bc%8f" rel="">Mutex的锁有哪几种模式</a></li>
+<li><a href="/topic/interview/golang/#mutex-%e9%94%81%e5%ba%95%e5%b1%82%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0" rel="">Mutex锁底层如何实现</a></li>
+<li><a href="/topic/interview/golang/#mutex-%e6%98%af%e6%82%b2%e8%a7%82%e9%94%81%e8%bf%98%e6%98%af%e4%b9%90%e8%a7%82%e9%94%81" rel="">Mutex是悲观锁还是乐观锁</a></li>
+<li><a href="/topic/interview/golang/#rwmutex%e8%af%bb%e5%86%99%e9%94%81%e9%80%82%e7%94%a8%e4%ba%8e%e4%bb%80%e4%b9%88%e5%9c%ba%e6%99%af" rel="">RWMutex(读写锁)适用于什么场景</a></li>
+</ul>
+</li>
+<li><a href="/topic/interview/golang/#channel" rel="">channel</a>
+<ul>
+<li><a href="/topic/interview/golang/#channel-%e7%9a%84%e5%86%85%e9%83%a8%e5%ae%9e%e7%8e%b0%e6%98%af%e6%80%8e%e4%b9%88%e6%a0%b7%e7%9a%84" rel="">channel 的内部实现是怎么样的?</a></li>
+<li><a href="/topic/interview/golang/#%e8%af%bb%e4%b8%80%e4%b8%aa%e5%b7%b2%e5%85%b3%e9%97%ad%e7%9a%84channel%e4%bc%9a%e6%80%8e%e6%a0%b7%e6%b2%a1%e5%88%9d%e5%a7%8b%e5%8c%96%e7%9a%84channel%e5%86%99%e4%bc%9a%e6%80%8e%e6%a0%b7" rel="">读一个已关闭的channel会怎样、没初始化的channel写会怎样</a></li>
+<li><a href="/topic/interview/golang/#%e5%b7%b2%e5%85%b3%e9%97%ad%e7%9a%84channel%e5%86%99%e6%95%b0%e6%8d%ae%e4%bc%9a%e6%80%8e%e6%a0%b7%e5%a6%82%e4%bd%95%e5%88%a4%e6%96%ad%e4%b8%80%e4%b8%aachannel%e5%b7%b2%e5%85%b3%e9%97%ad" rel="">已关闭的channel写数据会怎样，如何判断一个channel已关闭</a></li>
+<li><a href="/topic/interview/golang/#select-case-%e4%b8%ad%e6%9c%892%e4%b8%aacase-%e8%af%bbchannel%e5%85%b6%e4%b8%ad%e4%b8%80%e4%b8%aa%e5%85%b3%e9%97%ad%e8%af%bb%e6%95%b0%e6%8d%ae%e4%bc%9a%e6%80%8e%e6%a0%b7" rel="">select case 中有2个case 读channel，其中一个关闭，读数据会怎样</a></li>
+<li><a href="/topic/interview/golang/#golang%e5%a6%82%e4%bd%95%e9%99%90%e5%88%b6%e5%b9%b6%e5%8f%91" rel="">golang如何限制并发</a></li>
+</ul>
+</li>
+<li><a href="/topic/interview/golang/#context" rel="">context</a>
+<ul>
+<li><a href="/topic/interview/golang/#golang%e4%b8%ad%e7%9a%84context%e6%9c%89%e4%bb%80%e4%b9%88%e7%94%a8" rel="">golang中的context有什么用</a></li>
+<li><a href="/topic/interview/golang/#contextbackground-%e7%9a%84%e6%84%8f%e4%b9%89" rel="">context.Background的意义</a></li>
+<li><a href="/topic/interview/golang/#withcancel-%e5%92%8c-withtimeout-%e5%8f%af%e4%bb%a5%e9%80%9a%e7%9f%a5%e5%a4%9a%e4%b8%aagoroutine-%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%9a%84" rel="">WithCancel() 和 WithTimeout() 可以通知多个goroutine, 如何实现的</a></li>
+</ul>
+</li>
+<li><a href="/topic/interview/golang/#map" rel="">map</a>
+<ul>
+<li><a href="/topic/interview/golang/#map-%e4%b8%ba%e4%bb%80%e4%b9%88%e6%98%af%e4%b8%8d%e5%ae%89%e5%85%a8%e7%9a%84" rel="">map 为什么是不安全的？</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="sample">sample</h2>
+<h3 id="new-和-make-的区别">new 和 make 的区别？</h3>
+<p>Go语言中 new 和 make 是两个内置函数，主要用来创建并分配类型的内存。</p>
+<p>new 只分配内存，而 make 只能用于 slice、map 和 channel 的初始化。</p>
+<p>new返回的是他们的指针，指针指向分配类型的内存地址。而make 返回的是他们类型的本身，因为chan、map、slice 本身就是引用类型，所以没有必要再返回他们的指针。</p>
+<br/>
+<h3 id="golang-的参数值传递还是引用传递">Golang 的参数值传递还是引用传递</h3>
+<p>golang 默认使用的是值传递，即拷贝传递，也就是深拷贝。只有一些特定的类型，如 slice、map、channel、function、pointer 这种天生就是指针的类型是通过引用传递的。</p>
+<p><strong>但是传指针会发生逃逸，会导致本来应该分配到栈上的内存逃逸到堆上。</strong></p>
+<br/>
+<h3 id="golang-slice">Golang Slice</h3>
+<ol>
+<li>底层是如何实现的？</li>
+</ol>
+<blockquote>
+<p>答：切片本身并不是动态数组或者数组指针。它内部实现的数据结构通过指针引用底层数组</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-go">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">slice</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">array</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">len</span>   <span class="kt">int</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cap</span>   <span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
+<p>切片的结构体由3部分构成，Pointer 是指向一个数组的指针，len 代表当前切片的长度，cap 是当前切片的容量。cap 总是大于等于 len 的。</p>
+<p>详见：<a href="https://halfrost.com/go_slice/" target="_blank" rel="noopener noreffer ">https://halfrost.com/go_slice/</a></p>
+</blockquote>
+<ol start="2">
+<li>如何扩容</li>
+</ol>
+<blockquote>
+<p>当前所需容量大于原先容量的2倍时，则申请当前所需的容量。</p>
+<p>如果上述条件不满足，则进行如下判断</p>
+<p>原切片长度小于1024则申请原先容量的2倍</p>
+<p>否则每次增加 1/4 ，直到大于所需的容量为止。</p>
+<p>详见：<a href="https://halfrost.com/go_slice/" target="_blank" rel="noopener noreffer ">https://halfrost.com/go_slice/</a></p>
+</blockquote>
+<ol start="3">
+<li>判断 cap 的技巧</li>
+</ol>
+<blockquote>
+<p>核心问题：如果append需要扩容，就会完全开辟一个新空间。</p>
+<p>详见：<a href="https://coolshell.cn/articles/21128.html" target="_blank" rel="noopener noreffer ">https://coolshell.cn/articles/21128.html</a></p>
+</blockquote>
+<br/>
+<h3 id="interface变量和nil做比较">interface{}变量和nil做比较</h3>
+<p>一个 []string 切片的空值经过函数调用后再比较会不等于 nil,</p>
+<p>Go 语言中有两种略微不同的接口，一种是带有一组方法的接口，另一种是不带任何方法的空接口 interface{}。</p>
+<p>Go 语言使用<code>runtime.iface</code>表示带方法的接口，使用<code>runtime.eface</code>表示不带任何方法的空接口interface{}。如下是 runtime.eface 的定义。</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-go">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">eface</span> <span class="kd">struct</span> <span class="p">{</span> <span class="c1">// 16 字节
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">_type</span> <span class="o">*</span><span class="nx">_type</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span>  <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
+<p>而从空接口的定义得知需要两个指针均为0才行，但是经过一次传递会导致其变成一个值为空结构体 slice 的一个变量。</p>
+<p>空切片为 nil 因为其值为零值，类型为 []string 的空切片传给空接口后，因为空接口的值并不是零值，所以接口变量不是 nil。</p>
+<p>详见：<a href="https://cloud.tencent.com/developer/article/1911289" target="_blank" rel="noopener noreffer ">https://cloud.tencent.com/developer/article/1911289</a></p>
+<br/>
+<h3 id="go中-importconstvarinitmain-的执行顺序">go中 import/const/var/init/main 的执行顺序</h3>
+<p>import &gt; const &gt; var &gt; init &gt; main</p>
+<br/>
+<h3 id="defer的执行顺序">defer的执行顺序</h3>
+<p>多个defer出现的时候，它是一个栈的关系，先进后出</p>
+<p>当return 和 defer 同时出现时，<strong>先调用return再调用defer</strong></p>
+<p>详见: <a href="https://kiosk007.top/post/%E4%BA%86%E8%A7%A3golang%E7%9A%84defer/" target="_blank" rel="noopener noreffer ">了解defer的执行顺序</a></p>
+<br/>
+<h3 id="什么是go的内存逃逸">什么是go的内存逃逸</h3>
+<p>在传统的编程语言里，会根据程序员指定的方式来决定变量内存分配是在栈还是堆上，比如声明的变量是值类型，则会分配到栈上，或者 new 一个对象则会分配到堆上。</p>
+<p>在 Go 里变量的内存分配方式则是由编译器来决定的。如果变量在作用域（比如函数范围）之外，还会被引用的话，那么称之为发生了逃逸行为，此时将会把对象放到堆上，即使声明为值类型；如果没有发生逃逸行为的话，则会被分配到栈上，即使 new 了一个对象。</p>
+<br/>
+<h2 id="medium">medium</h2>
+<h3 id="golang-的内存管理">Golang 的内存管理</h3>
+<h4 id="go-是如何分配内存的">Go 是如何分配内存的</h4>
+<p>Go 的内存分配借鉴了 Google 的 TCMalloc 分配算法，其核心思想是 <strong>内存池 + 多级对象管理</strong>。内存池主要是预先分配内存，减少向系统申请的频率；多级对象有：mheap、mspan、arenas、mcentral、mcache。
+<br/></p>
+<p><strong>大内存的分配</strong>: 当要分配大于 32K 的对象时，从 mheap 分配。
+<strong>中等内存的分配</strong>: 当要分配的对象小于等于 32K 大于 16B 时，从 P 上的 mcache 分配，如果 mcache 没有内存，则从 mcentral 获取，如果 mcentral 也没有，则向 mheap 申请，如果 mheap 也没有，则从操作系统申请内存。
+<strong>小内存的分配</strong>:当要分配的对象小于等于 16B 时，从 mcache 上的微型分配器上分配。</p>
+<br/>
+<p>类比下来，所有的内存分配相关库包括操作系统本身都是类似的逻辑。
+比如 Linux 操作系统的内存分配有2个非常有名的算法 <strong>Buddy System</strong> 和 <strong>Slab 调度器</strong> 。
+<br/></p>
+<p><strong>Buddy System</strong>：</p>
+<blockquote>
+<p>Buddy System 是 Linux 内核中用于内存管理的一种算法，主要用于管理物理内存。它将内存分割成大小为 2 的幂次方的块，例如 1KB, 2KB, 4KB 等。当应用程序请求内存时，Buddy System 会找到第一个大于或等于请求大小的内存块，并将其分割成更小的块来满足请求。这种分割过程是递归的，直到找到合适的内存块。当内存被释放时，Buddy System 会尝试将相邻的空闲内存块合并，以减少内存碎片。
+<br/></p>
+</blockquote>
+<p><strong>Slab Allocator</strong>：</p>
+<blockquote>
+<p>Slab Allocator 是 Linux 内核中用于管理内核内存的机制。它主要用于分配和释放内核对象，如进程描述符、文件对象等。Slab Allocator 将内存分为多个缓存（slab cache），每个缓存用于特定类型的内核对象。当内核需要分配一个对象时，它会从相应的缓存中获取内存。当对象不再需要时，内存会被返回到缓存中，而不是直接释放回物理内存。这样可以减少内存碎片，提高内存分配和释放的效率。
+<br/></p>
+</blockquote>
+<p><strong>Buddy System 和 Slab Allocator 的关系</strong>：</p>
+<blockquote>
+<p>Buddy System 和 Slab Allocator 都是 Linux 内核中的内存管理机制，但它们的作用域和目标不同。Buddy System 主要用于管理物理内存，而 Slab Allocator 专注于内核内存的管理。在某些情况下，Slab Allocator 可能会使用 Buddy System 来分配和释放物理内存。例如，当 Slab Allocator 需要更多的内存来扩展缓存时，它可能会通过 Buddy System 来请求物理内存。同样，当 Slab Allocator 释放内存时，它可能会将内存返回给 Buddy System，以便重新分配给其他用途。
+<br/></p>
+</blockquote>
+<p>总的来说，Buddy System 和 Slab Allocator 都是 Linux 内核中重要的内存管理机制，它们相互协作，共同确保内存的有效利用和管理。</p>
+<br/>
+<p><strong>TCMalloc</strong>（Thread-Caching Malloc）是一个由 Google 开发的内存分配器，旨在提高多线程程序中的内存分配性能。它的工作原理和与 Buddy System 和 Slab Allocator 的关联如下：
+<br/></p>
+<p><strong>TCMalloc 的工作原理</strong>：</p>
+<blockquote>
+<p>线程缓存：TCMalloc 为每个线程提供一个小的缓存区域，用于存储该线程分配的内存块。这样可以减少锁的争用，因为每个线程可以独立地从自己的缓存中分配和释放内存。
+中央缓存：当线程缓存中的内存块用尽时，TCMalloc 会从中央缓存中请求更多的内存块。中央缓存是一个全局的内存池，用于存储不同大小的内存块。
+页面分配：当中央缓存中的内存也不足时，TCMalloc 会直接从操作系统请求更多的内存页面。这通常涉及到与操作系统的内存管理机制（如 Buddy System）交互。
+<br/></p>
+</blockquote>
+<p><strong>与 Buddy System 的关联</strong>：</p>
+<blockquote>
+<p>TCMalloc 在请求大量内存时，可能会与操作系统的物理内存管理机制（Buddy System）交互。操作系统通过 Buddy System 分配物理内存页面给 TCMalloc，然后 TCMalloc 将这些页面划分为更小的内存块，并将其存储在中央缓存中。
+<br/></p>
+</blockquote>
+<p><strong>与 Slab Allocator 的关联</strong>：</p>
+<blockquote>
+<p>TCMalloc 主要用于用户空间的内存分配，而 Slab Allocator 是内核空间的内存分配机制。尽管两者在内存分配上有不同的应用场景，但它们都可以从操作系统的物理内存管理机制中受益。
+在某些情况下，如果 TCMalloc 需要为内核对象分配内存，它可能会间接地与 Slab Allocator 交互。例如，当 TCMalloc 需要扩展其中央缓存时，它可能会请求内核分配更多的物理内存，而内核可能会使用 Slab Allocator 来满足这一请求。</p>
+</blockquote>
+<p>总的来说，TCMalloc 是一个高效的用户空间内存分配器，它通过减少锁的使用和优化内存块的分配和释放来提高性能。虽然 TCMalloc 主要与用户空间的内存分配相关，但它在需要时也会与操作系统的物理内存管理机制（如 Buddy System）以及内核空间的内存分配机制（如 Slab Allocator）交互。</p>
+<p>详见：<a href="https://kiosk007.top/post/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E4%B8%8E%E5%9B%9E%E6%94%B6" target="_blank" rel="noopener noreffer ">内存分配与回收</a></p>
+<br/>
+<h4 id="golang-的-gc-过程">Golang 的 GC 过程</h4>
+<p>非常古老的Go版本采用“标记清除法”，即通过标记清除法进行垃圾回收。</p>
+<p>后来的 Golang 采用三色标记法进行垃圾回收。</p>
+<ol>
+<li>初始状态下都是白色对象</li>
+<li>从根节点开始遍历，把遍历到的对象变成灰色对象</li>
+<li>遍历灰色对象，将灰色对象引用的对象也标记为灰色，再将遍历过的灰色对象变成黑色。</li>
+<li>重复步骤3</li>
+<li>通过 “混合写屏障“ 检测对象有变化，重复以上操作</li>
+<li>清除所有的白色对象</li>
+</ol>
+<br/>
+<p>混合写屏障机制，栈空间每次GC时直接全部标为黑色，堆空间启用混合写屏障，没有 STW。</p>
+<p><strong>写屏障机制</strong>：避免被没有被引用的对象，又被黑色对象引用而导致的误删除。这引入了 强三色不变式和弱三色不变式。而<strong>插入写屏障</strong>是以强三色不变式为思路。<strong>删除写屏障</strong> 是以弱三色不变式为思路。</p>
+<p>插入写屏障：A对B进行引用。B直接被标记为灰色。有个缺点。栈上的对象没法捕捉，没有生成写屏障。所以导致栈上还要STW扫描一遍。</p>
+<p>删除写屏障：被删除的对象自身是灰色或者白色，都会被标记为灰色。缺点是回收精度低，一个对象被删除了，但他引用的对象依旧可以存活过一轮GC。</p>
+<p>Go v1.8 混合写屏障。栈上不启用GC。</p>
+<p>详见：<a href="https://kiosk007.top/post/golang-gc/" target="_blank" rel="noopener noreffer ">https://kiosk007.top/post/golang-gc/</a></p>
+<br/>
+<h4 id="什么是强弱三色不变式">什么是强弱三色不变式</h4>
+<p>强三色不变式：强制性不允许黑色对象引用白色</p>
+<p>弱三色不变式：黑色对象可以引用白色对象，但白色对象需要存在其他灰色的引用。</p>
+<br/>
+<h4 id="gc的时机是什么时候">GC的时机是什么时候</h4>
+<p>GC 触发的场景主要分两大类，分别是：</p>
+<ol>
+<li>系统触发：运行时自行根据内置的条件检查触发</li>
+<li>手动触发：代码中调用 runtime.GC 的方法来触发 GC 行为</li>
+</ol>
+<p>其中系统触发场景中。1. 当所分配的堆大小达到阈值时会触发; 2. 当距离上一个 GC 周期的时间超过一定时间会触发;</p>
+<br/>
+<h3 id="gmp">GMP</h3>
+<p>G 是 gorouting、M 是系统级线程、P是调度器。</p>
+<p>程序刚启动时，P会绑定M0，G被放入P的本地队列中执行，当P的本地队列满了，G可能会被放到一个全局队列中。</p>
+<ol>
+<li>线程M想要运行G，就必须先和一个P进行关联</li>
+<li>P 获取本地队列的G，如果获取不到就从全局队列或者其他的 MP 中偷取。</li>
+<li>G 运行结束后，M会从P中获取下一个 G，如此往复。</li>
+</ol>
+<p>大致流程如上，还有一些细节，比如 M 与 P 是如何绑定的？G 阻塞了怎么办？M与P的关系是什么？可以具体再说。</p>
+<p>详见：<a href="https://kiosk007.top/post/golang-gmp/" target="_blank" rel="noopener noreffer ">https://kiosk007.top/post/golang-gmp/</a></p>
+<p>调度器的设计策略（基本就是为了复用）：</p>
+<ol>
+<li>work stealing 机制：当本线程无可以运行的G时，回去其他线程绑定的P中偷取G。而不是直接销毁线程。</li>
+<li>hand off 机制：当本线程上的G运行系统调用阻塞时，线程会释放绑定的P，把 P 转移给其他的空闲的线程。而阻塞的协程会留在线程之上。</li>
+</ol>
+<br/>
+<h3 id="协程阻塞调度器会怎么做">协程阻塞，调度器会怎么做？</h3>
+<p>hand off 机制：</p>
+<p>当一个协程发生阻塞时，当前协程上的 M 会和 P 立即解绑，如果P上还有其他的协程G，P会唤醒一个M和他绑定，否则P会加入到空闲P列表，等待M来获取可用的P。</p>
+<p>如果不是阻塞的系统的调用，M 和 P 还是会解绑，只不过 M 会记住 P。当 G 和 M 退出系统调用时，会获取之前的P，获取不到的话，当前的 G 加入全局队列，M加入可休眠列表。</p>
+<br/>
+<h3 id="m的流转状态">M的流转状态</h3>
+<p>M 线程会有两种状态，自旋 和 非自旋。</p>
+<br/>
+<h3 id="一个goroute会占用多少内存假设多个goroute一直占用资源会怎样">一个goroute会占用多少内存，假设多个goroute一直占用资源会怎样？</h3>
+<p>一个 gorouting 占用8K，老版本中一个 gorouting 一直占用资源会导致 P （因为P最大为 GOMAXPROC 个）耗尽，最终导致程序卡死。因为之前是非抢占式，Go 1.14 之后变成了抢占式，基于系统信号的抢占。</p>
+<br/>
+<h3 id="一个-goroute-发生oom-会怎样">一个 goroute 发生OOM 会怎样？</h3>
+<p>没有recover的话，父线程会 panic。</p>
+<br/>
+<h3 id="若干个-goroute-其中一个-panic-会发生什么defer-可以捕获子-goroute-的-panic-吗">若干个 goroute ，其中一个 panic ，会发生什么，defer 可以捕获子 goroute 的 panic 吗？</h3>
+<p>全部崩溃，不能！</p>
+<br/>
+<h3 id="反射">反射</h3>
+<p>反射在go里调用 reflect 包，可实现通过调用获取借口值到反射对象。</p>
+<h3 id="反射如何获取字段-tag">反射如何获取字段 tag？</h3>
+<p>通过 <code> t.Field(i).Tag.Get(&quot;json&quot;)</code> 调用</p>
+<br/>
+<h3 id="如何通过反射修改值">如何通过反射修改值</h3>
+<p>需要对变量的指针进行值反射（reflect.ValueOf），再获取其元素值（Elem），最后进行 SetString\SetFloat 等操作</p>
+<br/>
+<h2 id="锁">锁</h2>
+<h3 id="golang-的锁机制">golang 的锁机制</h3>
+<p>在Go中，主要实现了两种锁：sync.Mutex(互斥锁) 以及 sync.RWMutex(读写锁)。</p>
+<p>sync.Mutex 的常用方法有2个：Mutex.Lock() 用来获取锁  、 Mutex.Unlock() 用来释放锁。</p>
+<p><a href="https://juejin.cn/post/7032457568433733639" target="_blank" rel="noopener noreffer ">https://juejin.cn/post/7032457568433733639</a></p>
+<br/>
+<h3 id="mutex的锁有哪几种模式">Mutex的锁有哪几种模式</h3>
+<p>互斥锁在设计上主要有两种模式：正常模式和饥饿模式。</p>
+<p>之所以引入了饥饿模式，是为了保证 goroutine 获取互斥锁的公平性。所谓公平性，其实就是多个 goroutine 在获取锁时，goroutine 获取锁的顺序，和请求锁的顺序一致，保持公平。</p>
+<p><strong>正常模式</strong>：所有阻塞在等待队列中的 goroutine 会按顺序进行锁的获取，当唤醒一个等待队列中的 goroutine 时，此goroutine 会和其他新的请求锁的 goroutine 去竞争，通常新请求锁的 goroutine 更容易获取锁，这是因为新请求锁的 goroutine 正在占用 CPU 片执行，大概率可以直接执行到获取锁的逻辑。</p>
+<p><strong>饥饿模式</strong>：新请求锁的goroutine不会进行锁的获取，而是加入到队列尾部阻塞等待获取锁。</p>
+<p><strong>饥饿模式的出发条件</strong>：</p>
+<ul>
+<li>当一个goroutine等待锁的时间超过1ms时，互斥锁会切换到饥饿模式</li>
+</ul>
+<p><strong>饥饿模式的取消条件</strong>：</p>
+<ul>
+<li>当获取到锁的这个goroutine是等待锁队列中的最后一个goroutine，互斥锁会切换到正常模式。</li>
+<li>当获取到锁的这个goroutine的等待时间在 1ms 以内，互斥锁会切回到正常模式</li>
+</ul>
+<br/>
+<h3 id="mutex-锁底层如何实现">Mutex 锁底层如何实现</h3>
+<p>Go中的sync.Mutex的结构体为：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-go">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Mutex</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">state</span> <span class="kt">int32</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">sema</span>  <span class="kt">uint32</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
+<p><strong>sync.Mutex由两个字段构成</strong>，<strong>state用来表示当前互斥锁处于的状态</strong>，<strong>sema用于控制锁的信号量</strong>。</p>
+<p>互斥锁的 state 主要记录了如下四种状态：</p>
+<img src="https://img1.kiosk007.top/static/images/blog/golang_mutex.png" alt="golang_mutex" style="zoom:50%; margin: auto; clear: both; display: block;" />
+<ul>
+<li>waiter_num：记录了当前等待抢这个锁的 goroutine 数量</li>
+<li>starving：当前锁是否处于饥饿状态</li>
+<li>woken：当前锁是否有goroutine已被唤醒</li>
+<li>locked：当前锁是否被 goroutine 持有</li>
+</ul>
+<p>sema 信号量的作用：</p>
+<p>当持有锁的goroutine释放锁后，会释放 sema 信号量，这个信号量会唤醒之前抢锁阻塞的goroutine来获取锁。</p>
+<br/>
+<h3 id="mutex-是悲观锁还是乐观锁">Mutex 是悲观锁还是乐观锁</h3>
+<p>golang 的 Mutex锁是一个悲观锁。每次去操作数据之前都会上锁，操作结束后解锁。</p>
+<p>乐观锁在GO中的实现具体应该是 CAS。比较并交换(compare and swap, CAS)，是原子操作的一种，可用于在多线程编程中实现不被打断的数据交换操作。</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-go">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// CompareAndSwapUint32 executes the compare-and-swap operation for a uint32 value.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">CompareAndSwapUint32</span><span class="p">(</span><span class="nx">addr</span> <span class="o">*</span><span class="kt">uint32</span><span class="p">,</span> <span class="nx">old</span><span class="p">,</span> <span class="nx">new</span> <span class="kt">uint32</span><span class="p">)</span> <span class="p">(</span><span class="nx">swapped</span> <span class="kt">bool</span><span class="p">)</span></span></span></code></pre></div></div>
+<p>我们有两个goroutineA和goroutineB，接下来我们简称 A 和 B， 共享资源称为C</p>
+<ol>
+<li>A 和 B 均保存 C 当前的值</li>
+<li>A 尝试使用CAS（56，53）更新C的值</li>
+<li>C目前为56，可以更新，然后更新成功</li>
+<li>B尝试使用CAS（56，53）更新C的值</li>
+<li>C已经为53，更新失败。</li>
+</ol>
+<br/>
+<h3 id="自旋锁是什么">自旋锁是什么</h3>
+<p>某个协程持有锁的时间长，等待的协程一直循环等待，消耗CPU资源。另外其还有不公平的特点，可能存在有的协程等待时出现饥饿。</p>
+<p>详见：<a href="https://zhuanlan.zhihu.com/p/366437266" target="_blank" rel="noopener noreffer ">https://zhuanlan.zhihu.com/p/366437266</a></p>
+<br/>
+<h3 id="rwmutex读写锁适用于什么场景">RWMutex（读写锁）适用于什么场景？</h3>
+<p><code>RWMutex</code>是一个支持<strong>并行读串行写</strong>的读写锁。<code>RWMutex</code>具有<strong>写操作优先</strong>的特点，写操作发生时，仅允许正在执行的读操作执行，后续的读操作都会被阻塞。</p>
+<p>适用场景在 大量的并发读，少量的并发写的场景；如微服务配置更新、交易路由缓存等场景。相较于 <code>Mutex</code> 互斥锁、<code>RWMutex</code>有更好的读性能。</p>
+<p>详见：<a href="https://juejin.cn/post/6968853664718913543" target="_blank" rel="noopener noreffer ">https://juejin.cn/post/6968853664718913543</a></p>
+<br/>
+<h2 id="channel">channel</h2>
+<h3 id="channel-的内部实现是怎么样的">channel 的内部实现是怎么样的？</h3>
+<p>Go 语言的 channel 实现是通过 runtime.hchan 结构体，利用互斥锁、环形缓冲区和等待队列来同步 goroutines 间的通信，并保证线程安全和数据的先进先出。</p>
+<p><a href="https://halfrost.com/go_channel/" target="_blank" rel="noopener noreffer ">深入 Go 并发原语 — Channel 底层实现</a></p>
+<br/>
+<h3 id="读一个已关闭的channel会怎样没初始化的channel写会怎样">读一个已关闭的channel会怎样、没初始化的channel写会怎样？</h3>
+<p>已关闭的 channel 读到空值，没初始化的 channel 会崩溃</p>
+<br/>
+<h3 id="已关闭的channel写数据会怎样如何判断一个channel已关闭">已关闭的channel写数据会怎样？如何判断一个channel已关闭？</h3>
+<p>向已关闭的channel写数据会崩溃，可以通过 <code>if _, ok := &lt;- ch</code>  的方式判断channel没有关闭</p>
+<br/>
+<h3 id="select-case-中有2个case-读channel其中一个关闭读数据会怎样">select case 中有2个case 读channel，其中一个关闭，读数据会怎样。</h3>
+<p>每次 select 都是随机读的，即便有已经关闭的channel，依旧还是会读到。</p>
+<br/>
+<h3 id="golang如何限制并发">golang如何限制并发</h3>
+<p>channel的方式。
+详见: <a href="https://cloud.tencent.com/developer/article/1986989" target="_blank" rel="noopener noreffer ">https://cloud.tencent.com/developer/article/1986989</a></p>
+<br/>
+<h2 id="context">context</h2>
+<p>详见: <a href="https://zhuanlan.zhihu.com/p/482953942" target="_blank" rel="noopener noreffer ">Golang Context</a></p>
+<h3 id="golang中的context有什么用">golang中的context有什么用</h3>
+<ol>
+<li>context可用于指定超时时长取消多个goroutine (使用WithTimeout方法)</li>
+<li>可以指定触发条件，取消多个 goroutine 的运行 (使用WithCancel方法)</li>
+<li>设置 key \ value（使用WithValue，Value方法）</li>
+</ol>
+<br/>
+<h3 id="contextbackground-的意义">context.Background() 的意义</h3>
+<p>用于new(emptyCtx),作为初始节点, emptyCtx属于int类型, 但实现了context.Context接口的所有方法, 故初始化了Context, 方便以后初始化cancelCtx, timerCtx.</p>
+<br/>
+<h3 id="withcancel-和-withtimeout-可以通知多个goroutine-如何实现的">WithCancel() 和 WithTimeout() 可以通知多个goroutine, 如何实现的</h3>
+<p>close 单项接收管道,返回空结构体, 使select监听的ctx.Done()返回空结构体, 取消阻塞, 结束多个协程, 返回自定义的结果。</p>
+<br/>
+<h2 id="map">map</h2>
+<h3 id="map-为什么是不安全的">map 为什么是不安全的？</h3>
+<p>map 在扩缩容时，需要进行数据迁移，迁移的过程并没有采用锁机制防止并发操作，而是会对某个标识位标记为 1，表示此时正在迁移数据。如果有其他 goroutine 对 map 也进行写操作，当它检测到标识位为 1 时，将会直接 panic。</p>
+<p>如果并发读 Map 是不会有panic的，或者 Map的Value是指针且修改是并发安全的（如 value 是 &amp;atomic.Value{} ），那么也不会 panic 。
+如下：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-go">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">a</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">atomic</span><span class="p">.</span><span class="nx">Value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">a</span><span class="p">[</span><span class="s">&#34;a&#34;</span><span class="p">]</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">atomic</span><span class="p">.</span><span class="nx">Value</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">a</span><span class="p">[</span><span class="s">&#34;a&#34;</span><span class="p">].</span><span class="nf">Store</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}()</span>
+</span></span><span class="line"><span class="cl">	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="s">&#34;a&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
+<p>但是要是 map key 对应 value 要并发变化的则会panic.</p>
+<p>如果我们想要并发安全的 map，则需要使用 sync.map。
+<a href="https://kiosk007.top/post/gomap%E6%80%8E%E4%B9%88%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE/" target="_blank" rel="noopener noreffer ">gomap怎么并发访问</a></p>
+</div></div></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.1-DEV"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        <div id="fixed-buttons-hidden"><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/css/lightgallery-bundle.min.css"><script src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script src="https://cdn.jsdelivr.net/npm/algoliasearch@5.20.2/dist/lite/builds/browser.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/lightgallery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/zoom/lg-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.2/sharer.min.js"></script><script>window.config={"comment":{},"lightgallery":true,"search":{"algoliaAppID":"4D1IDY8JU6","algoliaIndex":"index","algoliaSearchKey":"05332ac5ed76655a511f0da583a9afac","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body>
+</html>

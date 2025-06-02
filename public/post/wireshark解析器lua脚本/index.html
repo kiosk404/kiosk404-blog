@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Wireshark解析器Lua脚本 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="Wireshark解析器Lua脚本">
+  <meta property="og:description" content="Wireshark集成了Lua解释器，以支持Lua脚本（自己编译的话根据编译配置决定是否支持Lua）。
+启动wireshark，依次点击“Help”，”About Wireshark“菜单，在打开的对话框中的”Wireshark”标签页上观察版本信息，如果如下图一样显示With Lua，说明此版本支持Lua插件。
+然后打开wireshark主目录下的init.lua文件，确保disable_lua的值为false，即开启了lua：">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-07-10T15:15:00+00:00">
+    <meta property="article:modified_time" content="2021-07-10T15:15:00+00:00">
+    <meta property="article:tag" content="Wireshark">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="Wireshark解析器Lua脚本">
+  <meta name="twitter:description" content="Wireshark集成了Lua解释器，以支持Lua脚本（自己编译的话根据编译配置决定是否支持Lua）。
+启动wireshark，依次点击“Help”，”About Wireshark“菜单，在打开的对话框中的”Wireshark”标签页上观察版本信息，如果如下图一样显示With Lua，说明此版本支持Lua插件。
+然后打开wireshark主目录下的init.lua文件，确保disable_lua的值为false，即开启了lua：">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/" /><link rel="prev" href="http://localhost:1313/post/http-2-%E7%89%B9%E6%80%A7%E6%A6%82%E8%A7%88/" /><link rel="next" href="http://localhost:1313/post/quic-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Wireshark解析器Lua脚本",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "wireshark","wordcount":  950 ,
+        "url": "http:\/\/localhost:1313\/post\/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC\/","datePublished": "2021-07-10T15:15:00+00:00","dateModified": "2021-07-10T15:15:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Wireshark解析器Lua脚本</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-07-10">2021-07-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;950 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#基础知识">基础知识</a>
+      <ul>
+        <li><a href="#lua">Lua</a></li>
+        <li><a href="#wireshark-支持">Wireshark 支持</a></li>
+      </ul>
+    </li>
+    <li><a href="#lua-api">Lua API</a>
+      <ul>
+        <li><a href="#1-proto">1. Proto</a></li>
+        <li><a href="#2protofield">2.ProtoField</a></li>
+        <li><a href="#4tvbrange">4.TvbRange</a></li>
+        <li><a href="#5-bytearray">5. ByteArray</a></li>
+        <li><a href="#6-pinfo">6. Pinfo</a></li>
+        <li><a href="#7-treeitem">7. TreeItem</a></li>
+        <li><a href="#8-fields">8. Fields</a></li>
+      </ul>
+    </li>
+    <li><a href="#创建-lua-解析器">创建 Lua 解析器</a>
+      <ul>
+        <li><a href="#mongodb-dissector">MongoDB dissector</a></li>
+        <li><a href="#srt协议的wireshark解析器编写">SRT协议的Wireshark解析器编写</a></li>
+        <li><a href="#解析websocket上的mqtt协议">解析Websocket上的MQTT协议</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2021-07-10T15:15:00" title="July 10, 2021">July 10, 2021</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>Wireshark集成了Lua解释器，以支持Lua脚本（自己编译的话根据编译配置决定是否支持Lua）。</p>
+<p>启动wireshark，依次点击“Help”，”About Wireshark“菜单，在打开的对话框中的”Wireshark”标签页上观察版本信息，如果如下图一样显示With Lua，说明此版本支持Lua插件。</p>
+<p>然后打开wireshark主目录下的init.lua文件，确保disable_lua的值为false，即开启了lua：</p>
+<img src="https://img1.kiosk007.top/static/images/wireshark/R-C.jpeg" style="height:400px">
+<p>因实际工作中需要对一种非官方的自研协议进行解析，每次可能需要对传输的内容进行对比，为了方便需要利用wireshark工具进行分析。恰好，Wireshark 可以利用其暴露的 <a href="https://wiki.wireshark.org/Lua" target="_blank" rel="noopener noreffer">Lua API</a> 对抓包数据进行分析。</p>
+<h1 id="基础知识">基础知识</h1>
+<h2 id="lua">Lua</h2>
+<p>Lua是一种轻量级的脚本语言，解释执行，不需要编译器之类的。基本语法可参考 <a href="https://www.w3cschool.cn/lua/lua-tutorial.html" target="_blank" rel="noopener noreffer">Lua W3CSchool</a></p>
+<p>Wireshark内置了对Lua脚本的支持，可以直接编写Lua脚本，无需配置额外的环境。使用起来方便。
+<a href="https://www.wireshark.org/docs/wsdg_html_chunked/wsluarm.html" target="_blank" rel="noopener noreffer">Wireshark Developer&rsquo;s Guide</a>里的第10章和第11章都是关于Lua支持的文档。</p>
+<p>使用Lua编写Wireshark协议解析插件，有几个比较重要的概念:</p>
+<ul>
+<li><code>Dissector</code>: 中文直译是解剖器，就是用来解析包的类，为了解析一个新协议，我们需要编写的也是一个Dissector。</li>
+<li><code>DissectorTable</code>: 解析器表是Wireshark中解析器的组织形式，是某一种协议的子解析器的一个列表，其作用是把所有的解析器组织成一种树状结构，便于Wireshark在解析包的时候自动选择对应的解析器。例如TCP协议的子解析器 http, smtp, sip等都被加在了&quot;tcp.port&quot;这个解析器表中，可以根据抓到的包的不同的tcp端口号，自动选择对应的解析器。</li>
+</ul>
+<p>Wireshark是用C编写的，Wireshark的剖析器通常也是用C编写的。然而，Wireshark有一个Lua实现，这使得不熟悉C的人很容易编写剖析器。对于那些不熟悉Lua的人来说，它是一种非常轻量级的编程语言，旨在作为脚本语言在应用程序中实现，以扩展其功能。</p>
+<h2 id="wireshark-支持">Wireshark 支持</h2>
+<p>Wireshark 天然对 Lua 有良好的支持性，且Lua在Wireshark中可以做的事情也有很多，详见<a href="https://wiki.wireshark.org/Lua/Examples" target="_blank" rel="noopener noreffer">Wireshark Lua Example</a></p>
+<p>网上的教程是点击 Help –&gt; About Wireshark –&gt; Folders，查找 Wireshark 的lua脚本存放目录。</p>
+<p>但是实际上我找到的敌方有些不同，不过亲测有效。该目录下有一个 <code>init.lua</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Linux </span>
+</span></span><span class="line"><span class="cl">/usr/share/wireshark
+</span></span><span class="line"><span class="cl"><span class="c1"># Mac</span>
+</span></span><span class="line"><span class="cl">/Applications/Wireshark.app/Contents/Resources/share/wireshark
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>将<code>init.lua</code> 文件末加上， <code>dofile(DATA_DIR..&quot;your_lua_script&quot;)</code></p>
+<img src="https://img1.kiosk007.top/static/images/wireshark/init_lua.png"  >
+<p>当 Wireshark 启动时，该脚本将处于激活状态。当脚本修改后，必须重启 Wireshark， 或者按 <code>Ctrl+Shift+L</code> （Mac 下<code>Shift+Command+L</code>） 重载 Lua 脚本。</p>
+<h1 id="lua-api">Lua API</h1>
+<p>在 Lua API 之前先看一个Lua 解析脚本的示例。参考 <a href="https://zhuanlan.zhihu.com/p/114669991" target="_blank" rel="noopener noreffer">自己动手编写Wireshark Lua插件解析自定义协议</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kr">do</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">--协议名称为DT，在Packet Details窗格显示为Nselab.Zachary DT</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">p_DT</span> <span class="o">=</span> <span class="n">Proto</span><span class="p">(</span><span class="s2">&#34;DT&#34;</span><span class="p">,</span><span class="s2">&#34;Nselab.Zachary DT&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">--协议的各个字段</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">f_identifier</span> <span class="o">=</span> <span class="n">ProtoField.uint8</span><span class="p">(</span><span class="s2">&#34;DT.identifier&#34;</span><span class="p">,</span><span class="s2">&#34;Identifier&#34;</span><span class="p">,</span> <span class="n">base.HEX</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">--这里的base是显示的时候的进制，详细可参考https://www.wireshark.org/docs/wsdg_html_chunked/lua_module_Proto.html#lua_class_ProtoField</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">f_speed</span> <span class="o">=</span> <span class="n">ProtoField.uint8</span><span class="p">(</span><span class="s2">&#34;DT.speed&#34;</span><span class="p">,</span> <span class="s2">&#34;Speed&#34;</span><span class="p">,</span> <span class="n">base.HEX</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">--这里把DT协议的全部字段都加到p_DT这个变量的fields字段里</span>
+</span></span><span class="line"><span class="cl">    <span class="n">p_DT.fields</span> <span class="o">=</span> <span class="p">{</span><span class="n">f_identifier</span><span class="p">,</span> <span class="n">f_speed</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">--这里是获取data这个解析器</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">data_dis</span> <span class="o">=</span> <span class="n">Dissector.get</span><span class="p">(</span><span class="s2">&#34;data&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="kr">function</span> <span class="nf">DT_dissector</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="n">pkt</span><span class="p">,</span><span class="n">root</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">buf_len</span> <span class="o">=</span> <span class="n">buf</span><span class="p">:</span><span class="n">len</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">--先检查报文长度，太短的不是我的协议</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">if</span> <span class="n">buf_len</span> <span class="o">&lt;</span> <span class="mi">16</span> <span class="kr">then</span> <span class="kr">return</span> <span class="kc">false</span> <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">--验证一下identifier这个字段是不是0x12,如果不是的话，认为不是我要解析的packet</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">v_identifier</span> <span class="o">=</span> <span class="n">buf</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">if</span> <span class="p">(</span><span class="n">v_identifier</span><span class="p">:</span><span class="n">uint</span><span class="p">()</span> <span class="o">~=</span> <span class="mh">0x12</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">then</span> <span class="kr">return</span> <span class="kc">false</span> <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">--取出其他字段的值</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">v_speed</span> <span class="o">=</span> <span class="n">buf</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">--现在知道是我的协议了，放心大胆添加Packet Details</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">t</span> <span class="o">=</span> <span class="n">root</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="n">p_DT</span><span class="p">,</span><span class="n">buf</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">--在Packet List窗格的Protocol列可以展示出协议的名称</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pkt.cols</span><span class="p">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="s2">&#34;DT&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">--这里是把对应的字段的值填写正确，只有t:add过的才会显示在Packet Details信息里. 所以在之前定义fields的时候要把所有可能出现的都写上，但是实际解析的时候，如果某些字段没出现，就不要在这里add</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="n">f_identifier</span><span class="p">,</span><span class="n">v_identifier</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="n">f_speed</span><span class="p">,</span><span class="n">v_speed</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="kr">return</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">--这段代码是目的Packet符合条件时，被Wireshark自动调用的，是p_DT的成员方法</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">function</span> <span class="nc">p_DT</span><span class="p">.</span><span class="nf">dissector</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="n">pkt</span><span class="p">,</span><span class="n">root</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">        <span class="kr">if</span> <span class="n">DT_dissector</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="n">pkt</span><span class="p">,</span><span class="n">root</span><span class="p">)</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--valid DT diagram</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">else</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--data这个dissector几乎是必不可少的；当发现不是我的协议时，就应该调用data</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data_dis</span><span class="p">:</span><span class="n">call</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="n">pkt</span><span class="p">,</span><span class="n">root</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">udp_encap_table</span> <span class="o">=</span> <span class="n">DissectorTable.get</span><span class="p">(</span><span class="s2">&#34;udp.port&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">--因为我们的DT协议的接受端口肯定是50002，所以这里只需要添加到&#34;udp.port&#34;这个DissectorTable里，并且指定值为50002即可。</span>
+</span></span><span class="line"><span class="cl">    <span class="n">udp_encap_table</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="mi">50002</span><span class="p">,</span> <span class="n">p_DT</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如上图就是一个标准的协议解析流程。下面我们做一个详细的流程梳理。</p>
+<h2 id="1-proto">1. Proto</h2>
+<p>官方文档：<a href="https://www.wireshark.org/docs/wsdg_html_chunked/lua_module_Proto.html#lua_class_Proto" target="_blank" rel="noopener noreffer">11.6.5. Proto
+</a>:</p>
+<p>表示一个新的Protocol，在Wireshark中Protocol对象有很多用处，解析器是其中主要的一个。主要接口有：</p>
+<table>
+<thead>
+<tr>
+<th>接口      </th>
+<th style="text-align:right">说明  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>proto:__call(name, desc)</td>
+<td style="text-align:right">创建Proto对象。name和desc分别是对象的名称和描述，前者可用于过滤器等</td>
+</tr>
+<tr>
+<td>Proto.new(name, desc)</td>
+<td style="text-align:right">创建一个Proto对象</td>
+</tr>
+<tr>
+<td>proto:register_heuristic(listname, func)</td>
+<td style="text-align:right">创建一个启发式解析器（<a href="https://mika-s.github.io/wireshark/lua/dissector/2018/12/30/creating-port-independent-wireshark-dissectors-in-lua.html" target="_blank" rel="noopener noreffer">启发式解析器</a>）</td>
+</tr>
+<tr>
+<td>proto.dissector</td>
+<td style="text-align:right">解析函数，3个参数tvb,pinfo,tree，分别是报文内容，报文信息和解析树结构</td>
+</tr>
+<tr>
+<td>proto.prefs</td>
+<td style="text-align:right">解析器的首选项</td>
+</tr>
+<tr>
+<td>proto.init</td>
+<td style="text-align:right">初始化</td>
+</tr>
+<tr>
+<td>proto.name</td>
+<td style="text-align:right">该解析器的名字</td>
+</tr>
+<tr>
+<td>proto.description</td>
+<td style="text-align:right">该解析器的描述</td>
+</tr>
+<tr>
+<td>proto.fields</td>
+<td style="text-align:right">该解析器的内容（返回 ProtoFeild 表）</td>
+</tr>
+<tr>
+<td>proto.experts</td>
+<td style="text-align:right">该解析器的专家信息</td>
+</tr>
+</tbody>
+</table>
+<p>举例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&#34;bvc_srt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">bvc_srt</span> <span class="o">=</span> <span class="n">Proto</span><span class="p">(</span><span class="n">NAME</span><span class="p">,</span> <span class="s2">&#34;BVC_SRT Protocol&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 创建 bvc_srt 协议首选项</span>
+</span></span><span class="line"><span class="cl"><span class="n">srt_dev.prefs</span><span class="p">[</span><span class="s2">&#34;srt_udp_port&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pref.uint</span><span class="p">(</span><span class="s2">&#34;SRT UDP Port&#34;</span><span class="p">,</span> <span class="mi">1935</span><span class="p">,</span> <span class="s2">&#34;SRT UDP Port&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 注册解析器, 将 bvc_srt 自定义协议挂载到 udp 1935 端口上 </span>
+</span></span><span class="line"><span class="cl"><span class="n">DissectorTable.get</span><span class="p">(</span><span class="s2">&#34;udp.port&#34;</span><span class="p">):</span><span class="n">add</span><span class="p">(</span><span class="mi">1935</span><span class="p">,</span> <span class="n">bvc_srt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 也可以直接调用下面函数，每个数据包都会用该 bvc_srt 去解析</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- register_postdissector(bvc_srt)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="2protofield">2.ProtoField</h2>
+<p>表示协议字段，一般用于解析字段后往解析树上添加节点。根据字段类型不同，其接口可以分为两大类。</p>
+<p>这些接口都会返回一个新的字段对象。方括号内是可选字段，花括号内是可替换的类型字段。</p>
+<p>字段可以是 uin8\uin16\uin64\string\char 等等</p>
+<p>如下所示：
+<code>ProtoField.uint8(abbr, [name], [base], [valuestring], [mask], [desc]) </code></p>
+<ul>
+<li>abbr: 协议字段缩写，比如 <code>bvc_srt.time_stamp</code>、<code>http.port</code></li>
+<li>name: 字段的实际名字，比如 <code>Time Stamp</code>、<code>HTTP Port</code></li>
+<li>base: 展示的形式，比如时间戳、端口号 是一个int64的十进制数字就可以填 <code>base.DEC</code>,再或者魔术值是一个 16进制数，可以填 <code>base.HEX</code> , 或者是HTTP的Header是字符串，可以填 <code>base.STRING</code></li>
+<li>valuestring: 与值对应的文本表，比如TCP的Flag有 9 位，每一位的对应关系就在这里体现。</li>
+<li>mask: 掩码，与valuestring配合，主要解决的是TCP Flag 的那种情况。</li>
+<li>desc: 描述</li>
+</ul>
+<p>举例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="n">fields.peer_ipaddr</span> <span class="o">=</span> <span class="n">ProtoField.ipv4</span><span class="p">(</span><span class="s2">&#34;bvc_srt.peer_ipaddr&#34;</span><span class="p">,</span> <span class="s2">&#34;Peer IP address&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 添加到树的时候要注意</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 如果是网络序，要使用add_le，而不是add</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="https://img1.kiosk007.top/static/images/wireshark/proto_field.png" >
+``` lua
+<p>local flag_select = {[0]=&quot;[Not Set]&quot;,[1]=&quot;[Set]&quot;}
+fields.tcp_flag_reserved = ProtoField.uint16(&ldquo;tcp.flag.reserved&rdquo;, &ldquo;Reserved&rdquo;, base.HEX, flag_select, 0x1000)</p>
+<p>&ndash; TCP Flag 需要 3 字节，这样处理解析器即可, 0b00010000000 做掩码。
+data_flag_info_tree:add(fields.tcp_flag_reserved, tvb(offset, 3))</p>
+<pre tabindex="0"><code>&lt;img src=&#34;https://img1.kiosk007.top/static/images/wireshark/proto_field_tcp.png&#34;&gt;
+
+
+## 3.TVB
+
+TVB 是 `proto.dissector(tvb, pinfo, treeitem)` 的第一个参数，我们将在 `proto.dissector` 函数里做我们的协议解析。
+
+[Tvb（Testy Virtual Buffer）](https://www.wireshark.org/docs/wsdg_html_chunked/lua_module_Tvb.html#lua_class_Tvb)表示报文缓存，也就是实际的报文数据，可以通过下面介绍的TvbRange从报文数据中解出信息。主要接口有：
+
+| 接口        | 说明     | 
+| --------   | -----:   |
+| tvb:__tostring() | 将报文数据转化为字符串，可用于调试 |
+| tvb:reported_len() | get tvb的(not captured)长度 |
+| tvb:len() | get tvb的(captured)长度 |
+| tvb:reported_length_remaining() | 获取当前tvb的剩余长度，如果偏移值大于报文长度，则返回-1 |
+| tvb:offset() | 返回原始偏移 |
+| tvb:raw() | 获取tvb中二进制字节的Lua字符串 |
+
+
+用法举例：
+``` lua
+-- tvb(offset, 4)表示从offset开始之后的4个字节
+subtree:add_le(fields.peer_ipaddr, tvb(offset, 4))
+</code></pre><h2 id="4tvbrange">4.TvbRange</h2>
+<p>表示Tvb的可用范围，常用来从Tvb中解出信息。主要接口有</p>
+<table>
+<thead>
+<tr>
+<th>接口      </th>
+<th style="text-align:right">说明  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tvb:range([offset], [length])</td>
+<td style="text-align:right">从tvb创建TvbRange，可选参数分别是偏移和长度，默认值分别是0和总长度</td>
+</tr>
+<tr>
+<td>tvbrange:{type}()</td>
+<td style="text-align:right">将tvbrange所表示范围内的数据转换成type类型的值，type包括但不限于：uint,uint64,int,int64,float,ipv4,ether,nstime,string,ustring,bytes,bitfield等，其中某些类型的方法可以带一些参数</td>
+</tr>
+</tbody>
+</table>
+<p>很少在实际使用中用到，大多数会取整个 tvb 进行运算位移。</p>
+<h2 id="5-bytearray">5. ByteArray</h2>
+<p>字节数组，可与Tvb互相转换。另外字符串也可以换成 <a href="https://www.wireshark.org/docs/wsdg_html_chunked/lua_module_Tvb.html#lua_class_ByteArray" target="_blank" rel="noopener noreffer">ByteArray</a> ，进而换成 Tvb。</p>
+<table>
+<thead>
+<tr>
+<th>接口      </th>
+<th style="text-align:right">说明    </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ByteArray.new([hexbytes], [separator])</td>
+<td style="text-align:right">创建一个新 ByteArray 对象</td>
+</tr>
+<tr>
+<td>bytearray:__concat(first, second)</td>
+<td style="text-align:right">连接两个 ByteArray</td>
+</tr>
+<tr>
+<td>bytearray:append(appended)</td>
+<td style="text-align:right">将 ByteArray 追加到此 ByteArray</td>
+</tr>
+<tr>
+<td>bytearray:len()</td>
+<td style="text-align:right">获取 ByteArray 的长度</td>
+</tr>
+<tr>
+<td>bytearray:subset(offset, length)</td>
+<td style="text-align:right">获取 ByteArray 的一段，作为新的 ByteArray</td>
+</tr>
+<tr>
+<td>bytearray:base64_decode()</td>
+<td style="text-align:right">获取 Base64 解码的 ByteArray</td>
+</tr>
+<tr>
+<td>bytearray:__tostring()</td>
+<td style="text-align:right">获取包含 ByteArray 中的字节的 Lua 字符串，以便可以在显示过滤器中使用它 (例如 “01FE456789AB”)</td>
+</tr>
+<tr>
+<td>bytearray:tvb(name)</td>
+<td style="text-align:right">ByteArray 转Tvb</td>
+</tr>
+<tr>
+<td>bytearray:raw([offset], [length])</td>
+<td style="text-align:right">获取 ByteArray 中的二进制字节的 Lua 字符串</td>
+</tr>
+</tbody>
+</table>
+<p>用法举例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kr">function</span> <span class="nc">proto_foo</span><span class="p">.</span><span class="nf">dissector</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">pinfo</span><span class="p">,</span> <span class="n">tree</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- Create a new tab named &#34;My Tvb&#34; and add some data to it</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">local</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ByteArray.new</span><span class="p">(</span><span class="s2">&#34;11223344&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">local</span> <span class="n">tvb</span> <span class="o">=</span> <span class="n">ByteArray.tvb</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">&#34;My Tvb&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">-- Create a tree item that, when clicked, automatically shows the tab we just created</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tree</span><span class="p">:</span><span class="n">add</span><span class="p">(</span> <span class="n">tvb</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="s2">&#34;Foo&#34;</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="kr">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="6-pinfo">6. Pinfo</h2>
+<p>报文信息(packet information)。主要接口有：</p>
+<table>
+<thead>
+<tr>
+<th>接口      </th>
+<th style="text-align:right">说明    </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pinfo.len pinfo.caplen</td>
+<td style="text-align:right">get报文长度</td>
+</tr>
+<tr>
+<td>pinfo.abs_ts</td>
+<td style="text-align:right">get报文捕获时间</td>
+</tr>
+<tr>
+<td>pinfo.number</td>
+<td style="text-align:right">get报文编号</td>
+</tr>
+<tr>
+<td>pinfo.src pinfo.dst</td>
+<td style="text-align:right">get/set报文的源地址、目的地址</td>
+</tr>
+<tr>
+<td>pinfo.columns pinfo.cols</td>
+<td style="text-align:right">get报文列表列（界面）</td>
+</tr>
+</tbody>
+</table>
+<p>用法举例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 修改协议名称（效果见下图）</span>
+</span></span><span class="line"><span class="cl"><span class="n">pinfo.cols</span><span class="p">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">bvc_srt.name</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 为报文的信息尾部添加字符串（效果见下图）</span>
+</span></span><span class="line"><span class="cl"><span class="n">pinfo.cols</span><span class="p">.</span><span class="n">info</span><span class="p">:</span><span class="n">append</span><span class="p">(</span><span class="s2">&#34; [ACK]&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 还有一种便是直接覆盖</span>
+</span></span><span class="line"><span class="cl"><span class="n">pinfo.cols</span><span class="p">.</span><span class="n">info</span> <span class="o">=</span> <span class="s2">&#34;[ACK]&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="https://img1.kiosk007.top/static/images/wireshark/lua_api_pinfo.png" />
+<h2 id="7-treeitem">7. TreeItem</h2>
+<p>表示报文解析树中的一个树节点。主要接口有：</p>
+<table>
+<thead>
+<tr>
+<th>接口      </th>
+<th style="text-align:right">说明    </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>treeitem:add([protofield], [tvbrange], [value], [label])</td>
+<td style="text-align:right">向当前树节点添加一个子节点</td>
+</tr>
+<tr>
+<td>treeitem:set_text(text)</td>
+<td style="text-align:right">设置当前树节点的文本</td>
+</tr>
+<tr>
+<td>treeitem:prepend_text(text)</td>
+<td style="text-align:right">在当前树节点文本的前面加上text</td>
+</tr>
+<tr>
+<td>treeitem:append_text(text)</td>
+<td style="text-align:right">在当前树节点文本的后面加上text</td>
+</tr>
+</tbody>
+</table>
+<p>还有注意一下网络字节序的问题，如果是网络字节序需要用add_le添加节点~
+添加节点举例</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="n">subtree</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="n">fields.dst_sock</span><span class="p">,</span> <span class="n">tvb</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>实现协议里面添加子树例子</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 子树其实也是一个节点，因此也需要在fields里面添加字段</span>
+</span></span><span class="line"><span class="cl"><span class="n">fields.pack_type_tree</span> <span class="o">=</span> <span class="n">ProtoField.uint32</span><span class="p">(</span><span class="n">NAME</span> <span class="o">..</span> <span class="s2">&#34;.pack_type_tree&#34;</span><span class="p">,</span> <span class="s2">&#34;Packet Type&#34;</span><span class="p">,</span> <span class="n">base.HEX</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 创建子树</span>
+</span></span><span class="line"><span class="cl"><span class="n">pack_type_tree</span> <span class="o">=</span> <span class="n">subtree</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="n">fields.pack_type_tree</span><span class="p">,</span> <span class="n">tvb</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">pack_type_tree</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="n">fields.msg_type</span><span class="p">,</span> <span class="n">tvb</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="https://img1.kiosk007.top/static/images/wireshark/lua_api_treeitem.png">
+<h2 id="8-fields">8. Fields</h2>
+<p>获得Wireshark已有协议字段。</p>
+<table>
+<thead>
+<tr>
+<th>接口      </th>
+<th style="text-align:right">说明    </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Field.new(fieldname)</td>
+<td style="text-align:right">获得一个字段</td>
+</tr>
+<tr>
+<td>all_field_infos()</td>
+<td style="text-align:right">获取当前packet的 field 信息</td>
+</tr>
+</tbody>
+</table>
+<p>wireshark 本身已有大量的字段，比如我们想要获取 http2 的data 帧的内容，即可用 <code>http2.data.data</code> 获取。具体的fields 可以通过以下方式获得。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Field.list</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">name</span> <span class="kr">in</span> <span class="n">ipairs</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">    <span class="n">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="https://img1.kiosk007.top/static/images/wireshark/lua_api_fields.png" style="height:400px">
+<p>可以为tap定义一个回调函数packet，每当有http协议的报文时wireshark将调用这个函数，参数tvb是报文的二进制缓冲区。在该函数中调用Field变量可以取得分析好的字段，如果不存在返回nil。</p>
+<p>我们要截获的http协议包就包括这几层协议Frame,IP,TCP,HTTP,data-text-lines（这个是http内容）,这些上层协议的字段你都可以通过Field字段取得。
+下面这一个截获框架，你可以使用tshark -X lua_script:tap.lua来执行这个例子</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">tap</span> <span class="o">=</span> <span class="n">Listener.new</span><span class="p">(</span><span class="s2">&#34;http&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">http</span> <span class="o">=</span> <span class="n">Field.new</span><span class="p">(</span><span class="s2">&#34;http&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">host</span> <span class="o">=</span> <span class="n">Field.new</span><span class="p">(</span><span class="s2">&#34;http.host&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">location</span> <span class="o">=</span> <span class="n">Field.new</span><span class="p">(</span><span class="s2">&#34;http.location&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">dst_ip</span> <span class="o">=</span> <span class="n">Field.new</span><span class="p">(</span><span class="s2">&#34;ip.dst&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">src_ip</span> <span class="o">=</span> <span class="n">Field.new</span><span class="p">(</span><span class="s2">&#34;ip.src&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">dst_port</span> <span class="o">=</span> <span class="n">Field.new</span><span class="p">(</span><span class="s2">&#34;tcp.dstport&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">src_port</span> <span class="o">=</span> <span class="n">Field.new</span><span class="p">(</span><span class="s2">&#34;tcp.srcport&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">text</span> <span class="o">=</span> <span class="n">Field.new</span><span class="p">(</span><span class="s2">&#34;data-text-lines&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">function</span> <span class="nc">tap</span><span class="p">.</span><span class="nf">packet</span><span class="p">(</span><span class="n">pinfo</span><span class="p">,</span><span class="n">tvb</span><span class="p">,</span><span class="n">tapinfo</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">--获取对应的字段</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">dst_ip</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">src_ip</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">h</span> <span class="o">=</span> <span class="n">host</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">dstp</span> <span class="o">=</span> <span class="n">dst_port</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">srcp</span> <span class="o">=</span> <span class="n">src_port</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">--这里可以对截获的数据做存储打印等处理</span>
+</span></span><span class="line"><span class="cl">    <span class="n">print</span><span class="p">(</span><span class="n">tostring</span><span class="p">(</span><span class="n">dst</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">print</span><span class="p">(</span><span class="s2">&#34;host : &#34;</span><span class="o">..</span><span class="n">tostring</span><span class="p">(</span><span class="n">h</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">function</span> <span class="nc">tap</span><span class="p">.</span><span class="nf">draw</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">print</span><span class="p">(</span><span class="s2">&#34;draw called&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">function</span> <span class="nc">tap</span><span class="p">.</span><span class="nf">reset</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">print</span><span class="p">(</span><span class="s2">&#34;reset called&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>也可以调用 <code>all_field_infos</code> 获取当前 packet 中的信息，比如说以下这个 <code>MQTT Over Websocket </code> 的例子。</p>
+<p><a href="https://cloud.tencent.com/developer/article/1093536" target="_blank" rel="noopener noreffer">https://cloud.tencent.com/developer/article/1093536</a></p>
+<h1 id="创建-lua-解析器">创建 Lua 解析器</h1>
+<p>以下会的内容是搜集网上的一些优秀的介绍关于如何使用。</p>
+<h2 id="mongodb-dissector">MongoDB dissector</h2>
+<p>以下的5篇文章是我从全网找到的最详尽的 lua 自定义协议解析脚本的教程。
+从Lua基础到协议解析的全过程进行了阐述，从TCP Data 中解析 MongoDB 协议。</p>
+<p>原文地址：</p>
+<ul>
+<li><a href="https://mika-s.github.io/wireshark/lua/dissector/2017/11/04/creating-a-wireshark-dissector-in-lua-1.html" target="_blank" rel="noopener noreffer">Creating a Wireshark dissector in Lua - part 1 (the basics)</a></li>
+<li><a href="https://mika-s.github.io/wireshark/lua/dissector/2017/11/06/creating-a-wireshark-dissector-in-lua-2.html" target="_blank" rel="noopener noreffer">Creating a Wireshark dissector in Lua - part 2 (debugging and a more advanced dissector)</a></li>
+<li><a href="https://mika-s.github.io/wireshark/lua/dissector/2017/11/08/creating-a-wireshark-dissector-in-lua-3.html" target="_blank" rel="noopener noreffer">Creating a Wireshark dissector in Lua - part 3 (parsing the payload)</a></li>
+<li><a href="https://mika-s.github.io/wireshark/lua/dissector/2018/12/16/creating-a-wireshark-dissector-in-lua-4.html" target="_blank" rel="noopener noreffer">Creating a Wireshark dissector in Lua - part 4 (separate subtrees)
+</a></li>
+<li><a href="https://mika-s.github.io/wireshark/lua/dissector/2018/12/18/creating-a-wireshark-dissector-in-lua-5.html" target="_blank" rel="noopener noreffer">Creating a Wireshark dissector in Lua - part 5 (modularization)</a></li>
+</ul>
+<p>Other</p>
+<ul>
+<li><a href="https://mika-s.github.io/wireshark/lua/dissector/2018/12/30/creating-port-independent-wireshark-dissectors-in-lua.html" target="_blank" rel="noopener noreffer">Creating port-independent (heuristic) Wireshark dissectors in Lua</a></li>
+</ul>
+<h2 id="srt协议的wireshark解析器编写">SRT协议的Wireshark解析器编写</h2>
+<p>该文章也详细介绍了如何使用wireshark解析一个自定义协议，本文的内容也有一些参考了本文章。 github 上的 <code>srt-dev.lua</code> 也是 比较全的例子。</p>
+<p>原文地址：</p>
+<ul>
+<li><a href="https://blog.csdn.net/Boring_Wednesday/article/details/99695507" target="_blank" rel="noopener noreffer">SRT协议的Wireshark解析器编写</a></li>
+</ul>
+<p>wireshark 解析脚本示例：</p>
+<ul>
+<li><a href="https://github.com/Haivision/srt/blob/master/scripts/srt-dev.lua" target="_blank" rel="noopener noreffer">https://github.com/Haivision/srt/blob/master/scripts/srt-dev.lua</a></li>
+</ul>
+<h2 id="解析websocket上的mqtt协议">解析Websocket上的MQTT协议</h2>
+<p>这篇文章被我单独列出的一个重要原因是，这个文章列举了如何实现，在已有协议之上的 payload 接着解析协议。比如本例中的在 websocket 的payload 之上解析 MQTT 协议。</p>
+<p>原文地址:</p>
+<ul>
+<li><a href="https://cloud.tencent.com/developer/article/1093536" target="_blank" rel="noopener noreffer">Lua编写wireshark插件初探——解析Websocket上的MQTT协议</a></li>
+</ul>
+<p>github 地址：</p>
+<ul>
+<li><a href="https://github.com/a3135134/Wireshark-Plugin-MQTToverWebSocket/blob/master/mqttoverwebsocket.lua" target="_blank" rel="noopener noreffer">https://github.com/a3135134/Wireshark-Plugin-MQTToverWebSocket/blob/master/mqttoverwebsocket.lua</a></li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-07-10</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/" data-title="Wireshark解析器Lua脚本"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/" data-title="Wireshark解析器Lua脚本"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/wireshark%E8%A7%A3%E6%9E%90%E5%99%A8lua%E8%84%9A%E6%9C%AC/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/wireshark/">Wireshark</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/http-2-%E7%89%B9%E6%80%A7%E6%A6%82%E8%A7%88/" class="prev" rel="prev" title="HTTP/2 特性概览"><i class="fas fa-angle-left fa-fw"></i>HTTP/2 特性概览</a>
+            <a href="/post/quic-%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" class="next" rel="next" title="QUIC 发生了什么">QUIC 发生了什么<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

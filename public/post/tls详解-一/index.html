@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>TLS 详解（一） - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="TLS 详解（一）">
+  <meta property="og:description" content="TLS的设计目标是构建一个安全传输层（Transport Layer Security ），在基于连接的传输层（如tcp）之上提供安全加密的通信信道。它是旨在防止窃听，篡改和消息伪造的 IETF 标准。常见应用程序包括Web浏览器，即时消息传递，电子邮件和IP语音都在使用TLS。
+Title From What is Transport Layer Security (TLS)?">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-05-02T23:31:00+00:00">
+    <meta property="article:modified_time" content="2020-05-02T23:31:00+00:00">
+    <meta property="article:tag" content="Tls">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="TLS 详解（一）">
+  <meta name="twitter:description" content="TLS的设计目标是构建一个安全传输层（Transport Layer Security ），在基于连接的传输层（如tcp）之上提供安全加密的通信信道。它是旨在防止窃听，篡改和消息伪造的 IETF 标准。常见应用程序包括Web浏览器，即时消息传递，电子邮件和IP语音都在使用TLS。
+Title From What is Transport Layer Security (TLS)?">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" /><link rel="prev" href="http://localhost:1313/post/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E6%80%9D%E7%BB%B4/" /><link rel="next" href="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%BA%8C/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "TLS 详解（一）",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "tls","wordcount":  1058 ,
+        "url": "http:\/\/localhost:1313\/post\/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80\/","datePublished": "2020-05-02T23:31:00+00:00","dateModified": "2020-05-02T23:31:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">TLS 详解（一）</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/network/"><i class="far fa-folder fa-fw"></i>Network</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-05-02">2020-05-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1058 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#tls-简介">TLS 简介</a>
+      <ul>
+        <li><a href="#tls的设计目标">TLS的设计目标</a></li>
+        <li><a href="#tls的发展历史">TLS的发展历史</a></li>
+      </ul>
+    </li>
+    <li><a href="#tls-ciphersuite">TLS CipherSuite</a>
+      <ul>
+        <li><a href="#非对称加密密钥交换身份验证">非对称加密/密钥交换/身份验证</a>
+          <ul>
+            <li><a href="#rsa-算法">RSA 算法</a>
+              <ul>
+                <li><a href="#基于openssl实战验证rsa">基于openssl实战验证RSA</a></li>
+                <li><a href="#rsa-握手">RSA 握手</a></li>
+              </ul>
+            </li>
+            <li><a href="#dh密钥交换">DH密钥交换</a>
+              <ul>
+                <li><a href="#dh-握手">DH 握手</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#对称加密消息身份验证">对称加密/消息身份验证</a>
+          <ul>
+            <li><a href="#xor-与-填充">XOR 与 填充</a></li>
+            <li><a href="#工作模式">工作模式</a>
+              <ul>
+                <li><a href="#ecbelectronic-codebook-模式">ECB(Electronic codebook) 模式</a></li>
+                <li><a href="#cbccipher-block-chaining-模式">CBC(Cipher-block chaining) 模式</a></li>
+                <li><a href="#ctrcounter模式">CTR（Counter）模式</a></li>
+                <li><a href="#gcmgalois-counter-mode模式">GCM（Galois Counter Mode）模式</a></li>
+              </ul>
+            </li>
+            <li><a href="#aesadvanced-encryption-standard-加密算法">AES(Advanced Encryption Standard) 加密算法</a>
+              <ul>
+                <li><a href="#aes-加密流程">AES 加密流程</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#tls的分层结构">TLS的分层结构</a>
+      <ul>
+        <li><a href="#record-protocol">record protocol</a></li>
+        <li><a href="#handshake-protocol">handshake protocol</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考：</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2020-05-02T23:31:00" title="May 2, 2020">May 2, 2020</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>TLS的设计目标是构建一个安全传输层（Transport Layer Security ），在基于连接的传输层（如tcp）之上提供安全加密的通信信道。它是旨在防止窃听，篡改和消息伪造的 <a href="https://mailarchive.ietf.org/arch/msg/ietf-announce/IhM9JJHVs_ZeK-_1eaVZrqxbnL8/" target="_blank" rel="noopener noreffer">IETF</a> 标准。常见应用程序包括Web浏览器，即时消息传递，电子邮件和IP语音都在使用TLS。</p>
+<blockquote>
+<p>Title From <a href="https://www.networkworld.com/article/2303073/lan-wan-what-is-transport-layer-security-protocol.html" target="_blank" rel="noopener noreffer">What is Transport Layer Security (TLS)?</a></p>
+</blockquote>
+<hr>
+<img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/encript-for-security.jpg" style="height:450px" >
+<ul>
+<li><a href="https://kiosk007.top/post/tls%e8%af%a6%e8%a7%a3-%e4%ba%8c/" target="_blank" rel="noopener noreffer">TLS 详解（二）</a></li>
+<li><a href="https://kiosk007.top/post/tls%e8%af%a6%e8%a7%a3-%e4%b8%89/" target="_blank" rel="noopener noreffer">TLS 详解（三）</a></li>
+</ul>
+<h1 id="tls-简介">TLS 简介</h1>
+<p>下面主要介绍一下TLS的设计目标和发展历史。</p>
+<h2 id="tls的设计目标">TLS的设计目标</h2>
+<p>TLS用于两个应用程序之间提供保密性和数据完整性。一个TLS需要满足(1)、密码学安全 (2)、互操作，通用性 (3)、高效性 (4)、可扩展性 才能称为一个合格的TLS。
+<img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/TLS.png"/></p>
+<h2 id="tls的发展历史">TLS的发展历史</h2>
+<ul>
+<li>1994: <strong>SSL 1.0</strong>, 由Netscape提出，但未公开。</li>
+<li>1995: <strong>SSL 2.0</strong>, 由Netscape提出，这个版本由于设计缺陷，并不安全，很快被发现有严重漏洞，已经废弃。</li>
+<li>1996: <strong>SSL 3.0</strong>. 作为 RFC 6101 发布。2015年后已经不安全，必须禁用。</li>
+<li>1999: <strong>TLS 1.0</strong>. 互联网标准化组织ISOC接替NetScape公司，发布了SSL的升级版TLS 1.0版.</li>
+<li>2006: <strong>TLS 1.1</strong>. 作为 RFC 4346 发布。主要fix了CBC模式相关的如BEAST攻击等漏洞</li>
+<li>2008: <strong>TLS 1.2</strong>. 作为RFC 5246 发布 ，增进安全性。此版本中的一个主要新功能是<strong>身份验证（AEAD）加密</strong>，它消除了对流和分组密码的需要（因而消除了固有的易受攻击的CBC模式）。</li>
+<li>2011: 正式弃用SSL 2.0，IETF尝试通过发布RFC 6176正式弃用SSL v2 。根据SSL Labs的调查，2011年有54％的HTTPS服务器支持此过时的协议版本。</li>
+<li>2013-2014: 多个针对TLS漏洞攻击手段相继爆出和同期发生的棱镜门事件也改变了人们对互联网安全的看法</li>
+<li>AlFardan和Paterson发布了<a href="http://www.isg.rhul.ac.uk/tls/Lucky13.html" target="_blank" rel="noopener noreffer">pLucky 13</a>，他们对CBC套件的攻击。在TLS中，块加密旨在对纯文本（而不是密文）进行身份验证，这为攻击者提供了执行填充oracle攻击的机会。</li>
+<li>发现了<a href="http://www.isg.rhul.ac.uk/tls/" target="_blank" rel="noopener noreffer">针对RC4的新攻击</a>。以前，人们认为RC4弱点对TLS的影响不大，但这被证明是错误的。这项研究标志着RC4的死亡。</li>
+<li>爱德华·斯诺登（Edward Snowden）向英国卫报记者发布了数千份美国国家安全局（NSA）分类文件，从而永远改变了公众对互联网的看法。</li>
+<li><a href="http://dualec.org/" target="_blank" rel="noopener noreffer">Dual EC DRBG</a> (由NIST标准化生成和推广的伪随机数）被认为是潜在的后门。</li>
+<li>一项名为<a href="https://mitls.org/pages/attacks/3SHAKE" target="_blank" rel="noopener noreffer">&ldquo;三重握手攻击&rdquo;</a>的新研究已经发布，TLS中的重新协商需要再次修复。</li>
+<li><a href="http://heartbleed.com/" target="_blank" rel="noopener noreffer">&ldquo;心脏出血攻击（heartbleed）&rdquo;</a>发现了OpenSSL（一个使用非常广泛的TLS库）中的一个严重漏洞。</li>
+<li><a href="https://blog.qualys.com/ssllabs/2014/12/08/poodle-bites-tls" target="_blank" rel="noopener noreffer">POODLE TLS</a>一些在SSL3.0 的填充攻击，即使TLS 1.0确实具有针对填充oracle攻击的内置防护，但某些实现仍无法正确避免。</li>
+<li>2015：TLS证书的不安全再次让互联网安全遭受打击，各机构再次出击。</li>
+<li>从2015-2016，Apple，Chrome和Mozilla 相继因为一些CA机构违反规则等问题选择不再信任 WoSign、StartCom，2016年Chrome又宣布取消对Symantec（赛门铁克）证书的信任。DigiCert收购Symantec后，各厂商恢复信任Symantec</li>
+<li>由于多家CA机构存在乱签发CA的行为，经过多年的讨论，发布了<a href="https://tools.ietf.org/html/rfc7469" target="_blank" rel="noopener noreffer">RFC 7469</a>，使任何人都可以使用公钥固定来保护自己免受欺诈性颁发的证书的侵害。</li>
+<li><a href="https://tools.ietf.org/html/rfc7633" target="_blank" rel="noopener noreffer">RFC 7633</a> 中发布了新的X.509扩展，以将具有某些TLS功能的证书耦合在一起。这是一项迫切需要的功能，它在信任证书之前需要有效的OCSP响应。</li>
+<li>2018: <strong>TLS 1.3</strong>，支持0-rtt，大幅增进安全性，砍掉了AEAD之外的加密方式</li>
+</ul>
+<p>From [@SSL/TLS and PKI History][3]</p>
+<h1 id="tls-ciphersuite">TLS CipherSuite</h1>
+<p>加密套间一般在 TLS 握手时协商得出，之后的整个加密过程都遵循套件的约定进行加密通信，每个集合的名称代表组成它的特定算法。</p>
+<p>以TLS1.2中最常见的 <strong><code>TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256</code></strong> 为例。
+<img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/tls_ciphersuite.png" style="height:200px" ></p>
+<ul>
+<li><code>密钥交换算法</code> -规定交换对称密钥的方式；</li>
+<li><code>身份验证算法</code> -指示如何执行服务器身份验证和（如果需要）客户端身份验证。</li>
+<li><code>对称加密算法</code> -指示将使用哪种对称密钥算法来加密实际数据；包含对称加密算法、强度、工作模式。</li>
+<li><code>消息身份验证代码（MAC）算法</code> -指示连接将用于执行数据完整性检查的方法。</li>
+</ul>
+<p>在tls的世界有许多密码学名词，组合在一起就成了密码套件。</p>
+<ol>
+<li>块加密算法 block cipher : AES, Serpent, 等</li>
+<li>流加密算法 stream cipher: RC4，ChaCha20 等</li>
+<li>Hash函数 hash funtion:MD5，sha1，sha256，sha512 , ripemd 160，poly1305 等</li>
+<li>消息验证码函数 message authentication code: HMAC-sha256，AEAD 等</li>
+<li>密钥交换 key exchange: DH，ECDH，RSA，DHE，ECDHE 等</li>
+<li>公钥加密 public-key encryption: RSA，rabin-williams 等</li>
+<li>数字签名算法 signature algorithm: RSA，DSA，ECDSA 等</li>
+<li>密码衍生函数 key derivation function: TLS-12-PRF(SHA-256) , bcrypto，scrypto，pbkdf2 等</li>
+</ol>
+<h2 id="非对称加密密钥交换身份验证">非对称加密/密钥交换/身份验证</h2>
+<p>非对称加密是一种使用公钥和私钥加解密的算法，一段明文如果用公钥加密，只能用私钥解密。如果用私钥加密，只能用公钥解密。公钥可以公开，但是私钥只能是一方保存。</p>
+<h3 id="rsa-算法">RSA 算法</h3>
+<p><strong>一. 随机选择两个不相等的质数 p 和 q , p 与 q 越大，越安全</strong></p>
+<p>比如 P = 67 ，Q = 71。计算他们的乘积 n = P * Q = 4757 ，转化为二进为 1001010010101，该加密算法即为 13 位，实际算法是 1024 位 或 2048 位，位数越长，算法越难被破解。</p>
+<p><strong>二. 计算 p 和 q 的乘积 n, 并计算 n 的欧拉函数 φ(n)</strong></p>
+<p>φ(n) 表示在小于等于 n 的正整数之中，与 n 构成互质关系的数的个数。例如：在 1 到 8 之中，与 8 形成互质关系的是1、3、5、7，所以 φ(n) = 4。 如果 n = P * Q，P 与 Q 均为质数，则 φ(n) = φ(P * Q)= φ(P - 1)φ(Q - 1) = (P - 1)(Q - 1) 。 本例中 φ(n) = 66 * 70 = 4620，这里记为 m， m = φ(n) = 4620</p>
+<p><strong>三. 随机选择一个整数 e，条件是1&lt; e &lt; m，且 e 与 m 互质</strong></p>
+<p>公约数只有 1 的两个整数，叫做互质整数，这里我们随机选择 e = 101 请注意不要选择 4619，如果选这个，则公钥和私钥将变得相同。</p>
+<p><strong>四. 计算模反元素 d，可以使得 e*d 除以 m 的余数为 1。</strong></p>
+<p>即找一个整数 d，使得  (e * d ) % m = 1。 等价于 e * d - 1 = y * m ( y 为整数） 找到 d ，实质就是对下面二元一次方程求解。 e * x - m * y =1 ，其中 e = 101，m = 4620 101x - 4620y =1  这个方程可以用&quot;扩展欧几里得算法&quot;求解，此处省略具体过程。 总之算出一组整数解（x，y ）= （ 1601，35），即 d = 1601。 到此密钥对生成完毕。不同的 e 生成不同的 d，因此可以生成多个密钥对。本例中公钥为 （n，e) = (4757 , 101)，私钥为 （n，d) = (4757 ，1601) ，仅（n，e) = (4757 , 101) 是公开的，其余数字均不公开。可以想像如果只有 n 和 e，如何推导出 d，目前只能靠暴力破解，位数越长，暴力破解的时间越长。</p>
+<p><strong>RSA 加密解密流程</strong></p>
+<ul>
+<li>加密：c=$m^k\pmod n$  </li>
+<li>解密：m=$c^d\pmod n$  </li>
+</ul>
+<p>m 是明文，c 是密文</p>
+<blockquote>
+<p>缺点： RSA 不具备前向保密性，也就是加密的通信所依赖的 Pre Master Key 是基于公钥加密，私钥解密的。如果私钥丢失，前面加密过的会话如果被保存下来，都可以用泄漏的私钥还原的。</p>
+</blockquote>
+<h4 id="基于openssl实战验证rsa">基于openssl实战验证RSA</h4>
+<ul>
+<li>待加密的明文</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜ <span class="nb">echo</span> <span class="s2">&#34;hello world&#34;</span> &gt; hello.txt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>生成私钥</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜ openssl genrsa -out private.pem
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>从私钥中提取公钥</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜ openssl rsa -in private.pem -pubout -out public.pem
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>加密</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜ openssl rsautl -encrypt -in hello.txt -inkey public.pem -pubin -out hello.en
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>解密</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜ openssl rsautl -decrypt -in hello.en  -inkey private.pem -out hello.de
+</span></span><span class="line"><span class="cl">➜ cat hello.de
+</span></span><span class="line"><span class="cl">hello world
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="rsa-握手">RSA 握手</h4>
+<p><img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/ssl_handshake_rsa.jpg
+" style="height:600px" ></p>
+<h3 id="dh密钥交换">DH密钥交换</h3>
+<p>1976年有 Bailey Whitfield Diffe 和 Martin Edward Hellman 首次发表，所以也被称作 Diffie-Hellman key exchange，简称DH。可以让双方在完全没有对方任何预先信息的条件下建立一个密钥。所以其具备向前安全性。
+<img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/Diffie-Hellman.png
+" style="height:200px" ></p>
+<ul>
+<li>g、p、A、B 公开。A 为 Alice 的公钥，B 为 Bob 的公钥</li>
+<li>a、b 保密。 a 为 Alice 的私钥匙，b 为 Alice 的私钥匙</li>
+</ul>
+<p><strong>DH 密钥交换协议举例</strong></p>
+<ul>
+<li>协定使用 p=23 以及 g=5</li>
+<li>Alice选择密钥 a=6, 计算公钥 $A=g^a\pmod p$ ,并发送给Bob (A=$5^6\pmod{23} = 8$)</li>
+<li>Bob 选择密钥 b=15，计算公钥 $B=g^b\pmod p$ ,并发送给Alice (A=$5^{15}\pmod{23} = 19$)</li>
+<li>Alice 计算 $s=B^a\pmod p$ (s=$19^6\pmod{23}=2$)</li>
+<li>Bob 计算 $s=A^b\pmod p$ (s=$8^{15}\pmod{23}=2$)</li>
+</ul>
+<blockquote>
+<p>缺点：大数乘法运算，速度很慢。实际使用的大多都是 ECDH 交换算法，也就是ECC椭圆曲线+DH</p>
+</blockquote>
+<p><strong>ECDH</strong>
+ECDH 是椭圆曲线的（DH）笛福赫尔曼算法的变种，它其实不单单是一种加密算法，而是一种密钥协商协议，也就是说 ECDH 定义了（在某种程度上）密钥怎么样在通信双方之间生成和交换，至于使用这些密钥怎么样来进行加密完全取决通信双方。</p>
+<p>ECDH比DH计算更快，同等安全程度下，密钥比DH更短。</p>
+<h4 id="dh-握手">DH 握手</h4>
+<p><img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/ssl_handshake_diffie_hellman.jpg
+" style="height:600px" ></p>
+<h2 id="对称加密消息身份验证">对称加密/消息身份验证</h2>
+<p>对称加密是一种使用单个密钥对数据进行加密（编码）和解密（解码）的加密方法。其明文的加密使用的是相同的一把密钥。</p>
+<h3 id="xor-与-填充">XOR 与 填充</h3>
+<p>对称加密的基本原理是XOR (异或运算)。</p>
+<img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/XOR.png" style="height:200px" >
+但是密钥和明文存在长度不一致的情况。为了将密钥和明文对齐，这就引入了分组的概念，对称加密中分为块加密和流式加密。以块加密为例。
+<p>Block cipher 加密方式：将明文分为多个等长的Block块，再对每个模块分别加解密。若当最后一个明文block模块长度不够时，需要引入填充算法进行填充。
+填充方案</p>
+<ul>
+<li>位填充：以bit为单位填充</li>
+<li>字节填充：以字节为单位填充</li>
+<li>补零：缺少字节数全部补0</li>
+<li>ANSI X9.23: 全部填0，但最后一个字节需要补充总共填写0个个数</li>
+<li>ISO 10126：完全随即字符，但最后一个字节需要补充总共填写随即字符个数</li>
+<li>PKCS7（RFC5652）：全部填充缺省的字节个数，如缺4个字节，填4个04</li>
+</ul>
+<h3 id="工作模式">工作模式</h3>
+<h4 id="ecbelectronic-codebook-模式">ECB(Electronic codebook) 模式</h4>
+<p>ECB是DES的最简单和最弱的形式。它不使用初始化向量, 直接将明文分解为多个块，对每个块作独立的加密。其最致命的弱点就是无法隐藏数据特征。
+<img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/ECB.jpg" style="height:400px" >
+图a 是加密前的明文， 图b 是ECB加密后的密文。可以看出，加密根本没有什么用处。
+<img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/ECB_encryption.png" style="height:250px" ></p>
+<p>以下是zoom在其加密白皮书（2020）上所宣传的，其实很不安全。</p>
+<blockquote>
+<p>For use cases such as meeting real-time content (video, voice, and content share), where data is transmitted over User
+Datagram Protocol (UDP), we use AES-256 in ECB mode to encrypt these compressed data streams. We expect to upgrade
+this soon to AES-256 GCM. Additionally, for video, voice, and content share encrypted with AES, once it’s encrypted, it
+remains encrypted as it passes through Zoom’s meeting servers until it reaches another Zoom Client or a Zoom Connector,
+which helps translate the data to another protocol.</p>
+</blockquote>
+<p>Link: <a href="https://xie.infoq.cn/article/644f4ed6b8a84286cc9f74ebc" target="_blank" rel="noopener noreffer">Zoom的加密算法，到底有什么问题？</a></p>
+<h4 id="cbccipher-block-chaining-模式">CBC(Cipher-block chaining) 模式</h4>
+<p>CBC 模式是最常见的传统加密模式。每个明文块先与前一个密文块异或后，再进行加密。由于此XOR处理，相同的明文块将不再导致加密产生相同的密文。</p>
+<p><strong>缺点:</strong> 加密过程串行化，只有第一步完成才能接下来的第二步，多核CPU无法发挥作用。
+<img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/CBC_encryption.png
+" style="height:250px">
+第一组通过初始化向量 IV 将第一组明文和 密钥K 加密得到密文，第二组再用第一组得到的密文和第二组的明文和 密钥K 加密得到第二组的密文，如此往复。</p>
+<blockquote>
+<ol>
+<li>IV不是密码短语的一部分，因为它不是秘密。它是作为随机数生成的，但是只有在了解此IV的情况下，您才能解密密钥本身。</li>
+<li>因为漏洞（Lucky 13）问题，被高版本TLS所宣布禁止，另外H2的实现也不允许使用CBC模式的TLS。</li>
+</ol>
+</blockquote>
+<h4 id="ctrcounter模式">CTR（Counter）模式</h4>
+<p>为了解决CBC不能串行加密的缺点。CTR模式支持每组加密采用一个计数向量，这样就可以多个块同时加密。它不具有消息依赖性，因此密文块不依赖于先前的明文块。</p>
+<p><strong>缺点：</strong> 不能提供密文的消息完整性校验。</p>
+<p><img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/CTR_encryption.svg
+" style="height:250px" ></p>
+<h4 id="gcmgalois-counter-mode模式">GCM（Galois Counter Mode）模式</h4>
+<p>GCM 是 CTR + GMAC ，其兼顾CTR的并法加解密的特点，也可以使用MAC算法实现消息的完整性验证。</p>
+<ul>
+<li>验证完整性 MAC(Message Authentication Code)</li>
+</ul>
+<p>通过将加密后的密文消息和密钥经过专门的Hash函数加密，传输时需要将密文和MAC一块传给接收方。接收方通过相同的MAC算法，将密文和密钥再次算出MAC值，判断MAC值是否相等。</p>
+<p>可以使用安全伪随机函数（<a href="http://www.crypto-it.net/eng/theory/prf-and-prp.html" target="_blank" rel="noopener noreffer">PRF</a>）创建安全MAC算法。</p>
+<p><img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/Message_Authentication_Code.png
+" style="height:250px"></p>
+<p>顾名思义，可以验证消息完整性，防止中间人恶意修改消息内容。</p>
+<ul>
+<li>GCM</li>
+</ul>
+<p>GMAC 是用到 Galois域的MAC算法，是众多消息验证算法的一种。
+<img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/two-parts-of-gcm-l.jpg
+" style="height:350px" ></p>
+<ul>
+<li>AEAD</li>
+</ul>
+<p>Authenticated Encryption with Associated Data (AEAD) 是一种同时具备保密性，完整性和可认证性的加密形式。</p>
+<p>AEAD 产生的原因很简单，单纯的对称加密算法，其解密步骤是无法确认密钥是否正确的。也就是说，加密后的数据可以用任何密钥执行解密运算，得到一组疑似原始数据，而不知道密钥是否是正确的，也不知道解密出来的原始数据是否正确。因此，需要在单纯的加密算法之上，加上一层验证手段，来确认解密步骤是否正确。</p>
+<p><code>AES-256-GCM</code> 就是常见的 AEAD 算法。其他的还有诸如 <code>ChaCha20-Poly1305</code>，<code>AES-128-GCM</code> 等</p>
+<h3 id="aesadvanced-encryption-standard-加密算法">AES(Advanced Encryption Standard) 加密算法</h3>
+<p>AES是当今可能会遇到的流行和被广泛采用的对称加密算法。它由比利时密码学家 Joan Daemen 和 Vincent Rijmen 所设计，常用的填充算法为：PKCS7。常用的分组模式为：GCM。分组长度只能是16字节。</p>
+<p>| AES      | 密钥长度（32 bit）  |  分组长度（32 bit）  |  加密轮数    |
+| &mdash;&mdash;&ndash; | :&mdash;&ndash;:           | :&mdash;-:             | :&mdash;-:     |
+| AES-128  | 4         		   |   4                |    10      |
+| AES-192  | 6                 |   4                |    12      |
+| AES-256  | 8                 |   4                |    14      |</p>
+<p><strong>AES加密步骤</strong></p>
+<ol>
+<li>将明文按照128 bit (16 字节)拆分为若干个明文块，每个明文块是 4*4 矩阵</li>
+<li>按照选择的填充方式来填充最后一个明文块。（PKCS7）</li>
+<li><strong>每一个明文块利用AES加密器和密钥，加密成密文块。</strong></li>
+<li>拼接所有的密文块，加上上文提到的加密模式GCM。成为最终的密文。</li>
+</ol>
+<p>下面是详细的加密步骤。</p>
+<p>第三步是最复杂，也是最重要的一步。也是上述加密轮数体现的地方。</p>
+<h4 id="aes-加密流程">AES 加密流程</h4>
+<p>AES中的加密回合数是可变的，并且取决于密钥的长度。AES对128位密钥使用10轮，对192位密钥使用12轮，对于256位密钥使用14轮。这些回合中的每个回合都使用不同的128位回合密钥，该密钥是根据原始AES密钥计算得出的。
+大体分为 <code>初始轮</code> 、 <code>普通轮</code> 、 <code>最终轮</code></p>
+<p><strong>初始轮</strong></p>
+<ul>
+<li><code>AddRoundKey 轮密钥加</code>  将明文矩阵的16个字节视为128位，并与回合密钥的128位进行XOR运算。</li>
+</ul>
+<p><strong>普通轮</strong></p>
+<ul>
+<li><code>AddRoundKey 轮密钥加</code></li>
+<li><code>Subytes 字节替代</code>   通过查找设计中给定的固定表（S-box）来替换16个输入字节。结果是四行四列的矩阵。</li>
+<li><code>ShiftRows 行移位</code>    矩阵的四行中的每一行都向左移动。第一行不变，第二行左移1个字节，第三行左移2个字节，第四行左移3个字节。</li>
+<li><code>MixColumns 列混合</code>  使用特殊的数学函数对每四个字节的列进行转换。此函数将一列的四个字节作为输入，并输出四个全新的字节，以替换原始列。结果是由16个新字节组成的另一个新矩阵。</li>
+</ul>
+<p><strong>最终轮</strong></p>
+<ul>
+<li><code>SubBytes 字节替代</code></li>
+<li><code>ShiftRows 行移位</code></li>
+<li><code>AddRoundKey 轮密钥加</code></li>
+</ul>
+<p><img src="https://img1.kiosk007.top/static/images/network/TLSDetailAnalysis/AES_Encrpyt.png
+" style="height:350px" ></p>
+<ul>
+<li>动画演示 <code>AES加密</code> : <a href="https://coolshell.cn/articles/3161.html" target="_blank" rel="noopener noreffer">https://coolshell.cn/articles/3161.html</a></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 参数 p: 明文的字符串数组。
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 参数 plen: 明文的长度。
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 参数 key: 密钥的字符串数组。
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">aes</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="kt">int</span> <span class="n">plen</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">key</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">keylen</span> <span class="o">=</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">key</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">plen</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">plen</span> <span class="o">%</span> <span class="mi">16</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;明文字符长度必须为16的倍数！</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nf">checkKeyLen</span><span class="p">(</span><span class="n">keylen</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;密钥字符长度错误！长度必须为16、24和32。当前长度为%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">keylen</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="nf">extendKey</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="c1">//扩展密钥
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">pArray</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">4</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">plen</span><span class="p">;</span> <span class="n">k</span> <span class="o">+=</span> <span class="mi">16</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">convertToIntArray</span><span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="n">k</span><span class="p">,</span> <span class="n">pArray</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">addRoundKey</span><span class="p">(</span><span class="n">pArray</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span><span class="c1">//一开始的轮密钥加
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> 
+</span></span><span class="line"><span class="cl">        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span><span class="c1">//前9轮
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">subBytes</span><span class="p">(</span><span class="n">pArray</span><span class="p">);</span><span class="c1">//字节代换
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">shiftRows</span><span class="p">(</span><span class="n">pArray</span><span class="p">);</span><span class="c1">//行移位
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">mixColumns</span><span class="p">(</span><span class="n">pArray</span><span class="p">);</span><span class="c1">//列混合
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">addRoundKey</span><span class="p">(</span><span class="n">pArray</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">        <span class="c1">//第10轮
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">subBytes</span><span class="p">(</span><span class="n">pArray</span><span class="p">);</span><span class="c1">//字节代换
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">shiftRows</span><span class="p">(</span><span class="n">pArray</span><span class="p">);</span><span class="c1">//行移位
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">addRoundKey</span><span class="p">(</span><span class="n">pArray</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">convertArrayToStr</span><span class="p">(</span><span class="n">pArray</span><span class="p">,</span> <span class="n">p</span> <span class="o">+</span> <span class="n">k</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>更多有关对称加密的实现可以参考： <a href="https://tools.ietf.org/html/rfc5246#section-6.3" target="_blank" rel="noopener noreffer">https://tools.ietf.org/html/rfc5246#section-6.3</a></p>
+<h1 id="tls的分层结构">TLS的分层结构</h1>
+<p>TLS 从实现上主要包含 <code>Record 记录协议</code> 和 <code>Handshake 握手协议</code>。</p>
+<ul>
+<li><strong>handshake protocol</strong>，验证通讯双方的身份，交换加解密的安全套间，协商加密参数</li>
+<li><strong>record protocol</strong>，记录层作为对称加密传输的record协议</li>
+</ul>
+<p>另外还有三种辅助协议</p>
+<ul>
+<li><strong>changecipher spec</strong> ，用来通知对端从handshake切换到record协议(有点冗余，在TLS1.3里面已经被删掉了)</li>
+<li><strong>alert协议，the alert</strong>, 用来通知各种返回码，</li>
+<li><strong>application data协议</strong>，就是把http，smtp等的数据流传入record层做处理并传输。</li>
+</ul>
+<p>这种 <strong>认证密钥协商</strong> + <strong>对称加密传输</strong> 的结构，是绝大多数加密通信协议的通用结构。</p>
+<h2 id="record-protocol">record protocol</h2>
+<p>record协议做应用数据的对称加密传输，占据一个TLS连接的绝大多数流量。记录层将信息块分割成携带 2^14 字节 (16KB) 或更小块的数据的 TLSPlaintext 记录。有点像TCP中的segment，所有的其他子协议需要通过 record 协议封装，多个record 数据可以在一个TCP包里记录一次性发出。
+<img src="https://img1.kiosk007.top/static/images/network/tls_record.png" style="height:390px" >
+Record 协议 – 从应用层接受数据:</p>
+<ul>
+<li>分片，逆向是重组</li>
+<li>生成序列号，为每个数据块生成唯一编号，防止被重放或被重排序</li>
+<li>压缩，可选步骤，使用握手协议协商出的压缩算法做压缩 （大多不压缩）</li>
+<li>加密，使用握手协议协商出来的key做加密/解密</li>
+<li>算HMAC，对数据计算HMAC，并且验证收到的数据包的HMAC正确性</li>
+<li>发给tcp/ip，把数据发送给 TCP/IP 做传输(或其它ipc机制)。</li>
+</ul>
+<h2 id="handshake-protocol">handshake protocol</h2>
+<p>handshake 是 TLS里最复杂的子协议，浏览器和服务器在握手过程中协商TLS版本号、随机数、密码套件等信息，并且交换证书、身份验证、交换密钥参数等。最终用于后续的混合加密系统。
+handshake在TLS的发展中又产生了多个变种，比如RSA密钥交换DH密钥交换。0RTT，false start 等等。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">      Client                                               Server
+</span></span><span class="line"><span class="cl">      ClientHello
+</span></span><span class="line"><span class="cl">      <span class="o">(</span>empty SessionTicket extension<span class="o">)</span>-------&gt;
+</span></span><span class="line"><span class="cl">                                                      ServerHello
+</span></span><span class="line"><span class="cl">                                  <span class="o">(</span>empty SessionTicket extension<span class="o">)</span>
+</span></span><span class="line"><span class="cl">                                                     Certificate*
+</span></span><span class="line"><span class="cl">                                               ServerKeyExchange*
+</span></span><span class="line"><span class="cl">                                              CertificateRequest*
+</span></span><span class="line"><span class="cl">                                   &lt;--------      ServerHelloDone
+</span></span><span class="line"><span class="cl">      Certificate*
+</span></span><span class="line"><span class="cl">      ClientKeyExchange
+</span></span><span class="line"><span class="cl">      CertificateVerify*
+</span></span><span class="line"><span class="cl">      <span class="o">[</span>ChangeCipherSpec<span class="o">]</span>
+</span></span><span class="line"><span class="cl">      Finished                     --------&gt;
+</span></span><span class="line"><span class="cl">                                                 NewSessionTicket
+</span></span><span class="line"><span class="cl">                                               <span class="o">[</span>ChangeCipherSpec<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                                   &lt;--------             Finished
+</span></span><span class="line"><span class="cl">      Application Data             &lt;-------&gt;     Application Data
+</span></span><span class="line"><span class="cl">   Figure 1: Message flow <span class="k">for</span> full handshake issuing new session ticket
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="参考">参考：</h1>
+<ul>
+<li></li>
+<li></li>
+<li>[3]: <a href="https://www.feistyduck.com/ssl-tls-and-pki-history/" target="_blank" rel="noopener noreffer">https://www.feistyduck.com/ssl-tls-and-pki-history/</a> （TLS发展史）</li>
+</ul>
+<p><strong>加密套件相关</strong></p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li>[AES]：https://www.tutorialspoint.com/cryptography/advanced_encryption_standard.htm</li>
+<li></li>
+<li></li>
+<li></li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2020-05-02</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" data-title="TLS 详解（一）"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/" data-title="TLS 详解（一）"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/tls/">Tls</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E6%80%9D%E7%BB%B4/" class="prev" rel="prev" title="函数式编程思维"><i class="fas fa-angle-left fa-fw"></i>函数式编程思维</a>
+            <a href="/post/tls%E8%AF%A6%E8%A7%A3-%E4%BA%8C/" class="next" rel="next" title="TLS 详解（二）">TLS 详解（二）<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>使用Open-vSwitch创建虚拟网络 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="使用Open-vSwitch创建虚拟网络">
+  <meta property="og:description" content="前面的文章 虚拟化-创建一个虚拟机 介绍了如何创建一个虚拟机，但是整个Iaas生态，网络的虚拟化也是非常大的一块。我们需要将同一台物理机上的虚拟机连通，虚拟机可以上网，甚至还需要将不同物理机上的虚拟机连通。
+而 OpenvSwitch 就是为了上述需求而诞生的SDN软件。
+OpenvSwtich OpenvSwitch (简称 OVS) 是一个用 C 语言开发的多层虚拟交换机。现如今基本上已经成为了开源 SDN（软件定义网络）基础设施层的事实标准。
+OVS 支持功能 支持标准 802.1Q VLAN协议，允许端口配置trunk模式。 支持组播 支持多种隧道协议（GRE、VXLAN、STT、Geneve 和 IPsec） 支持内核和用户空间的转发引擎选项 OVS的术语解释 Bridge 中文名称网桥，一个 Bridge 代表一个以太网交换机（Switch），一台主机可以创建一个或多个 Bridge，Bridge 可以根据一定的规则，把某一个端口接收到的数据报文转发到另一个或多个端口上，也可以修改或丢弃数据报文。
+Port 交换机上的插口，可以接水晶头，Port隶属于 Bridge，必须先添加了 Bridge 才能在 Bridge 上添加 Port。
+​ Normal：用户可以把操作系统中已有的网卡添加到 OVS 上，OVS会自动生成一个同名的Port。此类型的 Port 常用于 VLAN 模式的多台物理主机相连的口，交换机的一端属于 Trunk 模式
+​ Internal：当Port的类型是 Internal 时，OVS会自动创建一个虚拟网卡（Interface），此端口收到的数据报文都会转发到这个网卡。
+​ Patch：Patch Port 和 veth pair 功能相同，总是成双成对的出现，在其中一端收到的数据报文会被转发到另一个 Patch Port 上，就像是一根网线一样，Patch Port 常用于链接两个 Bridge，使两个网桥合并成为一个网桥
+​ Tunnel：OVS 支持 GRE、VXLAN、IPsec 隧道协议，这些隧道协议就是 overlay 网络的基础协议，通过对物理网络做的一层封装和扩展，解决跨二层网络的问题。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-08-22T11:23:00+00:00">
+    <meta property="article:modified_time" content="2022-08-22T11:23:00+00:00">
+    <meta property="article:tag" content="Openstack">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="使用Open-vSwitch创建虚拟网络">
+  <meta name="twitter:description" content="前面的文章 虚拟化-创建一个虚拟机 介绍了如何创建一个虚拟机，但是整个Iaas生态，网络的虚拟化也是非常大的一块。我们需要将同一台物理机上的虚拟机连通，虚拟机可以上网，甚至还需要将不同物理机上的虚拟机连通。
+而 OpenvSwitch 就是为了上述需求而诞生的SDN软件。
+OpenvSwtich OpenvSwitch (简称 OVS) 是一个用 C 语言开发的多层虚拟交换机。现如今基本上已经成为了开源 SDN（软件定义网络）基础设施层的事实标准。
+OVS 支持功能 支持标准 802.1Q VLAN协议，允许端口配置trunk模式。 支持组播 支持多种隧道协议（GRE、VXLAN、STT、Geneve 和 IPsec） 支持内核和用户空间的转发引擎选项 OVS的术语解释 Bridge 中文名称网桥，一个 Bridge 代表一个以太网交换机（Switch），一台主机可以创建一个或多个 Bridge，Bridge 可以根据一定的规则，把某一个端口接收到的数据报文转发到另一个或多个端口上，也可以修改或丢弃数据报文。
+Port 交换机上的插口，可以接水晶头，Port隶属于 Bridge，必须先添加了 Bridge 才能在 Bridge 上添加 Port。
+​ Normal：用户可以把操作系统中已有的网卡添加到 OVS 上，OVS会自动生成一个同名的Port。此类型的 Port 常用于 VLAN 模式的多台物理主机相连的口，交换机的一端属于 Trunk 模式
+​ Internal：当Port的类型是 Internal 时，OVS会自动创建一个虚拟网卡（Interface），此端口收到的数据报文都会转发到这个网卡。
+​ Patch：Patch Port 和 veth pair 功能相同，总是成双成对的出现，在其中一端收到的数据报文会被转发到另一个 Patch Port 上，就像是一根网线一样，Patch Port 常用于链接两个 Bridge，使两个网桥合并成为一个网桥
+​ Tunnel：OVS 支持 GRE、VXLAN、IPsec 隧道协议，这些隧道协议就是 overlay 网络的基础协议，通过对物理网络做的一层封装和扩展，解决跨二层网络的问题。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C/" /><link rel="prev" href="http://localhost:1313/post/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/" /><link rel="next" href="http://localhost:1313/post/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "使用Open-vSwitch创建虚拟网络",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "openstack","wordcount":  1981 ,
+        "url": "http:\/\/localhost:1313\/post\/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C\/","datePublished": "2022-08-22T11:23:00+00:00","dateModified": "2022-08-22T11:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">使用Open-vSwitch创建虚拟网络</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud-computing/"><i class="far fa-folder fa-fw"></i>Cloud Computing</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-08-22">2022-08-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1981 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;10 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#openvswtich">OpenvSwtich</a>
+      <ul>
+        <li><a href="#ovs-支持功能">OVS 支持功能</a></li>
+        <li><a href="#ovs的术语解释">OVS的术语解释</a></li>
+        <li><a href="#网络术语">网络术语</a></li>
+      </ul>
+    </li>
+    <li><a href="#准备实验环境">准备实验环境</a></li>
+    <li><a href="#实验一-同台宿主机下的虚拟机相互通信">实验一: 同台宿主机下的虚拟机相互通信</a></li>
+    <li><a href="#实验二-划分-vlan-隔离网络">实验二: 划分 VLAN 隔离网络</a></li>
+    <li><a href="#实验三-自动分配ip地址">实验三: 自动分配IP地址</a></li>
+    <li><a href="#实验四-跨宿主机下虚拟机通信">实验四: 跨宿主机下虚拟机通信</a></li>
+    <li><a href="#实验五-跨宿主机的-vlan-划分">实验五: 跨宿主机的 VLAN 划分</a></li>
+    <li><a href="#实验六-虚拟机访问外网openstack-模式">实验六: 虚拟机访问外网（OpenStack 模式）</a></li>
+    <li><a href="#更多实战">更多实战</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2022-08-22T11:23:00" title="August 22, 2022">August 22, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>前面的文章 <a href="https://kiosk007.top/post/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/" target="_blank" rel="noopener noreffer">虚拟化-创建一个虚拟机</a> 介绍了如何创建一个虚拟机，但是整个Iaas生态，网络的虚拟化也是非常大的一块。我们需要将同一台物理机上的虚拟机连通，虚拟机可以上网，甚至还需要将不同物理机上的虚拟机连通。</p>
+<p>而 OpenvSwitch 就是为了上述需求而诞生的SDN软件。</p>
+<h1 id="openvswtich">OpenvSwtich</h1>
+<p>OpenvSwitch (简称 OVS) 是一个用 C 语言开发的多层虚拟交换机。现如今基本上已经成为了开源 SDN（软件定义网络）基础设施层的事实标准。</p>
+<h2 id="ovs-支持功能">OVS 支持功能</h2>
+<ul>
+<li>支持标准 802.1Q VLAN协议，允许端口配置trunk模式。</li>
+<li>支持组播</li>
+<li>支持多种隧道协议（GRE、VXLAN、STT、Geneve 和 IPsec）</li>
+<li>支持内核和用户空间的转发引擎选项</li>
+</ul>
+<br/>
+<h2 id="ovs的术语解释">OVS的术语解释</h2>
+<ul>
+<li><strong>Bridge</strong></li>
+</ul>
+<p>中文名称<strong>网桥</strong>，一个 Bridge 代表一个以太网交换机（Switch），一台主机可以创建一个或多个 Bridge，Bridge 可以根据一定的规则，把某一个端口接收到的数据报文转发到另一个或多个端口上，也可以修改或丢弃数据报文。</p>
+<ul>
+<li><strong>Port</strong></li>
+</ul>
+<p>交换机上的插口，可以接水晶头，Port隶属于 Bridge，必须先添加了 Bridge 才能在 Bridge 上添加 Port。</p>
+<blockquote>
+<p>​     <strong>Normal</strong>：用户可以把操作系统中已有的网卡添加到 OVS 上，OVS会自动生成一个同名的Port。此类型的 Port 常用于 VLAN 模式的多台物理主机相连的口，交换机的一端属于 Trunk 模式</p>
+</blockquote>
+<blockquote>
+<p>​     <strong>Internal</strong>：当Port的类型是 Internal 时，OVS会自动创建一个虚拟网卡（Interface），此端口收到的数据报文都会转发到这个网卡。</p>
+</blockquote>
+<blockquote>
+<p>​    <strong>Patch</strong>：Patch Port 和 veth pair 功能相同，总是成双成对的出现，在其中一端收到的数据报文会被转发到另一个 Patch Port 上，就像是一根网线一样，Patch Port 常用于链接两个 Bridge，使两个网桥合并成为一个网桥</p>
+</blockquote>
+<blockquote>
+<p>​     <strong>Tunnel</strong>：OVS 支持 GRE、VXLAN、IPsec 隧道协议，这些隧道协议就是 overlay 网络的基础协议，通过对物理网络做的一层封装和扩展，解决跨二层网络的问题。</p>
+</blockquote>
+<p><strong>Interface</strong></p>
+<p>接口是OVS与操作系统交换数据报文的组件，一个接口即是操作系统上的一块网卡，这个网卡可能是 OVS 生成的虚拟网卡，也可能是挂载在 OVS 上的物理网卡，操作系统上的虚拟网卡（TAP/TUN）也可以被挂载在 OVS 上。</p>
+<p><strong>Controller</strong></p>
+<p>OpenFlow 控制器，OVS 可以接受一个或者多个 OpenFLow 控制器的管理。功能主要是下发流表、控制转发规则。</p>
+<p><strong>Flow</strong></p>
+<p>流表是OVS进行数据转发的核心功能，定义了端口之间的转发数据报文的规则，一条流表规则主要分为匹配和动作两部分，匹配部分决定哪些数据报文需要被处理，动作决定了匹配到的数据报文该如何处理。</p>
+<br/>
+<h2 id="网络术语">网络术语</h2>
+<ol>
+<li><strong>什么是VLAN</strong></li>
+</ol>
+<p>VLAN（Virtual Local Area Network）即虚拟局域网，是将一个物理的LAN在逻辑上划分成多个广播域的通信技术。
+每个VLAN是一个广播域，VLAN内的主机间可以直接通信，而VLAN间则不能直接互通。这样，广播报文就被限制在一个VLAN内。</p>
+<p>详见：<a href="https://info.support.huawei.com/info-finder/encyclopedia/zh/VLAN.html" target="_blank" rel="noopener noreffer">什么是VLAN</a></p>
+<ol start="2">
+<li><strong>什么是VXLAN</strong></li>
+</ol>
+<p>VXLAN（Virtual eXtensible Local Area Network，虚拟扩展局域网），是对传统VLAN协议的一种扩展。VXLAN的特点是将L2的以太帧封装到UDP报文（即L2 over L4）中，并在L3网络中传输。</p>
+<p>VXLAN本质上是一种隧道技术，在源网络设备与目的网络设备之间的IP网络上，建立一条逻辑隧道，将用户侧报文经过特定的封装后通过这条隧道转发。从用户的角度来看，接入网络的服务器就像是连接到了一个虚拟的二层交换机的不同端口上</p>
+<p>详见：<a href="https://support.huawei.com/enterprise/zh/doc/EDOC1100087027" target="_blank" rel="noopener noreffer">什么是VXLAN</a></p>
+<ol start="3">
+<li><strong>什么是访问链接和汇聚链接</strong></li>
+</ol>
+<p>访问链接（access link）:指的是“只属于一个VLAN，且仅向该VLAN转发数据帧”的端口。一般用于链接计算机端口。</p>
+<p>汇聚链接（trunk link）：指的是能够转发多个不同VLAN的通信的端口。汇聚链路上流通的数据帧，都被附加了用于识别分属于哪个VLAN的特殊信息。一般用于交换机与交换机之间的相关接口。</p>
+<ol start="4">
+<li><strong>VLAN的汇聚方式</strong></li>
+</ol>
+<p>通过汇聚链路时附加的 VLAN 识别信息，这个VLAN 识别信息有 IEEE 802.1Q、Cisco 产品独有的&quot;ISL（Inter Switch Link）&quot;</p>
+<br/>
+<h1 id="准备实验环境">准备实验环境</h1>
+<p>VMware WorkStation</p>
+<p>ubuntu 22.04 虚拟机 2 台，每台主机2块网卡，一块配置为Nat，一块配置为 Host-only 模式。</p>
+<table>
+<thead>
+<tr>
+<th>虚拟机</th>
+<th>网卡一</th>
+<th>网卡二</th>
+<th>网卡三</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>instance_001</td>
+<td>ens33 Nat 172.16.101.130</td>
+<td>ens37  Host-only (192.16.100.10)</td>
+<td>-</td>
+</tr>
+<tr>
+<td>instance_002</td>
+<td>ens33 Nat 172.16.101.131</td>
+<td>ens37  Host-only (192.168.100.11)</td>
+<td>-</td>
+</tr>
+<tr>
+<td>instance_003</td>
+<td>ens33 Nat 172.16.101.132</td>
+<td>ens37 Host-only (192.168.100.12)</td>
+<td>ens38  Bridge (192.168.0.106)</td>
+</tr>
+</tbody>
+</table>
+<img src="https://img1.kiosk007.top/static/images/blog/openvswitch_vmware_network.png" alt="openvswitch_vmware_network" style="zoom:33%;clear:both;display:block;margin:auto;" />
+<p><i class="fa-solid fa-network-wired"></i>   安装 OpenvSwtich 。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get install openvswitch-switch
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">systemctl start openvswitch-switch.service
+</span></span><span class="line"><span class="cl">systemctl <span class="nb">enable</span> openvswitch-switch.service
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><i class="fa-solid fa-circle-check"></i>    验证 OpenvSwitch</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ovs-vsctl show
+</span></span><span class="line"><span class="cl">4b671582-0aae-4dcb-bb89-763ac8a004cf
+</span></span><span class="line"><span class="cl">    ovs_version: <span class="s2">&#34;2.13.8&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><i class="fa-solid fa-terminal"></i> 支持的命令</p>
+<ul>
+<li>添加网桥：<code>ovs-vsctl add-br br0</code></li>
+<li>列出所有网桥：<code>ovs-vsctl list-br</code></li>
+<li>判断网桥是否存在：<code>ovs-vsctl br-exists br0</code></li>
+<li>将物理网卡挂接到网桥：<code>ovs-vsctl add-port br0 eth0</code></li>
+<li>列出网桥中的所有端口：<code>ovs-vsctl list-ports br0</code></li>
+<li>列出所有挂接到网卡上的网桥：<code>ovs-vsctl port-to-br eth0</code></li>
+<li>查看OVS 状态：<code>ovs-vsctl show</code></li>
+<li>查看OVS 的所有Interface、Port 等：<code>ovs-vsctl list (Interface|Port)</code> 或 <code>ovs-vsctl list Port ens37</code></li>
+<li>删除网桥上已经挂接的网口：<code>vs-vsctl del-port br0 eth0</code></li>
+<li>删除网桥：<code>ovs-vsctl del-br br0</code></li>
+</ul>
+<br/>
+<h1 id="实验一-同台宿主机下的虚拟机相互通信">实验一: 同台宿主机下的虚拟机相互通信</h1>
+<blockquote>
+<p>本实验均在 instance_001上进行</p>
+</blockquote>
+<img src="https://img1.kiosk007.top/static/images/blog/network1.png" alt="network1" style="zoom:37%;clear:both;display:block;margin:auto;" />
+<ul>
+<li>创建一个网桥</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ovs-vsctl add-br br-in
+</span></span><span class="line"><span class="cl">$ ovs-vsctl show
+</span></span><span class="line"><span class="cl">cd41a1cd-3c5e-40ed-9b96-cc46522b69fd
+</span></span><span class="line"><span class="cl">    Bridge br-in
+</span></span><span class="line"><span class="cl">        Port br-in
+</span></span><span class="line"><span class="cl">            Interface br-in
+</span></span><span class="line"><span class="cl">                type: internal
+</span></span><span class="line"><span class="cl">    ovs_version: <span class="s2">&#34;2.13.8&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>br 网桥上添加一个端口</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ovs-vsctl add-port br-in ens37
+</span></span><span class="line"><span class="cl">$ ovs-vsctl list-ports br-in
+</span></span><span class="line"><span class="cl">ens37
+</span></span><span class="line"><span class="cl">$ ovs-vsctl show 
+</span></span><span class="line"><span class="cl">cd41a1cd-3c5e-40ed-9b96-cc46522b69fd
+</span></span><span class="line"><span class="cl">    Bridge br-in
+</span></span><span class="line"><span class="cl">        Port ens37
+</span></span><span class="line"><span class="cl">            Interface ens37
+</span></span><span class="line"><span class="cl">        Port br-in
+</span></span><span class="line"><span class="cl">            Interface br-in
+</span></span><span class="line"><span class="cl">                type: internal
+</span></span><span class="line"><span class="cl">    ovs_version: <span class="s2">&#34;2.13.8&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>网卡配置脚本</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 启动网卡脚本</span>
+</span></span><span class="line"><span class="cl">touch /root/virtual-machine/if-up
+</span></span><span class="line"><span class="cl">chmod +x /root/virtual-machine/if-up
+</span></span><span class="line"><span class="cl">vim /root/virtual-machine/if-up 
+</span></span><span class="line"><span class="cl"><span class="c1">#!/bin/bash</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="nv">bridge</span><span class="o">=</span>br-in
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -n <span class="nv">$1</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+</span></span><span class="line"><span class="cl">        ip link <span class="nb">set</span> <span class="nv">$1</span> up
+</span></span><span class="line"><span class="cl">        sleep <span class="m">1</span>
+</span></span><span class="line"><span class="cl">        ovs-vsctl add-port <span class="nv">$bridge</span> <span class="nv">$1</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span> <span class="nv">$?</span> -eq <span class="m">0</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nb">exit</span> <span class="m">0</span> <span class="o">||</span> <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s1">&#39;Error:no port specified&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">exit</span> <span class="m">2</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 关闭网卡脚本</span>
+</span></span><span class="line"><span class="cl">touch /root/virtual-machine/if-down
+</span></span><span class="line"><span class="cl">chmod +x /root/virtual-machine/if-down
+</span></span><span class="line"><span class="cl">vim /root/virtual-machine/if-down
+</span></span><span class="line"><span class="cl"><span class="c1">#!/bin/bash</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="nv">bridge</span><span class="o">=</span>br-in
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -n <span class="nv">$1</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+</span></span><span class="line"><span class="cl">        ip link <span class="nb">set</span> <span class="nv">$1</span> down
+</span></span><span class="line"><span class="cl">        sleep <span class="m">1</span>
+</span></span><span class="line"><span class="cl">        ovs-vsctl del-port <span class="nv">$bridge</span> <span class="nv">$1</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span> <span class="nv">$?</span> -eq <span class="m">0</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nb">exit</span> <span class="m">0</span> <span class="o">||</span> <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s1">&#39;Error:no port specified&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">exit</span> <span class="m">2</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>启动虚拟机 vm1 vm2</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 启动vm1</span>
+</span></span><span class="line"><span class="cl">$ qemu-system-x86_64 -enable-kvm -name <span class="s2">&#34;vm1&#34;</span> -m <span class="m">256</span> -smp <span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-drive <span class="nv">file</span><span class="o">=</span>/root/images/cirros-0.4.0-x86_64-nocloud-1.img,media<span class="o">=</span>disk,if<span class="o">=</span>virtio <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net nic,model<span class="o">=</span>virtio,macaddr<span class="o">=</span>52:54:00:00:00:01 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net tap,ifname<span class="o">=</span>vif0.0,script<span class="o">=</span>/root/virtual-machine/if-up,downscript<span class="o">=</span>/root/virtual-machine/if-down <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--nographic
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动vm2</span>
+</span></span><span class="line"><span class="cl">$ qemu-system-x86_64 -enable-kvm -name <span class="s2">&#34;vm2&#34;</span> -m <span class="m">256</span> -smp <span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-drive <span class="nv">file</span><span class="o">=</span>/root/images/cirros-0.4.0-x86_64-nocloud-2.img,media<span class="o">=</span>disk,if<span class="o">=</span>virtio <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net nic,model<span class="o">=</span>virtio,macaddr<span class="o">=</span>52:54:00:00:00:02 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net tap,ifname<span class="o">=</span>vif1.0,script<span class="o">=</span>/root/virtual-machine/if-up,downscript<span class="o">=</span>/root/virtual-machine/if-down <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--nographic
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>配置vm的ip地址</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># vm1 上的操作</span>
+</span></span><span class="line"><span class="cl">$ ifconfig eth0 10.0.3.1 netmask 255.255.255.0 up
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># vm2 上的操作</span>
+</span></span><span class="line"><span class="cl">$ ifconfig eth0 10.0.3.2 netmask 255.255.255.0 up
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 此时vm1就可以 ping通vm2 了</span>
+</span></span><span class="line"><span class="cl">$ ping 10.0.3.2
+</span></span><span class="line"><span class="cl">PING 10.0.3.2 <span class="o">(</span>10.0.3.2<span class="o">)</span>: <span class="m">56</span> data bytes
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 10.0.3.2: <span class="nv">seq</span><span class="o">=</span><span class="m">0</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span>1.072 ms
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 10.0.3.2: <span class="nv">seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span>0.755 ms
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h1 id="实验二-划分-vlan-隔离网络">实验二: 划分 VLAN 隔离网络</h1>
+<blockquote>
+<p>本实验均在 instance_001上进行</p>
+</blockquote>
+<img src="https://img1.kiosk007.top/static/images/blog/network2.png" alt="network2" style="zoom:37%;clear:both;display:block;margin:auto;" />
+<p>VLan 的划分有很多方法，有基于Mac地址、有基于IP地址，本次基于 Tag 的方式（给端口加标签的方式）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ovs-vsctl <span class="nb">set</span> port vif0.0 <span class="nv">tag</span><span class="o">=</span><span class="m">10</span>
+</span></span><span class="line"><span class="cl">$ ovs-vsctl <span class="nb">set</span> port vif1.0 <span class="nv">tag</span><span class="o">=</span><span class="m">11</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此时 vm1 无法再 ping 通 vm2</p>
+<pre tabindex="0"><code>$ ovs-vsctl list Port vif0.0
+_uuid               : 83d88e1f-c234-4666-aba1-ece7b3d278b9
+...
+fake_bridge         : false
+interfaces          : [f07ff627-90e3-4650-a0da-588b722e9407]
+lacp                : []
+mac                 : []
+name                : vif0.0
+other_config        : {}
+protected           : false
+...
+tag                 : 10
+trunks              : []
+vlan_mode           : []
+</code></pre><ul>
+<li>在 instance_001 上再启动一个 ovs 交换机 br1-in。</li>
+</ul>
+<pre tabindex="0"><code>$ ovs-vsctl add-br br1-in
+$ ovs-vsctl list-br
+br-in
+br1-in
+</code></pre><ul>
+<li>启动一个新的虚拟机 vm3，并将vm3 连接在 br1-in 上，并配置 ip。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ cp <span class="k">if</span>-up <span class="k">if</span>-up1
+</span></span><span class="line"><span class="cl">$ cp ip-down <span class="k">if</span>-down1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动vm3</span>
+</span></span><span class="line"><span class="cl">$ qemu-system-x86_64 -enable-kvm -name <span class="s2">&#34;vm3&#34;</span> -m <span class="m">256</span> -smp <span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-drive <span class="nv">file</span><span class="o">=</span>/root/images/cirros-0.4.0-x86_64-nocloud-3.img,media<span class="o">=</span>disk,if<span class="o">=</span>virtio <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net nic,model<span class="o">=</span>virtio,macaddr<span class="o">=</span>52:54:00:00:00:03 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net tap,ifname<span class="o">=</span>vif2.0,script<span class="o">=</span>/root/virtual-machine/if-up1,downscript<span class="o">=</span>/root/virtual-machine/if-down1 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--nographic
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># vm3 上配置 ip</span>
+</span></span><span class="line"><span class="cl">$ ifconfig eth0 10.0.3.3 netmask 255.255.255.0 up
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>此时的 vm3 因为和 vm1、vm2 连在一个交换机上，肯定无法ping通。将两个交换机连起来</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 创建一个网卡对</span>
+</span></span><span class="line"><span class="cl">$ ip link add s0 <span class="nb">type</span> veth peer name s1 
+</span></span><span class="line"><span class="cl">$ ip link <span class="nb">set</span> s0 up
+</span></span><span class="line"><span class="cl">$ ip link <span class="nb">set</span> s1 up
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 连接两个交换机</span>
+</span></span><span class="line"><span class="cl">$ ovs-vsctl add-port br-in s0
+</span></span><span class="line"><span class="cl">$ ovs-vsctl add-port br1-in s1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 将vm3的 vif2.0 的vlan设为10</span>
+</span></span><span class="line"><span class="cl">$ ovs-vsctl <span class="nb">set</span> port vif2.0 <span class="nv">tag</span><span class="o">=</span><span class="m">10</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>此时 vm3 由于和 vm1 同出于 tag=10 的Vlan，vm3 和 vm2 无法ping 通，但是 vm3 和 vm1 可以ping 通。</li>
+</ul>
+<pre tabindex="0"><code>$ ping 10.0.3.2
+PING 10.0.3.2 (10.0.3.2): 56 data bytes
+^C
+--- 10.0.3.2 ping statistics ---
+4 packets transmitted, 0 packets received, 100% packet loss
+
+$ ping 10.0.3.1
+PING 10.0.3.1 (10.0.3.1): 56 data bytes
+64 bytes from 10.0.3.1: seq=0 ttl=64 time=11.117 ms
+64 bytes from 10.0.3.1: seq=1 ttl=64 time=1.852 ms
+</code></pre><blockquote>
+<p>实验结束，删除 VLAN tag 配置可使用</p>
+<p>ovs-vsctl remove Port vif0.0 tag 10</p>
+</blockquote>
+<br/>
+<h1 id="实验三-自动分配ip地址">实验三: 自动分配IP地址</h1>
+<blockquote>
+<p>本实验在 instance_001 上进行，并且清空之前 instance_001 上的网桥相关信息，重新开始</p>
+</blockquote>
+<p>为了让启动的虚拟机自动获得 IP 地址，我们使用 dnsmasq 搭建一个 DHCP 服务。</p>
+<ul>
+<li>使用网络空间创建一个 Namespace</li>
+</ul>
+<pre tabindex="0"><code>$ ip netns add r0   #添加namespace
+$ ip link add sif0 type veth peer name rif0 #添加一对网卡
+$ ip link set sif0 up
+$ ip link set rif0 up
+$ ip link set rif0 netns r0  #把网卡rif0给r0
+$ ovs-vsctl add-port ovs-br1 sif0 #把网卡sif0给br-in
+</code></pre><ul>
+<li>激活r0上的网卡</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ip netns <span class="nb">exec</span> r0 ip link <span class="nb">set</span> rif0 up
+</span></span><span class="line"><span class="cl">$ ip netns <span class="nb">exec</span> r0 ip addr add 10.0.0.1/24 dev rif0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>安装dnsmasq并配置DHCP服务</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo apt install dnsmasq
+</span></span><span class="line"><span class="cl"><span class="c1"># 配置DHCP</span>
+</span></span><span class="line"><span class="cl">$ ip netns <span class="nb">exec</span> r0 dnsmasq -F 10.0.0.200,10.0.0.230,86400 -i rif0
+</span></span><span class="line"><span class="cl">$ ip netns <span class="nb">exec</span> r0 ss -unl
+</span></span><span class="line"><span class="cl">State               Recv-Q              Send-Q                           Local Address:Port                            Peer Address:Port              Process              
+</span></span><span class="line"><span class="cl">UNCONN              <span class="m">0</span>                   <span class="m">0</span>                                      0.0.0.0:53                                   0.0.0.0:*                                      
+</span></span><span class="line"><span class="cl">UNCONN              <span class="m">0</span>                   <span class="m">0</span>                                      0.0.0.0:67                                   0.0.0.0:*                                      
+</span></span><span class="line"><span class="cl">UNCONN              <span class="m">0</span>                   <span class="m">0</span>                                         <span class="o">[</span>::<span class="o">]</span>:53                                      <span class="o">[</span>::<span class="o">]</span>:*            
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>启动一个虚拟机，并查看 IP地址和路由信息</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># 启动 vm4 </span>
+</span></span><span class="line"><span class="cl">$ qemu-system-x86_64 -enable-kvm -name <span class="s2">&#34;vm4&#34;</span> -m <span class="m">256</span> -smp <span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-drive <span class="nv">file</span><span class="o">=</span>/root/images/cirros-0.4.0-x86_64-nocloud.img,media<span class="o">=</span>disk,if<span class="o">=</span>virtio <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net nic,model<span class="o">=</span>virtio,macaddr<span class="o">=</span>52:54:00:00:00:04 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net tap,ifname<span class="o">=</span>vif4.0,script<span class="o">=</span>/root/virtual-machine/if-up,downscript<span class="o">=</span>/root/virtual-machine/if-down <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--nographic
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看信息</span>
+</span></span><span class="line"><span class="cl">$ ip a
+</span></span><span class="line"><span class="cl">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span class="m">65536</span> qdisc noqueue qlen <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</span></span><span class="line"><span class="cl">    inet 127.0.0.1/8 scope host lo
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">    inet6 ::1/128 scope host 
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc pfifo_fast qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 52:54:00:00:00:04 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet 10.0.0.211/24 brd 10.0.0.255 scope global eth0
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">    inet6 fe80::5054:ff:fe00:4/64 scope link 
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">$ route -n
+</span></span><span class="line"><span class="cl">Kernel IP routing table
+</span></span><span class="line"><span class="cl">Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+</span></span><span class="line"><span class="cl">0.0.0.0         10.0.0.1        0.0.0.0         UG    <span class="m">0</span>      <span class="m">0</span>        <span class="m">0</span> eth0
+</span></span><span class="line"><span class="cl">10.0.0.0        0.0.0.0         255.255.255.0   U     <span class="m">0</span>      <span class="m">0</span>        <span class="m">0</span> eth0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h1 id="实验四-跨宿主机下虚拟机通信">实验四: 跨宿主机下虚拟机通信</h1>
+<blockquote>
+<p>本实验在 instance_001 和 instance_002 上进行</p>
+</blockquote>
+<ul>
+<li>创建网桥</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 节点1添加网桥(instance_001 上执行)</span>
+</span></span><span class="line"><span class="cl">$ ovs-vsctl add-br ovs-br1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 节点2添加网桥 (instance_002 上执行)</span>
+</span></span><span class="line"><span class="cl">$ ovs-vsctl add-br ovs-br2 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>配置 gre 隧道</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 添加 gre （instance_001 上执行）</span>
+</span></span><span class="line"><span class="cl">$ ovs-vsctl add-port ovs-br1 gre1
+</span></span><span class="line"><span class="cl">$ ovs-vsctl <span class="nb">set</span> interface gre1 <span class="nv">type</span><span class="o">=</span>gre options:remote_ip<span class="o">=</span>192.168.100.11
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 添加 gre （instance_002 上执行）</span>
+</span></span><span class="line"><span class="cl">$ ovs-vsctl add-port ovs-br2 gre2
+</span></span><span class="line"><span class="cl">$ ovs-vsctl <span class="nb">set</span> interface gre2 <span class="nv">type</span><span class="o">=</span>gre options:remote_ip<span class="o">=</span>192.168.100.10
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看 002</span>
+</span></span><span class="line"><span class="cl">$ ovs-vsctl show
+</span></span><span class="line"><span class="cl">4b671582-0aae-4dcb-bb89-763ac8a004cf
+</span></span><span class="line"><span class="cl">    Bridge ovs-br2
+</span></span><span class="line"><span class="cl">        Port gre2
+</span></span><span class="line"><span class="cl">            Interface gre2
+</span></span><span class="line"><span class="cl">                type: gre
+</span></span><span class="line"><span class="cl">                options: <span class="o">{</span><span class="nv">remote_ip</span><span class="o">=</span><span class="s2">&#34;192.168.100.10&#34;</span><span class="o">}</span>
+</span></span><span class="line"><span class="cl">        Port ovs-br2
+</span></span><span class="line"><span class="cl">            Interface ovs-br2
+</span></span><span class="line"><span class="cl">                type: internal
+</span></span><span class="line"><span class="cl">    ovs_version: <span class="s2">&#34;2.13.8&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>启动虚拟机，自动从 001 上的DHCP 服务获取IP地址</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 启动虚拟机 (instance_002 上执行)</span>
+</span></span><span class="line"><span class="cl">$ qemu-system-x86_64 -enable-kvm -name <span class="s2">&#34;vm5&#34;</span> -m <span class="m">256</span> -smp <span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-drive <span class="nv">file</span><span class="o">=</span>/root/images/cirros-0.4.0-x86_64-nocloud.img,media<span class="o">=</span>disk,if<span class="o">=</span>virtio <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net nic,model<span class="o">=</span>virtio,macaddr<span class="o">=</span>52:54:00:00:00:05 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net tap,ifname<span class="o">=</span>vif5.0,script<span class="o">=</span>/root/virtual-machine/if-up,downscript<span class="o">=</span>/root/virtual-machine/if-down <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--nographic
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># vm5 的虚拟机内执行</span>
+</span></span><span class="line"><span class="cl">ip addr show
+</span></span><span class="line"><span class="cl">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span class="m">65536</span> qdisc noqueue qlen <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</span></span><span class="line"><span class="cl">    inet 127.0.0.1/8 scope host lo
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">    inet6 ::1/128 scope host 
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc pfifo_fast qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 52:54:00:00:00:05 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet 10.0.0.212/24 brd 10.0.0.255 scope global eth0
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">    inet6 fe80::5054:ff:fe00:5/64 scope link 
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl"><span class="c1"># ping 10.0.0.211</span>
+</span></span><span class="line"><span class="cl">PING 10.0.0.211 <span class="o">(</span>10.0.0.211<span class="o">)</span>: <span class="m">56</span> data bytes
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 10.0.0.211: <span class="nv">seq</span><span class="o">=</span><span class="m">0</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span>5.710 ms
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 10.0.0.211: <span class="nv">seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span>1.604 ms
+</span></span><span class="line"><span class="cl">^C
+</span></span><span class="line"><span class="cl">--- 10.0.0.211 ping statistics ---
+</span></span><span class="line"><span class="cl"><span class="m">2</span> packets transmitted, <span class="m">2</span> packets received, 0% packet loss
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>instance_001 的 ens37 网卡上抓报可以看到，其使用的GRE 隧道技术，IP地址之上又封装了一层IP地址。（<em>截图中的 192.168.0.10 可以认为是 192.168.100.10，后面换过网段</em>）</p>
+<img src="https://img1.kiosk007.top/static/images/blog/network3.png" alt="network3" style="zoom:67%;" />
+<br/>
+<h1 id="实验五-跨宿主机的-vlan-划分">实验五: 跨宿主机的 VLAN 划分</h1>
+<blockquote>
+<p>本实验在 instance_001 和 instance_002 上进行</p>
+</blockquote>
+<img src="https://img1.kiosk007.top/static/images/blog/network5.png" alt="network4" style="zoom:40%;clear:both;display:block;margin:auto;" />
+<ul>
+<li>再启动两个虚拟机</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># instance_001 上再启动一个虚拟机</span>
+</span></span><span class="line"><span class="cl">$ qemu-system-x86_64 -enable-kvm -name <span class="s2">&#34;vm6&#34;</span> -m <span class="m">256</span> -smp <span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-drive <span class="nv">file</span><span class="o">=</span>/root/images/cirros-0.4.0-x86_64-nocloud-1.img,media<span class="o">=</span>disk,if<span class="o">=</span>virtio <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net nic,model<span class="o">=</span>virtio,macaddr<span class="o">=</span>52:54:00:00:00:06 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net tap,ifname<span class="o">=</span>vif6.0,script<span class="o">=</span>/root/virtual-machine/if-up,downscript<span class="o">=</span>/root/virtual-machine/if-down <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--nographic
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># instance_002 上再启动一个虚拟机</span>
+</span></span><span class="line"><span class="cl">$ qemu-system-x86_64 -enable-kvm -name <span class="s2">&#34;vm7&#34;</span> -m <span class="m">256</span> -smp <span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-drive <span class="nv">file</span><span class="o">=</span>/root/images/cirros-0.4.0-x86_64-nocloud-1.img,media<span class="o">=</span>disk,if<span class="o">=</span>virtio <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net nic,model<span class="o">=</span>virtio,macaddr<span class="o">=</span>52:54:00:00:00:07 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-net tap,ifname<span class="o">=</span>vif7.0,script<span class="o">=</span>/root/virtual-machine/if-up,downscript<span class="o">=</span>/root/virtual-machine/if-down <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--nographic
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>划分VLAN</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># instance_001 上对 vm4 和 vm6 划分</span>
+</span></span><span class="line"><span class="cl">ovs-vsctl <span class="nb">set</span> port vif4.0 <span class="nv">tag</span><span class="o">=</span><span class="m">10</span>
+</span></span><span class="line"><span class="cl">ovs-vsctl <span class="nb">set</span> port vif6.0 <span class="nv">tag</span><span class="o">=</span><span class="m">11</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># instance_002 上对 vm5 和 vm7 划分</span>
+</span></span><span class="line"><span class="cl">ovs-vsctl <span class="nb">set</span> port vif5.0 <span class="nv">tag</span><span class="o">=</span><span class="m">10</span>
+</span></span><span class="line"><span class="cl">ovs-vsctl <span class="nb">set</span> port vif7.0 <span class="nv">tag</span><span class="o">=</span><span class="m">11</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此时 vm7 (10.0.0.214) 可以ping 通 vm6 (10.0.0.213) 但是无法ping通 vm4 (10.0.0.211)</p>
+<br/>
+<h1 id="实验六-虚拟机访问外网openstack-模式">实验六: 虚拟机访问外网（OpenStack 模式）</h1>
+<blockquote>
+<p>本实验在 instance_001 、 instance_002 和 instance_003 上进行（001 、002 取消所有vlan tag\删除001 和 002 中间的 gre）</p>
+<p>$ ovs-vsctl remove Port vif4.0 tag 10 &ndash; remove Port vif6.0 tag 11</p>
+<p>$ ovs-vsctl del-port ovs-br1 gre1</p>
+</blockquote>
+<img src="https://img1.kiosk007.top/static/images/blog/network6.png" alt="network6" style="zoom:107%;" />
+<ul>
+<li>instance_003 创建 网桥</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ovs-vsctl add-br ovs-br3
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>配置网络命名空间</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># instance_003 上操作</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 添加一个 netns</span>
+</span></span><span class="line"><span class="cl">ip netns add r0
+</span></span><span class="line"><span class="cl">ip link add sin0 <span class="nb">type</span> veth peer name rin0
+</span></span><span class="line"><span class="cl">ip link add sex0 <span class="nb">type</span> veth peer name rex0
+</span></span><span class="line"><span class="cl">ip link <span class="nb">set</span> sin0 up
+</span></span><span class="line"><span class="cl">ip link <span class="nb">set</span> sex0 up
+</span></span><span class="line"><span class="cl">ip link <span class="nb">set</span> rin0 netns r0
+</span></span><span class="line"><span class="cl">ip link <span class="nb">set</span> rex0 netns r0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 将 rin0 设置一个ip</span>
+</span></span><span class="line"><span class="cl">ip netns <span class="nb">exec</span> r0 ip addr add 10.0.0.2/24 dev rin0
+</span></span><span class="line"><span class="cl">ip netns <span class="nb">exec</span> r0 ifconfig rin0 up
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 将 sin0 添加到 ovs-br3</span>
+</span></span><span class="line"><span class="cl">ovs-vsctl add-port ovs-br3 sin0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>连通 instance_001 和 instance_003</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># instance_001 上执行</span>
+</span></span><span class="line"><span class="cl">ovs-vsctl add-port ovs-br1 gre3
+</span></span><span class="line"><span class="cl">ovs-vsctl <span class="nb">set</span> interface gre3 <span class="nv">type</span><span class="o">=</span>gre options:remote_ip<span class="o">=</span>192.168.100.12
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># instance_002 上执行</span>
+</span></span><span class="line"><span class="cl">ovs-vsctl add-port ovs-br2 gre4
+</span></span><span class="line"><span class="cl">ovs-vsctl <span class="nb">set</span> interface gre4 <span class="nv">type</span><span class="o">=</span>gre options:remote_ip<span class="o">=</span>192.168.100.12
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># instance_003 上执行</span>
+</span></span><span class="line"><span class="cl">ovs-vsctl add-port ovs-br3 gre5
+</span></span><span class="line"><span class="cl">ovs-vsctl <span class="nb">set</span> interface gre5 <span class="nv">type</span><span class="o">=</span>gre options:remote_ip<span class="o">=</span>192.168.100.10
+</span></span><span class="line"><span class="cl">ovs-vsctl add-port ovs-br3 gre6
+</span></span><span class="line"><span class="cl">ovs-vsctl <span class="nb">set</span> interface gre6 <span class="nv">type</span><span class="o">=</span>gre options:remote_ip<span class="o">=</span>192.168.100.11
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 此时 r0 已经可以和众多虚拟机 ping 通</span>
+</span></span><span class="line"><span class="cl">$ ip netns <span class="nb">exec</span> r0 ping 10.0.0.211
+</span></span><span class="line"><span class="cl">PING 10.0.0.211 <span class="o">(</span>10.0.0.211<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 10.0.0.211: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span>3.91 ms
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>instance_003 上创建网桥，并桥接 物理网卡 ens38</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 创建网桥</span>
+</span></span><span class="line"><span class="cl">brctl addbr br-ext
+</span></span><span class="line"><span class="cl"><span class="c1"># 绑定 ens38</span>
+</span></span><span class="line"><span class="cl">brctl addif br-ext ens38
+</span></span><span class="line"><span class="cl"><span class="c1"># 删除 ens38 上的 IP 地址</span>
+</span></span><span class="line"><span class="cl">ip addr del dev ens38 172.16.101.133/24
+</span></span><span class="line"><span class="cl"><span class="c1"># 将IP地址配置到网桥之上</span>
+</span></span><span class="line"><span class="cl">ifconfig br-ext 172.16.101.133/24 up
+</span></span><span class="line"><span class="cl"><span class="c1"># 重新加入默认网关</span>
+</span></span><span class="line"><span class="cl">route add default gw 172.16.101.2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 将 sex0 也加入 br-ext</span>
+</span></span><span class="line"><span class="cl">brctl addif br-ext sex0
+</span></span><span class="line"><span class="cl">ip netns <span class="nb">exec</span> r0 ifconfig rex0 192.168.0.200/24 up
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>虚拟机上配置默认路由</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 随便选一台vm,这里选择 instance_001 上的 vm1</span>
+</span></span><span class="line"><span class="cl">route add default gw 10.0.0.2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ ping 172.16.101.150
+</span></span><span class="line"><span class="cl">PING 172.16.101.150 <span class="o">(</span>172.16.101.150<span class="o">)</span>: <span class="m">56</span> data bytes
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 172.16.101.150: <span class="nv">seq</span><span class="o">=</span><span class="m">0</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span>2.931 ms
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>配置 instance_003 上的 r0 iptables</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 开启ip转发</span>
+</span></span><span class="line"><span class="cl">ip netns <span class="nb">exec</span> r0 sysctl -w net.ipv4.ip_forward<span class="o">=</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl">sysctl -w net.ipv4.ip_forward<span class="o">=</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 配置 r0 的 route 网关</span>
+</span></span><span class="line"><span class="cl">ip netns <span class="nb">exec</span> r0 route add default 192.168.0.106 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ip netns <span class="nb">exec</span> r0 iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -j SNAT --to-source 192.168.0.106
+</span></span><span class="line"><span class="cl">ip netns <span class="nb">exec</span> r0 iptables -t nat -A PREROUTING -d 192.168.0.106 -j DNAT --to-destination 10.0.0.2
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>在 vm 4 上 ping 外网</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ping 114.114.114.114
+</span></span><span class="line"><span class="cl">PING 114.114.114.114 <span class="o">(</span>114.114.114.114<span class="o">)</span>: <span class="m">56</span> data bytes
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 114.114.114.114: <span class="nv">seq</span><span class="o">=</span><span class="m">0</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">89</span> <span class="nv">time</span><span class="o">=</span>24.016 ms
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br>
+<h1 id="更多实战">更多实战</h1>
+<p>这里看到知乎上一位博主的文章，对 OVS 的总结还是算比较全的。</p>
+<ul>
+<li>
+<p><a href="https://zhuanlan.zhihu.com/p/336487371" target="_blank" rel="noopener noreffer">Open vSwitch 入门实践（1）简介</a></p>
+</li>
+<li>
+<p><a href="https://zhuanlan.zhihu.com/p/336692269" target="_blank" rel="noopener noreffer">Open vSwitch 入门实践（2）使用OVS构建隔离网络</a></p>
+</li>
+<li>
+<p><a href="https://zhuanlan.zhihu.com/p/337210249" target="_blank" rel="noopener noreffer">Open vSwitch 入门实践（3）使用OVS构建分布式隔离网络</a></p>
+</li>
+<li>
+<p><a href="https://zhuanlan.zhihu.com/p/337436733" target="_blank" rel="noopener noreffer">Open vSwitch 入门实践（4）使用OVS配置端口镜像</a></p>
+</li>
+</ul>
+<br/>
+<p><strong>更多参考</strong></p>
+<ul>
+<li><a href="https://www.sdnlab.com/sdn-guide/14747.html" target="_blank" rel="noopener noreffer">OVS初级教程</a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-08-22</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C/" data-title="使用Open-vSwitch创建虚拟网络"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C/" data-title="使用Open-vSwitch创建虚拟网络"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E4%BD%BF%E7%94%A8open-vswitch%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/" class="prev" rel="prev" title="虚拟化-创建一个虚拟机"><i class="fas fa-angle-left fa-fw"></i>虚拟化-创建一个虚拟机</a>
+            <a href="/post/linux%E9%99%90%E9%80%9F-tc%E6%A1%86%E6%9E%B6/" class="next" rel="next" title="Linux流量控制-TC框架">Linux流量控制-TC框架<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

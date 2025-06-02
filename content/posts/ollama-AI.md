@@ -71,7 +71,7 @@ Ollama 是一个用于构建大型语言模型应用的工具，它提供了一�
 
 
 
-```
+```bash
 curl -fsSL https://ollama.com/install.sh | sh
 
 >>> Installing ollama to /usr/local
@@ -112,7 +112,7 @@ WARNING: No NVIDIA/AMD GPU detected. Ollama will run in CPU-only mode.
 
 运行之后，项目默认监听 `11434` 端口，在终端执行如下命令可验证是否正常运行：
 
-```
+```bash
 ✗ curl 127.0.0.1:11434 
 Ollama is running%                   
 ```
@@ -168,7 +168,7 @@ ollama 安装之后，其同时还是一个命令，与模型交互就是通过�
 
 - **拉取模型**
 
-```
+```bash
 ollama pull llama3
 ```
 
@@ -178,26 +178,26 @@ ollama pull llama3
 
 - **删除模型**
 
-```
+```bash
 ollama rm llama3
 ```
 
 - **复制模型**
 
-```
+```bash
 ollama cp llama3 my-model
 ```
 
 - **多模态模型**
 
-```
+```bash
 >>> What's in this image? /Users/jmorgan/Desktop/smile.png
 The image features a yellow smiley face, which is likely the central focus of the picture.
 ```
 
 - **作为参数传递提示**
 
-```
+```bash
 $ ollama run llama3 "Summarize this file: $(cat README.md)"
  Ollama is a lightweight, extensible framework for building and running language models on the local machine. It provides a simple API for creating, running, and managing models, as well as a library of pre-built models that can be easily used in a variety of applications.
 ```
@@ -222,7 +222,7 @@ Ollama 有一个用于运行和管理模型的 REST API。
 
 #### 生成响应
 
-```
+```bash
 curl http://localhost:11434/api/generate -d '{
   "model": "llama3",
   "prompt":"Why is the sky blue?"
@@ -231,7 +231,7 @@ curl http://localhost:11434/api/generate -d '{
 
 #### 与模型聊天
 
-```
+```bash
 curl http://localhost:11434/api/chat -d '{
   "model": "llama3",
   "messages": [

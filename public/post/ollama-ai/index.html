@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>ollama 本地AI大模型 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/ollama-ai/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="ollama 本地AI大模型">
+  <meta property="og:description" content="自 OpenAI 公司于 2022 年 11 月 30 日发布 ChatGPT 以来，经过 23 年一整年的发展之后，大语言模型的概念已逐渐普及，各种基于大语言模型的周边产品，以及集成层出不穷，可以说已经玩出花来了。
+在这个过程中，也有不少本地化的模型应用方案冒了出来，针对一些企业知识库问答的场景中，模型本地化是第一优先考虑的问题，因此如何在本地把模型调教的更加智能，就是一个非常重要的技能了。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-08-21T13:52:18+00:00">
+    <meta property="article:modified_time" content="2024-08-22T11:26:27+00:00">
+    <meta property="article:tag" content="Ai">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="ollama 本地AI大模型">
+  <meta name="twitter:description" content="自 OpenAI 公司于 2022 年 11 月 30 日发布 ChatGPT 以来，经过 23 年一整年的发展之后，大语言模型的概念已逐渐普及，各种基于大语言模型的周边产品，以及集成层出不穷，可以说已经玩出花来了。
+在这个过程中，也有不少本地化的模型应用方案冒了出来，针对一些企业知识库问答的场景中，模型本地化是第一优先考虑的问题，因此如何在本地把模型调教的更加智能，就是一个非常重要的技能了。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/ollama-ai/" /><link rel="prev" href="http://localhost:1313/post/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/" /><link rel="next" href="http://localhost:1313/post/langchain/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "ollama 本地AI大模型",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/ollama-ai\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "ai","wordcount":  1579 ,
+        "url": "http:\/\/localhost:1313\/post\/ollama-ai\/","datePublished": "2024-08-21T13:52:18+00:00","dateModified": "2024-08-22T11:26:27+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/ollama-ai/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">ollama 本地AI大模型</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/artificial-intelligence/"><i class="far fa-folder fa-fw"></i>Artificial Intelligence</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-08-21">2024-08-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1579 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是-ollama">什么是 ollama?</a></li>
+    <li><a href="#ollama-探索">ollama 探索</a>
+      <ul>
+        <li><a href="#linux-安装-ollama">Linux 安装 ollama</a></li>
+        <li><a href="#模型管理">模型管理</a></li>
+        <li><a href="#简单交互">简单交互</a>
+          <ul>
+            <li><a href="#终端交互">终端交互</a></li>
+            <li><a href="#rest-api">REST API</a>
+              <ul>
+                <li><a href="#生成响应">生成响应</a></li>
+                <li><a href="#与模型聊天">与模型聊天</a></li>
+              </ul>
+            </li>
+            <li><a href="#web-和桌面端">Web 和桌面端</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#rag-进阶">RAG 进阶</a>
+      <ul>
+        <li><a href="#什么是-rag">什么是 RAG</a></li>
+        <li><a href="#rag-的架构">RAG 的架构</a></li>
+        <li><a href="#rag-领域开源项目">RAG 领域开源项目</a></li>
+      </ul>
+    </li>
+    <li><a href="#基于langchaingo实现知识库对接本地模型">基于langchaingo实现知识库对接本地模型</a>
+      <ul>
+        <li><a href="#前置准备">前置准备</a></li>
+        <li><a href="#切分文档">切分文档</a></li>
+        <li><a href="#块文本向量化">块文本向量化</a></li>
+        <li><a href="#将检索到的内容交给大语言模型处理">将检索到的内容，交给大语言模型处理</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition question open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwquestion"></i>Question<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2024-08-22T11:26:27" title="August 22, 2024">August 22, 2024</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>自 OpenAI 公司于 2022 年 11 月 30 日发布 ChatGPT 以来，经过 23 年一整年的发展之后，大语言模型的概念已逐渐普及，各种基于大语言模型的周边产品，以及集成层出不穷，可以说已经玩出花来了。</p>
+<p>在这个过程中，也有不少本地化的模型应用方案冒了出来，针对一些企业知识库问答的场景中，模型本地化是第一优先考虑的问题，因此如何在本地把模型调教的更加智能，就是一个非常重要的技能了。</p>
+<h1 id="什么是-ollama">什么是 ollama?</h1>
+<p>Ollama 是一个用于构建大型语言模型应用的工具，它提供了一个简洁易用的命令行界面和服务器，让你能够轻松下载、运行和管理各种开源 LLM。</p>
+<ul>
+<li>项目地址：<a href="https://github.com/ollama/ollama" target="_blank" rel="noopener noreffer">ollama(opens new window)</a></li>
+<li>官网地址： <a href="https://ollama.com/" target="_blank" rel="noopener noreffer">https://ollama.com/(opens new window)</a></li>
+<li>模型仓库： <a href="https://ollama.com/library" target="_blank" rel="noopener noreffer">https://ollama.com/library(opens new window)</a></li>
+<li>此文撰写时项目最新版本：<a href="https://github.com/ollama/ollama/releases/tag/v0.3.6" target="_blank" rel="noopener noreffer">v0.3.6(opens new window)</a></li>
+<li>官方 logo 是一只可爱的羊驼</li>
+</ul>
+<img src="https://img1.kiosk007.top/static/images/blog/20240821003113-ollama.webp" alt="Ollama" style="display: block; margin: 0 auto; width: 10%; max-width: 10%; height: auto;">
+<br/>
+<p><code>Ollama</code> 是一个基于 Go 语言开发的简单易用的本地大语言模型运行框架。可以将其类比为 docker（同基于 <a href="https://github.com/spf13/cobra" target="_blank" rel="noopener noreffer">cobra (opens new window)</a>包实现命令行交互中的 list,pull,push,run 等命令），事实上它也的确制定了类 docker 的一种模型应用标准。如 <code>ollama pull xxx</code>、<code>ollama run xxx </code> 等等。</p>
+<br/>
+<p>在管理模型的同时，它还基于 Go 语言中的 Web 框架 <a href="https://github.com/gin-gonic/gin" target="_blank" rel="noopener noreffer">gin (opens new window)</a>提供了一些 Api 接口，让你能够像跟 OpenAI 提供的接口那样进行交互。</p>
+<p>官方还为此专门发布了一篇官方博客： <a href="https://ollama.com/blog/openai-compatibility" target="_blank" rel="noopener noreffer">https://ollama.com/blog/openai-compatibility</a> (opens new window)，并配了如下一个可爱的图。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/20240821004719-1709995014383.png" alt="Ollama" style="display: block; margin: 0 auto; width: 100%; max-width: 100%; height: auto;">
+<p>同时：官方还提供了类似 GitHub，DockerHub 一般的，可类比理解为 ModelHub，用于存放大语言模型的仓库(有 llama 2，mistral，qwen 等模型，同时你也可以自定义模型上传到仓库里来给别人使用)。</p>
+<br/>
+<h1 id="ollama-探索">ollama 探索</h1>
+<h2 id="linux-安装-ollama">Linux 安装 ollama</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://ollama.com/install.sh <span class="p">|</span> sh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; Installing ollama to /usr/local
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; Downloading Linux amd64 CLI
+</span></span><span class="line"><span class="cl"><span class="c1">######################################################################## 100.0%#=#=-#  #                                                                  ######################################################################## 100.0%</span>
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; Making ollama accessible in the PATH in /usr/local/bin
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; Creating ollama user...
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; Adding ollama user to render group...
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; Adding ollama user to video group...
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; Adding current user to ollama group...
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; Creating ollama systemd service...
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; Enabling and starting ollama service...
+</span></span><span class="line"><span class="cl">Created symlink /etc/systemd/system/default.target.wants/ollama.service → /etc/systemd/system/ollama.service.
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; The Ollama API is now available at 127.0.0.1:11434.
+</span></span><span class="line"><span class="cl">&gt;&gt;&gt; Install complete. Run <span class="s2">&#34;ollama&#34;</span> from the <span class="nb">command</span> line.
+</span></span><span class="line"><span class="cl">WARNING: No NVIDIA/AMD GPU detected. Ollama will run in CPU-only mode.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<blockquote>
+<p><a href="https://ollama.fan/getting-started/linux/#amd-radeon-gpu-support" target="_blank" rel="noopener noreffer">AMD Radeon GPU 支持</a></p>
+<p>虽然 AMD 已将 <code>amdgpu</code> 驱动程序上游贡献给官方 Linux 内核源代码，但该版本较旧，可能不支持所有 ROCm 功能。建议从 <a href="https://www.amd.com/en/support/linux-drivers" target="_blank" rel="noopener noreffer">AMD 官网</a> 安装最新驱动程序，以获得对您 Radeon GPU 的最佳支持。</p>
+<p>不幸的是，我的GPU是 intel 的，所以只能是 CPU-only mode，所以有以下提示:</p>
+<p>WARNING: No NVIDIA/AMD GPU detected. Ollama will run in CPU-only mode.</p>
+</blockquote>
+<br/>
+<p>我这里个人使用的是 Linux Ubuntu (8C 16G)，直接下载安装包，安装即可，安装之后，运行软件。</p>
+<p>运行之后，项目默认监听 <code>11434</code> 端口，在终端执行如下命令可验证是否正常运行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">✗ curl 127.0.0.1:11434 
+</span></span><span class="line"><span class="cl">Ollama is running%                   
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此时只是相当于把一个架子，一个舞台搭好了, 就相当安装好了 Docker，要想要真正体验大模型，还需要拉下来一个模型。</p>
+<br/>
+<h2 id="模型管理">模型管理</h2>
+<p>ollama 安装之后，其同时还是一个命令，与模型交互就是通过命令来进行的。</p>
+<ul>
+<li><code>ollama list</code>：显示模型列表。</li>
+<li><code>ollama show</code>：显示模型的信息</li>
+<li><code>ollama pull</code>：拉取模型</li>
+<li><code>ollama push</code>：推送模型</li>
+<li><code>ollama cp</code>：拷贝一个模型</li>
+<li><code>ollama rm</code>：删除一个模型</li>
+<li><code>ollama run</code>：运行一个模型</li>
+</ul>
+<br/>
+<p>官方提供了一个模型仓库，<a href="https://ollama.com/library" target="_blank" rel="noopener noreffer">https://ollama.com/library (opens new window)</a>，在这里你可以找到你想要运行的模型。</p>
+<blockquote>
+<p>官方建议：应该至少有 8 GB 可用 RAM 来运行 7 B 型号，16 GB 来运行 13 B 型号，32 GB 来运行 33 B 型号。</p>
+<p>鉴于我的是 8C 16G ，所以我运行一个4 B的型号吧。</p>
+</blockquote>
+<p>以下是一些可下载的示例模型：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Model</th>
+<th style="text-align:left">Parameters</th>
+<th style="text-align:left">Size</th>
+<th style="text-align:left">Download</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Llama 3</td>
+<td style="text-align:left">8B</td>
+<td style="text-align:left">4.7GB</td>
+<td style="text-align:left"><code>ollama run llama3</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Llama 3</td>
+<td style="text-align:left">70B</td>
+<td style="text-align:left">40GB</td>
+<td style="text-align:left"><code>ollama run llama3:70b</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Mistral</td>
+<td style="text-align:left">7B</td>
+<td style="text-align:left">4.1GB</td>
+<td style="text-align:left"><code>ollama run mistral</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Dolphin Phi</td>
+<td style="text-align:left">2.7B</td>
+<td style="text-align:left">1.6GB</td>
+<td style="text-align:left"><code>ollama run dolphin-phi</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Phi-2</td>
+<td style="text-align:left">2.7B</td>
+<td style="text-align:left">1.7GB</td>
+<td style="text-align:left"><code>ollama run phi</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Neural Chat</td>
+<td style="text-align:left">7B</td>
+<td style="text-align:left">4.1GB</td>
+<td style="text-align:left"><code>ollama run neural-chat</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Starling</td>
+<td style="text-align:left">7B</td>
+<td style="text-align:left">4.1GB</td>
+<td style="text-align:left"><code>ollama run starling-lm</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Code Llama</td>
+<td style="text-align:left">7B</td>
+<td style="text-align:left">3.8GB</td>
+<td style="text-align:left"><code>ollama run codellama</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Llama 2 Uncensored</td>
+<td style="text-align:left">7B</td>
+<td style="text-align:left">3.8GB</td>
+<td style="text-align:left"><code>ollama run llama2-uncensored</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Llama 2 13B</td>
+<td style="text-align:left">13B</td>
+<td style="text-align:left">7.3GB</td>
+<td style="text-align:left"><code>ollama run llama2:13b</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Llama 2 70B</td>
+<td style="text-align:left">70B</td>
+<td style="text-align:left">39GB</td>
+<td style="text-align:left"><code>ollama run llama2:70b</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Orca Mini</td>
+<td style="text-align:left">3B</td>
+<td style="text-align:left">1.9GB</td>
+<td style="text-align:left"><code>ollama run orca-mini</code></td>
+</tr>
+<tr>
+<td style="text-align:left">LLaVA</td>
+<td style="text-align:left">7B</td>
+<td style="text-align:left">4.5GB</td>
+<td style="text-align:left"><code>ollama run llava</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Gemma</td>
+<td style="text-align:left">2B</td>
+<td style="text-align:left">1.4GB</td>
+<td style="text-align:left"><code>ollama run gemma:2b</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Gemma</td>
+<td style="text-align:left">7B</td>
+<td style="text-align:left">4.8GB</td>
+<td style="text-align:left"><code>ollama run gemma:7b</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Solar</td>
+<td style="text-align:left">10.7B</td>
+<td style="text-align:left">6.1GB</td>
+<td style="text-align:left"><code>ollama run solar</code></td>
+</tr>
+</tbody>
+</table>
+<br/>
+<ul>
+<li><strong>拉取模型</strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama pull llama3
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>此命令也可以用于更新本地模型。只会拉取差异部分。</p>
+<p>ps: 模型的拉取速度能达到 11MB/s ，可见官方的支持力度是非常足的。带宽是下了血本了。</p>
+</blockquote>
+<ul>
+<li><strong>删除模型</strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama rm llama3
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>复制模型</strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama cp llama3 my-model
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>多模态模型</strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">&gt;&gt;&gt; What<span class="err">&#39;</span>s in this image? /Users/jmorgan/Desktop/smile.png
+</span></span><span class="line"><span class="cl">The image features a yellow smiley face, which is likely the central focus of the picture.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>作为参数传递提示</strong></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ollama run llama3 <span class="s2">&#34;Summarize this file: </span><span class="k">$(</span>cat README.md<span class="k">)</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"> Ollama is a lightweight, extensible framework <span class="k">for</span> building and running language models on the <span class="nb">local</span> machine. It provides a simple API <span class="k">for</span> creating, running, and managing models, as well as a library of pre-built models that can be easily used in a variety of applications.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h2 id="简单交互">简单交互</h2>
+<p>执行 <code>ollama run llama3</code> 可以直接运行 llama 大模型。</p>
+<br/>
+<h3 id="终端交互">终端交互</h3>
+<img src="https://img1.kiosk007.top/static/images/blog/20240824193842-ollama-llama3-run1.png" />
+<br/>
+<h3 id="rest-api">REST API</h3>
+<p>Ollama 有一个用于运行和管理模型的 REST API。</p>
+<h4 id="生成响应">生成响应</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl http://localhost:11434/api/generate -d <span class="s1">&#39;{
+</span></span></span><span class="line"><span class="cl"><span class="s1">  &#34;model&#34;: &#34;llama3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s1">  &#34;prompt&#34;:&#34;Why is the sky blue?&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s1">}&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="与模型聊天">与模型聊天</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl http://localhost:11434/api/chat -d <span class="s1">&#39;{
+</span></span></span><span class="line"><span class="cl"><span class="s1">  &#34;model&#34;: &#34;llama3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s1">  &#34;messages&#34;: [
+</span></span></span><span class="line"><span class="cl"><span class="s1">    { &#34;role&#34;: &#34;user&#34;, &#34;content&#34;: &#34;why is the sky blue?&#34; }
+</span></span></span><span class="line"><span class="cl"><span class="s1">  ]
+</span></span></span><span class="line"><span class="cl"><span class="s1">}&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查看 <a href="https://ollama.fan/reference/api/" target="_blank" rel="noopener noreffer">API 文档</a>了解所有端点。</p>
+<br/>
+<h3 id="web-和桌面端">Web 和桌面端</h3>
+<p>这里基于颜值，我选择 webui-lite, 还有很多的 web 桌面端的开源选择，具体参考：<a href="https://ollama.fan/getting-started/#chat-with-a-model" target="_blank" rel="noopener noreffer">链接</a></p>
+<ul>
+<li><a href="https://github.com/ollama-webui/ollama-webui-lite" target="_blank" rel="noopener noreffer">ollama-webui-lite</a></li>
+</ul>
+<br/>
+<p>注意需要 <code>node &gt;= 16</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/ollama-webui/ollama-webui-lite.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ollama-webui-lite
+</span></span><span class="line"><span class="cl">yarn
+</span></span><span class="line"><span class="cl">yarn dev
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<img src="https://img1.kiosk007.top/static/images/blog/20240824200859-ollama-llama3-run2.png" />
+<br/>
+<h1 id="rag-进阶">RAG 进阶</h1>
+<p>了解了 ollama ，搭建了一个基础 llama ，那么怎么样才能让自己的本地大模型区分于 chatGPT 或者 doubao 之类的模型成为真正的钢铁侠中的 Jarvis呢？</p>
+<br/>
+<h2 id="什么是-rag">什么是 RAG</h2>
+<p>rag，即 <strong>Retrieval Augmented Generation</strong> ，意为检索增强生成。这是一种应用于知识内容检索领域的概念，有别于传统的基于关系型数据库构建的问答体系，rag 主要是基于向量数据库结合当下火热的大语言模型(LLM)来实现的智能问答的一种技术体系。</p>
+<p>是的，围绕 rag 的核心是三个部分，原始文本内容，向量数据库，和大语言模型，其他的技术实现，以及细节调优基本都是在这几者之间的延伸。</p>
+<br/>
+<p>以客服这个实际场景来举例：</p>
+<blockquote>
+<ul>
+<li>每个公司最早一批的客服，肯定也都是摸着石头过河，很多问题都是新产生的，并没有可参见的案例或话术。</li>
+<li>随着时间推移，客服工作人员的经验积累，话术慢慢沉淀，形成本公司业务专有的客服知识库，这个知识库可能会借助一些已有的 wiki 工具存放，那么后来的客服人员，遇到自己不会的问题，就可以通过查询 wiki 就能获取到他想要的答案。(局限：这里的问题是，这种查询一定是依赖于关键字匹配的，尽管能全文匹配，但一些时候，可能并不理想)</li>
+<li>再往后，一些公司可能会基于成熟的客服话术，开发自己的智能客服机器人，而这种方案，虽然比上边的人工查询要进了一步，但局限是雷同的(还是依赖于技术型交互语言，而非自然语言交互)。</li>
+<li>当大语言模型出现之后，人们最先想到的就是如何能将自己的知识库投喂给大语言模型，从而能够通过自然语言获取到想要的答案，自此念头开始，文本向量化，langchain 框架，本地大语言模型等技术应场景而生，渐渐进化为可完全基于本地构建的智能问答体系，从而解放客服的生产力。</li>
+</ul>
+</blockquote>
+<br/>
+<p>RAG模型结合了语言模型和信息检索技术。具体来说，当模型需要生成文本或者回答问题时，它会先从一个庞大的文档集合中检索出相关的信息，然后利用这些检索到的信息来指导文本的生成，从而提高预测的质量和准确性。其中，“检索”、“利用”、“生成”是RAG的关键部分。</p>
+<br/>
+<h2 id="rag-的架构">RAG 的架构</h2>
+<p>通过一些架构图来理解是最简单直观的。</p>
+<p>来自项目：<a href="https://github.com/chatchat-space/Langchain-Chatchat" target="_blank" rel="noopener noreffer">Langchain-Chatchat</a></p>
+
+<link rel="stylesheet" href=/css/hugo-easy-gallery.css />
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="https://img1.kiosk007.top/static/images/blog/20240824203129-langchain&#43;chatglm.png" />
+    </div>
+    <a href="https://img1.kiosk007.top/static/images/blog/20240824203129-langchain&#43;chatglm.png" itemprop="contentUrl"></a>
+      <figcaption><h4>RAG  处理流程</h4>
+      </figcaption>
+  </figure>
+</div>
+
+<img src="" />
+<p>实现原理如上图图所示，过程包括加载文件 -&gt; 读取文本 -&gt; 文本分割 -&gt; 文本向量化 -&gt; 问句向量化 -&gt; 在文本向量中匹配出与问句向量最相似的 <code>top k</code>个 -&gt; 匹配出的文本作为上下文和问题一起添加到 <code>prompt</code>中 -&gt; 提交给 <code>LLM</code>生成回答。</p>
+<br/>
+<p>从文档处理角度来看，实现流程如下：</p>
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="https://img1.kiosk007.top/static/images/blog/20240824203719-langchain&#43;chatglm2.png" />
+    </div>
+    <a href="https://img1.kiosk007.top/static/images/blog/20240824203719-langchain&#43;chatglm2.png" itemprop="contentUrl"></a>
+      <figcaption><h4>文档处理流程</h4>
+      </figcaption>
+  </figure>
+</div>
+
+<br/>
+<p>个人简约理解如下：</p>
+<ul>
+<li>先将知识库内容切分，类似NLP中的文本拆分，如jieba等。</li>
+<li>再把切分后的内容向量化存入向量数据库。</li>
+<li>用户提问之后，先将问题在向量库中进行相似性检索，找出匹配度高的答案。</li>
+<li>然后把查询出来的结果，包装好 Prompt。</li>
+<li>最后调用大语言模型，让大语言模型基于上一步的结果进行分析并形成最终的答案，返回给用户。</li>
+</ul>
+<br/>
+<p>开源社区中很火的 langchain 则是针对如上步骤提供了整套封装的一个框架，langchain 就是能够让你完成从文本处理，到转换向量与向量数据库的交互，再到承接用户提问的交互，再到与大语言模型的交互，所以如果你要构建一套 rag，那么基于 langchain 就可以做到，事实上，当下 GitHub 上很火的 rag 项目，大多也都是基于 langchain 来做的。</p>
+<br/>
+<h2 id="rag-领域开源项目">RAG 领域开源项目</h2>
+<p>伴随着大语言模型的火爆，除去一开始火爆的那批套壳应用之外，后来者居上的，并且保持了持久热度的，恐怕就是 rag 领域的开源项目了，这里罗列一下我个人知道的 rag 领域相关的开源项目。</p>
+<ul>
+<li><a href="https://github.com/langgenius/dify/blob/main/README_CN.md" target="_blank" rel="noopener noreffer">dify (opens new window)</a>:一个开源的 LLM 应用开发平台。其直观的界面结合了 AI 工作流程、RAG 管道、代理功能、模型管理、可观察性功能等，让您可以快速从原型到生产。</li>
+<li><a href="https://github.com/labring/FastGPT" target="_blank" rel="noopener noreffer">FastGPT (opens new window)</a>：一个基于 LLM 大语言模型的知识库问答系统，提供开箱即用的数据处理、模型调用等能力。同时可以通过 Flow 可视化进行工作流编排，从而实现复杂的问答场景！</li>
+<li><a href="https://github.com/Mintplex-Labs/anything-llm" target="_blank" rel="noopener noreffer">anything-llm (opens new window)</a>：一个全栈应用程序，使您能够将任何文档、资源或内容片段转换为任何法学硕士可以在聊天期间用作参考的上下文。该应用程序允许您选择要使用的法学硕士或矢量数据库，并支持多用户管理和权限。</li>
+<li><a href="https://github.com/infiniflow/ragflow/blob/main/README_zh.md" target="_blank" rel="noopener noreffer">ragflow (opens new window)</a>：一款基于深度文档理解构建的开源 RAG（Retrieval-Augmented Generation）引擎。RAGFlow 可以为各种规模的企业及个人提供一套精简的 RAG 工作流程，结合大语言模型（LLM）针对用户各类不同的复杂格式数据提供可靠的问答以及有理有据的引用。</li>
+<li><a href="https://github.com/1Panel-dev/MaxKB" target="_blank" rel="noopener noreffer">MaxKB (opens new window)</a>:基于 LLM 大语言模型的知识库问答系统。开箱即用，支持快速嵌入到第三方业务系统。</li>
+<li><a href="https://github.com/netease-youdao/QAnything" target="_blank" rel="noopener noreffer">QAnything (opens new window)</a>:是致力于支持任意格式文件或数据库的本地知识库问答系统，可断网安装使用。您的任何格式的本地文件都可以往里扔，即可获得准确、快速、靠谱的问答体验。目前已支持格式: PDF(pdf)，Word(docx)，PPT(pptx)，XLS(xlsx)，Markdown(md)，电子邮件(eml)，TXT(txt)，图片(jpg，jpeg，png)，CSV(csv)，网页链接(html)</li>
+</ul>
+<br/>
+<h1 id="基于langchaingo实现知识库对接本地模型">基于langchaingo实现知识库对接本地模型</h1>
+<p>前面2节把理论，以及流程都介绍完了，接下来世纪操作一下。因此，这篇就是通过一个简单的示例，结合 langchaingo 来实现一下自己开发 rag 应用的整个流程。</p>
+<p>项目地址：</p>
+<br/>
+<p>前文说到，rag 的核心流程大概有如下几步：</p>
+<ul>
+<li>先将知识库内容切分</li>
+<li>再把切分后的内容向量化存入向量数据库</li>
+<li>用户提问之后，先将问题在向量库中进行相似性检索，找出匹配度高的答案。</li>
+<li>然后把查询出来的结果，包装好 Prompt。</li>
+<li>最后调用大语言模型，让大语言模型基于上一步的结果进行分析并形成最终的答案，返回给用户。</li>
+</ul>
+<p>接下来我就通过代码，来按照上边的流程，做下实践。</p>
+<p>代码仓库地址：<a href="https://github.com/kiosk404/langchaingo-ollama-rag" target="_blank" rel="noopener noreffer">https://github.com/kiosk404/langchaingo-ollama-rag</a></p>
+<br/>
+<h2 id="前置准备">前置准备</h2>
+<p>安装一个向量数据库。这里向量数据库使用的是 <code>qdrant</code>，使用 docker 快速安装。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker pull qdrant/qdrant
+</span></span><span class="line"><span class="cl">docker run -itd --name qdrant -p 6333:6333 qdrant/qdrant
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>使用如下命令创建一个 集合：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -X PUT http://localhost:6333/collections/langchaingo-ollama-rag <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --data-raw <span class="s1">&#39;{
+</span></span></span><span class="line"><span class="cl"><span class="s1">    &#34;vectors&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s1">      &#34;size&#34;: 768,
+</span></span></span><span class="line"><span class="cl"><span class="s1">      &#34;distance&#34;: &#34;Dot&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s1">    }
+</span></span></span><span class="line"><span class="cl"><span class="s1">  }&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>使用如下命令可删除该集合：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl --location --request DELETE <span class="s1">&#39;http://localhost:6333/collections/langchaingo-ollama-rag&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<h2 id="切分文档">切分文档</h2>
+<p>文档我准备的内容是一片 acm 上的关于 低延迟视频传输网络 LiveNet 的设计架构。</p>
+<p>文章链接：<a href="https://dl.acm.org/doi/pdf/10.1145/3544216.3544236" target="_blank" rel="noopener noreffer">LiveNet: A Low-Latency Video Transport Network For Large Scale Live Streaming</a></p>
+<blockquote>
+<p>PS： 这里我一定要吐槽一下，golang 对 PDF 的识别三方库真的是很糟糕，正如 <a href="https://github.com/tmc/langchaingo/issues/348" target="_blank" rel="noopener noreffer">langchaingo 中的这个 issue</a> 所吐槽的，所以我不能直接用 他的接口 NewPDF，我得 PDF 转 TXT。</p>
+</blockquote>
+<br/>
+<p>主要代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// TextToChunks 函数将文本文件转换为文档块
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">TextToChunks</span><span class="p">(</span><span class="nx">dirFile</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">chunkSize</span><span class="p">,</span> <span class="nx">chunkOverlap</span> <span class="kt">int</span><span class="p">)</span> <span class="p">([]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">Document</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">file</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Open</span><span class="p">(</span><span class="nx">dirFile</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 创建一个新的文本文档加载器
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">docLoaded</span> <span class="o">:=</span> <span class="nx">documentloaders</span><span class="p">.</span><span class="nf">NewText</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 创建一个新的递归字符文本分割器
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">split</span> <span class="o">:=</span> <span class="nx">textsplitter</span><span class="p">.</span><span class="nf">NewRecursiveCharacter</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 设置块大小
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">split</span><span class="p">.</span><span class="nx">ChunkSize</span> <span class="p">=</span> <span class="nx">chunkSize</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 设置块重叠大小
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">split</span><span class="p">.</span><span class="nx">ChunkOverlap</span> <span class="p">=</span> <span class="nx">chunkOverlap</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 加载并分割文档
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">docs</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">docLoaded</span><span class="p">.</span><span class="nf">LoadAndSplit</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="nx">split</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">docs</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里将 <code>chunkSize</code> 和 <code>chunkOverlap</code> 两个变量参数化，也是为了能够更加清晰地看到参数所代表的含义，以及对于整个流程的影响。</p>
+<br/>
+<p>执行结果如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  langchaingo-ollama-rag go run *.go filetochunks -f livenet.txt 
+</span></span><span class="line"><span class="cl">INFO   <span class="o">[</span>2024-08-25 22:06:04<span class="o">]</span>main.init.func1:80 转换文件为块成功，块数量: <span class="m">458</span>                          
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">块儿内容</span><span class="o">==</span>&gt; LiveNet: A Low-Latency Video Transport Network <span class="k">for</span>
+</span></span><span class="line"><span class="cl">Large-Scale Live Streaming
+</span></span><span class="line"><span class="cl">Jinyang Li† § ‡ , Zhenyu Li† ‡, Ri Lu§, Kai Xiao§, Songlin Li§, Jufeng Chen§, Jingyu Yang§,
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">块儿内容</span><span class="o">==</span>&gt; Chunli Zong§, Aiyun Chen§, Qinghua Wu† ‡, Chen Sun§, Gareth Tyson∗, Hongqiang Harry Liu§
+</span></span><span class="line"><span class="cl">†Institute of Computing Technology, Chinese Academy of Sciences §Alibaba Group
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">块儿内容</span><span class="o">==</span>&gt; ‡University of Chinese Academy of Sciences ∗Hong Kong University of Science and Technology <span class="o">(</span>GZ<span class="o">)</span>
+</span></span><span class="line"><span class="cl">ABSTRACT
+</span></span><span class="line"><span class="cl">Low-latency live streaming has imposed stringent latency require-
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">块儿内容</span><span class="o">==</span>&gt; ments on video transport networks. In this paper, we report on the
+</span></span><span class="line"><span class="cl">design and operation of the Alibaba low-latency video transport
+</span></span><span class="line"><span class="cl">network, LiveNet. LiveNet builds on a flat CDN overlay with a
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">块儿内容</span><span class="o">==</span>&gt; centralized controller <span class="k">for</span> global optimization. As part of this, we
+</span></span><span class="line"><span class="cl">present our design of the global routing computation and path as-
+</span></span><span class="line"><span class="cl">signment, as well as our fast data transmission architecture with
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">块儿内容</span><span class="o">==</span>&gt; fine-grained control of video frames. The performance results ob-
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>通过上边切分之后，可以看出，单个 <code>chunkSize</code> 将决定单个块儿的内容大小，<code>chunkOverlap</code> 将决定有多少向前重复的内容。同理，当我调试时把块儿调大，那么最终块儿的数量就会减少：</p>
+<br/>
+<h2 id="块文本向量化">块文本向量化</h2>
+<p>这一步本质上是将切好的数据存入到向量数据库中。并支持查询</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// storeDocs 将文档存储到向量数据库
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">storeDocs</span><span class="p">(</span><span class="nx">docs</span> <span class="p">[]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">Document</span><span class="p">,</span> <span class="nx">store</span> <span class="o">*</span><span class="nx">qdrant</span><span class="p">.</span><span class="nx">Store</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 如果文档数组长度大于0
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">docs</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 添加文档到存储
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">store</span><span class="p">.</span><span class="nf">AddDocuments</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="nx">docs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// useRetriaver 函数使用检索器
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">useRetriaver</span><span class="p">(</span><span class="nx">store</span> <span class="o">*</span><span class="nx">qdrant</span><span class="p">.</span><span class="nx">Store</span><span class="p">,</span> <span class="nx">prompt</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">topk</span> <span class="kt">int</span><span class="p">)</span> <span class="p">([]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">Document</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 设置选项向量
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">optionsVector</span> <span class="o">:=</span> <span class="p">[]</span><span class="nx">vectorstores</span><span class="p">.</span><span class="nx">Option</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">vectorstores</span><span class="p">.</span><span class="nf">WithScoreThreshold</span><span class="p">(</span><span class="mf">0.80</span><span class="p">),</span> <span class="c1">// 设置分数阈值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 创建检索器
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">retriever</span> <span class="o">:=</span> <span class="nx">vectorstores</span><span class="p">.</span><span class="nf">ToRetriever</span><span class="p">(</span><span class="nx">store</span><span class="p">,</span> <span class="nx">topk</span><span class="p">,</span> <span class="nx">optionsVector</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 搜索
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">docRetrieved</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">retriever</span><span class="p">.</span><span class="nf">GetRelevantDocuments</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="nx">prompt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;检索文档失败: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 返回检索到的文档
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">docRetrieved</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>使用如下命令，将切分好的块扔进向量数据库。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ go run *.go embedding                                                 
+</span></span><span class="line"><span class="cl">INFO   <span class="o">[</span>2024-08-25 22:57:28<span class="o">]</span>main.init.func3:101 转换块为向量成功 
+</span></span><span class="line"><span class="cl">$ go run *.go retriever -t <span class="m">3</span>
+</span></span><span class="line"><span class="cl">请输入你的问题: CDN
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">根据输入的内容检索出的块内容</span><span class="o">==</span>&gt; mapped to CDN servers via DNS redirection. The CDN node that a broadcaster connects to is called a producer node, and the CDN node that a viewer connects to is called a consumer node. A broad-
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">根据输入的内容检索出的块内容</span><span class="o">==</span>&gt; Dec. <span class="m">10</span> Dec. 11-12 Dec. <span class="m">13</span> CDN path delay <span class="o">(</span>ms<span class="o">)</span> <span class="m">188</span> <span class="m">192</span> <span class="m">180</span> CDN path length <span class="m">2</span> <span class="m">2</span> <span class="m">2</span> Streaming delay <span class="o">(</span>ms<span class="o">)</span> <span class="m">954</span> <span class="m">988</span> <span class="m">944</span> 0-stall ratio <span class="o">(</span>%<span class="o">)</span> <span class="m">97</span> <span class="m">97</span> <span class="m">97</span> Fast startup ratio <span class="o">(</span>%<span class="o">)</span> <span class="m">94</span> <span class="m">94</span> <span class="m">95</span>
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">根据输入的内容检索出的块内容</span><span class="o">==</span>&gt; Network control algorithms<span class="p">;</span> KEYWORDS CDN<span class="p">;</span> Low latency transmission<span class="p">;</span> Live streaming ACM Reference Format: Jinyang Li† § ‡ , Zhenyu Li† ‡, Ri Lu§, Kai Xiao§, Songlin Li§, Jufeng Chen§,
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>如果出现以下错误，执行 <code>ollama pull nomic-embed-text:latest</code></p>
+<img src="https://img1.kiosk007.top/static/images/blog/20240825224538-ollama-rag-langchain-1.png" />
+<br/>
+<h2 id="将检索到的内容交给大语言模型处理">将检索到的内容，交给大语言模型处理</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// GetAnswer 获取答案
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">GetAnswer</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">llm</span> <span class="nx">llms</span><span class="p">.</span><span class="nx">Model</span><span class="p">,</span> <span class="nx">docRetrieved</span> <span class="p">[]</span><span class="nx">schema</span><span class="p">.</span><span class="nx">Document</span><span class="p">,</span> <span class="nx">prompt</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 创建一个新的聊天消息历史记录
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">history</span> <span class="o">:=</span> <span class="nx">memory</span><span class="p">.</span><span class="nf">NewChatMessageHistory</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 将检索到的文档添加到历史记录中
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">doc</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">docRetrieved</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">history</span><span class="p">.</span><span class="nf">AddAIMessage</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">PageContent</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 使用历史记录创建一个新的对话缓冲区
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">conversation</span> <span class="o">:=</span> <span class="nx">memory</span><span class="p">.</span><span class="nf">NewConversationBuffer</span><span class="p">(</span><span class="nx">memory</span><span class="p">.</span><span class="nf">WithChatHistory</span><span class="p">(</span><span class="nx">history</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">executor</span> <span class="o">:=</span> <span class="nx">agents</span><span class="p">.</span><span class="nf">NewExecutor</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">agents</span><span class="p">.</span><span class="nf">NewConversationalAgent</span><span class="p">(</span><span class="nx">llm</span><span class="p">,</span> <span class="kc">nil</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">		<span class="kc">nil</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">agents</span><span class="p">.</span><span class="nf">WithMemory</span><span class="p">(</span><span class="nx">conversation</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 设置链调用选项
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">options</span> <span class="o">:=</span> <span class="p">[]</span><span class="nx">chains</span><span class="p">.</span><span class="nx">ChainCallOption</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">chains</span><span class="p">.</span><span class="nf">WithTemperature</span><span class="p">(</span><span class="mf">0.8</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 运行链
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">chains</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">executor</span><span class="p">,</span> <span class="nx">prompt</span><span class="p">,</span> <span class="nx">options</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">res</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>为了将回答转成中文，这里拉下来一个翻译的 AI，让AI把答案翻译一下再回答。所以再需要拉一个翻译的 大模型。</p>
+<pre tabindex="0"><code>ollama run llama2-chinese
+</code></pre><p>对应翻译代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Translate 将文本翻译为中文
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">Translate</span><span class="p">(</span><span class="nx">llm</span> <span class="nx">llms</span><span class="p">.</span><span class="nx">Model</span><span class="p">,</span> <span class="nx">text</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">completion</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">llms</span><span class="p">.</span><span class="nf">GenerateFromSinglePrompt</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">llm</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="s">&#34;将如下这句话翻译为中文，只需要回复翻译后的内容，而不需要回复其他任何内容。需要翻译的英文内容是: \n&#34;</span><span class="o">+</span><span class="nx">text</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">llms</span><span class="p">.</span><span class="nf">WithTemperature</span><span class="p">(</span><span class="mf">0.8</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">completion</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>&hellip;&hellip;  见证奇迹的时刻诞生，但是我这块看起来在胡说八道，回答的完全不贴边，我还需要再好好查一下原因&hellip;.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">go run *.go getanswer
+</span></span><span class="line"><span class="cl">请输入你的问题: 导入的文章主要讲了什么?
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">原始回答</span><span class="o">==</span>&gt;  The article appears to be discussing the main topic of what the imported article is about.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">🗂 <span class="nv">翻译后的回答</span><span class="o">==</span>&gt; 这句话翻译为中文：关于引进报道主题的文章。
+</span></span></code></pre></td></tr></table>
+</div>
+</div><br/>
+<p>未完待续&hellip;</p>
+<br/>
+<br/>
+<p>参考文章：</p>
+<ul>
+<li>
+<p><a href="https://wiki.eryajf.net/pages/97047e/#%E5%89%8D%E8%A8%80" target="_blank" rel="noopener noreffer">二丫讲梵</a></p>
+</li>
+<li>
+<p><a href="https://github.com/chatchat-space/Langchain-Chatchat" target="_blank" rel="noopener noreffer">Langchain-Chatchat</a></p>
+</li>
+<li>
+<p><a href="https://llama.family/" target="_blank" rel="noopener noreffer">llama中文社区</a></p>
+</li>
+<li>
+<p><a href="https://ollama.qianniu.city/index.html" target="_blank" rel="noopener noreffer">Ollama 中文文档</a></p>
+</li>
+<li>
+<p><a href="https://ollama.fan/getting-started/" target="_blank" rel="noopener noreffer">ollama 中文网</a></p>
+</li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2024-08-22</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/ollama-ai/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/ollama-ai/" data-title="ollama 本地AI大模型"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/ollama-ai/" data-title="ollama 本地AI大模型"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/ollama-ai/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/ai/">Ai</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/" class="prev" rel="prev" title="Linux自签证书并自信任"><i class="fas fa-angle-left fa-fw"></i>Linux自签证书并自信任</a>
+            <a href="/post/langchain/" class="next" rel="next" title="LLM大模型 - langchain应用技术介绍">LLM大模型 - langchain应用技术介绍<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

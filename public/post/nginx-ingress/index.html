@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Nginx Ingress - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/nginx-ingress/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="Nginx Ingress">
+  <meta property="og:description" content="在K8S的中， Service 暴露给外界的三种方法。其中有一个叫作 LoadBalancer 类型的 Service，它会为你在 Cloud Provider（比如：Google Cloud 或者 OpenStack）里创建一个与该 Service 对应的负载均衡服务。
+但是，由于每个 Service 都要有一个负载均衡服务，所以这个做法实际上既浪费成本又高。作为用户，我其实更希望看到 Kubernetes 为我内置一个全局的负载均衡器。然后，通过我访问的 URL，把请求转发给不同的后端 Service。
+这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-09-05T11:37:00+00:00">
+    <meta property="article:modified_time" content="2021-09-05T11:37:00+00:00">
+    <meta property="article:tag" content="Nginx">
+    <meta property="article:tag" content="K8s">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="Nginx Ingress">
+  <meta name="twitter:description" content="在K8S的中， Service 暴露给外界的三种方法。其中有一个叫作 LoadBalancer 类型的 Service，它会为你在 Cloud Provider（比如：Google Cloud 或者 OpenStack）里创建一个与该 Service 对应的负载均衡服务。
+但是，由于每个 Service 都要有一个负载均衡服务，所以这个做法实际上既浪费成本又高。作为用户，我其实更希望看到 Kubernetes 为我内置一个全局的负载均衡器。然后，通过我访问的 URL，把请求转发给不同的后端 Service。
+这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/nginx-ingress/" /><link rel="prev" href="http://localhost:1313/post/k8s%E6%9E%B6%E6%9E%84%E6%8B%93%E6%89%91/" /><link rel="next" href="http://localhost:1313/post/service-mesh-%E6%98%AF%E4%BB%80%E4%B9%88/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Nginx Ingress",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/nginx-ingress\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "nginx, k8s","wordcount":  850 ,
+        "url": "http:\/\/localhost:1313\/post\/nginx-ingress\/","datePublished": "2021-09-05T11:37:00+00:00","dateModified": "2021-09-05T11:37:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/nginx-ingress/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Nginx Ingress</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/k8s/"><i class="far fa-folder fa-fw"></i>K8s</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-09-05">2021-09-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;850 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#简介">简介</a></li>
+    <li><a href="#安装-nginx-ingress">安装 nginx-ingress</a></li>
+    <li><a href="#测试">测试</a></li>
+    <li><a href="#配置">配置</a></li>
+    <li><a href="#ingress-工作原理">ingress 工作原理</a>
+      <ul>
+        <li><a href="#ingress-controller">Ingress Controller</a></li>
+        <li><a href="#第三方模块启用"><strong>第三方模块启用</strong></a></li>
+        <li><a href="#nginxconf-配置加载"><strong>nginx.conf 配置加载</strong></a></li>
+        <li><a href="#k8s与nginx-官方-ingres-区别">k8s与Nginx 官方 Ingres 区别</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2021-09-05T11:37:00" title="September 5, 2021">September 5, 2021</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>在K8S的中， Service 暴露给外界的三种方法。其中有一个叫作 LoadBalancer 类型的 Service，它会为你在 Cloud Provider（比如：Google Cloud 或者 OpenStack）里创建一个与该 Service 对应的负载均衡服务。</p>
+<p>但是，由于每个 Service 都要有一个负载均衡服务，所以这个做法实际上既浪费成本又高。作为用户，我其实更希望看到 Kubernetes 为我内置一个全局的负载均衡器。然后，通过我访问的 URL，把请求转发给不同的后端 Service。</p>
+<p><strong>这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。</strong></p>
+<h1 id="简介">简介</h1>
+<p><strong>Kubernetes</strong> 内置一个全局的负载均衡器。然后，通过访问 URL，把请求转发给不同的后端 Service。这就是这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。所以，Ingress 的功能其实很容易理解：<strong>所谓 Ingress，就是 Service 的“Service”。</strong></p>
+<img src="https://img1.kiosk007.top/static/images/k8s/ingress/ingress.png"> 
+<h1 id="安装-nginx-ingress">安装 nginx-ingress</h1>
+<p>参考: <a href="https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-manifests/" target="_blank" rel="noopener noreffer">NGINX Ingress Controller</a></p>
+<ol>
+<li>创建 <code>Nginx Controller</code></li>
+</ol>
+<ul>
+<li>创建 <code>Namespace</code> 与 <code>账号</code></li>
+<li>创建角色并绑定账号</li>
+<li>创建 default server 的秘钥</li>
+<li>创建存放 <code>nginx.conf</code> 的 <code>Config Map</code></li>
+<li>创建 <code>ingress-class</code></li>
+<li>创建 <code>Nginx Controller Pod</code></li>
+</ul>
+<ol start="2">
+<li>暴露 <code>Nginx Controller</code> 服务</li>
+<li>创建 <code>Ingress</code> 规则</li>
+</ol>
+<ul>
+<li><code>Host</code> 精准与通配符匹配</li>
+<li><code>Path</code> 前缀或精确匹配</li>
+<li><code>Backend</code></li>
+</ul>
+<p>第一步：创建 <code>Nginx Controller</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git clone https://github.com/nginxinc/kubernetes-ingress/
+</span></span><span class="line"><span class="cl">$ <span class="nb">cd</span> kubernetes-ingress/deployments
+</span></span><span class="line"><span class="cl">$ git checkout v1.12.0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Namespace 与 账号</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl apply -f common/ns-and-sa.yaml
+</span></span><span class="line"><span class="cl">$ kubectl apply -f rbac/rbac.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>default server 秘钥证书 与 Config Map</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl apply -f common/default-server-secret.yaml
+</span></span><span class="line"><span class="cl">$ kubectl apply -f common/nginx-config.yaml
+</span></span><span class="line"><span class="cl">$ kubectl apply -f common/ingress-class.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>创建 <code>Nginx-Ingress</code> 当一个新的 Ingress 对象由用户创建后，nginx-ingress-controller 就会根据 Ingress 对象里定义的内容，生成一份对应的 Nginx 配置文件（/etc/nginx/nginx.conf），并使用这个配置文件启动一个 Nginx 服务。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl apply -f deployment/nginx-ingress.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>为了让用户能够用到这个 Nginx，我们就需要创建一个 Service 来把 Nginx Ingress Controller 管理的 Nginx 服务暴露出去。创建 <code>Node Port</code> , 暴露服务。Kubernetes将在集群的每个节点上随机分配两个端口。可以使用 <strong>任意节点</strong> + <strong>分配的特殊端口</strong> 即可访问服务。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl create -f service/nodeport.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ kubectl get svc -n nginx-ingress
+</span></span><span class="line"><span class="cl">NAME            TYPE       CLUSTER-IP    EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>                      AGE
+</span></span><span class="line"><span class="cl">nginx-ingress   NodePort   10.80.23.67   &lt;none&gt;        80:30595/TCP,443:30920/TCP   4m32s
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个 Service 的唯一工作，就是将所有携带 ingress-nginx 标签的 Pod 的 80 和 433 端口暴露出去。</p>
+<h1 id="测试">测试</h1>
+<p>Nginx 官方 ingress 提供了 cafe 、 tea 的例子，参考: <a href="https://github.com/nginxinc/kubernetes-ingress/tree/master/examples/complete-example" target="_blank" rel="noopener noreffer">https://github.com/nginxinc/kubernetes-ingress/tree/master/examples/complete-example</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">IC_IP</span><span class="o">=</span>172.16.101.135   <span class="c1"># 宿主机ip</span>
+</span></span><span class="line"><span class="cl"><span class="nv">IC_HTTPS_PORT</span><span class="o">=</span><span class="m">30920</span>    <span class="c1"># nodeport</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>部署</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create -f cafe.yaml
+</span></span><span class="line"><span class="cl">kubectl create -f cafe-secret.yaml
+</span></span><span class="line"><span class="cl">kubectl create -f cafe-ingress.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>验证：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ curl --resolve cafe.example.com:<span class="nv">$IC_HTTPS_PORT</span>:<span class="nv">$IC_IP</span> https://cafe.example.com:<span class="nv">$IC_HTTPS_PORT</span>/coffee --insecure
+</span></span><span class="line"><span class="cl">Server address: 10.100.1.37:8080
+</span></span><span class="line"><span class="cl">Server name: coffee-6f4b79b975-59d8f
+</span></span><span class="line"><span class="cl">Date: 04/Sep/2021:15:36:01 +0000
+</span></span><span class="line"><span class="cl">URI: /coffee
+</span></span><span class="line"><span class="cl">Request ID: 1873881292193359134a0619136b2780
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="配置">配置</h1>
+<p>每次文件变化后，执行 <code>kubectl apply -f cafe-ingress.yaml</code>，实际会对Nginx进行一次reload。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">networking.k8s.io/v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Ingress</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">cafe-ingress</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ingressClassName</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">tls</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">hosts</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="l">cafe.example.com</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l">cafe-secret</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">rules</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">cafe.example.com</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">http</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">paths</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/tea</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l">Prefix</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">backend</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">service</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">tea-svc</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">              </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="m">80</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/coffee</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l">Prefix</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">backend</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">service</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">coffee-svc</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">              </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="m">80</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>执行上述命令后，会生成一个 ingress 规则。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl get ingress 
+</span></span><span class="line"><span class="cl">NAME           CLASS   HOSTS              ADDRESS   PORTS     AGE
+</span></span><span class="line"><span class="cl">cafe-ingress   nginx   cafe.example.com             80, <span class="m">443</span>   14h
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>而这个ingress 规则实质上是在 <code>ingress controller</code> 的 deployment pod 中的 <code>/etc/nginx/conf.d</code> 中生成一个规则。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ kubectl <span class="nb">exec</span> -it -n nginx-ingress nginx-ingress-c7cd9948d-r8hxz -- /bin/bash
+</span></span><span class="line"><span class="cl">nginx@nginx-ingress-c7cd9948d-r8hxz:/$ <span class="nb">cd</span> /etc/nginx/conf.d/
+</span></span><span class="line"><span class="cl">nginx@nginx-ingress-c7cd9948d-r8hxz:/etc/nginx/conf.d$ ls
+</span></span><span class="line"><span class="cl">default-cafe-ingress.conf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>nginx.conf</code> 相关配置遵从 configmap 模板配置, 同样更改会reload。
+详见：<code>https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/</code></p>
+<blockquote>
+<p>k8s 官方的 ingress-nginx 是利用 balance by lua 的方式进行负载均衡。nginx 官方是利用 nginx reload 实现。</p>
+</blockquote>
+<h1 id="ingress-工作原理">ingress 工作原理</h1>
+<p>K8S 调度 <code>Nginx Ingress Controller Pod</code>, Go 语言基于Nginx 模板生成的 <code>nginx.conf</code></p>
+<ul>
+<li>模板语法 <code>import &quot;text/template&quot;</code></li>
+<li>模板位置 Nginx 官方:</li>
+<li><code>/nginx.ingress.tmpl</code> 和 <code>nginx.tmpl</code></li>
+<li>填充模板的数据：</li>
+<li><code>ConfigMap</code>, <code>Ingress</code>, <code>Service</code> 和  <code>Secrets</code></li>
+</ul>
+<p>配置文件改变后，**Nginx 官方的 Ingress (<a href="https://github.com/nginxinc/kubernetes-ingress" target="_blank" rel="noopener noreffer">https://github.com/nginxinc/kubernetes-ingress</a>) ** 的做法是每次 reload。而 **kubernetes 官方的 Ingress **是基于 lua 实现的类似openresty 的 <code>balance by lua</code> 来实现配置重载。</p>
+<p>而配置文件本身是全部存在的 ETCD 中的。ETCD 基于 raft 协议实现高可用的一致性。具体可以参考我之前的文章 <a href="https://kiosk007.top/2020/05/30/go-etcd-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" target="_blank" rel="noopener noreffer">etcd 的基本入门</a></p>
+<p>Nginx 官方的Ingress 和 K8S 官方的Ingress 性能对比。</p>
+<ul>
+<li>静态部署：即 Nginx 配置文件不变, 可以看到开源的Nginx（蓝线）在压力逐渐增加时，时延变高的最慢。</li>
+</ul>
+<img src="https://img1.kiosk007.top/static/images/k8s/ingress/ingress_static_stress.png">
+<ul>
+<li>动态部署: 即 Nginx 配置总是变，如 upstream 变化导致需要配置变化。官方Nginx的性能就拉垮了，压力到90多就时延上升一个台阶，到99.9时时延已经1分钟以上了。</li>
+</ul>
+<img src="https://img1.kiosk007.top/static/images/k8s/ingress/ingress_dynamic_stress.png">
+<p>参考：<a href="https://www.nginx.org.cn/course/detail/12" target="_blank" rel="noopener noreffer">K8S Ingress Controller技术细节探讨</a></p>
+<h2 id="ingress-controller">Ingress Controller</h2>
+<p>Ingress Controller 完成了包含 <code>负载均衡/会话保持</code>、<code>协议转换</code>、<code>TLS 卸载、认证</code>、<code>文本压缩</code>、<code>请求认证</code>、<code>限流限速</code>、<code>Waf</code>、<code>全链路跟踪</code>、<code>日志监控</code> 等等功能。</p>
+<h2 id="第三方模块启用"><strong>第三方模块启用</strong></h2>
+<p>Nginx 有大量的第三方模块，Ingress 复用 Nginx 时这些大量的第三方模块是用 <code>annotations</code> 的方式加载这些第三方模块。详见 <a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/" target="_blank" rel="noopener noreffer">K8S官方文档 Annotations</a> 和 <a href="https://docs.nginx.com/nginx-ingress-controller/configuration/ingress-resources/advanced-configuration-with-annotations/" target="_blank" rel="noopener noreffer">Nginx 官方文档</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">networking.k8s.io/v1beta1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Ingress</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">cafe-ingress</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">nginx.org/proxy-connect-timeout</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;30s&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">nginx.org/proxy-read-timeout</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;20s&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">nginx.org/client-max-body-size</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;4m&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># ingressClassName: nginx # use only with k8s version &gt;= 1.18.0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">tls</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">hosts</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="l">cafe.example.com</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l">cafe-secret</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">rules</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">cafe.example.com</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">http</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">paths</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/tea</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">backend</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="l">tea-svc</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">servicePort</span><span class="p">:</span><span class="w"> </span><span class="m">80</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/coffee</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">backend</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="l">coffee-svc</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">servicePort</span><span class="p">:</span><span class="w"> </span><span class="m">80</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><img src="https://img1.kiosk007.top/static/images/k8s/ingress/ingress_annotations.png" >
+<ul>
+<li>opentrace 全链路追踪</li>
+</ul>
+<p>Nginx 本身可以遵从全链路追踪 <code>opentracing</code> 架构规范实现（https://opentracing.io/）。通过为流行的平台提供一致的，富有表现力的，供应商中立的API，OpenTracing使开发人员可以轻松地通过O（1）配置更改添加（或切换）跟踪实现。OpenTracing还为OSS检测和特定于平台的跟踪帮助程序库提供了通用语言。</p>
+<p>比如全链路追踪的 <code>jaeger trace</code>。jaeger 本身搭建比较简单，但是其数据源需要 ingress Nginx 按照 opentracing 规范导入到 jaeger 中最使用 UI 查看。</p>
+<img src="https://img1.kiosk007.top/static/images/k8s/ingress/jaeger_trace.png" />
+<p><code>nginx ingress</code> 中的nginx 支持如 <code>https://github.com/opentracing-contrib/nginx-opentracing.git</code> 等模块。</p>
+<p>详见: <a href="https://www.nginx.org.cn/article/detail/517" target="_blank" rel="noopener noreffer">采用 NGINX Ingress Controller for Kubernetes 支持 OpenTracing</a></p>
+<h2 id="nginxconf-配置加载"><strong>nginx.conf 配置加载</strong></h2>
+<p>nginx 的 config 配置文件是通过 <code>ConfigMap</code> 搭配 go 语言的 template 模板来更新 <code>nginx.conf</code> 。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ConfigMap</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-config</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-ingress</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">worker-processes</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2&#34;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>如下是进入到 <code>nginx ingress controller</code> pod 里看到的内容，<code>ConfigMap</code> 里data中的内容，<code>worker-processes: &quot;2&quot;</code> 会对应到 pod 里的 <code>nginx.tmpl</code> 的 <code>{{.WorkerProcesses}}</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nginx@nginx-ingress-c7cd9948d-r8hxz:/$ ls
+</span></span><span class="line"><span class="cl">bin   dev		   docker-entrypoint.sh  home  lib64  mnt	     nginx.ingress.tmpl  nginx.transportserver.tmpl  opt   root  sbin  sys  usr
+</span></span><span class="line"><span class="cl">boot  docker-entrypoint.d  etc			 lib   media  nginx-ingress  nginx.tmpl		 nginx.virtualserver.tmpl    proc  run	 srv   tmp  var
+</span></span><span class="line"><span class="cl">nginx@nginx-ingress-c7cd9948d-r8hxz:/$ cat nginx.tmpl 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">worker_processes  <span class="o">{{</span>.WorkerProcesses<span class="o">}}</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">{{</span>- <span class="k">if</span> .WorkerRlimitNofile<span class="o">}}</span>
+</span></span><span class="line"><span class="cl">worker_rlimit_nofile <span class="o">{{</span>.WorkerRlimitNofile<span class="o">}}</span><span class="p">;</span><span class="o">{{</span>end<span class="o">}}</span>
+</span></span><span class="line"><span class="cl"><span class="o">{{</span>- <span class="k">if</span> .WorkerCPUAffinity<span class="o">}}</span>
+</span></span><span class="line"><span class="cl">worker_cpu_affinity <span class="o">{{</span>.WorkerCPUAffinity<span class="o">}}</span><span class="p">;</span><span class="o">{{</span>end<span class="o">}}</span>
+</span></span><span class="line"><span class="cl"><span class="o">{{</span>- <span class="k">if</span> .WorkerShutdownTimeout<span class="o">}}</span>
+</span></span><span class="line"><span class="cl">worker_shutdown_timeout <span class="o">{{</span>.WorkerShutdownTimeout<span class="o">}}</span><span class="p">;</span><span class="o">{{</span>end<span class="o">}}</span>
+</span></span><span class="line"><span class="cl">daemon off<span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="k8s与nginx-官方-ingres-区别">k8s与Nginx 官方 Ingres 区别</h2>
+<p>进程架构</p>
+<ul>
+<li>
+<p>K8S 官方</p>
+<ul>
+<li>/usr/bin/dumb-init</li>
+<li>nginx-ingress-controller</li>
+<li>/usr/local/nginx/sbin/nginx -c /etc/nginx/nginx.conf</li>
+</ul>
+</li>
+<li>
+<p>Nginx 官方</p>
+<ul>
+<li>nginx-ingress</li>
+<li>/usr/sbin/nginx</li>
+</ul>
+</li>
+<li>
+<p><strong>K8S 官方优势</strong></p>
+</li>
+</ul>
+<p>可以看出 K8S 官方是对容器的理解非常深，容器是单进程架构，这并不意味着容器里面只能跑一个进程，而是指容器内只能管理一个进程。K8S 的这一个进程就是 <code>/usr/bin/dumb-init</code> 仿照了操作系统中的 <code>systemd</code> 进程对这个POD容器进行管理。</p>
+<p>而Nginx官方的Ingress 是 <code>nginx-ingress</code> 进程。</p>
+<p>另一个就是K8S官方的负载均衡配置变更是用的 <code>Balance By Lua</code> ，这个在配置频繁变更时性能会很高。</p>
+<ul>
+<li><strong>Nginx 官方优势</strong></li>
+</ul>
+<p>但是 Nginx 官方的 Ingress 明显是对 <code>nginx</code> 的理解更加深刻的。Ingress 默认是不支持正则匹配，Nginx 官方则对此有优化，这个就是 <code>VirtualServer</code>、<code>VirtualServerRoute</code>。</p>
+<img src="https://img1.kiosk007.top/static/images/k8s/ingress/virtual_server.png" >
+<p>另外，Nginx 官方还提供了 <code>snippets</code> 。支持更高级的匹配模式，但其实也是一种全局的匹配。 具体参考 <a href="https://docs.nginx.com/nginx-ingress-controller/configuration/ingress-resources/advanced-configuration-with-snippets/" target="_blank" rel="noopener noreffer">Advanced Configuration with Snippets</a></p>
+<p>支持添加 302 跳转，支持全局加 Header 。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">networking.k8s.io/v1beta1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Ingress</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">cafe-ingress-with-snippets</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">nginx.org/server-snippets</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">      location / {
+</span></span></span><span class="line"><span class="cl"><span class="sd">          return 302 /coffee;
+</span></span></span><span class="line"><span class="cl"><span class="sd">      }      </span><span class="w">      
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">nginx.org/location-snippets</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">            add_header my-test-header test-value;</span><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">rules</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">cafe.example.com</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="l">....</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>另外Nginx官方支持自定义模板。具体参考 <a href="https://docs.nginx.com/nginx-ingress-controller/configuration/ingress-resources/custom-annotations/" target="_blank" rel="noopener noreffer">Custom Annotations</a></p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-09-05</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/nginx-ingress/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/nginx-ingress/" data-title="Nginx Ingress"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/nginx-ingress/" data-title="Nginx Ingress"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/nginx-ingress/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/nginx/">Nginx</a>,&nbsp;<a href="/tags/k8s/">K8s</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/k8s%E6%9E%B6%E6%9E%84%E6%8B%93%E6%89%91/" class="prev" rel="prev" title="k8s 架构拓扑"><i class="fas fa-angle-left fa-fw"></i>k8s 架构拓扑</a>
+            <a href="/post/service-mesh-%E6%98%AF%E4%BB%80%E4%B9%88/" class="next" rel="next" title="Service Mesh 是什么？">Service Mesh 是什么？<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

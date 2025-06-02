@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>认识 Openstack - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/post/%E8%AE%A4%E8%AF%86-openstack/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="认识 Openstack">
+  <meta property="og:description" content="最近机缘巧合，需要重新认识一下 openstack 这门技术，之前其实也接触过很多虚拟化的技术，但是不够统一，也打算将之前了解的虚拟化技术好好的回顾一遍。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-08-18T16:30:00+00:00">
+    <meta property="article:modified_time" content="2022-08-18T16:30:00+00:00">
+    <meta property="article:tag" content="Openstack">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="认识 Openstack">
+  <meta name="twitter:description" content="最近机缘巧合，需要重新认识一下 openstack 这门技术，之前其实也接触过很多虚拟化的技术，但是不够统一，也打算将之前了解的虚拟化技术好好的回顾一遍。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/post/%E8%AE%A4%E8%AF%86-openstack/" /><link rel="prev" href="http://localhost:1313/post/go%E5%8F%AF%E4%BB%A5%E6%97%A0%E9%99%90go%E5%90%97/" /><link rel="next" href="http://localhost:1313/post/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/" /><link rel="stylesheet" href="https://cdn.staticfile.net//normalize/8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "认识 Openstack",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/post\/%E8%AE%A4%E8%AF%86-openstack\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "openstack","wordcount":  639 ,
+        "url": "http:\/\/localhost:1313\/post\/%E8%AE%A4%E8%AF%86-openstack\/","datePublished": "2022-08-18T16:30:00+00:00","dateModified": "2022-08-18T16:30:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('light' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'light' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/post/%E8%AE%A4%E8%AF%86-openstack/" selected>English</option></select>
+                </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">认识 Openstack</h1><h2 class="single-subtitle">Cloud Infrastructure for Virtual Machines, Bare Metal, and Containers</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud-computing/"><i class="far fa-folder fa-fw"></i>Cloud Computing</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-08-18">2022-08-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;639 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是openstack">什么是OpenStack？</a>
+      <ul>
+        <li><a href="#主要组件以及作用">主要组件以及作用</a></li>
+      </ul>
+    </li>
+    <li><a href="#openstack-组成">Openstack 组成</a></li>
+    <li><a href="#nova">Nova</a>
+      <ul>
+        <li><a href="#nova-架构">Nova 架构</a></li>
+        <li><a href="#nova-架构中各个组件协作">Nova 架构中各个组件协作</a></li>
+      </ul>
+    </li>
+    <li><a href="#cinder">Cinder</a>
+      <ul>
+        <li><a href="#cinder-架构">Cinder 架构</a></li>
+        <li><a href="#cinder-各架构组件的协作">Cinder 各架构组件的协作</a></li>
+      </ul>
+    </li>
+    <li><a href="#neutron">Neutron</a>
+      <ul>
+        <li><a href="#neutron-架构">Neutron 架构</a></li>
+        <li><a href="#neutron-各架构组件的协作">Neutron 各架构组件的协作</a></li>
+      </ul>
+    </li>
+    <li><a href="#keystone">Keystone</a>
+      <ul>
+        <li><a href="#keystone-架构">Keystone 架构</a></li>
+        <li><a href="#keystone-认证原理">Keystone 认证原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#glance">Glance</a>
+      <ul>
+        <li><a href="#glance-架构">Glance 架构</a></li>
+        <li><a href="#glance-各架构组件的协作">Glance 各架构组件的协作</a></li>
+      </ul>
+    </li>
+    <li><a href="#ceilometer">Ceilometer</a>
+      <ul>
+        <li><a href="#ceilometer-架构">Ceilometer 架构</a></li>
+        <li><a href="#ceilometer-各架构组件的协作">Ceilometer 各架构组件的协作</a></li>
+      </ul>
+    </li>
+    <li><a href="#swift">Swift</a>
+      <ul>
+        <li><a href="#swift-架构">Swift 架构</a></li>
+        <li><a href="#swift-各架构组件的协作">Swift 各架构组件的协作</a></li>
+      </ul>
+    </li>
+    <li><a href="#heat">Heat</a>
+      <ul>
+        <li><a href="#heat-架构">Heat 架构</a></li>
+        <li><a href="#heat-各架构组件交互逻辑">Heat 各架构组件交互逻辑</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2022-08-18T16:30:00" title="August 18, 2022">August 18, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>最近机缘巧合，需要重新认识一下 openstack 这门技术，之前其实也接触过很多虚拟化的技术，但是不够统一，也打算将之前了解的虚拟化技术好好的回顾一遍。</p>
+<h1 id="什么是openstack">什么是OpenStack？</h1>
+<p>官方给出的定义是：</p>
+<blockquote>
+<p>Openstack controls large pools of compute, storage, and networking resources, all managed through APIs or a dashboard.</p>
+<p>Beyond standard infrastructure-as-a-service functionality, additional components provide orchestration, fault management and service management amongst other services to ensure high availability of user applications.</p>
+</blockquote>
+<p>简单的翻译一下：</p>
+<p><a href="https://www.openstack.org/" target="_blank" rel="noopener noreffer">OpenStack</a> 是一个可以控制真个数据中心里大量的计算、存储和网络资源池的云操作系统，他通过一个既能赋予管理员控制资源的能力，也能让普通用户调配资源的可视化控制面板（Dashboard）来管理这一切。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_overview.jpg" alt="openstack_overview" style="zoom:40%; clear: both; margin: auto; display: block;" />
+<br/>
+<p>OpenStack 是由一系列开源组件构成的基础设施即服务（Infrastructure as a Service，简称 IaaS）范畴的云平台解决方案，它让用户方便的构建和管理自己的云平台。</p>
+<p>OpenStack 要解决的问题就是如何管理物理主机上虚拟出来的虚拟机和虚拟资源。</p>
+<p>虚拟资源主要由<strong>计算</strong>、<strong>网络</strong>、<strong>存储</strong> 三种构成，OpenStack 有对应的组件去管理这些资源。其组件的源码在 <a href="https://github.com/openstack/" target="_blank" rel="noopener noreffer">https://github.com/openstack/</a></p>
+<h2 id="主要组件以及作用">主要组件以及作用</h2>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>Service</th>
+<th>Catalog</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/nova_logo.webp" title="https://img1.kiosk007.top/static/images/blog/nova_logo.webp" data-thumbnail="https://img1.kiosk007.top/static/images/blog/nova_logo.webp" data-sub-html="<h2>NOVA</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/nova_logo.webp"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/nova_logo.webp, https://img1.kiosk007.top/static/images/blog/nova_logo.webp 1.5x, https://img1.kiosk007.top/static/images/blog/nova_logo.webp 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/nova_logo.webp" />
+    </a><figcaption class="image-caption"><strong>NOVA</strong></figcaption>
+    </figure></td>
+<td>Compute Service 计算服务</td>
+<td>Compute</td>
+</tr>
+<tr>
+<td><figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/clance_logo.webp" title="https://img1.kiosk007.top/static/images/blog/clance_logo.webp" data-thumbnail="https://img1.kiosk007.top/static/images/blog/clance_logo.webp" data-sub-html="<h2>GLANCE</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/clance_logo.webp"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/clance_logo.webp, https://img1.kiosk007.top/static/images/blog/clance_logo.webp 1.5x, https://img1.kiosk007.top/static/images/blog/clance_logo.webp 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/clance_logo.webp" />
+    </a><figcaption class="image-caption">GLANCE</figcaption>
+    </figure></td>
+<td>Image Service 镜像服务</td>
+<td>Compute</td>
+</tr>
+<tr>
+<td><figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/swift_logo.webp" title="https://img1.kiosk007.top/static/images/blog/swift_logo.webp" data-thumbnail="https://img1.kiosk007.top/static/images/blog/swift_logo.webp" data-sub-html="<h2>SWIFT</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/swift_logo.webp"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/swift_logo.webp, https://img1.kiosk007.top/static/images/blog/swift_logo.webp 1.5x, https://img1.kiosk007.top/static/images/blog/swift_logo.webp 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/swift_logo.webp" />
+    </a><figcaption class="image-caption">SWIFT</figcaption>
+    </figure></td>
+<td>Object Store 对象存储</td>
+<td>Storage，Backup &amp; Recovery</td>
+</tr>
+<tr>
+<td><figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/cinder_logo.webp" title="https://img1.kiosk007.top/static/images/blog/cinder_logo.webp" data-thumbnail="https://img1.kiosk007.top/static/images/blog/cinder_logo.webp" data-sub-html="<h2>CINDER</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/cinder_logo.webp"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/cinder_logo.webp, https://img1.kiosk007.top/static/images/blog/cinder_logo.webp 1.5x, https://img1.kiosk007.top/static/images/blog/cinder_logo.webp 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/cinder_logo.webp" />
+    </a><figcaption class="image-caption">CINDER</figcaption>
+    </figure></td>
+<td>Block Storage 块存储</td>
+<td>Storage，Backup &amp; Recovery</td>
+</tr>
+<tr>
+<td><figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/keystone_logo.webp" title="https://img1.kiosk007.top/static/images/blog/keystone_logo.webp" data-thumbnail="https://img1.kiosk007.top/static/images/blog/keystone_logo.webp" data-sub-html="<h2>KEYSTONE</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/keystone_logo.webp"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/keystone_logo.webp, https://img1.kiosk007.top/static/images/blog/keystone_logo.webp 1.5x, https://img1.kiosk007.top/static/images/blog/keystone_logo.webp 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/keystone_logo.webp" />
+    </a><figcaption class="image-caption">KEYSTONE</figcaption>
+    </figure></td>
+<td>Identity Service 认证服务</td>
+<td>Security，Identity &amp; Compliance</td>
+</tr>
+<tr>
+<td><figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/neutron_logo.webp" title="https://img1.kiosk007.top/static/images/blog/neutron_logo.webp" data-thumbnail="https://img1.kiosk007.top/static/images/blog/neutron_logo.webp" data-sub-html="<h2>NEUTRON</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/neutron_logo.webp"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/neutron_logo.webp, https://img1.kiosk007.top/static/images/blog/neutron_logo.webp 1.5x, https://img1.kiosk007.top/static/images/blog/neutron_logo.webp 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/neutron_logo.webp" />
+    </a><figcaption class="image-caption">NEUTRON</figcaption>
+    </figure></td>
+<td>Networking 网络服务</td>
+<td>Networking &amp; Content Delivery</td>
+</tr>
+<tr>
+<td><figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/horizon_logo.webp" title="https://img1.kiosk007.top/static/images/blog/horizon_logo.webp" data-thumbnail="https://img1.kiosk007.top/static/images/blog/horizon_logo.webp" data-sub-html="<h2>HORIZON</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/horizon_logo.webp"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/horizon_logo.webp, https://img1.kiosk007.top/static/images/blog/horizon_logo.webp 1.5x, https://img1.kiosk007.top/static/images/blog/horizon_logo.webp 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/horizon_logo.webp" />
+    </a><figcaption class="image-caption">HORIZON</figcaption>
+    </figure></td>
+<td>Dashboard 管理界面</td>
+<td>Management Tools</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<p>组件内部也并不是完全一体，紧密耦合的状态，这样方便了组件的扩展和维护，组件之间也并不是孤立的。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_level.png" alt="openstack_level" style="zoom:80%;clear:both;margin:auto;display:block;" />
+<br/>
+<h1 id="openstack-组成">Openstack 组成</h1>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img1.kiosk007.top/static/images/blog/openstack_draft.png"
+        data-srcset="https://img1.kiosk007.top/static/images/blog/openstack_draft.png, https://img1.kiosk007.top/static/images/blog/openstack_draft.png 1.5x, https://img1.kiosk007.top/static/images/blog/openstack_draft.png 2x"
+        data-sizes="auto"
+        alt="https://img1.kiosk007.top/static/images/blog/openstack_draft.png"
+        title="openstack_draft" />
+   <div class="post-img-view">
+      <a data-fancybox="gallery" href="https://img1.kiosk007.top/static/images/blog/openstack_draft.png">
+         <img src="https://img1.kiosk007.top/static/images/blog/openstack_draft.png" alt="openstack_draft"  />
+      </a>
+   </div>
+
+
+</p>
+<br/>
+<h1 id="nova">Nova</h1>
+<p>Nova 在 OpenStack 中提供计算资源服务的项目，管理OpenStack 云中实例的生命周期的所有活动；是管理计算资源、网络认证所需的可扩展平台。</p>
+<p>其<strong>负责</strong>虚拟机生命周期的管理和其他计算资源生命周期的管理。<strong>不负责</strong>承载虚拟机的物理主机自身的管理和全面系统状态的监控。</p>
+<p>事实上Nova是OpenStack事实上最核心的项目。</p>
+<p><a href="https://github.com/openstack/nova" target="_blank" rel="noopener noreffer">https://github.com/openstack/nova</a></p>
+<h2 id="nova-架构">Nova 架构</h2>
+<p>常见术语解释</p>
+<table>
+<thead>
+<tr>
+<th>名词</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KVM</td>
+<td>内核虚拟化，是基于内核的虚拟化技术，也是 OpenStack 中默认的 Hypersvisor 层</td>
+</tr>
+<tr>
+<td>Qemu</td>
+<td>辅助KVM，提供存储、网络等虚拟化技术，不支持全虚拟化</td>
+</tr>
+<tr>
+<td>Flavor</td>
+<td>新建虚拟机的配置列表，可以认为是创建虚拟机的模板，比如一种具有2个 VCPU、4GB内存、40GB存储的虚拟机</td>
+</tr>
+<tr>
+<td>Keypair</td>
+<td>ssh 连接访问实例的密钥对</td>
+</tr>
+<tr>
+<td>Server Group</td>
+<td>虚拟机亲和性/反亲和性，同一个亲和性组的虚拟机，在创建时会被调度到相同的物理主机上，同一个反亲和性组的虚拟机，在创建时会被调度到不同的物理主机上</td>
+</tr>
+</tbody>
+</table>
+<p>Nova组件由<strong>Nova-API</strong>，<strong>Nova-scheduler</strong>,<strong>Nova-conductor</strong>,<strong>Nova-compute</strong>以及提供<strong>消息传递的消息队列</strong>（message queue）和<strong>数据裤模块</strong>（database）组成</p>
+<ul>
+<li><strong>Nova-API</strong>：主要提供了统一风格的REST-API 接口，作为 Nova 组件的入口，接受用户的请求。</li>
+<li><strong>Nova-scheduler</strong>：负责调度将实例分配到具体的计算节点</li>
+<li><strong>Nova-conductor</strong>：主要负责与Nova数据库进行交互</li>
+<li><strong>Nova-compute</strong>：计算节点，用于虚拟机实例的创建和管理</li>
+<li><strong>Message Queue</strong>：主要用于Nova各个组件之间的消息传递</li>
+</ul>
+<br/>
+<h2 id="nova-架构中各个组件协作">Nova 架构中各个组件协作</h2>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_nova.png" alt="openstack_nova" style="zoom:40%;clear:both;margin:auto;display:block;" />
+<p>首先用户通过 CLI 命令行或 Horizon 向 Nova 组件提出创建实例的请求，</p>
+<ol>
+<li>Nova-API作为Nova的入口，将会接受用户的请求，然后以消息队列的方式，将请求发送给 Nova-scheduler</li>
+<li>Nova-scheduler 从消息队列中获取到Nova-API的消息后，去数据库中查询当前计算节点的负载和使用情况。</li>
+<li>由于Nova-scheduler不能直接和数据库交互，因此会借助与消息队列的方式，通过 Nova-conductor 组件与数据库进行交互，最后根据查询的结果，将虚拟机分配到当前负载最小并且满足启动虚拟机实例的计算节点上。</li>
+<li>最终实例的创建需要Nova-compute来完成，期间也离不开镜像、网络、存储等一些资源的配合，因此Nova-compute组件将会与 Nova-valume, Nova-network 等组件交互，最终完成虚拟机实例的创建。</li>
+</ol>
+<br/>
+<h1 id="cinder">Cinder</h1>
+<p>Cinder 在OpenStack 中为虚拟机实例提供 vloume 的块存储服务，可将卷挂载到实例上，作为虚拟机实例的本地磁盘使用。</p>
+<p>一个 volume 卷可以同时挂载到多个实例上，但是同时只能有一个实例对卷进行写操作，其他都是只读的。</p>
+<p><strong>Cinder 支持的逻辑卷系统类型</strong>：LVM/LSCSI、NFS、NetAPP NFS、Gluster、DELL Equall Logic。</p>
+<p><a href="https://github.com/openstack/cinder" target="_blank" rel="noopener noreffer">https://github.com/openstack/cinder</a></p>
+<h2 id="cinder-架构">Cinder 架构</h2>
+<p>常见术语解释</p>
+<table>
+<thead>
+<tr>
+<th>名词</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Volum 备份</td>
+<td>指的是 Volum 卷的备份存放在备份的设备中</td>
+</tr>
+<tr>
+<td>Volum 快照</td>
+<td>指的是卷在某个时间点的状态</td>
+</tr>
+</tbody>
+</table>
+<p>Cinder组件由 <strong>Cinder API</strong>、<strong>Cinder Scheduler</strong>、<strong>Cinder Volume</strong>、<strong>Cinder Backup</strong> 等组成。</p>
+<ul>
+<li><strong>Cinder API</strong>：为 Cinder 请求提供统一风格的 Rest API服务，用来接收Cinder的请求，是Cinder服务的入口</li>
+<li><strong>Cinder Scheduler</strong>：主要负责调度为新建卷分配块存储节点</li>
+<li><strong>Cinder Volume</strong>：主要负责与存储的块设备交互，实现卷的创建、删除、修改等操作。</li>
+<li><strong>Cinder Backup</strong>：备份服务，主要负责通过驱动和后端的备份设备打交道，备份的后端比如 Swift 组件。</li>
+</ul>
+<br/>
+<h2 id="cinder-各架构组件的协作">Cinder 各架构组件的协作</h2>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_cinder.png" alt="openstack_cinder" style="zoom:40%;clear:both;margin:auto;display:block;" />
+<p>首先由用户通过 CLI 命令行 或者 Nova-compute 提出创建卷的请求。</p>
+<ol>
+<li>由 Cinder API 接收请求，然后以消息队列的方式发送给 Cinder Scheduler 来调用。</li>
+<li>Cinder Scheduler 侦听到来自Cinder API的消息队列后，到数据库中查询当前存储节点的状态信息，并根据预定策略，选择卷的最佳 Volume Service 节点，然后将调度的结果发布给 Volume Service 来调用。</li>
+<li>当Volume Service 收到 Volume Scheduler 的调度结果之后，会去查找 volume provider，从而在特定的存储节点上创建相关的卷，然后将相关的结果返回给用户，同时将修改的数据写入到数据库中。</li>
+</ol>
+<br/>
+<h1 id="neutron">Neutron</h1>
+<p>Neutron 是 OpenStack 中负责提供网络服务的组件，基于软件定义网络的思想，实现网络化的网络资源管理，在实现上充分利用了 Linux 系统中的各种网络相关技术，支持第三方插件。</p>
+<p><a href="https://github.com/openstack/neutron" target="_blank" rel="noopener noreffer">https://github.com/openstack/neutron</a></p>
+<h2 id="neutron-架构">Neutron 架构</h2>
+<p>常见术语解释</p>
+<table>
+<thead>
+<tr>
+<th>名词</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bridge-int</td>
+<td>指的是综合网桥，常用语表示实现内部网络通信功能的网桥</td>
+</tr>
+<tr>
+<td>Br-ex</td>
+<td>外部网桥，通常用于跟外部网络通信的网桥</td>
+</tr>
+</tbody>
+</table>
+<p>Neutron 组件由 <strong>Neutron-server</strong>、<strong>Neutron-L2-agent</strong>、<strong>Neutron-DHCP-agent</strong>、<strong>Neutron-L3-agent</strong>、<strong>Neution-metadata-agent</strong>、<strong>LBaas agent</strong></p>
+<ul>
+<li><strong>Neutron-server</strong>：提供了API接口，把API的调用请求传递给已经配置好的插件，进行后续处理。</li>
+<li><strong>Neutron-L2-agent</strong>：二层代理，用语管理 VLan 插件，接受 Neutron-server 的指令创建 Vlan</li>
+<li><strong>Neutron-DHCP-agent</strong>：是OpenStack中用语创建子网，并为每一个创建的子网实现IP地址的自动分配的组件</li>
+<li><strong>Neutron-L3-agent</strong>：负责租户网络和 floating IP 之间的地址转换，通过 Linux IP tables 的nat 功能实现地址转换</li>
+<li><strong>Neution-metadata-agent</strong>：运行在网络节点上，用来响应 Navo 组件的 metadata 请求</li>
+<li><strong>LBaas agent</strong>：主要为多台实例和 openvswitch agent 提供负载均衡服务。</li>
+</ul>
+<br/>
+<h2 id="neutron-各架构组件的协作">Neutron 各架构组件的协作</h2>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_neutron.png" alt="openstack_neutron" style="zoom:40%;clear:both;margin:auto;display:block;" />
+<p>当 Neutron 通过 API 接口接到来自用户或者其他组件的网络请求时。</p>
+<ol>
+<li>以消息队列的方式提交给二层或者三层代理</li>
+<li>其中 DHCP-agent 实现子网的创建和IP地址的自动分发</li>
+<li>L2-agent实现相同 vlan 下的网络通信</li>
+<li>L3-agent实现同一个租户网络下不同子网间的通信</li>
+</ol>
+<br/>
+<h1 id="keystone">Keystone</h1>
+<p>Keystone 在 OpenStack 框架中负责身份验证、服务规则和服务令牌的功能。提供了认证服务的API，为OpenStack中的各个组件提供了认证服务，类似于一个服务的总线，或者说是提供了整个OpenStack框架的注册表。</p>
+<p>其他的服务都是通过 Keystone来注册其服务的 Endpoint，也就是服务的 URL 路径，来实现服务之间的相互访问与调用。</p>
+<p><a href="https://github.com/openstack/keystone" target="_blank" rel="noopener noreffer">https://github.com/openstack/keystone</a></p>
+<h2 id="keystone-架构">Keystone 架构</h2>
+<p>常见术语解释</p>
+<table>
+<thead>
+<tr>
+<th>名词</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User</td>
+<td>OpenStack 中最基本的用户，进行访问的人或者程序</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>项目或者是租户，指的是分配给使用者资源的集合，比如给租户A，我们可以分配 50 个实例，100 核CPU、200G内存</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>角色，代表一组用户可以访问资源的权限</td>
+</tr>
+<tr>
+<td>Domain</td>
+<td>域，定义了管理的边界，是最上层的一个集合，域里面可包含很多的 Project/tenant，user，role 等等</td>
+</tr>
+<tr>
+<td>Endpoint</td>
+<td>指的是服务的URL路径，可以认为是服务暴露出来的访问点。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Keystone 认证模型</strong></p>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_keystone_explanation.png" alt="openstack_keystone_explanation" style="zoom:40%;clear:both;margin:auto;display:block;" />
+<p>首先创建两个域，集团1 和 集团2 。</p>
+<p>集团下面可能还有分公司，他们分别创建三个 project 给三个分公司使用，在project 下创建不同的用户，用户可以跨多个project 存在。</p>
+<h2 id="keystone-认证原理">Keystone 认证原理</h2>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_keystone.png" alt="openstack_keystone" style="zoom:40%;clear:both;margin:auto;display:block;" />
+<p>Keystone 如何实现身份验证？</p>
+<p><strong>当用户在创建时，通过Keystone将会申请一张访问令牌的token</strong></p>
+<ol>
+<li>假设当用户提出创建虚拟机实例的请求时，首先将自己的访问令牌和访问请求，提交给Nova服务</li>
+<li>Nova服务为确保用户的访问令牌没有被篡改过，因此Nova首先将访问令牌交给Keystone进行验证</li>
+<li>验证通过后，Nova为了启动虚拟机实例，还需要向 Glance 组件申请相关的镜像资源，Glance 为确保访问令牌在传递过程中没有被篡改过，也需要把令牌发送给 Keystone 确认，验证通过后将会发放镜像资源给 Nova 组件</li>
+<li>当然虚拟机实例的创建除了需要镜像文件，还需要网络、存储等资源，因此 Nova组件还需要给负责各种资源的模块来传递资源申请的请求，这些资源申请过程中都会伴随着访问令牌验证</li>
+<li>最终 Nova 拿到启动虚拟机实例的所有资源以后，进行实例的启动，然后分配给相关用户</li>
+</ol>
+<br/>
+<h1 id="glance">Glance</h1>
+<p>Glance 是 OpenStack 中负责为Nova提供镜像服务，以便启动实例的组件，但通常不负责镜像的本地存储，可以实现对镜像做快照，备份镜像模板的管理。</p>
+<p>Glance 支持的镜像格式：</p>
+<ul>
+<li>raw：非结构化的镜像格式</li>
+<li>vhd：一种通用的虚拟机磁盘格式，可用于Vmaware、Xen、Microsoft Virtual PC/Virtual Server/Hyper-V、VirtualBox 等</li>
+<li>vmdk：Vmware 的虚拟机磁盘格式，同样支持多种Hypervisor</li>
+<li>vdi：VirtualBox、QEMU 等支持的虚拟机磁盘格式</li>
+<li>iso：光盘存档格式</li>
+<li>qcow2：一种支持QEMU并可动态扩展的磁盘格式</li>
+</ul>
+<p><a href="https://github.com/openstack/glance" target="_blank" rel="noopener noreffer">https://github.com/openstack/glance</a></p>
+<h2 id="glance-架构">Glance 架构</h2>
+<p>Glance 由 Glance-API 和 Glance-registry 两个组件构成。</p>
+<ul>
+<li><strong>Glance-API</strong>： 负责提供镜像服务的 rest api 服务，作为镜像服务请求的入口</li>
+<li><strong>Glance-registry</strong>：主要负责与Glance使用的数据库的交互</li>
+</ul>
+<p>比如镜像的创建、删除、修改等操作都会通过 Glance-registry 来与数据库交互来实现。</p>
+<h2 id="glance-各架构组件的协作">Glance 各架构组件的协作</h2>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_glance.png" alt="openstack_glance" style="zoom:40%;clear:both;margin:auto;display:block;" />
+<p>当有 Horizon、Glance-CLI 或者是 Nova-Compute 组件发送过来的镜像请求时，由 Glance-API接收处理</p>
+<ol>
+<li>Glance-API将请求的消息传递给 Glance-registry 组件</li>
+<li>Glance-register 组件到数据库中去查询镜像存储的位置信息返回给API</li>
+<li>API将调用 Storage adapter 组件进行查询，用来查询 Glance 后端的存储，比如 Swift 、Ceph、Amazon S3 等</li>
+<li>最终获取镜像，返回给相关用户。</li>
+</ol>
+<br/>
+<h1 id="ceilometer">Ceilometer</h1>
+<p>Ceilometer 是 OpenStack 的子项目，它像一个漏斗一样，把 OpenStack 内部发生的几乎所有事件都收集起来，然后为计费、监控、以及其他的服务提供数据支撑。</p>
+<p>之所以需要 Ceilometer 是因为：OpenStack 作为一个开源的 IaaS 平台，发展的速度越来越快，那么越来越多的公司基于OpenStack 做自己的共有云平台，而作为共有云，计量和监控这两个基础的服务往往是必不可少的，计量是为了获取平台中用户对各种资源的使用情况。</p>
+<p>监控是为了保证资源处于一个健康的状态，因此 Ceilometer 在项目提出之初，它的定位就是专注于计量、计费。</p>
+<p><a href="https://github.com/openstack/ceilometer" target="_blank" rel="noopener noreffer">https://github.com/openstack/ceilometer</a></p>
+<h2 id="ceilometer-架构">Ceilometer 架构</h2>
+<p>Ceilometer 由五个重要的组件以及一个 Message Bus 组成。</p>
+<ul>
+<li><strong>Ceilometer-agent-computer</strong>：运行在计算节点上，是计算节点上数据收集的代理</li>
+<li><strong>Ceilometer-agent-contral</strong>：运行在控制节点上，轮询服务的非持续化数据</li>
+<li><strong>Ceilometer-collector</strong>：运行在一个或多个控制节点上，主要作用是监控消息总线，将收到的消息以及相关的数据写入到数据库中</li>
+<li><strong>Storage</strong>：数据存储，支持 MySQL、MongoDB，用于存储收集到的样本数据</li>
+<li><strong>API Server</strong>：运行在控制节点上，提供对数据库的数据访问</li>
+<li><strong>Message Bus</strong>：计量数据的消息总线，收集数据给 collector</li>
+</ul>
+<h2 id="ceilometer-各架构组件的协作">Ceilometer 各架构组件的协作</h2>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_ceilometer_fix.png" alt="openstack_glance" style="zoom:40%;clear:both;margin:auto;display:block;" />
+<p>在上图中 Ceilometer 组件采用了两种数据采集的方式：</p>
+<ul>
+<li>其中一种是消费了 OpenStack 内各个服务自动发出的Notification 消息，对应图中Notification Message Bus</li>
+<li>另一种是通过各个服务的API去主动轮询获取数据，对应图中 Central Pollsters 服务引出的箭头。</li>
+</ul>
+<p><strong>采用两种方式的原因是</strong>：</p>
+<ol>
+<li>因为在 OpenStack 内部，大部分事件都会发出 Notification 消息。 比如创建、删除实例的时候，这些计量、计费的重要信息时，都会发出对应的 Notification 消息。Ceilometer 组件是 Notification 消息最大的消费者，所以第一种方式是Ceilometer的首要数据来源。</li>
+<li>有些消息 Notification 获取不到，比如实例的CPU运行时间，CPU的使用率等等，这些信息不会通过Notification发出，因此Ceilometer 增加了第二种方式，即周期性的调用相关的 API 去轮询这些消息</li>
+</ol>
+<br/>
+<h1 id="swift">Swift</h1>
+<p>Swift 是OpenStack中提供高可用分布式对象存储的服务，为Nova子项目提供虚拟机镜像存储服务，在软件层引入一致性散列技术和数据冗余，牺牲一定程度的数据一致性来达到高可用和伸缩性。支持多租户模式下，容器和对象的读写操作。</p>
+<p><strong>适用于互联网场景下非结构化数据的存储</strong>，如华为云盘等。</p>
+<p>Swift 组件在物理结构上往往会保存存储对象的多个副本，通常按照物理位置的特征，将对象拷贝到不同对象的物理位置上，来保证数据地理位置上的可靠性。</p>
+<p><a href="https://github.com/openstack/swift" target="_blank" rel="noopener noreffer">https://github.com/openstack/swift</a></p>
+<h2 id="swift-架构">Swift 架构</h2>
+<p>常用术语</p>
+<table>
+<thead>
+<tr>
+<th>名词</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Account</td>
+<td>不是传统意义上的用户，而是用户定义的管理存储区域</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>容器，存储的隔间，类似于子文件夹或者是目录</td>
+</tr>
+<tr>
+<td>Object</td>
+<td>对象，包含了我们上传的每一个基本的存储实体和它自身的元数据</td>
+</tr>
+<tr>
+<td>Ring</td>
+<td>环，记录了磁盘上存储的实体名称和物理位置的映射关系，有 Account 环，Container 环和 Object 环</td>
+</tr>
+</tbody>
+</table>
+<p><strong>术语间关系</strong></p>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_swift_explanation.png" alt="openstack_swift_explanation" style="zoom:40%;clear:both;margin:auto;display:block;" />
+<p>常用概念：</p>
+<ul>
+<li><strong>Region</strong>：地域，地理位置上的一个概念，往往代表着不同城市的地理位置，从灾备考虑的概念</li>
+<li><strong>Zone</strong>：可用区，强调的是物理的网络，供电，空调等基础设施的隔离，不同的可用区可能是同一个城市的不同数据中心机房，也可能是同一个数据中心，不同的供电、供水、网络、接入等隔离的系统</li>
+<li><strong>Node</strong>：节点，表示一台存储服务器</li>
+<li><strong>Disk</strong>：磁盘，代表着物理的存储设备</li>
+<li><strong>Cluster</strong>：集群，是为冗余考虑而设计的架构</li>
+</ul>
+<p><strong>常用概念间的关系</strong></p>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_swift_concept.png" alt="openstack_swift_concept" style="zoom:40%;clear:both;margin:auto;display:block;" />
+<br/>
+<h2 id="swift-各架构组件的协作">Swift 各架构组件的协作</h2>
+<p>首先<strong>用户提出了一个对象存储资源的申请</strong>，由Swift的API接收和处理，<strong>申请收到以后先去找Keystone认证结点</strong>，<strong>对于用户的身份进行认证</strong>，</p>
+<p>认证通过后将请求提交给名称为Swift Proxy的组件。</p>
+<p>Swift Proxy 是 Swift 的代理，由它来确定，究竟应该将存储对象放在哪一个满足存储要求的存储节点上，最终将对象存储到指定的存储节点上，最终返回用户。</p>
+<br/>
+<h1 id="heat">Heat</h1>
+<p>heat 是基于模板来创建相关资源的服务，是OpenStack 的核心项目之一，可以通过 yaml 文件生成模板，通过 heat-agent 组件在 OpenStack 中创建相关的资源，模板支持丰富的资源类型，不仅覆盖了常用的基础架构，包括计算、网络、存储、镜像等。</p>
+<p><a href="https://github.com/openstack/heat" target="_blank" rel="noopener noreffer">https://github.com/openstack/heat</a></p>
+<h2 id="heat-架构">Heat 架构</h2>
+<p>常用术语</p>
+<table>
+<thead>
+<tr>
+<th>名词</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stack</td>
+<td>指的是 heat 要用到的所有设施和资源的集合</td>
+</tr>
+<tr>
+<td>Heat template</td>
+<td>指的是 heat 模板，往往以 .yaml 结尾的文件，用于创建 Stack</td>
+</tr>
+<tr>
+<td>Resouerce</td>
+<td>底层各种服务的抽象集合，比如计算、存储、网络等等</td>
+</tr>
+</tbody>
+</table>
+<p>Heat 由 <strong>Heat-api</strong>、<strong>Heat-engine</strong>、<strong>Heat-cfntools</strong>、<strong>Heat-initial</strong>、<strong>heat-api-cloudwatch</strong>、<strong>heat-client</strong> 等组件构成</p>
+<ul>
+<li><strong>Heat-api</strong>：提供了 rest api 接口，是 heat 服务的入口，将 API 请求发送给 heat-engine 去执行</li>
+<li><strong>Heat-engine</strong>：heat 的核心模块，接收api的请求在 OpenStack 中创建相关的资源</li>
+<li><strong>Heat-cfntools、Heat-initial</strong>：往往是镜像中安装完成虚拟机实例操作任务的工具</li>
+<li><strong>Heat-api-cloudwatch</strong>：编排服务的监控组件</li>
+<li><strong>Heat-client</strong>：用于访问其他各个组件的Client 工具</li>
+</ul>
+<h2 id="heat-各架构组件交互逻辑">Heat 各架构组件交互逻辑</h2>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_heat_explanation.png" alt="openstack_heat_explanation" style="zoom:47%;clear:both;display:block;margin:auto" />
+<p>当用户在 Horizon 中或者命令行（CLI）提交包含模板和参数的创建实例的请求时，Heat 服务接收请求，调用 Heat-api 或者 Heat-api-cfn。然后 heat-api 或者 heat-api-cfn 首先验证模板的正确性。</p>
+<p>验证通过后，通过消息队列，异步传输给 heat-engine 进行处理。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/openstack_heat.png" alt="openstack_heat" style="zoom:40%;clear:both;margin:auto;display:block;" />
+<p>接下来，当 heat-engine 拿到这种请求以后，会把请求解析为各种资源类型，而每种资源都有相关的Client 与对应服务的资源映射。</p>
+<p>然后 client 通过发送 rest 的请求给其他的服务，从而获取其他的资源，最终完成请求的处理，heat-engine 在整个过程中的作用分3层。</p>
+<ul>
+<li><strong>第一层</strong>：处理 heat 层面的请求，然后根据模板和输入的参数来创建 Stack，这里面的Stack 是由各种资源集合而成。</li>
+<li><strong>第二层</strong>：解析Stack里面各种资源的依赖关系以及 Stack 的嵌套关系</li>
+<li><strong>第三层</strong>：根据解析出来的关系，一次调用各种服务的client来创建各种资源。</li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-08-18</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/post/%E8%AE%A4%E8%AF%86-openstack/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/post/%E8%AE%A4%E8%AF%86-openstack/" data-title="认识 Openstack"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/post/%E8%AE%A4%E8%AF%86-openstack/" data-title="认识 Openstack"><i data-svg-src="https://fastly.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg"></i></a><a href="javascript:void(0);" title="Share on 人人" data-sharer="renren" data-url="http://localhost:1313/post/%E8%AE%A4%E8%AF%86-openstack/"><i class="fab fa-renren fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/post/go%E5%8F%AF%E4%BB%A5%E6%97%A0%E9%99%90go%E5%90%97/" class="prev" rel="prev" title="Go可以无限go下去吗"><i class="fas fa-angle-left fa-fw"></i>Go可以无限go下去吗</a>
+            <a href="/post/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/" class="next" rel="next" title="虚拟化-创建一个虚拟机">虚拟化-创建一个虚拟机<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer>
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.css" />
+<script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.slim.min.js"></script>
+<script src="https://cdn.staticfile.net/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script src="https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js"></script>
+
+
+
+</div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script type="text/javascript" src="https://cdn.staticfile.net/smooth-scroll/16.1.3/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
