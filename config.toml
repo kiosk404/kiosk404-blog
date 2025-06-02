@@ -746,7 +746,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
     # 位于 "themes/LoveIt/assets/data/cdn/" 目录
     # 可以在你的项目下相同路径存放你自己的数据文件:
     # "assets/data/cdn/"
-    data = "staticfile.yml"
+    data = "jsdelivr.fastly.yml"
 
   # Compatibility config
   # 兼容性设置
@@ -816,8 +816,10 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
   [privacy.googleAnalytics]
     # ...
   [privacy.twitter]
+    enableDNT = true
     # ...
   [privacy.youtube]
+    privacyEnhanced = true
     # ...
 
 # Options to make output .md files
