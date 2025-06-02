@@ -7,8 +7,7 @@
         <title>Golang - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/topic/interview/golang/">
   <meta property="og:site_name" content="Kiosk&#39;s/ ">
   <meta property="og:title" content="Golang">
-  <meta property="og:description" content="Based on google
-sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Golang Slice interface{}变量和nil做比较 go中 import/const/var/init/main 的执行顺序 defer的执行顺序 什么是 go 的内存逃逸 medium Golang 的内存管理 Go 是如何分配内存的 Golang 的GC过程 什么是强弱三色不变式 GC的时机是什么时候 GMP 协程阻塞，调度器会怎么做？ M的流转状态 一个goroute会占用多少内存，假设多个goroute一直占用资源会怎样 一个 goroute 发生OOM 会怎样？ 若干个 goroute，其中一个 panic，会发生什么，defer可以捕获子goroute的panic吗？ 反射 反射如何获取字段tag 如何通过反射修改值 锁 golang 的锁机制 Mutex的锁有哪几种模式 Mutex锁底层如何实现 Mutex是悲观锁还是乐观锁 RWMutex(读写锁)适用于什么场景 channel channel 的内部实现是怎么样的? 读一个已关闭的channel会怎样、没初始化的channel写会怎样 已关闭的channel写数据会怎样，如何判断一个channel已关闭 select case 中有2个case 读channel，其中一个关闭，读数据会怎样 golang如何限制并发 context golang中的context有什么用 context.Background的意义 WithCancel() 和 WithTimeout() 可以通知多个goroutine, 如何实现的 map map 为什么是不安全的？ sample new 和 make 的区别？ Go语言中 new 和 make 是两个内置函数，主要用来创建并分配类型的内存。">
+  <meta property="og:description" content="Based on google sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Golang Slice interface{}变量和nil做比较 go中 import/const/var/init/main 的执行顺序 defer的执行顺序 什么是 go">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="article">
     <meta property="article:section" content="topic">
@@ -19,13 +18,12 @@ sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Go
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="http://localhost:1313/logo.png">
   <meta name="twitter:title" content="Golang">
-  <meta name="twitter:description" content="Based on google
-sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Golang Slice interface{}变量和nil做比较 go中 import/const/var/init/main 的执行顺序 defer的执行顺序 什么是 go 的内存逃逸 medium Golang 的内存管理 Go 是如何分配内存的 Golang 的GC过程 什么是强弱三色不变式 GC的时机是什么时候 GMP 协程阻塞，调度器会怎么做？ M的流转状态 一个goroute会占用多少内存，假设多个goroute一直占用资源会怎样 一个 goroute 发生OOM 会怎样？ 若干个 goroute，其中一个 panic，会发生什么，defer可以捕获子goroute的panic吗？ 反射 反射如何获取字段tag 如何通过反射修改值 锁 golang 的锁机制 Mutex的锁有哪几种模式 Mutex锁底层如何实现 Mutex是悲观锁还是乐观锁 RWMutex(读写锁)适用于什么场景 channel channel 的内部实现是怎么样的? 读一个已关闭的channel会怎样、没初始化的channel写会怎样 已关闭的channel写数据会怎样，如何判断一个channel已关闭 select case 中有2个case 读channel，其中一个关闭，读数据会怎样 golang如何限制并发 context golang中的context有什么用 context.Background的意义 WithCancel() 和 WithTimeout() 可以通知多个goroutine, 如何实现的 map map 为什么是不安全的？ sample new 和 make 的区别？ Go语言中 new 和 make 是两个内置函数，主要用来创建并分配类型的内存。">
+  <meta name="twitter:description" content="Based on google sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Golang Slice interface{}变量和nil做比较 go中 import/const/var/init/main 的执行顺序 defer的执行顺序 什么是 go">
 <meta name="application-name" content="Kiosk&#39;s">
 <meta name="apple-mobile-web-app-title" content="Kiosk&#39;s">
-<meta name="referrer" content="no-referrer" /><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/topic/interview/golang/" /><link rel="next" href="http://localhost:1313/topic/interview/devops/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+<meta name="referrer" content="no-referrer" /><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/topic/interview/golang/" /><link rel="next" href="http://localhost:1313/topic/interview/devops/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"></noscript><link rel="preload" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"></noscript><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -39,14 +37,14 @@ sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Go
                             "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
                             "width":  3105 ,
                             "height":  1536 
-                        }],"genre": "topic","wordcount":  809 ,
+                        }],"genre": "topic","wordcount":  7235 ,
         "url": "http:\/\/localhost:1313\/topic\/interview\/golang\/","datePublished": "2022-06-08T23:41:26+00:00","dateModified": "2024-07-21T22:11:52+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
-            "name": "xxxx","logo": {
+            "name": "kiosk007","logo": {
                     "@type": "ImageObject",
-                    "url": "http:\/\/localhost:1313\/images\/avatar.png",
-                    "width":  528 ,
-                    "height":  560 
+                    "url": "http:\/\/localhost:1313\/images\/avatar.jpg",
+                    "width":  1200 ,
+                    "height":  1194 
                 }},"author": {
                 "@type": "Person",
                 "name": "kiosk007"
@@ -61,7 +59,7 @@ sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Go
             <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
         </div>
         <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/categories/documentation/"> Docs </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/dillonzq/LoveIt" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
                         <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
                         <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
                             <i class="fas fa-search fa-fw" aria-hidden="true"></i>
@@ -103,7 +101,7 @@ sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Go
                     <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
                         Cancel
                     </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/categories/documentation/" title="">Docs</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/dillonzq/LoveIt" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
                 <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
             </a></div>
     </div>
@@ -535,5 +533,5 @@ sample new 和 make 的区别？ Golang 的参数值传递还是引用传递? Go
         <div id="fixed-buttons-hidden"><a href="#" id="view-comments" class="fixed-button" title="View Comments">
                 <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
             </a>
-        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/css/lightgallery-bundle.min.css"><script src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script src="https://cdn.jsdelivr.net/npm/algoliasearch@5.20.2/dist/lite/builds/browser.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/lightgallery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/zoom/lg-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.2/sharer.min.js"></script><script>window.config={"comment":{},"lightgallery":true,"search":{"algoliaAppID":"4D1IDY8JU6","algoliaIndex":"index","algoliaSearchKey":"05332ac5ed76655a511f0da583a9afac","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/lightgallery/2.7.1/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script src="https://cdn.staticfile.net/lightgallery/2.7.1/lightgallery.min.js"></script><script src="https://cdn.staticfile.net/lightgallery/2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script src="https://cdn.staticfile.net/lightgallery/2.7.1/plugins/zoom/lg-zoom.min.js"></script><script src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script>window.config={"comment":{},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body>
 </html>

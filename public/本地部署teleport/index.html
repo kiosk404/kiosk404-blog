@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>本地部署 teleport - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2teleport/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="本地部署 teleport">
+  <meta property="og:description" content="由于最近装了好多虚拟机，希望有一个统一的入口，那么就需要一个开源的跳板机了，调研了一下 teleport（远程传送）真的是个不错的选择。这样就可以有一个统一的 跳板入口了。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-05T08:50:00+00:00">
+    <meta property="article:modified_time" content="2025-05-05T08:50:00+00:00">
+    <meta property="article:tag" content="Devops">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="本地部署 teleport">
+  <meta name="twitter:description" content="由于最近装了好多虚拟机，希望有一个统一的入口，那么就需要一个开源的跳板机了，调研了一下 teleport（远程传送）真的是个不错的选择。这样就可以有一个统一的 跳板入口了。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s">
+<meta name="referrer" content="no-referrer" /><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2teleport/" /><link rel="prev" href="http://localhost:1313/kubernetes%E7%BD%91%E7%BB%9C%E6%96%B9%E6%A1%88/" /><link rel="next" href="http://localhost:1313/even-preview/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"></noscript><link rel="preload" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "本地部署 teleport",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2teleport\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "devops","wordcount":  4970 ,
+        "url": "http:\/\/localhost:1313\/%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2teleport\/","datePublished": "2025-05-05T08:50:00+00:00","dateModified": "2025-05-05T08:50:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.jpg",
+                    "width":  1200 ,
+                    "height":  1194 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script>(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">本地部署 teleport</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2025-05-05">2025-05-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;4970 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;10 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="true">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#teleport-是什么">Teleport 是什么？</a></li>
+        <li><a href="#核心功能模块">核心功能模块</a>
+          <ul>
+            <li><a href="#ssh-与终端访问">SSH 与终端访问</a></li>
+            <li><a href="#kubernetes-访问">Kubernetes 访问</a></li>
+            <li><a href="#数据库访问">数据库访问</a></li>
+            <li><a href="#内部应用与远程桌面">内部应用与远程桌面</a></li>
+            <li><a href="#工作负载身份workload-identity">工作负载身份（Workload Identity）</a></li>
+          </ul>
+        </li>
+        <li><a href="#典型应用场景">典型应用场景</a></li>
+        <li><a href="#docker-部署">Docker 部署</a>
+          <ul>
+            <li><a href="#生成-teleport-配置文件">生成 Teleport 配置文件</a></li>
+            <li><a href="#运行-teleport-docker-容器">运行 Teleport Docker 容器</a></li>
+            <li><a href="#验证-teleport-集群状态">验证 Teleport 集群状态</a></li>
+            <li><a href="#访问-teleport-web-ui">访问 Teleport Web UI</a></li>
+            <li><a href="#创建第一个-teleport-用户">创建第一个 Teleport 用户</a></li>
+            <li><a href="#安装-teleport-客户端-tsh">安装 Teleport 客户端 (<code>tsh</code>)</a></li>
+            <li><a href="#登录-teleport-并连接节点">登录 Teleport 并连接节点</a></li>
+          </ul>
+        </li>
+        <li><a href="#录入其他服务器节点">录入其他服务器节点</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>由于最近装了好多虚拟机，希望有一个统一的入口，那么就需要一个开源的跳板机了，调研了一下 teleport（远程传送）真的是个不错的选择。这样就可以有一个统一的 跳板入口了。</p>
+<p>Teleport 是由 Gravitational 打造的一体化访问控制平面（Access Plane），通过统一的身份验证与授权机制，为 SSH、Kubernetes、数据库、内部应用以及桌面等多种资源提供安全、可审计的访问能力。它支持零信任架构理念，能够集成多种 SSO（单点登录）提供商，生成短期证书与令牌，并对会话进行录制与审计，满足安全合规和运维效率需求。下面，我们将从 Teleport 的定义、核心功能模块、典型应用场景等方面进行详细介绍。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/20250517110030-teleport.png" />
+<h2 id="teleport-是什么">Teleport 是什么？</h2>
+<p>Teleport 是一个开源的基础设施访问安全平台（Infrastructure Access Platform），它通过“访问代理”模式（Proxy Service）在公网上暴露单一入口，同时将实际资源置于私有网络中，有效降低网络暴露面和攻击面 <a href="https://goteleport.com/docs/core-concepts/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。它整合了认证（Auth Service）、代理（Proxy Service）和多种 Agent 服务，用于管理和保护 SSH、Kubernetes、数据库、内部 Web 应用、远程桌面等多种类型的访问 <a href="https://goteleport.com/docs/core-concepts/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a><a href="https://goteleport.com/docs/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</p>
+<br/>
+<p>Teleport 的两大支柱是身份安全（Identity Security）和统一访问控制（Unified Access Plane）。在身份安全方面，它能够检测常驻权限（standing privileges）并消除影子访问（shadow access）与盲点（blind spots），帮助团队可视化并强化 RBAC（基于角色的访问控制）策略 <a href="https://goteleport.com/docs/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。在统一访问控制方面，所有访问请求均通过 Proxy Service，使用 Teleport 证书进行加密，并可灵活配置多因素认证（MFA）与设备信任（Device Trust） <a href="https://goteleport.com/docs/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</p>
+<h2 id="核心功能模块">核心功能模块</h2>
+<h3 id="ssh-与终端访问">SSH 与终端访问</h3>
+<p>Teleport 最初以 SSH 访问安全著称，通过 Teleport SSH Service 替代传统的 SSH Daemon，使用短期证书代替静态密钥，消除了长生命周期秘钥带来的风险，并支持记录和回放终端会话，满足审计合规要求 <a href="https://goteleport.com/docs/core-concepts/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</p>
+<hr>
+<h3 id="kubernetes-访问">Kubernetes 访问</h3>
+<p>通过 Teleport Kubernetes Service，用户可以使用同一套 SSO 凭据访问多个 Kubernetes 集群，且可针对不同集群或资源级别实施细粒度 RBAC 策略，并将 <code>kubectl</code> 会话录制到审计日志中 <a href="https://goteleport.com/docs/enroll-resources/kubernetes-access/introduction/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</p>
+<hr>
+<h3 id="数据库访问">数据库访问</h3>
+<p>Teleport Database Service 支持对 PostgreSQL、MySQL 等常见数据库的访问代理，无需在客户端配置静态凭据，所有数据库会话均通过 Teleport Proxy，并可启用 SQL 查询审计 <a href="https://goteleport.com/docs/core-concepts/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</p>
+<hr>
+<h3 id="内部应用与远程桌面">内部应用与远程桌面</h3>
+<p>Teleport Application Service 代理 HTTP/TCP 流量，可安全发布内部 Web 应用和如 AWS 控制台之类的私有后台；Teleport Desktop Service 则代理 RDP 流量，实现对 Windows 桌面的安全访问 <a href="https://goteleport.com/docs/core-concepts/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</p>
+<hr>
+<h3 id="工作负载身份workload-identity">工作负载身份（Workload Identity）</h3>
+<p>Teleport Workload Identity（兼容 SPIFFE 标准）为非人类实体发放短期证书和 JWT，用于微服务间的相互认证，支持细粒度的工作负载鉴权与自动续期 <a href="https://goteleport.com/docs/enroll-resources/workload-identity/introduction/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</p>
+<br/>
+<h2 id="典型应用场景">典型应用场景</h2>
+<ul>
+<li><strong>跨团队运维与审计</strong>：集中管理运维权限，记录所有 SSH、Kubernetes、数据库等会话，便于事后审计与问题溯源 <a href="https://goteleport.com/docs/enroll-resources/kubernetes-access/introduction/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</li>
+<li><strong>零信任安全架构</strong>：将 Teleport 作为统一访问网关，结合 MFA、设备信任，确保每次访问都经过身份验证和授权 <a href="https://goteleport.com/docs/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</li>
+<li><strong>云上与混合云环境</strong>：无需 VPN，通过 Proxy Service 的 443 端口暴露入口，私有网络中的服务通过反向隧道接入，简化网络配置与安全防护 <a href="https://goteleport.com/docs/core-concepts/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</li>
+<li><strong>开发与 CI/CD 集成</strong>：借助 Teleport API 与 Terraform 提供的 gRPC 接口，可将访问配置纳入基础设施即代码流程，自动化管理 <a href="https://goteleport.com/docs/reference/architecture/api-architecture/?utm_source=chatgpt.com" target="_blank" rel="noopener noreffer ">Teleport</a>。</li>
+</ul>
+<br/>
+<h2 id="docker-部署">Docker 部署</h2>
+<blockquote>
+<p>注意： 在生产环境中部署 Teleport 需要更详细的规划和配置，包括持久化存储、TLS 证书、高可用性设置等。本文档提供的是一个基础的 Docker 部署和用户创建示例。</p>
+</blockquote>
+<ul>
+<li><strong>前提条件</strong></li>
+</ul>
+<p>已安装 Docker。</p>
+<p>对 Docker 命令有基本了解。</p>
+<p>防火墙已允许访问 Teleport 所需的端口（默认通常是 3023, 3025, 3080）。</p>
+<br/>
+<h3 id="生成-teleport-配置文件">生成 Teleport 配置文件</h3>
+<p>在运行 Teleport 容器之前，建议生成一个基础的配置文件 <code>teleport.yaml</code>。这将帮助您更好地控制 Teleport 的行为并持久化配置。</p>
+<p>创建一个用于存放 Teleport 配置和数据的本地目录，例如 <code>~/teleport</code>：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p teleport/data teleport/config teleport/certs</span></span></code></pre></div></div>
+<p>使用 Teleport 镜像生成默认配置文件，并将其保存到您创建的配置目录中：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker run --hostname localhost --rm <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --entrypoint<span class="o">=</span>/usr/local/bin/teleport <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  public.ecr.aws/gravitational/teleport-distroless:17.4.8 configure --roles<span class="o">=</span>proxy,auth &gt; ~/teleport/config/teleport.yaml</span></span></code></pre></div></div>
+<ul>
+<li><code>--hostname localhost</code>: 设置容器的主机名为 <code>localhost</code>，这对于使用自签名证书进行本地测试很有用。</li>
+<li><code>--rm</code>: 容器停止后自动删除。</li>
+<li><code>--entrypoint=/usr/local/bin/teleport</code>: 指定容器的入口点为 teleport 可执行文件。</li>
+<li><code>configure</code>: 运行 Teleport 的配置生成命令。</li>
+<li><code>--roles=proxy,auth</code>: 指定 Teleport 实例同时运行认证服务（auth）和代理服务（proxy）。</li>
+<li><code>&gt; ~/teleport/config/teleport.yaml</code>: 将生成的配置输出重定向到本地文件。</li>
+</ul>
+<p>您可以根据需要编辑 <code>~/teleport/config/teleport.yaml</code> 文件来修改端口、域名等配置。例如，您可能需要修改 <code>public_addr</code> 来匹配您的服务器域名或 IP 地址，以便通过 Web UI 访问。</p>
+<br/>
+<p>这里我们对配置文件做一些修改：</p>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-yaml">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">proxy_service</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;yes&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">web_listen_addr</span><span class="p">:</span><span class="w"> </span><span class="m">0.0.0.0</span><span class="p">:</span><span class="m">3080</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">tunnel_listen_addr</span><span class="p">:</span><span class="w"> </span><span class="m">0.0.0.0</span><span class="p">:</span><span class="m">3024</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">listen_addr</span><span class="p">:</span><span class="w"> </span><span class="m">0.0.0.0</span><span class="p">:</span><span class="m">3023</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">public_addr</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="l">localhost:3080</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">https_key_file</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/teleport/certs/server-key.pem</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">https_cert_file</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/teleport/certs/server.pem</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">https_keypairs</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">https_keypairs_reload_interval</span><span class="p">:</span><span class="w"> </span><span class="l">0s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">acme</span><span class="p">:</span><span class="w"> </span>{}</span></span></code></pre></div></div>
+<p>这里提到了证书，如果需要的话填上，不需要的话不填，证书的生成可以使用 <a href="https://github.com/cloudflare/cfssl" target="_blank" rel="noopener noreffer ">cfssl</a> 参考 <a href="https://kubernetes.io/zh-cn/docs/tasks/administer-cluster/certificates/#cfssl" target="_blank" rel="noopener noreffer ">教程</a>生成</p>
+<br/>
+<h3 id="运行-teleport-docker-容器">运行 Teleport Docker 容器</h3>
+<p>现在，使用以下命令运行 Teleport 容器，并将配置、数据和证书目录都挂载进去：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker run -d --restart<span class="o">=</span>always <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --hostname localhost --name teleport <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -v ~/Applications/teleport/config:/etc/teleport <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -v ~/Applications/teleport/data:/var/lib/teleport <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -v ~/Applications/teleport/certs:/etc/teleport/certs <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -p 3025:3025 -p 3080:3080 -p 3023:3023 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  public.ecr.aws/gravitational/teleport-distroless:17.4.8</span></span></code></pre></div></div>
+<p><code>-v ~/teleport/certs:/etc/teleport/certs</code>: 将主机上的证书目录挂载到容器内 <code>/etc/teleport/certs</code>，这样 Teleport 才能找到证书文件。</p>
+<p>其他参数与之前运行容器的命令类似，用于映射端口、持久化数据和配置、设置重启策略等。</p>
+<p><code>start -c /etc/teleport/teleport.yaml</code>: 启动 Teleport 服务并加载指定的配置文件。</p>
+<br/>
+<h3 id="验证-teleport-集群状态">验证 Teleport 集群状态</h3>
+<p>确认容器正在运行，并且 Teleport 服务健康：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker ps <span class="p">|</span> grep teleport
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> teleport tctl status</span></span></code></pre></div></div>
+<p>确保 Auth Service 和 Proxy Service 都显示为 Healthy 或 Running。</p>
+<br/>
+<h3 id="访问-teleport-web-ui">访问 Teleport Web UI</h3>
+<p>现在可以通过 HTTPS 访问 Teleport Web UI 了。在浏览器中输入：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">https://&lt;Teleport服务器IP或域名&gt;:3080</span></span></code></pre></div></div>
+<p>由于使用的是自签名证书，浏览器会显示安全警告（例如 &ldquo;Your connection is not private&rdquo;）。这是正常的，因为证书不是由受信任的 CA 颁发的。</p>
+<ul>
+<li><strong>在测试环境中，可以选择忽略警告并继续访问。</strong> 在大多数浏览器中，可以点击 &ldquo;Advanced&rdquo;（高级）或 &ldquo;Details&rdquo;（详情），然后选择 &ldquo;Proceed to&hellip;&rdquo; 或 &ldquo;Add Exception&hellip;&quot;。</li>
+<li><strong>理解风险：</strong> 忽略警告意味着您信任连接的目标是自己的 Teleport 服务器，并且接受中间人攻击的风险（尽管在知道自己在连接什么的情况下风险较低）。</li>
+</ul>
+<br/>
+<h3 id="创建第一个-teleport-用户">创建第一个 Teleport 用户</h3>
+<p>首次部署 Teleport 集群时，需要创建第一个用户。通过 <code>docker exec</code> 在容器内运行 <code>tctl users add</code> 命令：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker <span class="nb">exec</span> teleport tctl users add admin --roles<span class="o">=</span>editor,access --logins<span class="o">=</span>root,ubuntu <span class="c1"># 根据需要调整 --logins</span></span></span></code></pre></div></div>
+<p>将 <code>admin</code> 替换为您想要的用户名。</p>
+<p><code>--roles=editor,access</code>: 授予用户编辑 Teleport 资源和访问节点的权限。</p>
+<p><code>--logins=root,ubuntu</code>: 允许该用户以 root 或 ubuntu 系统用户身份登录目标节点</p>
+<p>执行命令后，终端会输出一个用户邀请链接。复制这个链接，并在浏览器中访问它（请注意，访问链接时使用的域名或 IP 必须与您生成证书时的 CN/SANs 匹配，否则浏览器会再次显示证书错误）。通过邀请链接，您可以设置用户的密码和多因素认证 (MFA)。</p>
+<br/>
+<blockquote>
+<p>如果希望删除用户的话，可以使用 <code>docker exec teleport tctl users rm admin</code> 命令。</p>
+</blockquote>
+<br/>
+<h3 id="安装-teleport-客户端-tsh">安装 Teleport 客户端 (<code>tsh</code>)</h3>
+<p>在您希望连接到 Teleport 的本地机器上，下载并安装 Teleport 客户端工具 <code>tsh</code>。访问 <a href="https://goteleport.com/download/" target="_blank" rel="noopener noreffer ">Teleport 下载页面</a> 获取适合您操作系统的版本。</p>
+<br/>
+<h3 id="登录-teleport-并连接节点">登录 Teleport 并连接节点</h3>
+<p>在本地机器的终端中：</p>
+<ol>
+<li>
+<p><strong>登录 Teleport 集群：</strong></p>
+<p>Bash</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tsh login --proxy<span class="o">=</span>&lt;您的Teleport服务器IP或域名&gt;:3080 --user<span class="o">=</span>admin <span class="c1"># 使用您创建的用户名</span></span></span></code></pre></div></div>
+<p>根据提示输入密码和 MFA 验证码。成功后，您会获得一个临时的本地证书。</p>
+</li>
+<li>
+<p><strong>连接到节点：</strong> 首先需要有节点加入集群。假设您已经录入了一个名为 <code>node-a</code> 的节点，并且您的用户被授权以 <code>ubuntu</code> 用户身份登录：</p>
+<p>Bash</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tsh ssh ubuntu@node-a</span></span></code></pre></div></div>
+</li>
+</ol>
+<p>至此，您已经完成了使用 Docker 部署带自签证书的 Teleport 集群、创建用户并通过客户端连接的基本流程。</p>
+<h2 id="录入其他服务器节点">录入其他服务器节点</h2>
+<p>录入过程主要是在<strong>目标节点</strong>上安装和配置 Teleport 代理（节点服务），使其连接到 Teleport 集群。</p>
+<p><strong>目标：</strong> 使远程服务器 (&ldquo;目标节点&rdquo;) 出现在 Teleport Web UI 的列表中，并能够通过 Teleport 客户端 (<code>tsh</code>) 连接访问它。</p>
+<p><strong>前期准备：</strong></p>
+<ol>
+<li>Teleport 集群（Auth 和 Proxy 服务）已经在运行中（如我们之前使用 Docker 部署的那样）。</li>
+<li>需要有权限访问要录入的“目标节点”，并且具备在其上安装软件和运行命令的权限（通常需要 <code>sudo</code> 权限）。</li>
+<li>“目标节点”需要能够通过网络连接到 Teleport 集群的 Auth Service 地址和端口（默认是 3025）。</li>
+</ol>
+<p><strong>详细步骤</strong></p>
+<ul>
+<li><strong>步骤 1：在 Teleport 集群上获取加入令牌 (Join Token) 和安装脚本</strong></li>
+</ul>
+<p>这个令牌和脚本包含了让目标节点知道如何连接到集群所需的所有信息。</p>
+<p><strong>推荐方式：通过 Teleport Web UI 获取脚本</strong> 这是最简单直观的方法。</p>
+<ol>
+<li>
+<p>登录到你的 Teleport Web UI (通常是 <code>https://&lt;Teleport服务器IP或域名&gt;:3080</code>)。</p>
+</li>
+<li>
+<p>导航到页面上添加资源的选项。在主页上右上角会有 &ldquo;Enroll New Resource&rdquo; 或类似的按钮。</p>
+</li>
+<li>
+<p>选择 &ldquo;Server&rdquo; 或 &ldquo;SSH Server&rdquo; 作为要添加的资源类型。</p>
+</li>
+<li>
+<p>Teleport Web UI 会根据集群信息生成一个定制化的安装脚本命令。这个命令通常看起来像这样：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo bash -c <span class="s2">&#34;</span><span class="k">$(</span>curl -kfsSL https://&lt;Teleport服务器IP或域名&gt;:3080/scripts/&lt;一个长令牌&gt;/install-node.sh<span class="k">)</span><span class="s2">&#34;</span></span></span></code></pre></div></div>
+</li>
+<li>
+<p>仔细复制这个完整的命令。请注意，这个链接中的令牌是<strong>一次性</strong>且<strong>有时效性</strong>的。</p>
+</li>
+</ol>
+<ul>
+<li><strong>步骤 2：在目标节点上执行安装脚本</strong></li>
+</ul>
+<p>好的，我们来详细讲解如何将其他服务器节点（假设称为 &ldquo;目标节点&rdquo;）录入到您的 Teleport 集群，以便通过 Teleport 进行安全访问。</p>
+<p>这个过程主要是在<strong>目标节点</strong>上安装和配置 Teleport 代理（节点服务），使其连接到您的 Teleport 集群。</p>
+<p><strong>目标：</strong> 使您的远程服务器 (&ldquo;目标节点&rdquo;) 出现在 Teleport Web UI 的列表中，并能够通过 Teleport 客户端 (<code>tsh</code>) 连接访问它。</p>
+<p><strong>前期准备：</strong></p>
+<ol>
+<li>您的 Teleport 集群（Auth 和 Proxy 服务）已经在运行中（如我们之前使用 Docker 部署的那样）。</li>
+<li>您需要有权限访问要录入的“目标节点”，并且具备在其上安装软件和运行命令的权限（通常需要 <code>sudo</code> 权限）。</li>
+<li>“目标节点”需要能够通过网络连接到您的 Teleport 集群的 Auth Service 地址和端口（默认是 3025）。</li>
+</ol>
+<p><strong>详细步骤：</strong></p>
+<p><strong>步骤 1：在 Teleport 集群上获取加入令牌 (Join Token) 和安装脚本</strong></p>
+<p>这个令牌和脚本包含了让目标节点知道如何连接到您的集群所需的所有信息。</p>
+<ul>
+<li>
+<p><strong>推荐方式：通过 Teleport Web UI 获取脚本</strong> 这是最简单直观的方法。</p>
+<ol>
+<li>
+<p>登录到您的 Teleport Web UI (通常是 <code>https://&lt;您的Teleport服务器IP或域名&gt;:3080</code>)。</p>
+</li>
+<li>
+<p>导航到页面上添加资源的选项。通常在主页上会有 &ldquo;Add Server&rdquo; 或类似的按钮，或者在导航菜单中有相关选项。</p>
+</li>
+<li>
+<p>选择 &ldquo;Server&rdquo; 或 &ldquo;SSH Server&rdquo; 作为您要添加的资源类型。</p>
+</li>
+<li>
+<p>Teleport Web UI 会根据您的集群信息生成一个定制化的安装脚本命令。这个命令通常看起来像这样：</p>
+<p>Bash</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><pre tabindex="0"><code>sudo bash -c &#34;$(curl -kfsSL https://&lt;您的Teleport服务器IP或域名&gt;:3080/scripts/&lt;一个长令牌&gt;/install-node.sh)&#34;</code></pre></div>
+</li>
+<li>
+<p>仔细复制这个完整的命令。请注意，这个链接中的令牌是<strong>一次性</strong>且<strong>有时效性</strong>的。</p>
+</li>
+</ol>
+</li>
+<li>
+<p><strong>替代方式：通过 <code>tctl</code> 命令生成令牌（如果无法访问 Web UI）</strong> 如果您无法访问 Web UI，可以在运行 Teleport Auth 服务的 Docker 容器内使用 <code>tctl</code> 命令生成一个令牌。</p>
+<p>Bash</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><pre tabindex="0"><code>docker exec teleport tctl nodes add --ttl=5m --roles=node --format=json</code></pre></div>
+<ul>
+<li><code>--ttl=5m</code>: 设置令牌的有效时间，请确保在目标节点上操作期间令牌不会过期。</li>
+<li><code>--roles=node</code>: 指定这个令牌是用于加入一个节点代理。</li>
+<li><code>--format=json</code>: 以 JSON 格式输出，方便提取信息。 命令输出会包含一个 <code>token</code> 字段和一个 <code>auth_servers</code> 列表。您需要记下 <code>token</code> 的值和 <code>auth_servers</code> 的地址。您需要手动使用这些信息去安装和配置 Teleport 代理。<strong>使用 Web UI 脚本通常更容易。</strong></li>
+</ul>
+</li>
+</ul>
+<p><strong>步骤 2：在目标节点上执行安装脚本</strong></p>
+<p>在希望加入 Teleport 的“目标节点”服务器上执行以下操作：</p>
+<ol>
+<li>
+<p>确保节点 A 可以执行 <code>curl</code> 和 <code>bash</code>： 大多数 Linux 系统都默认安装了，如果缺少，请先安装。</p>
+</li>
+<li>
+<p>粘贴并运行在步骤 1 中获取的安装脚本命令：</p>
+<p>直接在目标节点的终端中粘贴并运行从 Teleport Web UI 复制的完整命令。例如：</p>
+<p>Bash</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo bash -c <span class="s2">&#34;</span><span class="k">$(</span>curl -kfsSL https://192.168.120.100:3080/scripts/e4662d25348effdef1847175e9ec6264/install-node.sh<span class="k">)</span><span class="s2">&#34;</span></span></span></code></pre></div></div>
+<ul>
+<li>
+<p><code>sudo bash -c &quot;...&quot;</code>: 使用 root 权限执行后面的 bash 命令。</p>
+</li>
+<li>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><pre tabindex="0"><code>curl -kfsSL ...</code></pre></div>
+<ul>
+<li><code>-k</code>: 忽略不安全的连接（用于自签名证书）。如果在生产环境中使用正式证书，可以移除此标志。</li>
+<li><code>-f</code>: 使 curl 在 HTTP 错误时失败。</li>
+<li><code>-s</code>: 静默模式，不显示进度条。</li>
+<li><code>-S</code>: 在静默模式下显示错误信息。</li>
+<li><code>-L</code>: 如果遇到重定向，跟踪重定向。</li>
+</ul>
+</li>
+<li>
+<p><code>$(...)</code>: 命令替换，先执行括号内的 <code>curl</code> 命令下载脚本，然后将脚本内容作为参数传递给 <code>bash -c</code> 执行。</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>这个脚本会自动完成以下工作：</p>
+<ul>
+<li>检测操作系统和架构。</li>
+<li>下载适合的 Teleport 二进制文件。</li>
+<li>将其放置到正确的系统路径。</li>
+<li>生成一个基础的 <code>teleport.yaml</code> 配置文件，其中已经包含了集群的 Auth Server 地址和加入令牌。</li>
+<li>将 Teleport 配置为系统服务（例如使用 systemd），并启动它。</li>
+</ul>
+<p><strong>步骤3</strong>：验证 Teleport 代理服务在目标节点上运行</p>
+<p>脚本执行完成后，检查 Teleport 代理服务是否成功启动。</p>
+<ul>
+<li>对于使用 systemd 的系统（如 Ubuntu 15.04+, CentOS 7+, Debian 8+）：</li>
+</ul>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo systemctl status teleport</span></span></code></pre></div></div>
+<p>最后就可以看到，Web UI 中存在了一个 资源可以被 SSH 连上去：</p>
+<img src="https://img1.kiosk007.top/static/images/blog/20250517143851-teleport-connect-vm00.png" /></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2025-05-05</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2teleport/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/devops/">Devops</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/kubernetes%E7%BD%91%E7%BB%9C%E6%96%B9%E6%A1%88/" class="prev" rel="prev" title="Kubernetes网络方案"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Kubernetes网络方案</a>
+            <a href="/even-preview/" class="next" rel="next" title="Theme preview">Theme preview<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.1-DEV"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        <div id="fixed-buttons-hidden"><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script>window.config={"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body>
+</html>

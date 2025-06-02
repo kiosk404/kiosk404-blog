@@ -1,0 +1,31 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Preview - Tag - Kiosk&#39;s/ </title>
+        <link>http://localhost:1313/tags/preview/</link>
+        <description>Preview - Tag - Kiosk&#39;s/ </description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>kiosk007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>kiosk007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 10 Jul 2018 00:00:00 &#43;0800</lastBuildDate><atom:link href="http://localhost:1313/tags/preview/" rel="self" type="application/rss+xml" /><item>
+    <title>Theme preview</title>
+    <link>http://localhost:1313/even-preview/</link>
+    <pubDate>Tue, 10 Jul 2018 00:00:00 &#43;0800</pubDate>
+    <author>kiosk007</author>
+    <guid>http://localhost:1313/even-preview/</guid>
+    <description><![CDATA[Based on MarkdownPreview test.md. Markdown # H1 ## H2 ### H3 #### H4 ##### H5 ###### H6 ### Duplicate Header ### Duplicate Header H1 H2 H3 H4 H5 H6 Duplicate Header Duplicate Header Paragraphs This is a paragraph. I am still part of the paragraph. New paragraph. This is a paragraph. I am still part of the paragraph. New paragraph. Anchor Define anchor by {#section-id} Something Footnote This is a]]></description>
+</item>
+<item>
+    <title>Syntax Highlighting</title>
+    <link>http://localhost:1313/syntax-highlighting/</link>
+    <pubDate>Tue, 30 Aug 2011 16:01:23 &#43;0800</pubDate>
+    <author>kiosk007</author>
+    <guid>http://localhost:1313/syntax-highlighting/</guid>
+    <description><![CDATA[<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-js">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">helloWorld</span> <span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">alert</span><span class="p">(</span><span class="s2">&#34;Hello, World!&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>]]></description>
+</item>
+</channel>
+</rss>

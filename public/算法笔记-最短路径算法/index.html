@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>算法笔记-最短路径算法（Bellman-ford） - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="算法笔记-最短路径算法（Bellman-ford）">
+  <meta property="og:description" content="最短路径算法是一个比较常见的用于查找2点之间最短路径的方案。在工作中，由于涉及要查找2点之间的最短路径的场景，所以特此记录一下 算法思想 美国应">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-01-31T22:53:00+00:00">
+    <meta property="article:modified_time" content="2024-01-31T22:53:00+00:00">
+    <meta property="article:tag" content="Algorithm">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="算法笔记-最短路径算法（Bellman-ford）">
+  <meta name="twitter:description" content="最短路径算法是一个比较常见的用于查找2点之间最短路径的方案。在工作中，由于涉及要查找2点之间的最短路径的场景，所以特此记录一下 算法思想 美国应">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s">
+<meta name="referrer" content="no-referrer" /><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/" /><link rel="prev" href="http://localhost:1313/kube-schedule%E5%AE%9E%E7%8E%B0/" /><link rel="next" href="http://localhost:1313/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"></noscript><link rel="preload" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "算法笔记-最短路径算法（Bellman-ford）",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "algorithm","wordcount":  1674 ,
+        "url": "http:\/\/localhost:1313\/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95\/","datePublished": "2024-01-31T22:53:00+00:00","dateModified": "2024-01-31T22:53:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.jpg",
+                    "width":  1200 ,
+                    "height":  1194 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script>(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">算法笔记-最短路径算法（Bellman-ford）</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/algorithm/"><i class="far fa-folder fa-fw"></i>Algorithm</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2024-01-31">2024-01-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1674 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="true">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#算法思想">算法思想</a></li>
+    <li><a href="#分析">分析</a>
+      <ul>
+        <li><a href="#负环的含义">负环的含义</a></li>
+      </ul>
+    </li>
+    <li><a href="#golang-实现">Golang 实现</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2024-01-31T22:53:00" title="January 31, 2024">January 31, 2024</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>最短路径算法是一个比较常见的用于查找2点之间最短路径的方案。在工作中，由于涉及要查找2点之间的最短路径的场景，所以特此记录一下</p>
+<h1 id="算法思想">算法思想</h1>
+<p>美国应用数学家Richard Bellman (理查德.贝尔曼, 动态规划的提出者)于1958 年发表了该算法。此外Lester Ford在1956年也发表了该算法。因此这个算法叫做Bellman-Ford算法。</p>
+<p>Bellman-Ford算法是一种基于逐次逼近思想进行最短路径求解的算法。其可以被应用在带负权的有向图中，Bellman-ford 算法比dijkstra算法更具普遍性，因为它对边没有要求，<strong>可以处理负权边与负权回路</strong>。缺点是时间复杂度过高，高达O(VE), V为顶点数，E为边数。</p>
+</br>
+<p>其核心思想为：对于任意一个具有n个节点的图 𝐺 ，任意两点之间的最短路径至多包含 𝑛−1 条边。因此我们可以反复通过对边的松弛来得到当前图的最短路径。</p>
+<p>也就是说：第1轮在对所有的边进行松弛后，得到的是源点最多经过一条边到达其他顶点的最短距离；第2轮在对所有的边进行松弛后，得到的是源点最多经过两条边到达其他顶点的最短距离；第3轮在对所有的边进行松弛后，得到的是源点最多经过一条边到达其他顶点的最短距离&hellip;&hellip;</p>
+<blockquote>
+<p>松弛操作的含义是更新节点之间的最短距离。</p>
+</blockquote>
+<h1 id="分析">分析</h1>
+<img src="https://img1.kiosk007.top/static/images/blog/Bellman-Ford-Algorithm-1.webp" alt="Bellman-Ford-Algorithm-1" style="zoom: 63%;clear:both;display:block;margin:auto;" />
+<p>第一步：创建一个带权重 (可以有负权) 的有向图</p>
+<img src="https://img1.kiosk007.top/static/images/blog/Bellman-Ford-Algorithm-2.webp" alt="Bellman-Ford-Algorithm-2" style="zoom: 63%;clear:both;display:block;margin:auto;" />
+<p>第二步：选定一个起点（A），将A 到所有节点的 距离都置为 无穷大。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/Bellman-Ford-Algorithm-3.webp" alt="Bellman-Ford-Algorithm-3" style="zoom: 63%;clear:both;display:block;margin:auto;" />
+<p>第三步：从节点A开始，将节点最短距离更新，比如 A -&gt; B 直接相连，最短距离是 4 ，A-&gt;C 直接相连，距离是 2 。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/Bellman-Ford-Algorithm-4.webp" alt="Bellman-Ford-Algorithm-4" style="zoom: 63%;clear:both;display:block;margin:auto;" />
+<p>第四步：最差的情况下，我们需要 V （节点个数）次这样的操作。一个节点最短路径需要被调整 V 次。</p>
+<img src="https://img1.kiosk007.top/static/images/blog/Bellman-Ford-Algorithm-5.webp" alt="Bellman-Ford-Algorithm-5" style="zoom: 63%;clear:both;display:block;margin:auto;" />
+<p>第五步：注意右上角的节点 D 是怎么调整的，因为 B -&gt; D (4+2) = 6 , C -&gt; D (2+4) =6 , E-&gt;D (6-5)=1 ，所以被更新.</p>
+<img src="https://img1.kiosk007.top/static/images/blog/Bellman-Ford-Algorithm-6.webp" alt="Bellman-Ford-Algorithm-6" style="zoom: 63%;clear:both;display:block;margin:auto;" />
+<p>第五步：经过最大循环次数 or 所有的顶点都有其路径长度且不再变后，检查是否有负循环。</p>
+<br/>
+<h2 id="负环的含义">负环的含义</h2>
+<p>短路径算法通常用于在加权图中找到两个顶点之间的最短路径。然而，当图中存在负权边时，情况就会变得复杂。负权环（Negative Weight Cycle）是指图中的一个环，其总权重为负值。如果存在负权环，那么最短路径的概念可能会变得模糊，因为你可以无限次地通过这个环来减少路径的总权重。</p>
+<p>负权环的存在可能导致算法无法正确工作，因为它们可能会陷入无限循环。例如，贝尔曼-福特算法（Bellman-Ford）在存在负权环的情况下可以检测到问题，但无法找到最短路径。而像迪杰斯特拉算法（Dijkstra&rsquo;s algorithm）这样的算法则可能给出错误的结果，因为它们假设权重非负。</p>
+<p>这里是一个简单的图示来解释负权环：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><pre tabindex="0"><code>A --1--&gt; B --2--&gt; C --(-3)--&gt; A</code></pre></div>
+<p>在这个图中，A到B是1的权重，B到C是2的权重，而C回到A有一个权重为-3的边。这个图中存在一个负权环：A -&gt; C -&gt; A。如果我们从A出发，经过C再回到A，总权重是-3。如果我们重复这个过程，路径的总权重可以无限减小。</p>
+<br/>
+<p>参考：https://www.geeksforgeeks.org/bellman-ford-algorithm-dp-23/</p>
+<h1 id="golang-实现">Golang 实现</h1>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-go">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Edge</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">src</span>    <span class="kt">int</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">dest</span>   <span class="kt">int</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">weight</span> <span class="kt">float64</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Graph</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">vertices</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">edges</span>    <span class="p">[]</span><span class="nx">Edge</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">InitGraph</span><span class="p">(</span><span class="nx">vertices</span> <span class="kt">int</span><span class="p">)</span> <span class="o">*</span><span class="nx">Graph</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">Graph</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">vertices</span><span class="p">:</span> <span class="nx">vertices</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">edges</span><span class="p">:</span>    <span class="nb">make</span><span class="p">([]</span><span class="nx">Edge</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">g</span> <span class="o">*</span><span class="nx">Graph</span><span class="p">)</span> <span class="nf">AddEdge</span><span class="p">(</span><span class="nx">src</span><span class="p">,</span> <span class="nx">dest</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">weight</span> <span class="kt">float64</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nx">edges</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">g</span><span class="p">.</span><span class="nx">edges</span><span class="p">,</span> <span class="nx">Edge</span><span class="p">{</span><span class="nx">src</span><span class="p">,</span> <span class="nx">dest</span><span class="p">,</span> <span class="nx">weight</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">BellmanFord</span><span class="p">(</span><span class="nx">g</span> <span class="o">*</span><span class="nx">Graph</span><span class="p">,</span> <span class="nx">source</span> <span class="kt">int</span><span class="p">)</span> <span class="p">([]</span><span class="kt">float64</span><span class="p">,</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">dist</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">float64</span><span class="p">,</span> <span class="nx">g</span><span class="p">.</span><span class="nx">vertices</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">prev</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">g</span><span class="p">.</span><span class="nx">vertices</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">g</span><span class="p">.</span><span class="nx">vertices</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">dist</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nx">math</span><span class="p">.</span><span class="nf">Inf</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1">// 将所有节点的距离设为 无穷大
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nx">prev</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="o">-</span><span class="mi">1</span>          <span class="c1">// 保存到节点v最短距离，到v的上一跳是哪个节点
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">dist</span><span class="p">[</span><span class="nx">source</span><span class="p">]</span> <span class="p">=</span> <span class="mi">0</span> <span class="c1">// 起点的距离为 0
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// Relax edges V - 1 times（i 从 1 开始计数）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">g</span><span class="p">.</span><span class="nx">vertices</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">edge</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">g</span><span class="p">.</span><span class="nx">edges</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">u</span> <span class="o">:=</span> <span class="nx">edge</span><span class="p">.</span><span class="nx">src</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">v</span> <span class="o">:=</span> <span class="nx">edge</span><span class="p">.</span><span class="nx">dest</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">w</span> <span class="o">:=</span> <span class="nx">edge</span><span class="p">.</span><span class="nx">weight</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">dist</span><span class="p">[</span><span class="nx">u</span><span class="p">]</span><span class="o">+</span><span class="nx">w</span> <span class="p">&lt;</span> <span class="nx">dist</span><span class="p">[</span><span class="nx">v</span><span class="p">]</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">dist</span><span class="p">[</span><span class="nx">v</span><span class="p">]</span> <span class="p">=</span> <span class="nx">dist</span><span class="p">[</span><span class="nx">u</span><span class="p">]</span> <span class="o">+</span> <span class="nx">w</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">prev</span><span class="p">[</span><span class="nx">v</span><span class="p">]</span> <span class="p">=</span> <span class="nx">u</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="c1">// Check for negative cycle，经过了 v-1 次循环了，还是存在更短的路径证明存在负环了
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">edge</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">g</span><span class="p">.</span><span class="nx">edges</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">u</span> <span class="o">:=</span> <span class="nx">edge</span><span class="p">.</span><span class="nx">src</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">v</span> <span class="o">:=</span> <span class="nx">edge</span><span class="p">.</span><span class="nx">dest</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">w</span> <span class="o">:=</span> <span class="nx">edge</span><span class="p">.</span><span class="nx">weight</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">dist</span><span class="p">[</span><span class="nx">u</span><span class="p">]</span><span class="o">+</span><span class="nx">w</span> <span class="p">&lt;</span> <span class="nx">dist</span><span class="p">[</span><span class="nx">v</span><span class="p">]</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Graph contains a negative weight cycle&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">dist</span><span class="p">,</span> <span class="nx">prev</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">PrintShortestPaths</span><span class="p">(</span><span class="nx">dist</span> <span class="p">[]</span><span class="kt">float64</span><span class="p">,</span> <span class="nx">prev</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">source</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Shortest Paths from vertex&#34;</span><span class="p">,</span> <span class="nx">source</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">dist</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">dist</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="nx">math</span><span class="p">.</span><span class="nf">Inf</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Vertex %d is not reachable\n&#34;</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">path</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">j</span> <span class="o">:=</span> <span class="nx">i</span>
+</span></span><span class="line"><span class="cl">			<span class="k">for</span> <span class="nx">j</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">path</span> <span class="p">=</span> <span class="nb">append</span><span class="p">([]</span><span class="kt">int</span><span class="p">{</span><span class="nx">j</span><span class="p">},</span> <span class="nx">path</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">j</span> <span class="p">=</span> <span class="nx">prev</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Vertex %d: Distance=%f, Path=%v\n&#34;</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">dist</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span> <span class="o">:=</span> <span class="nf">InitGraph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nf">AddEdge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nf">AddEdge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nf">AddEdge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nf">AddEdge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nf">AddEdge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nf">AddEdge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nf">AddEdge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nf">AddEdge</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nf">AddEdge</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">g</span><span class="p">.</span><span class="nf">AddEdge</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">source</span> <span class="o">:=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">dist</span><span class="p">,</span> <span class="nx">prev</span> <span class="o">:=</span> <span class="nf">BellmanFord</span><span class="p">(</span><span class="nx">g</span><span class="p">,</span> <span class="nx">source</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">dist</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">prev</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">PrintShortestPaths</span><span class="p">(</span><span class="nx">dist</span><span class="p">,</span> <span class="nx">prev</span><span class="p">,</span> <span class="nx">source</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 执行输出
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">Shortest</span> <span class="nx">Paths</span> <span class="nx">from</span> <span class="nx">vertex</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Vertex</span> <span class="mi">0</span><span class="p">:</span> <span class="nx">Distance</span><span class="p">=</span><span class="mf">0.000000</span><span class="p">,</span> <span class="nx">Path</span><span class="p">=[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Vertex</span> <span class="mi">1</span><span class="p">:</span> <span class="nx">Distance</span><span class="p">=</span><span class="mf">1.000000</span><span class="p">,</span> <span class="nx">Path</span><span class="p">=[</span><span class="mi">0</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Vertex</span> <span class="mi">2</span><span class="p">:</span> <span class="nx">Distance</span><span class="p">=</span><span class="mf">1.000000</span><span class="p">,</span> <span class="nx">Path</span><span class="p">=[</span><span class="mi">0</span> <span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Vertex</span> <span class="mi">3</span><span class="p">:</span> <span class="nx">Distance</span><span class="p">=</span><span class="mf">2.000000</span><span class="p">,</span> <span class="nx">Path</span><span class="p">=[</span><span class="mi">0</span> <span class="mi">1</span> <span class="mi">3</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Vertex</span> <span class="mi">4</span><span class="p">:</span> <span class="nx">Distance</span><span class="p">=</span><span class="mf">2.000000</span><span class="p">,</span> <span class="nx">Path</span><span class="p">=[</span><span class="mi">0</span> <span class="mi">1</span> <span class="mi">4</span><span class="p">]</span></span></span></code></pre></div></div>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2024-01-31</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/algorithm/">Algorithm</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/kube-schedule%E5%AE%9E%E7%8E%B0/" class="prev" rel="prev" title="kube-schedule 调度实现"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>kube-schedule 调度实现</a>
+            <a href="/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/" class="next" rel="next" title="Linux自签证书并自信任">Linux自签证书并自信任<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.1-DEV"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        <div id="fixed-buttons-hidden"><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script>window.config={"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body>
+</html>

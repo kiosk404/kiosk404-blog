@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Ssl - Tag - Kiosk&#39;s/ </title>
+        <link>http://localhost:1313/tags/ssl/</link>
+        <description>Ssl - Tag - Kiosk&#39;s/ </description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>kiosk007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>kiosk007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 04 Aug 2024 10:16:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/ssl/" rel="self" type="application/rss+xml" /><item>
+    <title>Linux自签证书并自信任</title>
+    <link>http://localhost:1313/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/</link>
+    <pubDate>Sun, 04 Aug 2024 10:16:00 &#43;0000</pubDate>
+    <author>kiosk</author>
+    <guid>http://localhost:1313/linux%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E5%B9%B6%E8%87%AA%E4%BF%A1%E4%BB%BB/</guid>
+    <description><![CDATA[<p>由于本地自建了Nginx，需要HTTPS访问，所以这里记录一下 Linux 下的 证书自签名和自信任。</p>]]></description>
+</item>
+</channel>
+</rss>

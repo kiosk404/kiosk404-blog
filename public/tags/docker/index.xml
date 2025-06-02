@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Docker - Tag - Kiosk&#39;s/ </title>
+        <link>http://localhost:1313/tags/docker/</link>
+        <description>Docker - Tag - Kiosk&#39;s/ </description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>kiosk007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>kiosk007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 11 Jul 2020 00:32:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/docker/" rel="self" type="application/rss+xml" /><item>
+    <title>docker 容器技术基础</title>
+    <link>http://localhost:1313/docker-%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80/</link>
+    <pubDate>Sat, 11 Jul 2020 00:32:00 &#43;0000</pubDate>
+    <author>kiosk</author>
+    <guid>http://localhost:1313/docker-%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80/</guid>
+    <description><![CDATA[<p><a href="https://hijiangtao.github.io/2018/04/17/Docker-in-Action/" target="_blank" rel="noopener noreffer ">docker</a> 容器是随着PaaS技术的普及随之诞生的，Docker公司推出了docker并通过“容器镜像”解决了容器打包的根本性难题。而容器本身没有价值，有价值的是“容器编排技术”。Docker项目则通过容器技术解决了应用打包的根本性难题。</p>]]></description>
+</item>
+</channel>
+</rss>

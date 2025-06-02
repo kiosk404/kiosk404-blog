@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>虚拟机怎么做到热迁移 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="虚拟机怎么做到热迁移">
+  <meta property="og:description" content="之前买腾讯云服务的时候，有2大问题一直困扰着我。
+我的虚机经常CPU使用率不到5%，它会不会它拿着我的资源去偷偷接济同物理机上的其他高负载业务。反正我也不知道。 我一次性买了3年的虚机，一台物理机能一直开机3年吗？总得重启一下吧，在上家公司的做运维的时候，物理机真的是不停有物理机宕机 这里就对第二个疑问做个终结，因为我知道答案了，云厂商有热迁移技术。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-10-17T11:23:00+00:00">
+    <meta property="article:modified_time" content="2022-10-17T11:23:00+00:00">
+    <meta property="article:tag" content="Openstack">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="虚拟机怎么做到热迁移">
+  <meta name="twitter:description" content="之前买腾讯云服务的时候，有2大问题一直困扰着我。
+我的虚机经常CPU使用率不到5%，它会不会它拿着我的资源去偷偷接济同物理机上的其他高负载业务。反正我也不知道。 我一次性买了3年的虚机，一台物理机能一直开机3年吗？总得重启一下吧，在上家公司的做运维的时候，物理机真的是不停有物理机宕机 这里就对第二个疑问做个终结，因为我知道答案了，云厂商有热迁移技术。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s">
+<meta name="referrer" content="no-referrer" /><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/" /><link rel="prev" href="http://localhost:1313/what-is-numa/" /><link rel="next" href="http://localhost:1313/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"></noscript><link rel="preload" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "虚拟机怎么做到热迁移",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "openstack","wordcount":  4116 ,
+        "url": "http:\/\/localhost:1313\/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB\/","datePublished": "2022-10-17T11:23:00+00:00","dateModified": "2022-10-17T11:23:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.jpg",
+                    "width":  1200 ,
+                    "height":  1194 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script>(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">虚拟机怎么做到热迁移</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/cloud-computing/"><i class="far fa-folder fa-fw"></i>Cloud Computing</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-10-17">2022-10-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;4116 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;9 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="true">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#概述">概述</a></li>
+    <li><a href="#应用场景">应用场景</a></li>
+    <li><a href="#虚拟机迁移">虚拟机迁移</a>
+      <ul>
+        <li><a href="#冷迁移">冷迁移</a></li>
+        <li><a href="#热迁移">热迁移</a></li>
+        <li><a href="#注意事项和约束限制">注意事项和约束限制</a></li>
+      </ul>
+    </li>
+    <li><a href="#virsh-虚拟化热迁移">virsh 虚拟化热迁移</a>
+      <ul>
+        <li><a href="#安装虚拟化依赖">安装虚拟化依赖</a></li>
+        <li><a href="#准备虚拟机环境">准备虚拟机环境</a></li>
+        <li><a href="#创建虚拟机">创建虚拟机</a></li>
+        <li><a href="#热迁移虚拟机">热迁移虚拟机</a></li>
+      </ul>
+    </li>
+    <li><a href="#高负载虚拟机热迁移遇到的挑战">高负载虚拟机热迁移遇到的挑战</a>
+      <ul>
+        <li><a href="#qemu-热迁移压缩算法效率低">QEMU 热迁移压缩算法效率低</a></li>
+        <li><a href="#磁盘热迁移流程中的cpu空耗">磁盘热迁移流程中的CPU空耗</a></li>
+        <li><a href="#qume-的-cpu-节流算法导致业务性能受影响时间较长">QUME 的 CPU 节流算法导致业务性能受影响时间较长</a></li>
+        <li><a href="#热点内存的重复无效迁移">热点内存的重复无效迁移</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2022-10-17T11:23:00" title="October 17, 2022">October 17, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>之前买腾讯云服务的时候，有2大问题一直困扰着我。</p>
+<ol>
+<li>我的虚机经常CPU使用率不到5%，它会不会它拿着我的资源去偷偷接济同物理机上的其他高负载业务。反正我也不知道。</li>
+<li>我一次性买了3年的虚机，一台物理机能一直开机3年吗？总得重启一下吧，在上家公司的做运维的时候，物理机真的是不停有物理机宕机</li>
+</ol>
+<p>这里就对第二个疑问做个终结，因为我知道答案了，云厂商有热迁移技术。</p>
+<h1 id="概述">概述</h1>
+<p>当虚拟机在物理机上运行时，物理机可能存在资源分配不均，造成负载过重或过轻的情况。另外物理机本身也存在硬件的更换、组网调整、故障处理等操作，需要在不中断业务的情况下完成这些操作。</p>
+<br/>
+<h1 id="应用场景">应用场景</h1>
+<p>共享存储和非共享存储迁移的共同应用场景有：</p>
+<ul>
+<li>当物理机故障或者负载过重时，可以将运行的虚拟机迁移到另一台物理机上，以避免业务中断，保证业务的正常运行。</li>
+<li>当多数的物理机负载过轻时，可以将虚拟机迁移整合，以减少物理机数量，提高资源的利用率。</li>
+<li>当物理服务器硬件设备成为瓶颈，比如CPU、内存、硬盘等，需要更换性能更好的硬件，或者需要增加设备，但是又不能关闭虚拟机或者停止业务。</li>
+<li>服务器软件升级，比如虚拟化平台升级，就可以把虚拟机从旧版本虚拟化平台热迁移到新版本虚拟化平台。</li>
+</ul>
+<p>对于非共享存储热迁移，还可以应用在如下场景：</p>
+<ul>
+<li>当物理机故障存储空间不足，需要将运行的虚拟机迁移到另一台物理机上，可以避免业务中断，保证业务的正常运行。</li>
+<li>当物理机存储设备老化，性能不能支撑当前业务数据处理，成为系统性能的瓶颈，需要更换性能更强的存储，但是又不能关闭虚拟机或者停止虚拟机，这需要将运行的虚拟机迁移到一个具有更好性能的物理机上。</li>
+</ul>
+<br/>
+<h1 id="虚拟机迁移">虚拟机迁移</h1>
+<p>虚拟机热迁移是指把虚拟机从一个物理主机（源主机）迁移到另一个物理主机（目的主机）。我们所熟知的开源 QEMU\KVM 虚拟机便支持这种技术。</p>
+<p>KVM 虚拟机的迁移分两种方式</p>
+<ol>
+<li><strong>静态迁移（冷迁移）</strong>：对于冷迁移，就是在虚拟机关闭的状态下，将虚拟机的磁盘文件及 .xml 配置文件（这两个文件定义了一个虚拟机）复制到要迁移的目标主机上，然后在目标主机上使用 “virsh define *.xml” 重新定义这个虚拟机即可。</li>
+<li><strong>动态迁移（热迁移）</strong>：对于热迁移，就比较常用，通常是这台服务器上一直跑着的一些业务，而这些业务又不能中断，那么就需要使用热迁移了。</li>
+</ol>
+<br/>
+<h2 id="冷迁移">冷迁移</h2>
+<p>通常是存放虚拟机的磁盘的目录是挂载一个NFS文件系统的磁盘，而这个磁盘通常是 LVM 文件系统，需要进行冷迁移，只要在目标主机上挂载这个 NFS 文件系统，就可以看到要迁移的那个虚拟机的磁盘文件，通常以 .qcow2 或 .raw 结尾。然后只需要将虚拟机的 .xml 配置文件发送到目标服务器上，重新你定义一下，就可以看到迁移过来的虚拟机。</p>
+<br/>
+<h2 id="热迁移">热迁移</h2>
+<p>如果原宿主机和目的宿主机是共享存储系统的，那么只需要通过网络发送客户机的 vCPU 执行状态、内存中的内容、虚拟机设备的状态到目的主机上。</p>
+<p>KVM 动态迁移的具体过程为：</p>
+<ol>
+<li>迁移开始时，客户机依然在宿主机上运行，于此同时，客户机的内存页被传输到目的主机上。<font color="red">小结</font>：<em>[全量迁移阶段]</em></li>
+<li>QEMU/KVM 会监控并记录下迁移过程中所有已被传输的内存页上的修改，并在所有内存页都传输完成之后开始传输在前面过程中内存页的更改内容。<font color="red">小结</font>：<em>[增量迭代迁移阶段]，该阶段对内存进行多轮迭代，使得剩余脏数据逐渐减少</em></li>
+<li>QEMU/KVM 会估计迁移过程中的传输速度，当剩余内存数据量能够在一个可以设定的时间周期（默认30毫秒）内传输完成时，QEMU/KVM 会关闭宿主机上的客户机，再将剩余的数据量传输到目的主机上，最后传输过来的内存内容在目的宿主机上恢复客户机的运行状体。<font color="red">小结</font>：<em>[停机迁移阶段]，当剩余内存脏数据能够在停机时间内完成迁移，就会暂停虚拟机，将剩余的内存一次性迁移到目的主机</em></li>
+<li>至此，KVM虚拟机的动态迁移操作就完成了。其虚拟机上的运行的业务不会受到影响。</li>
+</ol>
+<br/>
+<h2 id="注意事项和约束限制">注意事项和约束限制</h2>
+<ul>
+<li>热迁移过程中，需要保证网络状态的良好，如果发生网络中断，热迁移会暂停，直到网络恢复后才会继续，当发生超时，热迁移会失败</li>
+<li>迁移过程中，不允许对虚拟机进行生命周期和管理虚拟机硬件设备等操作</li>
+<li>只支持同构热迁移，即源端和目的端CPU型号需要相同。</li>
+<li>跨业务网段虚拟机迁移可以成功，但是到目的端后会出现网络异常，为了防止该情况的发生，需要用户保证迁移业务的网段一致。</li>
+</ul>
+<br/>
+<h1 id="virsh-虚拟化热迁移">virsh 虚拟化热迁移</h1>
+<p>Libvirt工具采用XML格式的文件描述一个虚拟机特征，包括虚拟机名称、CPU、内存、磁盘、网卡、鼠标、键盘等信息。用户可以通过修改配置文件，对虚拟机进行管理。</p>
+<h2 id="安装虚拟化依赖">安装虚拟化依赖</h2>
+<ol>
+<li>安装libvirt</li>
+</ol>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo apt install qemu-kvm <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>libvirt-daemon-system libvirt-clients bridge-utils virtinst virt-manager</span></span></code></pre></div></div>
+<ul>
+<li><font color="7CFC00">qemu-kvm</font> - 为 KVM 管理程序提供硬件模拟的软件程序</li>
+<li><font color="7CFC00">libvirt-daemon-system</font> - 将 libvirt 守护程序作为系统服务运行的配置文件</li>
+<li><font color="7CFC00">libvirt-clients</font> - 用来管理虚拟化平台的软件</li>
+<li><font color="7CFC00">bridge-utils</font> - 用来配置网络桥接的<a href="https://cloud.tencent.com/product/cli?from=10680" target="_blank" rel="noopener noreffer ">命令行工具</a></li>
+<li><font color="7CFC00">virtinst</font> - 用来创建虚拟机的命令行工具</li>
+<li><font color="7CFC00">virt-manager</font> - 提供一个易用的图形界面，并且通过libvirt 支持用于管理虚拟机的命令行工具</li>
+</ul>
+<br/>
+<ol start="2">
+<li>启动并验证</li>
+</ol>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ systemctl start libvirtd
+</span></span><span class="line"><span class="cl">$ systemctl is-active libvirtd
+</span></span><span class="line"><span class="cl">active</span></span></code></pre></div></div>
+<p>验证内核是否支持KVM虚拟化</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ls /dev/kvm
+</span></span><span class="line"><span class="cl">/dev/kvm
+</span></span><span class="line"><span class="cl">$ ls /sys/module/kvm
+</span></span><span class="line"><span class="cl">parameters uevent</span></span></code></pre></div></div>
+<br/>
+<h2 id="准备虚拟机环境">准备虚拟机环境</h2>
+<ul>
+<li><strong>制作镜像</strong></li>
+</ul>
+<p>虚拟机镜像是一个文件，包含了已经完成安装并且可启动操作系统的虚拟磁盘。虚拟机镜像具有不同格式，常见的有raw格式和qcow2格式。</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ qemu-img create -f qcow2 ubuntu-image.qcow2 5G
+</span></span><span class="line"><span class="cl">Formatting <span class="s1">&#39;ubuntu-image.qcow2&#39;</span>, <span class="nv">fmt</span><span class="o">=</span>qcow2 <span class="nv">size</span><span class="o">=</span><span class="m">5368709120</span> <span class="nv">cluster_size</span><span class="o">=</span><span class="m">65536</span> <span class="nv">lazy_refcounts</span><span class="o">=</span>off <span class="nv">refcount_bits</span><span class="o">=</span><span class="m">16</span></span></span></code></pre></div></div>
+<br/>
+<ul>
+<li><strong>准备虚拟机网络</strong></li>
+</ul>
+<p>KVM 虚拟化支持Linux网桥、Open vSwitch 网桥等多种类型的网桥。</p>
+<figure><a class="lightgallery" href="https://img1.kiosk007.top/static/images/blog/virtual-network-structure.png" title="https://img1.kiosk007.top/static/images/blog/virtual-network-structure.png" data-thumbnail="https://img1.kiosk007.top/static/images/blog/virtual-network-structure.png" data-sub-html="<h2>虚拟网络结构图</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://img1.kiosk007.top/static/images/blog/virtual-network-structure.png"
+            data-srcset="https://img1.kiosk007.top/static/images/blog/virtual-network-structure.png, https://img1.kiosk007.top/static/images/blog/virtual-network-structure.png 1.5x, https://img1.kiosk007.top/static/images/blog/virtual-network-structure.png 2x"
+            data-sizes="auto"
+            alt="https://img1.kiosk007.top/static/images/blog/virtual-network-structure.png" />
+    </a><figcaption class="image-caption">虚拟网络结构图</figcaption>
+    </figure>
+<p>上述安装 libvirtd 时会自动启动一个 virbr0 网桥。</p>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ip a
+</span></span><span class="line"><span class="cl">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span class="m">65536</span> qdisc noqueue state UNKNOWN group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</span></span><span class="line"><span class="cl">    inet 127.0.0.1/8 scope host lo
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">    inet6 ::1/128 scope host 
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">2: enp1s0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc fq_codel state UP group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 52:54:00:1e:17:9a brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet 192.168.122.202/24 brd 192.168.122.255 scope global enp1s0
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">    inet6 fe80::5054:ff:fe1e:179a/64 scope link 
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">3: virbr0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span class="m">1500</span> qdisc noqueue state DOWN group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 52:54:00:db:7b:e0 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet 192.168.123.1/24 brd 192.168.123.255 scope global virbr0
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever</span></span></code></pre></div></div>
+<br/>
+<ul>
+<li><strong>定义 Domain XML</strong></li>
+</ul>
+<p>定义一个基本元素及总线元素 x86_64 架构虚拟机的 XML 配置文件</p>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-xml">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;domain</span> <span class="na">type=</span><span class="s">&#39;kvm&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;name&gt;</span>Ubuntu-VM<span class="nt">&lt;/name&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;memory</span> <span class="na">unit=</span><span class="s">&#39;KiB&#39;</span><span class="nt">&gt;</span>2097152<span class="nt">&lt;/memory&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;currentMemory</span> <span class="na">unit=</span><span class="s">&#39;KiB&#39;</span><span class="nt">&gt;</span>2097152<span class="nt">&lt;/currentMemory&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;vcpu</span> <span class="na">placement=</span><span class="s">&#39;static&#39;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/vcpu&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;iothreads&gt;</span>1<span class="nt">&lt;/iothreads&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;os&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;type</span> <span class="na">arch=</span><span class="s">&#34;x86_64&#34;</span> <span class="na">machine=</span><span class="s">&#34;pc-q35-4.2&#34;</span><span class="nt">&gt;</span>hvm<span class="nt">&lt;/type&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/os&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;features&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;acpi/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/features&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;cpu</span> <span class="na">mode=</span><span class="s">&#39;host-passthrough&#39;</span> <span class="na">check=</span><span class="s">&#39;none&#39;</span> <span class="na">migratable=</span><span class="s">&#39;on&#39;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;clock</span> <span class="na">offset=</span><span class="s">&#39;utc&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;on_poweroff&gt;</span>destroy<span class="nt">&lt;/on_poweroff&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;on_reboot&gt;</span>restart<span class="nt">&lt;/on_reboot&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;on_crash&gt;</span>restart<span class="nt">&lt;/on_crash&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;devices&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;emulator&gt;</span>/usr/bin/qemu-system-x86_64<span class="nt">&lt;/emulator&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;disk</span> <span class="na">type=</span><span class="s">&#39;file&#39;</span> <span class="na">device=</span><span class="s">&#39;disk&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;driver</span> <span class="na">name=</span><span class="s">&#39;qemu&#39;</span> <span class="na">type=</span><span class="s">&#39;qcow2&#39;</span> <span class="na">discard=</span><span class="s">&#39;unmap&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;source</span> <span class="na">file=</span><span class="s">&#39;/mnt/ubuntu-image.qcow2&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;target</span> <span class="na">dev=</span><span class="s">&#39;vda&#39;</span> <span class="na">bus=</span><span class="s">&#39;virtio&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;address</span> <span class="na">type=</span><span class="s">&#39;pci&#39;</span> <span class="na">domain=</span><span class="s">&#39;0x0000&#39;</span> <span class="na">bus=</span><span class="s">&#39;0x00&#39;</span> <span class="na">slot=</span><span class="s">&#39;0x08&#39;</span> <span class="na">function=</span><span class="s">&#39;0x0&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/disk&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;disk</span> <span class="na">type=</span><span class="s">&#39;file&#39;</span> <span class="na">device=</span><span class="s">&#39;cdrom&#39;</span><span class="nt">&gt;</span> 
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;driver</span> <span class="na">name=</span><span class="s">&#39;qemu&#39;</span> <span class="na">type=</span><span class="s">&#39;raw&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;source</span> <span class="na">file=</span><span class="s">&#39;/root/kvm/ubuntu-20.04-live-server-amd64.iso&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;boot</span> <span class="na">order=</span><span class="s">&#39;1&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;backingStore/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;target</span> <span class="na">dev=</span><span class="s">&#39;sdb&#39;</span> <span class="na">bus=</span><span class="s">&#39;sata&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;readonly/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;alias</span> <span class="na">name=</span><span class="s">&#39;sata-cdrom&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;address</span> <span class="na">type=</span><span class="s">&#39;drive&#39;</span> <span class="na">controller=</span><span class="s">&#39;0&#39;</span> <span class="na">bus=</span><span class="s">&#39;0&#39;</span> <span class="na">target=</span><span class="s">&#39;0&#39;</span> <span class="na">unit=</span><span class="s">&#39;0&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/disk&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;controller</span> <span class="na">type=</span><span class="s">&#39;scsi&#39;</span> <span class="na">index=</span><span class="s">&#39;0&#39;</span> <span class="na">model=</span><span class="s">&#39;virtio-scsi&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/controller&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;controller</span> <span class="na">type=</span><span class="s">&#39;virtio-serial&#39;</span> <span class="na">index=</span><span class="s">&#39;0&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/controller&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;controller</span> <span class="na">type=</span><span class="s">&#39;usb&#39;</span> <span class="na">index=</span><span class="s">&#39;0&#39;</span> <span class="na">model=</span><span class="s">&#39;ehci&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/controller&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;controller</span> <span class="na">type=</span><span class="s">&#39;sata&#39;</span> <span class="na">index=</span><span class="s">&#39;0&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/controller&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;controller</span> <span class="na">type=</span><span class="s">&#39;pci&#39;</span> <span class="na">index=</span><span class="s">&#39;0&#39;</span> <span class="na">model=</span><span class="s">&#39;pcie-root&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;interface</span> <span class="na">type=</span><span class="s">&#39;bridge&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;mac</span> <span class="na">address=</span><span class="s">&#39;52:54:00:db:7b:e0&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;source</span> <span class="na">bridge=</span><span class="s">&#39;virbr0&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;model</span> <span class="na">type=</span><span class="s">&#39;virtio&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/interface&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;serial</span> <span class="na">type=</span><span class="s">&#39;pty&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;target</span> <span class="na">type=</span><span class="s">&#39;isa-serial&#39;</span> <span class="na">port=</span><span class="s">&#39;0&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;model</span> <span class="na">name=</span><span class="s">&#39;isa-serial&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;/target&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/serial&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;console</span> <span class="na">type=</span><span class="s">&#39;pty&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;target</span> <span class="na">type=</span><span class="s">&#39;serial&#39;</span> <span class="na">port=</span><span class="s">&#39;0&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/console&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&#39;tablet&#39;</span> <span class="na">bus=</span><span class="s">&#39;usb&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;address</span> <span class="na">type=</span><span class="s">&#39;usb&#39;</span> <span class="na">bus=</span><span class="s">&#39;0&#39;</span> <span class="na">port=</span><span class="s">&#39;1&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/input&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&#39;keyboard&#39;</span> <span class="na">bus=</span><span class="s">&#39;usb&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;address</span> <span class="na">type=</span><span class="s">&#39;usb&#39;</span> <span class="na">bus=</span><span class="s">&#39;0&#39;</span> <span class="na">port=</span><span class="s">&#39;2&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/input&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&#39;mouse&#39;</span> <span class="na">bus=</span><span class="s">&#39;ps2&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&#39;keyboard&#39;</span> <span class="na">bus=</span><span class="s">&#39;ps2&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;graphics</span> <span class="na">type=</span><span class="s">&#39;vnc&#39;</span> <span class="na">port=</span><span class="s">&#39;-1&#39;</span> <span class="na">autoport=</span><span class="s">&#39;yes&#39;</span> <span class="na">listen=</span><span class="s">&#39;0.0.0.0&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;listen</span> <span class="na">type=</span><span class="s">&#39;address&#39;</span> <span class="na">address=</span><span class="s">&#39;0.0.0.0&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/graphics&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;video&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;model</span> <span class="na">type=</span><span class="s">&#39;vga&#39;</span> <span class="na">vram=</span><span class="s">&#39;16384&#39;</span> <span class="na">heads=</span><span class="s">&#39;1&#39;</span> <span class="na">primary=</span><span class="s">&#39;yes&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;address</span> <span class="na">type=</span><span class="s">&#39;pci&#39;</span> <span class="na">domain=</span><span class="s">&#39;0x0000&#39;</span> <span class="na">bus=</span><span class="s">&#39;0x00&#39;</span> <span class="na">slot=</span><span class="s">&#39;0x02&#39;</span> <span class="na">function=</span><span class="s">&#39;0x0&#39;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/video&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;memballoon</span> <span class="na">model=</span><span class="s">&#39;virtio&#39;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/memballoon&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/devices&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/domain&gt;</span></span></span></code></pre></div></div>
+<br/>
+<h2 id="创建虚拟机">创建虚拟机</h2>
+<ul>
+<li><strong>创建虚拟机</strong></li>
+</ul>
+<p>虚拟机XML配置文件为 ubuntu-VM.xml</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ virsh define ubuntu-vm.xml 
+</span></span><span class="line"><span class="cl">Domain <span class="s1">&#39;Ubuntu-VM&#39;</span> defined from ubuntu-vm.xml</span></span></code></pre></div></div>
+<ul>
+<li><strong>启动虚拟机</strong></li>
+</ul>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ virsh start Ubuntu-VM
+</span></span><span class="line"><span class="cl">Domain <span class="s1">&#39;Ubuntu-VM&#39;</span> started</span></span></code></pre></div></div>
+<ul>
+<li><strong>添加ISO</strong></li>
+</ul>
+<p>如果忘记在 XML 添加CDROM设备。可以使用 virt-xml 命令添加 CDROM 。（上面的XML我后来加上了）</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ virt-xml Ubuntu-VM --add-device <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--disk /root/kvm/ubuntu-20.04-live-server-amd64.iso,device<span class="o">=</span>cdrom</span></span></code></pre></div></div>
+<ul>
+<li><strong>使用VNC Viewer连上之后进行安装</strong></li>
+</ul>
+<img src="https://img1.kiosk007.top/static/images/blog/virsh_kvm.png" alt="virsh_kvm" style="zoom:40%;clear:both;display:block;margin:auto;" />
+<ul>
+<li><strong>安装完成卸载 ISO</strong></li>
+</ul>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ virsh change-media Ubuntu-VM sdb --eject
+</span></span><span class="line"><span class="cl">Successfully ejected media.</span></span></code></pre></div></div>
+<p>更多 virsh 相关的命令 <a href="https://docs.openeuler.org/zh/docs/22.03_LTS/docs/Virtualization/%E7%AE%A1%E7%90%86%E8%99%9A%E6%8B%9F%E6%9C%BA.html" target="_blank" rel="noopener noreffer ">管理虚拟机</a></p>
+<br/>
+<h2 id="热迁移虚拟机">热迁移虚拟机</h2>
+<p>前提条件：</p>
+<blockquote>
+<ul>
+<li>进行热迁移之间需要确保源端和目的端宿主机之间的网络是互通的，并且可获取资源是对等的</li>
+<li>在执行虚拟机热迁移之前应当对虚拟机进行健康检查，确保目的端主机有足够的CPU、内存和存储资源</li>
+</ul>
+</blockquote>
+<br/>
+<ul>
+<li><strong>热迁移脏页率预测(可选)</strong></li>
+</ul>
+<p>用户在迁移前可以使用 dirtyrate 功能，获取热迁移的内存脏页变化速率，根据虚拟机内存使用情况评估虚拟机是否适合迁移或配置合理的迁移参数。</p>
+<p>不过我本地的 libvirtd 执行报错，这里不掩饰了。</p>
+<ul>
+<li><strong>设置热迁移参数(可选)</strong></li>
+</ul>
+<p>在执行热迁移之前，可以通过使用过 virsh migrate-setmaxdowntime 来指定虚拟机热迁移过程中可以容忍的最大停机时间，这是一个可选项配置</p>
+<p>如配置最大停机时间为 500ms</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ virsh migrate-setmaxdowntime Ubuntu-VM <span class="m">500</span></span></span></code></pre></div></div>
+<br/>
+<p>同时可以通过调用 virsh migrate-setspeed 来限制虚拟机热迁移占用的带宽大小，防止虚拟机热迁移时占用带宽过大，对宿主机上的其他虚拟机或业务造成影响，同样是一个可选项</p>
+<p>如配置虚拟机热迁移带宽为 500Mbps</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ virsh migrate-setspeed Ubuntu-VM --bandwidth <span class="m">500</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看</span>
+</span></span><span class="line"><span class="cl">$ virsh migrate-getspeed Ubuntu-VM</span></span></code></pre></div></div>
+<br/>
+<p>用户可以使用 migrate-set-parameters 来设置热迁移时的相关参数，与热迁移压缩的参数如下：</p>
+<ol>
+<li>compress-level: 压缩级别，默认：1</li>
+<li>compress-threads: 压缩线程数目，默认：8</li>
+<li>compress-wait-thread: 是否等待压缩线程，默认：true</li>
+<li>decompress-threads: 解压缩线程数目，默认：2</li>
+<li>compress-method: 压缩算法选择（zlib、zstd），默认：zlib</li>
+</ol>
+<p>如将压缩级别改成1</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ virsh qemu-monitor-command Ubuntu-VM <span class="s1">&#39;{ &#34;execute&#34;: &#34;migrate-set-parameters&#34;, &#34;arguments&#34;: {&#34;compress-level&#34;: &#34;1&#34;}}&#39;</span></span></span></code></pre></div></div>
+<br/>
+<p>最后查看整体的热迁移相关参数。</p>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">virsh qemu-monitor-command Ubuntu-VM <span class="s1">&#39;{ &#34;execute&#34;: &#34;query-migrate-parameters&#34;}&#39;</span> --pretty
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;return&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;xbzrle-cache-size&#34;</span>: 67108864,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;cpu-throttle-initial&#34;</span>: 20,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;announce-max&#34;</span>: 550,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;decompress-threads&#34;</span>: 2,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;compress-threads&#34;</span>: 8,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;compress-level&#34;</span>: 1,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;multifd-channels&#34;</span>: 2,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;announce-initial&#34;</span>: 50,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;block-incremental&#34;</span>: false,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;compress-wait-thread&#34;</span>: true,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;downtime-limit&#34;</span>: 500,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;tls-authz&#34;</span>: <span class="s2">&#34;&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;announce-rounds&#34;</span>: 5,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;announce-step&#34;</span>: 100,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;tls-creds&#34;</span>: <span class="s2">&#34;&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;max-cpu-throttle&#34;</span>: 99,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;max-postcopy-bandwidth&#34;</span>: 0,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;tls-hostname&#34;</span>: <span class="s2">&#34;&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;max-bandwidth&#34;</span>: 524288000,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;x-checkpoint-delay&#34;</span>: 20000,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;cpu-throttle-increment&#34;</span>: <span class="m">10</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;id&#34;</span>: <span class="s2">&#34;libvirt-383&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div></div>
+<ul>
+<li><strong>热迁移操作（非共享存储场景）</strong></li>
+</ul>
+<p>首先，现在目标宿主机上创建一个虚拟磁盘文件。磁盘格式和大小必须保持一致。</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ qemu-img create -f qcow2 /mnt/ubuntu-vm.qcow2 5G</span></span></code></pre></div></div>
+<ul>
+<li>在源宿主机使用 virsh migrate 进行迁移</li>
+</ul>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ virsh migrate --live --unsafe <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--copy-storage-all --migrate-disks vda Ubuntu-VM qemu+ssh://192.168.122.203/system</span></span></code></pre></div></div>
+<p>注意需要提前配置好 ssh 免密登陆，而且对应主机名的 解析需要提前写进 /etc/hosts 文件中，否则会报错<code>error: internal error: unable to execute QEMU command 'blockdev-add': address resolution failed for instance004:49153: Name or service not known</code></p>
+<ul>
+<li><strong>热迁移完成</strong></li>
+</ul>
+<p>我们在目标主机 instance004 上可以看到，虚拟机已经完整的迁移过来了。</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@instance004:/mnt# virsh list --all
+</span></span><span class="line"><span class="cl"> Id   Name        State
+</span></span><span class="line"><span class="cl">---------------------------
+</span></span><span class="line"><span class="cl"> <span class="m">9</span>    Ubuntu-VM   running</span></span></code></pre></div></div>
+<br/>
+<h1 id="高负载虚拟机热迁移遇到的挑战">高负载虚拟机热迁移遇到的挑战</h1>
+<h2 id="qemu-热迁移压缩算法效率低">QEMU 热迁移压缩算法效率低</h2>
+<p>原生 QEMU 热迁移内存数据使用的压缩算法是 zlib，其存在的如下问题：</p>
+<ol>
+<li>单核的压缩性能只有 100MB/s 左右</li>
+<li>满足万兆带宽场景，QEMU 压缩线程的 CPU 消耗高达 1000%</li>
+</ol>
+<p>由此引发的后果是性能无法满足高负载场景下的需求，在带宽受限的场景下可能无法完成热迁移，导致功能失效。且严重消耗物理主机的CPU资源，导致物理主机其他业务系统性能下降</p>
+<p>目前业界已有的解决方案包括优化 QEMU 的 zlib 压缩算法的性能或者将压缩算法卸载到硬件（加速卡、INTEL QAT 等）</p>
+<br/>
+<h2 id="磁盘热迁移流程中的cpu空耗">磁盘热迁移流程中的CPU空耗</h2>
+<p>QEMU 进行跨存储热迁移时，在迁移数据库时，会通过 BITMAP 来记录磁盘脏数据块。原生 QEMU 的磁盘BITMAP 大小粒度是 1M，后续就要迁移这1M数据，这就带来了磁盘脏数据的放大问题。假设其实只有4K数据发生了修改，但是这1M都需要进行迁移。这就大量消耗在干净数据块的无效遍历上。</p>
+<br/>
+<h2 id="qume-的-cpu-节流算法导致业务性能受影响时间较长">QUME 的 CPU 节流算法导致业务性能受影响时间较长</h2>
+<p>当进入到 <em>增量迭代迁移阶段</em> 时，如果内存脏数据的生成速率大于迁移速率，迁移则永远无法完成，原生的 QEMU 通过 CPU 节流策略来解决此问题。具体如下：</p>
+<ol>
+<li>如果本轮内存脏数据量超过上轮迁移的 50% ，QEMU 会开始对虚拟机进行 CPU 节流，先削减 20% 的 vCPU （虚拟机CPU）执行时间</li>
+<li>在每轮内存迭代迁移开始时，QEMU 会根据之前的削减情况，决定后续的削减粒度</li>
+<li>如果新增脏数据仍然过多，QEMU 会继续削减 10% 的 vCPU 执行时间</li>
+<li>QEMU 最高会削减 99% 的 vCPU 执行时间</li>
+</ol>
+<p>原生QEMU热迁移的 CPU 节流策略较为保守和呆板，在高业务负载场景下，CPU 节流持续时间长，导致 业务性能持续受到影响。</p>
+<br/>
+<h2 id="热点内存的重复无效迁移">热点内存的重复无效迁移</h2>
+<p>根据内存的局部性原理，虚拟机业务在运行过程中，会存在大量的热点内存，在短时间内被频繁修改，虚拟机热迁移进入到增量迭代迁移阶段时，热点内存由于被频繁更高，导致每轮迭代迁移都会变脏而重复迁移。这就需要额外的一个算法去识别热点内存区域，先迁移非热点内存区域，最后再高效迁移热点区域。</p>
+<p><br/><br/></p>
+<ul>
+<li><a href="https://developers.redhat.com/blog/2015/03/24/live-migrating-qemu-kvm-virtual-machines" target="_blank" rel="noopener noreffer ">Live Migrating QEMU-KVM Virtual Machines</a></li>
+<li><a href="https://docs.openeuler.org/zh/docs/22.09/docs/Virtualization/%E8%AE%A4%E8%AF%86%E8%99%9A%E6%8B%9F%E5%8C%96.html" target="_blank" rel="noopener noreffer ">OpenEuler Docs &ndash; 认识虚拟化</a></li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-10-17</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0%E7%83%AD%E8%BF%81%E7%A7%BB/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/openstack/">Openstack</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/what-is-numa/" class="prev" rel="prev" title="什么是 NUMA"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>什么是 NUMA</a>
+            <a href="/%E8%AE%A1%E7%AE%97%E8%99%9A%E6%8B%9F%E5%8C%96/" class="next" rel="next" title="计算虚拟化">计算虚拟化<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.1-DEV"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        <div id="fixed-buttons-hidden"><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script>window.config={"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body>
+</html>

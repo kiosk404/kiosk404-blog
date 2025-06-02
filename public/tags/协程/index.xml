@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>协程 - Tag - Kiosk&#39;s/ </title>
+        <link>http://localhost:1313/tags/%E5%8D%8F%E7%A8%8B/</link>
+        <description>协程 - Tag - Kiosk&#39;s/ </description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>kiosk007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>kiosk007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 18 Jul 2020 16:30:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/%E5%8D%8F%E7%A8%8B/" rel="self" type="application/rss+xml" /><item>
+    <title>理解协程</title>
+    <link>http://localhost:1313/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/</link>
+    <pubDate>Sat, 18 Jul 2020 16:30:00 &#43;0000</pubDate>
+    <author>kiosk</author>
+    <guid>http://localhost:1313/%E7%90%86%E8%A7%A3%E5%8D%8F%E7%A8%8B/</guid>
+    <description><![CDATA[<p><strong>协程</strong> 在如今在高并发场景下最容易提到的一个技术，协程即能暂停执行以在之后恢复的函数。。下面是关于 <a href="https://en.cppreference.com/w/cpp/language/coroutines" target="_blank" rel="noopener noreffer ">GCC11 编辑器</a> 对协程的介绍 （ A coroutine is a function that can suspend execution to be resumed later. Coroutines are stackless: they suspend execution by returning to the caller and the data that is required to resume execution is stored separately from the stack. ）</p>]]></description>
+</item>
+</channel>
+</rss>

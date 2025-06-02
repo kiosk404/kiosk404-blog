@@ -1,0 +1,19 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Linux - Tag - Kiosk&#39;s/ </title>
+        <link>http://localhost:1313/tags/linux/</link>
+        <description>Linux - Tag - Kiosk&#39;s/ </description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>kiosk007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>kiosk007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 15 Sep 2022 02:21:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/linux/" rel="self" type="application/rss+xml" /><item>
+    <title>什么是 NUMA</title>
+    <link>http://localhost:1313/what-is-numa/</link>
+    <pubDate>Thu, 15 Sep 2022 02:21:00 &#43;0000</pubDate>
+    <author>kiosk</author>
+    <guid>http://localhost:1313/what-is-numa/</guid>
+    <description><![CDATA[<p>最近再看虚拟化相关内容的时候注意到 KVM 支持 SMP 和 NUMA 多 CPU 架构的主机和客户机。注意到CPU的模型概念。</p>
+<p>之前其实有听到过 CPU 模型对高性能计算的影响。但是又不清楚其中的原理。高性能云服务可能会引入 <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/performance_tuning_guide/sect-red_hat_enterprise_linux-performance_tuning_guide-tool_reference-numad" target="_blank" rel="noopener noreffer ">numad</a> 守护进程来优化 NUMA 的资源分配。</p>
+<p>Linux man手册中对numad的定义为<code>A user-level daemon that provides placement advice and process management for efficient use of CPUs and memory on systems with NUMA topology.（为高效利用CPU和内存提供布局建议和进程管理功能的用户态守护进程。）</code></p>
+<p>本文将介绍一下什么是 numa ，以及到底有什么用。</p>]]></description>
+</item>
+</channel>
+</rss>

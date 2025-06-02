@@ -1,0 +1,35 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Tls - Tag - Kiosk&#39;s/ </title>
+        <link>http://localhost:1313/tags/tls/</link>
+        <description>Tls - Tag - Kiosk&#39;s/ </description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>kiosk007@foxmail.com (kiosk007)</managingEditor>
+            <webMaster>kiosk007@foxmail.com (kiosk007)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 16 Jan 2021 16:48:00 &#43;0000</lastBuildDate><atom:link href="http://localhost:1313/tags/tls/" rel="self" type="application/rss+xml" /><item>
+    <title>TLS详解（三）</title>
+    <link>http://localhost:1313/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/</link>
+    <pubDate>Sat, 16 Jan 2021 16:48:00 &#43;0000</pubDate>
+    <author>kiosk</author>
+    <guid>http://localhost:1313/tls%E8%AF%A6%E8%A7%A3-%E4%B8%89/</guid>
+    <description><![CDATA[<p>TLS 1.3现已于2018年8月发布。相比与TLS1.2，TLS1.3 在速度和安全性上做出了更大的性能提升，其最大的特点是支持了 Zero Round Trip Time (0-RTT). 在安全性方面，TLS1.3 摒弃了绝大多数不安全的加密套件，只支持几个AEAD的加密认证方式。</p>]]></description>
+</item>
+<item>
+    <title>TLS 详解（二）</title>
+    <link>http://localhost:1313/tls%E8%AF%A6%E8%A7%A3-%E4%BA%8C/</link>
+    <pubDate>Mon, 04 May 2020 14:03:00 &#43;0000</pubDate>
+    <author>kiosk</author>
+    <guid>http://localhost:1313/tls%E8%AF%A6%E8%A7%A3-%E4%BA%8C/</guid>
+    <description><![CDATA[<p>承接 TLS详解（一），本文主要以源码的视角介绍一下TLS的整体过程，这里以 <a href="http://golang.org/pkg/crypto/tls/" target="_blank" rel="noopener noreffer ">GoTLS</a> (golang 自己按照 RFC 实现的一套 tls)为切入点还原整个TLS过程。主要介绍 TLS 的 handshake protocol 和 record protocol。</p>]]></description>
+</item>
+<item>
+    <title>TLS 详解（一）</title>
+    <link>http://localhost:1313/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/</link>
+    <pubDate>Sat, 02 May 2020 23:31:00 &#43;0000</pubDate>
+    <author>kiosk</author>
+    <guid>http://localhost:1313/tls%E8%AF%A6%E8%A7%A3-%E4%B8%80/</guid>
+    <description><![CDATA[<p>TLS的设计目标是构建一个安全传输层（Transport Layer Security ），在基于连接的传输层（如tcp）之上提供安全加密的通信信道。它是旨在防止窃听，篡改和消息伪造的 <a href="https://mailarchive.ietf.org/arch/msg/ietf-announce/IhM9JJHVs_ZeK-_1eaVZrqxbnL8/" target="_blank" rel="noopener noreffer ">IETF</a> 标准。常见应用程序包括Web浏览器，即时消息传递，电子邮件和IP语音都在使用TLS。</p>
+<blockquote>
+<p>Title From <a href="https://www.networkworld.com/article/2303073/lan-wan-what-is-transport-layer-security-protocol.html" target="_blank" rel="noopener noreffer ">What is Transport Layer Security (TLS)?</a></p>
+</blockquote>]]></description>
+</item>
+</channel>
+</rss>

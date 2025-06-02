@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=443&amp;path=livereload" data-no-instant defer></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>搭建我的ELK 7.12 - Kiosk&#39;s/ </title><meta name="Description" content="Kiosk Stduio"><meta property="og:url" content="http://localhost:1313/%E6%90%AD%E5%BB%BA%E6%88%91%E7%9A%84elk-7-2/">
+  <meta property="og:site_name" content="Kiosk&#39;s/ ">
+  <meta property="og:title" content="搭建我的ELK 7.12">
+  <meta property="og:description" content="Elasticsearch 是一个实时的分布式搜索分析引擎，它能让你以前所未有的速度和规模，去探索你的数据。
+“ELK”是三个开源项目的首字母缩写，这三个项目分别是：Elasticsearch、Logstash 和 Kibana。Elasticsearch 是一个搜索和分析引擎。Logstash 是服务器端数据处理管道，能够同时从多个来源采集数据，转换数据，然后将数据发送到诸如 Elasticsearch 等“存储库”中。Kibana 则可以让用户在 Elasticsearch 中使用图形和图表对数据进行可视化。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-03-27T13:52:18+00:00">
+    <meta property="article:modified_time" content="2022-06-26T11:26:27+00:00">
+    <meta property="article:tag" content="Elasticsearch">
+    <meta property="og:image" content="http://localhost:1313/logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:title" content="搭建我的ELK 7.12">
+  <meta name="twitter:description" content="Elasticsearch 是一个实时的分布式搜索分析引擎，它能让你以前所未有的速度和规模，去探索你的数据。
+“ELK”是三个开源项目的首字母缩写，这三个项目分别是：Elasticsearch、Logstash 和 Kibana。Elasticsearch 是一个搜索和分析引擎。Logstash 是服务器端数据处理管道，能够同时从多个来源采集数据，转换数据，然后将数据发送到诸如 Elasticsearch 等“存储库”中。Kibana 则可以让用户在 Elasticsearch 中使用图形和图表对数据进行可视化。">
+<meta name="application-name" content="Kiosk&#39;s">
+<meta name="apple-mobile-web-app-title" content="Kiosk&#39;s">
+<meta name="referrer" content="no-referrer" /><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="canonical" href="http://localhost:1313/%E6%90%AD%E5%BB%BA%E6%88%91%E7%9A%84elk-7-2/" /><link rel="prev" href="http://localhost:1313/worker-pool-in-golang/" /><link rel="next" href="http://localhost:1313/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/6.6.0/css/all.min.css"></noscript><link rel="preload" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.staticfile.net/animate.css/4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "搭建我的ELK 7.12",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/%E6%90%AD%E5%BB%BA%E6%88%91%E7%9A%84elk-7-2\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "http:\/\/localhost:1313\/images\/Apple-Devices-Preview.png",
+                            "width":  3105 ,
+                            "height":  1536 
+                        }],"genre": "posts","keywords": "elasticsearch","wordcount":  5667 ,
+        "url": "http:\/\/localhost:1313\/%E6%90%AD%E5%BB%BA%E6%88%91%E7%9A%84elk-7-2\/","datePublished": "2021-03-27T13:52:18+00:00","dateModified": "2022-06-26T11:26:27+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kiosk007","logo": {
+                    "@type": "ImageObject",
+                    "url": "http:\/\/localhost:1313\/images\/avatar.jpg",
+                    "width":  1200 ,
+                    "height":  1194 
+                }},"author": {
+                "@type": "Person",
+                "name": "kiosk"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script>(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/thematic/"> Thematic </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="/express"> Express </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Kiosk&#39;s/ "><span class="header-title-pre"><i class='fa-solid fa-feather-pointed'>  </i> </span>Kiosk&#39;s/</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/thematic/" title="">Thematic</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="/express" title="">Express</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/kiosk404" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">搭建我的ELK 7.12</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>kiosk</a></span>&nbsp;<span class="post-category">included in <a href="/categories/devops/"><i class="far fa-folder fa-fw"></i>Devops</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-03-27">2021-03-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;5667 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;12 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="true">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#简介">简介</a></li>
+    <li><a href="#安装-elk712">安装 ELK7.12</a>
+      <ul>
+        <li><a href="#1-安装-elasticsearch">1. 安装 elasticsearch</a></li>
+        <li><a href="#2-安装-kibana">2. 安装 Kibana</a></li>
+        <li><a href="#3-安装-logstash">3. 安装 Logstash</a></li>
+        <li><a href="#4-安装-cerebro">4. 安装 cerebro</a></li>
+        <li><a href="#4-测试">4. 测试</a></li>
+      </ul>
+    </li>
+    <li><a href="#进阶-82">进阶 8.2</a>
+      <ul>
+        <li><a href="#相关配置项">相关配置项</a></li>
+        <li><a href="#安全功能部署">安全功能部署</a></li>
+        <li><a href="#启动集群">启动集群</a></li>
+        <li><a href="#启动kibana">启动Kibana</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition warning open">
+			<div class="details-summary admonition-title">
+				<i class="icon fas fa-exclamation-triangle fa-fwwarning"></i>Warning<i class="details-icon fas fa-angle-right fa-fw"></i>
+		    </div>
+			<div class="details-content">
+				<div class="admonition-content">
+					本文最后更新于 <span class="timeago" datetime="2022-06-26T11:26:27" title="June 26, 2022">June 26, 2022</span>，文中内容可能已过时，请谨慎使用。</div>
+			</div>
+		 </div><p>Elasticsearch 是一个实时的分布式搜索分析引擎，它能让你以前所未有的速度和规模，去探索你的数据。</p>
+<p>“ELK”是三个开源项目的首字母缩写，这三个项目分别是：Elasticsearch、Logstash 和 Kibana。Elasticsearch 是一个搜索和分析引擎。Logstash 是服务器端数据处理管道，能够同时从多个来源采集数据，转换数据，然后将数据发送到诸如 Elasticsearch 等“存储库”中。Kibana 则可以让用户在 Elasticsearch 中使用图形和图表对数据进行可视化。</p>
+<p>引用官网的一句话：</p>
+<blockquote>
+<p>Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。 作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况。</p>
+</blockquote>
+<h1 id="简介">简介</h1>
+<img src="https://img1.kiosk007.top/static/images/elk/elk.png" style="height:500px">
+<p><strong>ElasticSearch 的目录结构</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th style="text-align:right">配置文件</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bin</td>
+<td style="text-align:right"></td>
+<td style="text-align:center">脚本文件，包括启动elasticsearch，安装插件，运行统计数据等</td>
+</tr>
+<tr>
+<td>config</td>
+<td style="text-align:right">elasticsearch.yml</td>
+<td style="text-align:center">集群配置文件，user，role based 相关配置</td>
+</tr>
+<tr>
+<td>JDK</td>
+<td style="text-align:right"></td>
+<td style="text-align:center">java 运行环境</td>
+</tr>
+<tr>
+<td>data</td>
+<td style="text-align:right">path.data</td>
+<td style="text-align:center">数据文件</td>
+</tr>
+<tr>
+<td>lib</td>
+<td style="text-align:right"></td>
+<td style="text-align:center">java 类库</td>
+</tr>
+<tr>
+<td>logs</td>
+<td style="text-align:right">path.log</td>
+<td style="text-align:center">日志文件</td>
+</tr>
+<tr>
+<td>modules</td>
+<td style="text-align:right"></td>
+<td style="text-align:center">包含所有ES模块</td>
+</tr>
+<tr>
+<td>plugins</td>
+<td style="text-align:right"></td>
+<td style="text-align:center">包含所有已经安装的插件</td>
+</tr>
+</tbody>
+</table>
+<h1 id="安装-elk712">安装 ELK7.12</h1>
+<p>官方文档 Set up Elasticsearch 有各个 OS 的安装指导，页面 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.3/install-elasticsearch.html" target="_blank" rel="noopener noreffer ">Installing Elasticsearch</a> 中提供了多种安装包对应的指导链接！</p>
+<p>本文选择绿色安装包的的方式（tar.gz）安装。</p>
+<ul>
+<li>安装环境： ubuntu 20.04</li>
+<li>下载链接： <a href="https://mirrors.huaweicloud.com/elasticsearch/" target="_blank" rel="noopener noreffer ">华为镜像站</a> 速度能快一点</li>
+</ul>
+<p>说明：ElasticSearch使用java语言开发，所以默认需要安装并配置JDK，设置 JAVA_HOME, 但是从 7.0 开始，ElasticSearch 内置了Java环境，无需再安装。另外ES启动不能使用root用户</p>
+<p>内核参数修改（32C + 128G参考）</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#修改文件描述符数量</span>
+</span></span><span class="line"><span class="cl">grep <span class="s2">&#34;* - nofile 512000&#34;</span> /etc/security/limits.conf <span class="o">||</span> <span class="nb">echo</span>  <span class="s2">&#34;* - nofile 512000&#34;</span>  &gt;&gt; /etc/security/limits.conf  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#修改最大打开进程数数量</span>
+</span></span><span class="line"><span class="cl">grep <span class="s2">&#34;work - nproc unlimited&#34;</span> /etc/security/limits.conf <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&#34;elasticsearch - nproc unlimited&#34;</span>   &gt;&gt; /etc/security/limits.conf  
+</span></span><span class="line"><span class="cl"><span class="c1">#配合es mem lock，centos6无须添加</span>
+</span></span><span class="line"><span class="cl">grep <span class="s2">&#34;* soft memlock unlimited&#34;</span> /etc/security/limits.conf <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&#34;* soft memlock unlimited&#34;</span>   &gt;&gt; /etc/security/limits.conf  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#配合es mem lock，centos6无须添加</span>
+</span></span><span class="line"><span class="cl">grep <span class="s2">&#34;* hard memlock unlimited&#34;</span> /etc/security/limits.conf <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&#34;* hard memlock unlimited&#34;</span>   &gt;&gt; /etc/security/limits.conf  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#修改系统文件描述符</span>
+</span></span><span class="line"><span class="cl">grep <span class="s2">&#34;fs.file-max = 1024000&#34;</span> /etc/sysctl.conf <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&#34;fs.file-max = 1024000&#34;</span>  &gt;&gt; /etc/sysctl.conf 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#修改程序最大管理的vm</span>
+</span></span><span class="line"><span class="cl">grep <span class="s2">&#34;vm.max_map_count = 262144&#34;</span> /etc/sysctl.conf <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&#34;vm.max_map_count = 262144&#34;</span>  &gt;&gt;  /etc/sysctl.conf  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">grep  <span class="s2">&#34;vm.min_free_kbytes = 2097152&#34;</span> /etc/sysctl.conf <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&#34;vm.min_free_kbytes = 2097152&#34;</span>  &gt;&gt;  /etc/sysctl.conf
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">grep  <span class="s2">&#34;vm.zone_reclaim_mode = 0&#34;</span> /etc/sysctl.conf <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&#34;vm.zone_reclaim_mode = 0&#34;</span>  &gt;&gt;  /etc/sysctl.conf
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sysctl -p
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">swapoff -a   <span class="c1">#关闭虚拟内存</span></span></span></code></pre></div></div>
+<h2 id="1-安装-elasticsearch">1. 安装 elasticsearch</h2>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.12.0-linux-x86_64.tar.gz
+</span></span><span class="line"><span class="cl">tar -xf elasticsearch-7.12.0-linux-x86_64.tar.gz -C ~
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ~/elasticsearch-7.12.0
+</span></span><span class="line"><span class="cl">./bin/elasticsearch  <span class="c1"># 启动</span></span></span></code></pre></div></div>
+<p>启动成功后访问本地的 9200 端口，可以看到</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ curl 127.0.0.1:9200
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;name&#34;</span> : <span class="s2">&#34;k8s-master&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;cluster_name&#34;</span> : <span class="s2">&#34;elasticsearch&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;cluster_uuid&#34;</span> : <span class="s2">&#34;sEn3TgEVSnW4kHpIAU1-5Q&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;version&#34;</span> : <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;number&#34;</span> : <span class="s2">&#34;7.12.0&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;build_flavor&#34;</span> : <span class="s2">&#34;default&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;build_type&#34;</span> : <span class="s2">&#34;tar&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;build_hash&#34;</span> : <span class="s2">&#34;78722783c38caa25a70982b5b042074cde5d3b3a&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;build_date&#34;</span> : <span class="s2">&#34;2021-03-18T06:17:15.410153305Z&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;build_snapshot&#34;</span> : false,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;lucene_version&#34;</span> : <span class="s2">&#34;8.8.0&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;minimum_wire_compatibility_version&#34;</span> : <span class="s2">&#34;6.8.0&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;minimum_index_compatibility_version&#34;</span> : <span class="s2">&#34;6.0.0-beta1&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;tagline&#34;</span> : <span class="s2">&#34;You Know, for Search&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div></div>
+<p class='div-border red'>如果有安装的错误，参考：</p>
+<ul>
+<li><strong>seccomp unavailable 错误</strong></li>
+</ul>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><pre tabindex="0"><code>解决方法：elasticsearch.yml 配置
+bootstrap.memory_lock: false
+bootstrap.system_call_filter: false</code></pre></div>
+<ul>
+<li><strong>max file descriptors [4096] for elasticsearch process likely too low, increase to at least [65536]</strong></li>
+</ul>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><pre tabindex="0"><code>解决方法：修改 /etc/security/limits.conf，配置：
+hard nofile 80000
+soft nofile 80000</code></pre></div>
+<ul>
+<li><strong>max virtual memory areas vm.max_map_count [65530] is too low</strong></li>
+</ul>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><pre tabindex="0"><code>解决方法：修改 /etc/sysctl.conf，添加 ：
+vm.max_map_count = 262144
+然后 sysctl -p 生效</code></pre></div>
+<blockquote>
+<p>安装插件方式：./bin/elasticsearch-plugin install analysis-icu</p>
+</blockquote>
+<p><strong>ES 相关配置</strong></p>
+<ul>
+<li>官网关于配置的内容主要有两处：
+<ul>
+<li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html" target="_blank" rel="noopener noreffer ">Configuring Elasticsearch</a></li>
+<li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html" target="_blank" rel="noopener noreffer ">Important Elasticsearch configuration</a></li>
+</ul>
+</li>
+<li>Elasticsearch 主要有三个配置文件：
+<ul>
+<li><code>elasticsearch.yml</code>：ES的配置文件 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html" target="_blank" rel="noopener noreffer ">more</a></li>
+<li><code>jvm.options</code>: ES JVM 参数 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/jvm-options.html#jvm-options" target="_blank" rel="noopener noreffer ">more</a></li>
+<li><code>log4j2.properties</code>: ES log 配置 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/logging.html#logging" target="_blank" rel="noopener noreffer ">more</a></li>
+</ul>
+</li>
+</ul>
+<p>默认情况，ES 告诉 JVM 使用一个最小和最大都为 4GB 的堆。但是到了生产环境，这个配置就比较重要了，确保 ES 有足够堆空间可用。</p>
+<blockquote>
+<p>但是我的XPS 16G内存。不改堆内存大小的只能起一个实例，再起其他实例，旧的实例总显示 Killed。
+修复方式，更改 <code>./config/jvm.options</code></p>
+</blockquote>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">-Xms1g 
+</span></span><span class="line"><span class="cl">-Xmx1g</span></span></code></pre></div></div>
+<p><strong>运行多个Elasticsearch 实例</strong></p>
+<p>每个实例的配置文件需要不同，这里降低复杂度，不修改配置文件，而是直接用命令行的形式启动一个集群。</p>
+<ul>
+<li>启动实例</li>
+</ul>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 启动实例1</span>
+</span></span><span class="line"><span class="cl">./bin/elasticsearch -E cluster.name<span class="o">=</span>myes -Enode.name<span class="o">=</span>node0 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E node.master<span class="o">=</span><span class="nb">true</span> -E node.data<span class="o">=</span><span class="nb">false</span> -E node.ingest<span class="o">=</span><span class="nb">false</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E network.host<span class="o">=</span>127.0.0.1 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E http.port<span class="o">=</span><span class="m">9200</span> -E transport.tcp.port<span class="o">=</span><span class="m">9300</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E discovery.seed_hosts<span class="o">=</span><span class="s2">&#34;127.0.0.1:9300&#34;</span>,<span class="s2">&#34;127.0.0.1:9301&#34;</span>,<span class="s2">&#34;127.0.0.1:9302&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E cluster.initial_master_nodes<span class="o">=</span><span class="s2">&#34;node0&#34;</span> -d
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动实例2 </span>
+</span></span><span class="line"><span class="cl">./bin/elasticsearch -E cluster.name<span class="o">=</span>myes -E node.name<span class="o">=</span>node1 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E node.master<span class="o">=</span><span class="nb">true</span> -E node.data<span class="o">=</span><span class="nb">true</span> -E node.ingest<span class="o">=</span><span class="nb">false</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E path.data<span class="o">=</span>./data/data_node1 -E network.host<span class="o">=</span>127.0.0.1 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E http.port<span class="o">=</span><span class="m">9201</span> -E transport.tcp.port<span class="o">=</span><span class="m">9301</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E discovery.seed_hosts<span class="o">=</span><span class="s2">&#34;127.0.0.1:9300&#34;</span>,<span class="s2">&#34;127.0.0.1:9301&#34;</span>,<span class="s2">&#34;127.0.0.1:9302&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-d
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动实例3 </span>
+</span></span><span class="line"><span class="cl">./bin/elasticsearch -E cluster.name<span class="o">=</span>myes -E node.name<span class="o">=</span>node2 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E node.master<span class="o">=</span><span class="nb">true</span> -E node.data<span class="o">=</span><span class="nb">true</span> -E node.ingest<span class="o">=</span><span class="nb">false</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E path.data<span class="o">=</span>./data/data_node2 -E network.host<span class="o">=</span>127.0.0.1 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E http.port<span class="o">=</span><span class="m">9202</span> -E transport.tcp.port<span class="o">=</span><span class="m">9302</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-E discovery.seed_hosts<span class="o">=</span><span class="s2">&#34;127.0.0.1:9300&#34;</span>,<span class="s2">&#34;127.0.0.1:9301&#34;</span>,<span class="s2">&#34;127.0.0.1:9302&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-d</span></span></code></pre></div></div>
+<blockquote>
+<ul>
+<li>9300端口： ES节点之间通讯使用</li>
+<li>9200端口： ES节点 和 外部 通讯使用</li>
+<li><code>discovery.seed_hosts</code>: 发现设置。有两种重要的发现和集群形成配置，以便集群中的节点能够彼此发现并且选择一个主节点.其中 <code>discovery.seed_hosts</code> 是组件集群时比较重要的配置，用于启动当前节点时，发现其他节点的初始列表。
+当一个已经加入过集群的节点重启时，如果他无法与之前集群中的节点通信，很可能就会报这个错误 master not discovered or elected yet, an election requires at least 2 nodes with ids from。必须至少配置 [discovery.seed_hosts，discovery.seed_providers，cluster.initial_master_nodes] 中的一个。</li>
+<li><code>cluster.initial_master_nodes</code>: 初始的候选 master 节点列表。初始主节点应通过其 node.name 标识，默认为其主机名。确保 cluster.initial_master_nodes 中的值与 node.name 完全匹配。</li>
+</ul>
+</blockquote>
+<p class='div-border red'>`cluster.initial_master_nodes` 该配置项并不是需要每个节点设置保持一致，设置需谨慎，如果其中的主节点关闭了，可能会导致其他主节点也会关闭。因为一旦节点初始启动时设置了这个参数，它下次启动时还是会尝试和当初指定的主节点链接，当链接失败时，自己也会关闭！
+因此，为了保证可用性，预备做主节点的节点不用每个上面都配置该配置项！保证有的主节点上就不设置该配置项，这样当有主节点故障时，还有可用的主节点不会一定要去寻找初始节点中的主节点！</p>
+- 详细资料参考：
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/master/modules-discovery-bootstrap-cluster.html" target="_blank" rel="noopener noreffer ">Bootstrapping a cluster</a></p>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-discovery-settings.html" target="_blank" rel="noopener noreffer ">Discovery and cluster formation settings</a></p>
+<blockquote>
+<p>在新版 7.x 的 ES 中，对 ES 的集群发现系统做了调整，不再有 discovery.zen.minimum_master_nodes 这个控制集群脑裂的配置，转而由集群自主控制，并且新版在启动一个新的集群的时候需要有cluster.initial_master_nodes 初始化集群主节点列表。如果一个集群一旦形成，你不该再设置该配置项，应该移除它。该配置项仅仅是集群第一次创建时设置的！集群形成之后，这个配置也会被忽略的！</p>
+<ul>
+<li><code>discovery.seed_hosts</code>: 提供群集中符合master节点资格的地址列表</li>
+</ul>
+</blockquote>
+<p>node0 节点仅仅是一个 master 节点，它不是一个数据节点。</p>
+<p>先启动 node0 节点，因为它设置了初始主节点的列表。这时候就可以使用 <code>http://&lt;host IP&gt;:9200/</code> 看到结果了。然后逐一启动 node1 和 node2。通过访问 <code>http://127.0.0.1:9200/_cat/nodes</code> 查看集群是否 OK。</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ curl 127.0.0.1:9200/_cat/nodes
+</span></span><span class="line"><span class="cl">127.0.0.1 <span class="m">42</span> <span class="m">49</span> <span class="m">58</span> 4.45 2.09 1.37 lmr        * node0
+</span></span><span class="line"><span class="cl">127.0.0.1 <span class="m">42</span> <span class="m">49</span> <span class="m">54</span> 4.45 2.09 1.37 cdfhlmrstw - node1
+</span></span><span class="line"><span class="cl">127.0.0.1 <span class="m">42</span> <span class="m">49</span> <span class="m">45</span> 4.45 2.09 1.37 cdfhlmrstw - node2</span></span></code></pre></div></div>
+<h2 id="2-安装-kibana">2. 安装 Kibana</h2>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://artifacts.elastic.co/downloads/kibana/kibana-7.12.0-linux-x86_64.tar.gz
+</span></span><span class="line"><span class="cl">tar -xf kibana-7.12.0-linux-x86_64.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> kibana-7.12.0-linux-x86_64</span></span></code></pre></div></div>
+<p><strong>启动kibana</strong></p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 将kibana改成中文</span>
+</span></span><span class="line"><span class="cl">vim config/kibana.yml
+</span></span><span class="line"><span class="cl">     i18n.locale: <span class="s2">&#34;zh-CN&#34;</span>   <span class="c1">## 最后一行</span>
+</span></span><span class="line"><span class="cl">./bin/kibana</span></span></code></pre></div></div>
+<p>访问本地的5601端口
+查看样例。点击右下角的 <code>try out sample data</code> ，可以导入kibana的测试数据。分别是电商网站报表、航空数据、日志
+<img src="https://img1.kiosk007.top/static/images/elk/kinana_home.png">
+这里分 <a href="https://www.elastic.co/cn/enterprise-search?elektra=home&amp;storm=river1" target="_blank" rel="noopener noreffer ">Enterprise Search(企业搜索)</a>、<a href="https://www.elastic.co/guide/en/observability/7.9/observability-introduction.html" target="_blank" rel="noopener noreffer ">Observability(监控)</a>、<a href="https://www.elastic.co/guide/en/security/7.9/es-overview.html" target="_blank" rel="noopener noreffer ">Security(安全)</a></p>
+<ul>
+<li>Enterprise Search(企业搜索)：可建立强大的搜索体验，当然是付费滴。</li>
+<li>Observability(监控)：日志、APM、站点SLA监控、指标打点。（支持Nginx、MySQL、Redis等日志）</li>
+<li>Security(安全): 安全相关的解决方案</li>
+</ul>
+<p>另外还开以打开 <code>http://127.0.0.1:5601/app/dev_tools#/console</code> 控制台，这个是直接对接 ES 的。可在这里直接使用查询语句。</p>
+<h2 id="3-安装-logstash">3. 安装 Logstash</h2>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://artifacts.elastic.co/downloads/logstash/logstash-7.12.0-linux-x86_64.tar.gz</span></span></code></pre></div></div>
+<h2 id="4-安装-cerebro">4. 安装 cerebro</h2>
+<p>cerebro是专业化项目管理系统，提供一个协作工作环境和项目管理软件，用于处理复杂的视觉材料。它
+专为 CGI 和动画工作室、广告公司、电视公司和建筑设计公司而开发。也可以说它是一款Elasticsearch监控工具。</p>
+<p>安装</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://github.com/lmenezes/cerebro/releases/download/v0.9.3/cerebro-0.9.3.tgz
+</span></span><span class="line"><span class="cl">tar -xf cerebro-0.9.3.tgz 
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> cerebro-0.9.3 
+</span></span><span class="line"><span class="cl">./bin/cerebro   <span class="c1"># 启动</span></span></span></code></pre></div></div>
+<blockquote>
+<p>cerebro 需要 java 才能运行，没有java环境的化，可以执行 <code>sudo apt install openjdk-11-jdk</code> 。 Java 11 是 Java 的一个长期支持版本（LTS）。它同时也是 Ubuntu 20.04的默认 Java 开发和运行环境。</p>
+</blockquote>
+<p>访问 <code>http://127.0.0.1:9000</code> 浏览器打开。</p>
+<p><img src="https://img1.kiosk007.top/static/images/elk/cerebro.png
+"/></p>
+<p>点击左上方 node，可查看节点情况。</p>
+<h2 id="4-测试">4. 测试</h2>
+<p>下载测试样本 movielens</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"> wget http://files.grouplens.org/datasets/movielens/ml-20m.zip
+</span></span><span class="line"><span class="cl"> unzip ml-20m.zip</span></span></code></pre></div></div>
+<p>开始配置文件</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">input <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  file <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">path</span> <span class="o">=</span>&gt; <span class="s2">&#34;/home/work/logs/ml-20m/movies.csv&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">start_position</span> <span class="o">=</span>&gt; <span class="s2">&#34;beginning&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">sincedb_path</span> <span class="o">=</span>&gt; <span class="s2">&#34;/dev/null&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">filter <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  csv <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">separator</span> <span class="o">=</span>&gt; <span class="s2">&#34;,&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">columns</span> <span class="o">=</span>&gt; <span class="o">[</span><span class="s2">&#34;id&#34;</span>,<span class="s2">&#34;content&#34;</span>,<span class="s2">&#34;genre&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  mutate <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">split</span> <span class="o">=</span>&gt; <span class="o">{</span> <span class="s2">&#34;genre&#34;</span> <span class="o">=</span>&gt; <span class="s2">&#34;|&#34;</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">remove_field</span> <span class="o">=</span>&gt; <span class="o">[</span><span class="s2">&#34;path&#34;</span>, <span class="s2">&#34;host&#34;</span>,<span class="s2">&#34;@timestamp&#34;</span>,<span class="s2">&#34;message&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  mutate <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">split</span> <span class="o">=</span>&gt; <span class="o">[</span><span class="s2">&#34;content&#34;</span>, <span class="s2">&#34;(&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">add_field</span> <span class="o">=</span>&gt; <span class="o">{</span> <span class="s2">&#34;title&#34;</span> <span class="o">=</span>&gt; <span class="s2">&#34;%{[content][0]}&#34;</span><span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">add_field</span> <span class="o">=</span>&gt; <span class="o">{</span> <span class="s2">&#34;year&#34;</span> <span class="o">=</span>&gt; <span class="s2">&#34;%{[content][1]}&#34;</span><span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  mutate <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">convert</span> <span class="o">=</span>&gt; <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;year&#34;</span> <span class="o">=</span>&gt; <span class="s2">&#34;integer&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">strip</span> <span class="o">=</span>&gt; <span class="o">[</span><span class="s2">&#34;title&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">remove_field</span> <span class="o">=</span>&gt; <span class="o">[</span><span class="s2">&#34;path&#34;</span>, <span class="s2">&#34;host&#34;</span>,<span class="s2">&#34;@timestamp&#34;</span>,<span class="s2">&#34;message&#34;</span>,<span class="s2">&#34;content&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">output <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   elasticsearch <span class="o">{</span>
+</span></span><span class="line"><span class="cl">     <span class="nv">hosts</span> <span class="o">=</span>&gt; <span class="s2">&#34;http://localhost:9200&#34;</span>
+</span></span><span class="line"><span class="cl">     <span class="nv">index</span> <span class="o">=</span>&gt; <span class="s2">&#34;movies&#34;</span>
+</span></span><span class="line"><span class="cl">     <span class="nv">document_id</span> <span class="o">=</span>&gt; <span class="s2">&#34;%{id}&#34;</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  stdout <span class="o">{}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div></div>
+<p>导入测试数据到ES中
+<code> logstash -f log.conf</code></p>
+<h1 id="进阶-82">进阶 8.2</h1>
+<p>elasticsearch 8.0 版本做了比较大的更新，尤其是在安全层面，默认开启安全配置，并极大简化了开启安全模式所需要的工作量。安装过程中的一些参数也发生了比较大的变化，这里再启用 8.0 的安全模式做一个补充。</p>
+<blockquote>
+<p>部署还是采用单机启3个实例的模式，结构参照 上面。</p>
+</blockquote>
+<br/>
+<p>8.x 版本的安全属性主要是由 X-pack 这个扩展插件提供，X-pack 为Elastic stack 提供扩展了警报，监控，报告，机器学习和许多其他功能，ES 8正是默认启动了该功能。</p>
+<br/>
+<h2 id="相关配置项">相关配置项</h2>
+<ol>
+<li><strong>xpack.security.enabled</strong></li>
+</ol>
+<p>​     默认为true，启用节点上ES的XPACK安全功能，相当于总开关</p>
+<ol start="2">
+<li><strong>xpack.security.http.ssl</strong></li>
+</ol>
+<p>​     用来开启https，以及对应的设置，整体配置项如下：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-yaml">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">xpack.security.http.ssl</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="l">【开启还是关闭】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">verification_mode</span><span class="p">:</span><span class="w"> </span><span class="l">certificate【如下】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="l">【full：它验证所提供的证书是否由受信任的权威机构(CA)签名，并验证服务器的主机名(或IP地址)是否与证书中识别的名称匹配。】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="l">【certificate：它验证所提供的证书是否由受信任的机构(CA)签名，但不执行任何主机名验证。】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="l">【none：它不执行服务器证书的验证。】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">truststore.path</span><span class="p">:</span><span class="w"> </span><span class="l">certs/elastic-certificates.p12 【信任存储库文件的存放位置】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">keystore.path</span><span class="p">:</span><span class="w"> </span><span class="l">certs/elastic-certificates.p12【密钥存储库文件的存放位置】</span></span></span></code></pre></div></div>
+<ol start="3">
+<li><strong>xpack.security.transport.ssl</strong></li>
+</ol>
+<p>​       这个是传输层的认证设置，整体配置项如下：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-yaml">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">xpack.security.transport.ssl</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="l">【开启还是关闭】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">verification_mode</span><span class="p">:</span><span class="w"> </span><span class="l">certificate【如下】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="l">【full：它验证所提供的证书是否由受信任的权威机构(CA)签名，并验证服务器的主机名(或IP地址)是否与证书中识别的名称匹配。】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="l">【certificate：它验证所提供的证书是否由受信任的机构(CA)签名，但不执行任何主机名验证。】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="l">【none：它不执行服务器证书的验证。】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">keystore.path</span><span class="p">:</span><span class="w"> </span><span class="l">certs/elastic-certificates.p12【信任存储库文件的存放位置】</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">truststore.path</span><span class="p">:</span><span class="w"> </span><span class="l">certs/elastic-certificates.p12【密钥存储库文件的存放位置】</span></span></span></code></pre></div></div>
+<br/>
+<h2 id="安全功能部署">安全功能部署</h2>
+<p><strong>「创建证书生成信息的存放路径」</strong></p>
+<blockquote>
+<p>8.2.3 必须将security放到 ES根目录的 ./config 下，否则报错：</p>
+<p>org.elasticsearch.ElasticsearchSecurityException: failed to load SSL configuration [xpack.security.transport.ssl] - cannot read configured [PKCS12] keystore (as a truststore) [/home/ubuntu/data/elasticsearch-8.2.3/security/es-node1/es-node1.p12] because access to read the file is blocked; SSL resources should be placed in the [/home/ubuntu/data/elasticsearch-8.2.3/config] directory
+Likely root cause: java.security.AccessControlException: access denied (&ldquo;java.io.FilePermission&rdquo; &ldquo;/home/ubuntu/data/elasticsearch-8.2.3/security/es-node1/es-node1.p12&rdquo; &ldquo;read&rdquo;)</p>
+<p>没有读权限，莫名其妙的，搞不懂！&#x1f621;</p>
+</blockquote>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p ~/data/elasticsearch-8.2.3/config/security</span></span></code></pre></div></div>
+<br/>
+<p><strong>「创建CA」</strong></p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./bin/elasticsearch-certutil ca --ca-dn <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span><span class="s2">&#34;CN=Elastic Certificate Tool Autogenerated CA&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--days <span class="m">3650</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--out <span class="s2">&#34;./config/security/elastic-certificates.p12&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>--silent
+</span></span><span class="line"><span class="cl">Enter password <span class="k">for</span> elastic-certificates.p12 : </span></span></code></pre></div></div>
+<br/>
+<p><strong>「生成各节点传输层证书和私钥，用于节点间的发现和通信加密」</strong></p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ vim ./config/security/instances.yml
+</span></span><span class="line"><span class="cl">instances:
+</span></span><span class="line"><span class="cl">  - name: <span class="s2">&#34;CN=es-node1.kiosk007.top&#34;</span>
+</span></span><span class="line"><span class="cl">    ip: 
+</span></span><span class="line"><span class="cl">      - <span class="s2">&#34;127.0.0.1&#34;</span>
+</span></span><span class="line"><span class="cl">    filename: <span class="s2">&#34;es-node1&#34;</span>
+</span></span><span class="line"><span class="cl">  - name: <span class="s2">&#34;CN=es-node2.kiosk007.top&#34;</span>
+</span></span><span class="line"><span class="cl">    ip:
+</span></span><span class="line"><span class="cl">      - <span class="s2">&#34;127.0.0.1&#34;</span>
+</span></span><span class="line"><span class="cl">    filename: <span class="s2">&#34;es-node2&#34;</span>
+</span></span><span class="line"><span class="cl">  - name: <span class="s2">&#34;CN=es-node3.kiosk007.top&#34;</span>
+</span></span><span class="line"><span class="cl">    ip: 
+</span></span><span class="line"><span class="cl">      - <span class="s2">&#34;127.0.0.1&#34;</span>
+</span></span><span class="line"><span class="cl">    filename: <span class="s2">&#34;es-node3&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 生成证书，指定CA，配置证书密码为 transpasswd</span>
+</span></span><span class="line"><span class="cl">$ ./bin/elasticsearch-certutil cert --silent <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --in <span class="s2">&#34;./config/security/instances.yml&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --out <span class="s2">&#34;./config/security/certs.zip&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --ca <span class="s2">&#34;./config/security/elastic-certificates.p12&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --pass <span class="s2">&#34;transpasswd&#34;</span> --ca-pass <span class="s2">&#34;capasswd&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 解压</span>
+</span></span><span class="line"><span class="cl">$ unzip certs.zip
+</span></span><span class="line"><span class="cl">$ tree
+</span></span><span class="line"><span class="cl">security/
+</span></span><span class="line"><span class="cl">├── certs.zip
+</span></span><span class="line"><span class="cl">├── elastic-certificates.p12
+</span></span><span class="line"><span class="cl">├── es-node1
+</span></span><span class="line"><span class="cl">│   └── es-node1.p12
+</span></span><span class="line"><span class="cl">├── es-node2
+</span></span><span class="line"><span class="cl">│   └── es-node2.p12
+</span></span><span class="line"><span class="cl">├── es-node3
+</span></span><span class="line"><span class="cl">│   └── es-node3.p12
+</span></span><span class="line"><span class="cl">└── instances.yml</span></span></code></pre></div></div>
+<br/>
+<p><strong>「生成个节点 HTTPS 证书」</strong></p>
+<p>(如果有中央CA，可以创建CSR申请中央CA的证书，此处使用自建CA)</p>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 交互式生成 http 证书 </span>
+</span></span><span class="line"><span class="cl">$ ./bin/elasticsearch-certutil http --silent
+</span></span><span class="line"><span class="cl"><span class="c1">## Elasticsearch HTTP Certificate Utility</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Do you wish to generate a Certificate Signing Request (CSR)?</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 是否生成 CSR，否（使用中央CA时选择 是）</span>
+</span></span><span class="line"><span class="cl">Generate a CSR? <span class="o">[</span>y/N<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Do you have an existing Certificate Authority (CA) key-pair that you wish to use to sign your certificate?</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 是否使用已存在的 CA</span>
+</span></span><span class="line"><span class="cl">Use an existing CA? <span class="o">[</span>y/N<span class="o">]</span>y
+</span></span><span class="line"><span class="cl"><span class="c1">## What is the path to your CA?</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># CA 路径</span>
+</span></span><span class="line"><span class="cl">CA Path: ./config/security/elastic-certificates.p12
+</span></span><span class="line"><span class="cl"><span class="c1"># CA 密码</span>
+</span></span><span class="line"><span class="cl">Password <span class="k">for</span> elastic-stack-ca.p12:
+</span></span><span class="line"><span class="cl"><span class="c1"># 证书有效时间</span>
+</span></span><span class="line"><span class="cl">For how long should your certificate be valid? <span class="o">[</span>5y<span class="o">]</span> 10y
+</span></span><span class="line"><span class="cl"><span class="c1"># 是否为每个节点生成证书</span>
+</span></span><span class="line"><span class="cl">Generate a certificate per node? <span class="o">[</span>y/N<span class="o">]</span>y
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 配置节点一信息</span>
+</span></span><span class="line"><span class="cl">node <span class="c1">#1 name: es-node1           </span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Which hostnames will be used to connect to es-1?</span>
+</span></span><span class="line"><span class="cl">es-node1.kiosk007.top
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">You entered the following hostnames.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> - es-node1.kiosk007.top
+</span></span><span class="line"><span class="cl">Is this correct <span class="o">[</span>Y/n<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Which IP addresses will be used to connect to es-node1?</span>
+</span></span><span class="line"><span class="cl">127.0.0.1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">You entered the following IP addresses.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> - 127.0.0.1
+</span></span><span class="line"><span class="cl">Is this correct <span class="o">[</span>Y/n<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Other certificate options</span>
+</span></span><span class="line"><span class="cl">Key Name: es-node1
+</span></span><span class="line"><span class="cl">Subject DN: <span class="nv">CN</span><span class="o">=</span>es-node1
+</span></span><span class="line"><span class="cl">Key Size: <span class="m">2048</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Do you wish to change any of these options? <span class="o">[</span>y/N<span class="o">]</span>  <span class="c1"># 选 N</span>
+</span></span><span class="line"><span class="cl">Generate additional certificates? <span class="o">[</span>Y/n<span class="o">]</span> <span class="c1"># 选 Y</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 配置节点二信息</span>
+</span></span><span class="line"><span class="cl">node <span class="c1">#2 name: es-node2</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Which hostnames will be used to connect to es-node2?</span>
+</span></span><span class="line"><span class="cl">es-node2.kiosk007.top
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">You entered the following hostnames.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> - es-node2.kiosk007.top
+</span></span><span class="line"><span class="cl">Is this correct <span class="o">[</span>Y/n<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Which IP addresses will be used to connect to es-node2?</span>
+</span></span><span class="line"><span class="cl">127.0.0.1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">You entered the following IP addresses.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> - 127.0.0.1
+</span></span><span class="line"><span class="cl">Is this correct <span class="o">[</span>Y/n<span class="o">]</span>y
+</span></span><span class="line"><span class="cl"><span class="c1">## Other certificate options</span>
+</span></span><span class="line"><span class="cl">Key Name: es-node2
+</span></span><span class="line"><span class="cl">Subject DN: <span class="nv">CN</span><span class="o">=</span>es-node2
+</span></span><span class="line"><span class="cl">Key Size: <span class="m">2048</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Do you wish to change any of these options? <span class="o">[</span>y/N<span class="o">]</span> <span class="c1"># 选 N</span>
+</span></span><span class="line"><span class="cl">Generate additional certificates? <span class="o">[</span>Y/n<span class="o">]</span> <span class="c1"># 选 Y</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 配置节点三信息</span>
+</span></span><span class="line"><span class="cl">node <span class="c1">#3 name: es-node3</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Which hostnames will be used to connect to es-node3?</span>
+</span></span><span class="line"><span class="cl">es-node3.kiosk007.top
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">You entered the following hostnames.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> - es-node3.kiosk007.top
+</span></span><span class="line"><span class="cl">Is this correct <span class="o">[</span>Y/n<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Which IP addresses will be used to connect to es-node3?</span>
+</span></span><span class="line"><span class="cl">127.0.0.1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">You entered the following IP addresses.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> - 127.0.0.1
+</span></span><span class="line"><span class="cl">Is this correct <span class="o">[</span>Y/n<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Other certificate options</span>
+</span></span><span class="line"><span class="cl">Key Name: es-node3
+</span></span><span class="line"><span class="cl">Subject DN: <span class="nv">CN</span><span class="o">=</span>es-node3
+</span></span><span class="line"><span class="cl">Key Size: <span class="m">2048</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Do you wish to change any of these options? <span class="o">[</span>y/N<span class="o">]</span>
+</span></span><span class="line"><span class="cl">Generate additional certificates? <span class="o">[</span>Y/n<span class="o">]</span>n
+</span></span><span class="line"><span class="cl"><span class="c1"># 生成证书密码，此处使用 httppasswd</span>
+</span></span><span class="line"><span class="cl">Provide a password <span class="k">for</span> the <span class="s2">&#34;http.p12&#34;</span> file:  <span class="o">[</span>&lt;ENTER&gt; <span class="k">for</span> none<span class="o">]</span>
+</span></span><span class="line"><span class="cl">Repeat password to confirm: 
+</span></span><span class="line"><span class="cl"><span class="c1"># 生成证书路径</span>
+</span></span><span class="line"><span class="cl">What filename should be used <span class="k">for</span> the output zip file? <span class="o">[</span>/home/ubuntu/data/elasticsearch-8.2.3/elasticsearch-ssl-http.zip<span class="o">]</span> </span></span></code></pre></div></div>
+<br/>
+<p><strong>「查看生成的证书」</strong></p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ tree
+</span></span><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">├── certs.zip
+</span></span><span class="line"><span class="cl">├── elastic-certificates.p12
+</span></span><span class="line"><span class="cl">├── elasticsearch
+</span></span><span class="line"><span class="cl">│   ├── es-node1
+</span></span><span class="line"><span class="cl">│   │   ├── README.txt
+</span></span><span class="line"><span class="cl">│   │   ├── http.p12
+</span></span><span class="line"><span class="cl">│   │   └── sample-elasticsearch.yml
+</span></span><span class="line"><span class="cl">│   ├── es-node2
+</span></span><span class="line"><span class="cl">│   │   ├── README.txt
+</span></span><span class="line"><span class="cl">│   │   ├── http.p12
+</span></span><span class="line"><span class="cl">│   │   └── sample-elasticsearch.yml
+</span></span><span class="line"><span class="cl">│   └── es-node3
+</span></span><span class="line"><span class="cl">│       ├── README.txt
+</span></span><span class="line"><span class="cl">│       ├── http.p12
+</span></span><span class="line"><span class="cl">│       └── sample-elasticsearch.yml
+</span></span><span class="line"><span class="cl">├── es-node1
+</span></span><span class="line"><span class="cl">│   └── es-node1.p12
+</span></span><span class="line"><span class="cl">├── es-node2
+</span></span><span class="line"><span class="cl">│   └── es-node2.p12
+</span></span><span class="line"><span class="cl">├── es-node3
+</span></span><span class="line"><span class="cl">│   └── es-node3.p12
+</span></span><span class="line"><span class="cl">├── instances.yml
+</span></span><span class="line"><span class="cl">└── kibana
+</span></span><span class="line"><span class="cl">    ├── README.txt
+</span></span><span class="line"><span class="cl">    ├── elasticsearch-ca.pem
+</span></span><span class="line"><span class="cl">    └── sample-kibana.yml</span></span></code></pre></div></div>
+<br/>
+<p>「密钥库配置」</p>
+<blockquote>
+<p>注解： keystore可以看成一个放key的库，key就是公钥，私钥，数字签名等组成的一个信息。 truststore是放信任的证书的一个store truststore和keystore的性质是一样的，都是存放key的一个仓库，区别在于，truststore里存放的是只包含公钥的数字证书，代表了可以信任的证书，而keystore是包含私钥的。</p>
+</blockquote>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 创建密钥库</span>
+</span></span><span class="line"><span class="cl">$ ./bin/elasticsearch-keystore create
+</span></span><span class="line"><span class="cl">Created elasticsearch keystore in /home/ubuntu/data/elasticsearch-8.2.3/config/elasticsearch.keystore
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 存储传输层证书密码（此处为 transpoasswd）</span>
+</span></span><span class="line"><span class="cl">$ ./bin/elasticsearch-keystore add xpack.security.transport.ssl.keystore.secure_password
+</span></span><span class="line"><span class="cl">$ ./bin/elasticsearch-keystore add xpack.security.transport.ssl.truststore.secure_password
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 存储http证书密码（此处为 httppasswd）</span>
+</span></span><span class="line"><span class="cl">$ ./bin/elasticsearch-keystore add xpack.security.http.ssl.keystore.secure_password
+</span></span><span class="line"><span class="cl">$ ./bin/elasticsearch-keystore add xpack.security.http.ssl.truststore.secure_password</span></span></code></pre></div></div>
+<br/>
+<h2 id="启动集群">启动集群</h2>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><pre tabindex="0"><code># 启动实例1
+./bin/elasticsearch -E cluster.name=kiosk-es -Enode.name=es-node1 \
+-E path.data=/home/ubuntu/data/elasticsearch-8.2.3/data/data1  \
+-E path.logs=/home/ubuntu/data/elasticsearch-8.2.3/logs/log1 \
+-E http.port=9200 -E transport.port=9300 -E network.host=127.0.0.1 \
+-E discovery.seed_hosts=&#34;127.0.0.1:9300&#34;,&#34;127.0.0.1:9301&#34;,&#34;127.0.0.1:9302&#34; \
+-E action.destructive_requires_name=true \
+-E cluster.initial_master_nodes=&#34;es-node1&#34;,&#34;es-node2&#34;,&#34;es-node3&#34; \
+-E xpack.security.enabled=true \
+-E xpack.security.enrollment.enabled=true \
+-E xpack.security.http.ssl.enabled=true \
+-E xpack.security.http.ssl.verification_mode=certificate \
+-E xpack.security.http.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node1/http.p12 \
+-E xpack.security.http.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node1/http.p12 \
+-E xpack.security.transport.ssl.enabled=true \
+-E xpack.security.transport.ssl.verification_mode=certificate \
+-E xpack.security.transport.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node1/es-node1.p12 \
+-E xpack.security.transport.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node1/es-node1.p12 \
+-d
+
+# 启动实例2 
+./bin/elasticsearch -E cluster.name=kiosk-es -E node.name=es-node2 \
+-E path.data=/home/ubuntu/data/elasticsearch-8.2.3/data/data2 \
+-E path.logs=/home/ubuntu/data/elasticsearch-8.2.3/logs/log2 \
+-E http.port=9201 -E transport.port=9301 -E network.host=127.0.0.1 \
+-E discovery.seed_hosts=&#34;127.0.0.1:9300&#34;,&#34;127.0.0.1:9301&#34;,&#34;127.0.0.1:9302&#34; \
+-E action.destructive_requires_name=true \
+-E cluster.initial_master_nodes=&#34;es-node1&#34;,&#34;es-node2&#34;,&#34;es-node3&#34; \
+-E xpack.security.enabled=true \
+-E xpack.security.enrollment.enabled=true \
+-E xpack.security.http.ssl.enabled=true \
+-E xpack.security.http.ssl.verification_mode=certificate \
+-E xpack.security.http.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node2/http.p12 \
+-E xpack.security.http.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node2/http.p12 \
+-E xpack.security.transport.ssl.enabled=true \
+-E xpack.security.transport.ssl.verification_mode=certificate \
+-E xpack.security.transport.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node2/es-node2.p12 \
+-E xpack.security.transport.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node2/es-node2.p12 \
+-d
+
+# 启动实例3 
+./bin/elasticsearch -E cluster.name=kiosk-es -E node.name=es-node3 \
+-E path.data=/home/ubuntu/data/elasticsearch-8.2.3/data/data3 \
+-E path.logs=/home/ubuntu/data/elasticsearch-8.2.3/logs/log3 \
+-E http.port=9202 -E transport.port=9302 -E network.host=127.0.0.1 \
+-E discovery.seed_hosts=&#34;127.0.0.1:9300&#34;,&#34;127.0.0.1:9301&#34;,&#34;127.0.0.1:9302&#34; \
+-E action.destructive_requires_name=true \
+-E cluster.initial_master_nodes=&#34;es-node1&#34;,&#34;es-node2&#34;,&#34;es-node3&#34; \
+-E xpack.security.enabled=true \
+-E xpack.security.enrollment.enabled=true \
+-E xpack.security.http.ssl.enabled=true \
+-E xpack.security.http.ssl.verification_mode=certificate \
+-E xpack.security.http.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node3/http.p12 \
+-E xpack.security.http.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node3/http.p12 \
+-E xpack.security.transport.ssl.enabled=true \
+-E xpack.security.transport.ssl.verification_mode=certificate \
+-E xpack.security.transport.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node3/es-node3.p12 \
+-E xpack.security.transport.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node3/es-node3.p12 \
+-d</code></pre></div>
+<br/>
+<p>这样启动比较晕&#x1f635;的是，所有的命令行最好都带上这些 -E 选项，比如我想要改 elastic 用户的密码，应该这样做。。</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-yaml">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="l">./bin/elasticsearch-reset-password -u elastic -E cluster.name=kiosk-es -Enode.name=es-node1 -E path.data=/home/ubuntu/data/elasticsearch-8.2.3/data/data1  -E path.logs=/home/ubuntu/data/elasticsearch-8.2.3/logs/log1 -E http.port=9200 -E transport.port=9300 -E network.host=127.0.0.1 -E discovery.seed_hosts=&#34;127.0.0.1:9300&#34;,&#34;127.0.0.1:9301&#34; -E action.destructive_requires_name=true -E cluster.initial_master_nodes=&#34;es-node1&#34;,&#34;es-node2&#34; -E xpack.security.enabled=true -E xpack.security.enrollment.enabled=true -E xpack.security.http.ssl.enabled=true -E xpack.security.http.ssl.verification_mode=certificate -E xpack.security.http.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node1/http.p12 -E xpack.security.http.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasticsearch/es-node1/http.p12 -E xpack.security.transport.ssl.enabled=true -E xpack.security.transport.ssl.verification_mode=certificate -E xpack.security.transport.ssl.keystore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node1/es-node1.p12 -E xpack.security.transport.ssl.truststore.path=/home/ubuntu/data/elasticsearch-8.2.3/config/security/es-node1/es-node1.p12</span></span></span></code></pre></div></div>
+<br/>
+<h2 id="启动kibana">启动Kibana</h2>
+<p>别忘了带上上面说的一堆 &ldquo;-E&rdquo; 选项</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><pre tabindex="0"><code>./bin/elasticsearch-reset-password -u kibana_system</code></pre></div>
+<br/>
+<p>得到 kibana_system 用户的密码后，将内容填进 ./config/kibana.yml 配置文件中，大概 42-51 行</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-yaml">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># =================== System: Elasticsearch ===================</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># The URLs of the Elasticsearch instances to use for all your queries.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">elasticsearch.hosts</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;https://es-node1.kiosk007.top:9200&#34;</span><span class="p">,</span><span class="s2">&#34;https://es-node2.kiosk007.top:9201&#34;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># If your Elasticsearch is protected with basic authentication, these settings provide</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># the username and password that the Kibana server uses to perform maintenance on the Kibana</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># index at startup. Your Kibana users still need to authenticate with Elasticsearch, which</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># is proxied through the Kibana server.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">elasticsearch.username</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;kibana_system&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">elasticsearch.password</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;_pSr-80lrixxxxxxxxxxx&#34;</span><span class="w">   </span><span class="c"># 上一步得到的密码</span></span></span></code></pre></div></div>
+<br/>
+<blockquote>
+<p>这里填写的是域名 es-node1.kiosk007.top，可以本地写个 hosts，将流量指向本地，主要原因是证书认证是看域名的，写127.0.0.1 或者 localhost 证书认证都过不了</p>
+</blockquote>
+<p>因为 Kibana 访问 Elasticsearch 需要通过证书的方式，然而我们的CA是自签证书，默认当然无法认证成功。我们的CA证书是 <code>./config/security/elastic-certificates.p12</code></p>
+<p><strong>kibana</strong> 不能够直接使用 <strong>PKCS#12</strong>类型的证书！</p>
+<p><strong>kibana</strong> 不能够直接使用 <strong>PKCS#12</strong>类型的证书！</p>
+<p><strong>kibana</strong> 不能够直接使用 <strong>PKCS#12</strong>类型的证书！</p>
+<br/>
+<p>那么需要我们先转一次，将 pkcs12 中的证书部分转换成 pem 格式。</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openssl pkcs12 -in elastic-certificates.p12 -clcerts -nokeys -chain -out elasic-certificates.pem</span></span></code></pre></div></div>
+<p>将ca 证书的存储路径填写到 kibana 的配置文件中，大概在93行</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-yaml">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="Copy to clipboard"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># Enables you to specify a path to the PEM file for the certificate</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># authority for your Elasticsearch instance.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">#elasticsearch.ssl.certificateAuthorities: [ &#34;/path/to/your/CA.pem&#34; ]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">elasticsearch.ssl.certificateAuthorities</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&#34;/home/ubuntu/data/elasticsearch-8.2.3/config/security/elasic-certificates.pem&#34;</span><span class="w"> </span><span class="p">]</span></span></span></code></pre></div></div>
+<br/>
+<p>配置完成之后，恭喜你，完成了！！</p>
+<p>哦，对了，登陆用户是 elastic ，密码不知道了可以用 <code>./bin/elasticsearch-reset-password -u elastic</code> 重新生成一个。</p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-06-26</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/%E6%90%AD%E5%BB%BA%E6%88%91%E7%9A%84elk-7-2/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/elasticsearch/">Elasticsearch</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/worker-pool-in-golang/" class="prev" rel="prev" title="Worker Pool in Golang"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Worker Pool in Golang</a>
+            <a href="/go-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6-stretchr-testify/" class="next" rel="next" title="Go 测试框架 stretchr/testify">Go 测试框架 stretchr/testify<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.130.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.1-DEV"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about" target="_blank">kiosk007</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span><span class="icp-splitter">&nbsp;|&nbsp;</span><br class="icp-br"/>
+                    <span class="icp"><a href='http://beian.miit.gov.cn/'>京ICP备20015006号-1</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        <div id="fixed-buttons-hidden"><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.css"><link rel="stylesheet" href="/css/code-style.css"><script src="https://cdn.staticfile.net/autocomplete.js/0.38.1/autocomplete.min.js"></script><script src="https://cdn.staticfile.net/algoliasearch/4.17.0/algoliasearch-lite.umd.min.js"></script><script src="https://cdn.staticfile.net/lazysizes/5.3.2/lazysizes.min.js"></script><script src="https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js"></script><script src="https://cdn.staticfile.net/sharer.js/0.5.1/sharer.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/katex.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/auto-render.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/copy-tex.min.js"></script><script src="https://cdn.staticfile.net/KaTeX/0.16.7/contrib/mhchem.min.js"></script><script>window.config={"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"FCN3MYXNZF","algoliaIndex":"prod_kiosk_blog","algoliaSearchKey":"c22f8769712c472ead654253bf558a6e","highlightTag":"em","maxResultLength":10,"noResultsFound":"No results found","snippetLength":30,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body>
+</html>

@@ -83,6 +83,7 @@
     
 * [<i class="fas fa-home"></i> ->  Openstack 搭建](/docsify-book/cloudnative-openstack/)
 * [<i class="fas fa-book"></i> ->  Kubernetes 源码解读](/docsify-book/cloudnative-kubernetes/)
+* [<i class="fa-solid fa-laptop-code"></i> -> 计算机基础](/docsify-book/special_subject) 
 </div>
 
 
