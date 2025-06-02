@@ -48,7 +48,7 @@ jobs:
 
       # Hugo构建静态站点，默认输出到public目录下    
       - name: Build
-        run: hugo --gc --verbose --minify && ls public
+        run: hugo --gc --logLevel info --minify && ls public
 
       # 用docker容器上传algolia索引文件
       # - uses: actions/checkout@v2
