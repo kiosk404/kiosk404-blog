@@ -16,4 +16,5 @@
     - [内存](/_content/system/memory.md)  
     - [网络](/_content/system/network.md)
   - [MySQL](/_content/mysql/index.md)
-    - [索引]()
+    - [基础](/_content/mysql/base.md)
+    - [索引](/_content/mysql/index_1.md)
