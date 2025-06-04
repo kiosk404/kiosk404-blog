@@ -28,12 +28,9 @@ There are all kinds of mysterious portals here...
 
 ## GoLang 
 - 标准库
-    - [Go标准库](https://colobu.com/2016/10/12/go-file-operations/)
-- 高性能
     - [百万 Go TCP 连接的思考: epoll方式减少资源占用](https://colobu.com/2019/02/23/1m-go-tcp-connection/)
     - [Go语言中实现基于 event-loop 网络处理](https://colobu.com/2017/11/29/event-loop-networking-in-Go/)
-- Other 
-    - [优秀开源日志包使用教程](https://github.com/marmotedu/geekbang-go/blob/master/%E4%BC%98%E7%A7%80%E5%BC%80%E6%BA%90%E6%97%A5%E5%BF%97%E5%8C%85%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
+- Other
     - [mapset 工具包](https://github.com/deckarep/golang-set)
     - [lo 工具包](https://github.com/samber/lo)
     - [mo 依赖注入工具包](https://github.com/samber/mo)
@@ -56,6 +53,8 @@ There are all kinds of mysterious portals here...
     - [cutefish OS - 你的另一个选择](https://cn.cutefishos.com/)
 - eBPF/BCC
     - [BCC tools](https://github.com/iovisor/bcc#tools)
+- Encode 
+    - [加密通话](https://sym233.github.io/core-values-encoder/)
 
 ## Topic
 > - [eBPF Topic](/topic/ebpf/)
