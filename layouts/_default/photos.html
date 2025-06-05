@@ -2,10 +2,11 @@
 
 {{- define "content" -}}
     {{- $photos := where .Site.RegularPages "Section" "photos" -}}
-    
     <div class="page single special">
-        <h1 class="single-title animate__animated animate__pulse animate__faster">{{ .Title }}</h1>
-        
+         {{- /* Title */ -}}
+        <h1 class="single-title animate__animated animate__pulse animate__faster">
+            {{- .Title -}}
+        </h1>
         <div class="photo-gallery">
             {{- range $photos -}}
                 {{- $pageTitle := .Title -}}
@@ -41,12 +42,7 @@
         </div>
     </div>
 
-    <style>
-        .page.single.special {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+    <style>   
 
         .photo-gallery {
             display: grid;

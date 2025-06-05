@@ -1,4 +1,4 @@
 +++
-title = "Topic"
+title = "photos"
 type = "gallery"
 +++
