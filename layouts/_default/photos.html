@@ -3,7 +3,7 @@
 {{- define "content" -}}
     {{- $photos := where .Site.RegularPages "Section" "photos" -}}
     <div class="page single special">
-         {{- /* Title */ -}}
+        {{- /* Title */ -}}
         <h1 class="single-title animate__animated animate__pulse animate__faster">
             {{- .Title -}}
         </h1>
@@ -17,12 +17,18 @@
                     <div class="photo-item" id="gallery-{{ $albumID }}">
                         {{/* 第一张图片作为封面 */}}
                         <div class="gallery-trigger" style="cursor: pointer;">
-                            <img src="{{ index $images 0 }}" 
-                                 alt="{{ $pageTitle }}"
-                                 loading="lazy"
-                                 class="gallery-image">
-                            <div class="photo-overlay">
-                                <h3 class="photo-title">{{ $pageTitle }}</h3>
+                            <div class="photo-card">
+                                <div class="photo-image-wrapper">
+                                    <img src="{{ index $images 0 }}" 
+                                         alt="{{ $pageTitle }}"
+                                         loading="lazy"
+                                         class="gallery-image"
+                                         onload="this.parentElement.classList.add('loaded')">
+                                </div>
+                                <div class="photo-overlay">
+                                    <h3 class="photo-title">{{ $pageTitle }}</h3>
+                                    <p class="photo-desc">{{ $pageDesc }}</p>
+                                </div>
                             </div>
                         </div>
                         {{/* 所有图片（用于灯箱） */}}
@@ -43,13 +49,14 @@
     </div>
 
     <style>   
-
         .photo-gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            padding: 16px;
             justify-content: center;
+            max-width: 1600px;
+            margin: 0 auto;
         }
 
         .photo-item {
@@ -58,20 +65,54 @@
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            aspect-ratio: 3/2;
             cursor: pointer;
+            background: #fff;
+            break-inside: avoid;
+            margin-bottom: 16px;
+        }
+
+        .photo-card {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .photo-image-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            background: #f5f5f5;
+            overflow: hidden;
+        }
+
+        .photo-image-wrapper.loaded {
+            padding-bottom: 0;
+        }
+
+        .photo-image-wrapper.loaded img {
+            position: relative;
+            height: auto;
         }
 
         .photo-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .gallery-image {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .photo-item:hover .gallery-image {
+            transform: scale(1.03);
         }
 
         .photo-overlay {
@@ -79,31 +120,75 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-            padding: 20px;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-        }
-
-        .photo-item:hover .photo-overlay {
-            transform: translateY(0);
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 16px;
+            color: white;
         }
 
         .photo-title {
-            color: white;
             margin: 0;
             font-size: 1.1em;
-            text-align: center;
+            font-weight: 600;
+            margin-bottom: 6px;
         }
 
-        @media (max-width: 768px) {
+        .photo-desc {
+            margin: 0;
+            font-size: 0.85em;
+            opacity: 0.9;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @media (min-width: 1600px) {
             .photo-gallery {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) and (max-width: 1599px) {
+            .photo-gallery {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .photo-gallery {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            .photo-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 767px) {
+            .photo-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .photo-title {
+                font-size: 0.95em;
+            }
+
+            .photo-desc {
+                font-size: 0.8em;
+                -webkit-line-clamp: 1;
+            }
+
+            .photo-overlay {
+                padding: 10px;
             }
         }
 
         .lg-backdrop {
-            background-color: rgba(0, 0, 0, 0.85);
+            background-color: rgba(0, 0, 0, 0.9);
         }
 
         .lg-sub-html {
@@ -166,6 +251,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lightgallery.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lg-zoom.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lg-thumbnail.min.css">
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/lightgallery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/plugins/zoom/lg-zoom.min.js"></script>
@@ -173,6 +260,20 @@
 
     <script>
         window.addEventListener('load', function() {
+            // 初始化 Masonry
+            var grid = document.querySelector('.photo-gallery');
+            var masonry = new Masonry(grid, {
+                itemSelector: '.photo-item',
+                columnWidth: '.photo-item',
+                percentPosition: true,
+                transitionDuration: '0.2s'
+            });
+
+            // 等待图片加载完成后重新布局
+            imagesLoaded(grid).on('progress', function() {
+                masonry.layout();
+            });
+
             document.querySelectorAll('.photo-item').forEach(function(element) {
                 const trigger = element.querySelector('.gallery-trigger');
                 const items = element.querySelectorAll('.gallery-item');
