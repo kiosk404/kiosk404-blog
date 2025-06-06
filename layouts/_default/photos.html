@@ -7,68 +7,87 @@
         <h1 class="single-title animate__animated animate__pulse animate__faster">
             {{- .Title -}}
         </h1>
-        <div class="photo-gallery">
+        <div class="photo-gallery fancybox-gallery">
             {{- range $photos -}}
                 {{- $pageTitle := .Title -}}
-                {{- $pageDesc := .Description | .RenderString -}}
+                {{- $pageDesc := .Params.description | default "无描述" -}}
                 {{- $albumID := .File.UniqueID -}}
                 {{- $images := .Params.images -}}
                 {{- if $images -}}
-                    <div class="photo-item" id="gallery-{{ $albumID }}">
-                        {{/* 第一张图片作为封面 */}}
-                        <div class="gallery-trigger" style="cursor: pointer;">
-                            <div class="photo-card">
-                                <div class="photo-image-wrapper">
-                                    <img src="{{ index $images 0 }}" 
-                                         alt="{{ $pageTitle }}"
-                                         loading="lazy"
-                                         class="gallery-image"
-                                         onload="this.parentElement.classList.add('loaded')">
+                    <div class="photo-item">
+                        <div class="photo-card">
+                            <div class="photo-image-wrapper">
+                                {{- $desc := .Params.description | markdownify -}}
+                                {{- $title := $pageTitle | default "无标题" -}}
+                                {{- $captionHTML := printf "<div class=\"fancybox-caption-card\"><h4>%s</h4><div>%s</div></div>" $title $desc -}}
+                                {{- range $i, $img := $images -}}
+                                    <a href="{{ $img }}" data-fancybox="gallery-{{ $albumID }}" data-caption='{{ $captionHTML | safeHTML }}'{{ if ne $i 0 }} style="display:none"{{ end }}>
+                                        <img src="{{ $img }}" alt="{{ $title }}" loading="lazy" class="gallery-image" {{ if ne $i 0 }}style="display:none"{{ end }} />
+                                    </a>
+                                {{- end -}}
+                            </div>
+                            <div class="photo-content">
+                                <div class="photo-info">
+                                    <h3 class="photo-title">{{ $title }}</h3>
+                                    <p class="photo-desc">{{ $desc }}</p>
                                 </div>
-                                <div class="photo-overlay">
-                                    <h3 class="photo-title">{{ $pageTitle }}</h3>
-                                    <p class="photo-desc">{{ $pageDesc }}</p>
+                                <div class="photo-meta">
+                                    <div class="photo-author">
+                                        <img src="/images/avatar.jpg" alt="Author" class="author-avatar">
+                                        <span class="author-name">Kiosk</span>
+                                    </div>
+                                    <div class="photo-actions">
+                                        <span class="action-item">
+                                            <i class="fas fa-heart"></i>
+                                            <span class="action-count">0</span>
+                                        </span>
+                                        <span class="action-item">
+                                            <i class="fas fa-bookmark"></i>
+                                            <span class="action-count">0</span>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        {{/* 所有图片（用于灯箱） */}}
-                        {{- range $images -}}
-                            <div 
-                                class="gallery-item"
-                                data-src="{{ . }}"
-                                data-sub-html="<h4>{{ $pageTitle }}</h4><div class='gallery-desc'>{{ $pageDesc }}</div>"
-                                data-thumb="{{ . }}"
-                                style="display: none;"
-                            >
-                            </div>
-                        {{- end -}}
                     </div>
                 {{- end -}}
             {{- end -}}
         </div>
     </div>
 
-    <style>   
+    <!-- Fancybox 样式和脚本 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
         .photo-gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 16px;
-            padding: 16px;
-            justify-content: center;
-            max-width: 1600px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
             margin: 0 auto;
+        }
+        @media (max-width: 900px) {
+            .photo-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .photo-gallery {
+                grid-template-columns: 1fr;
+            }
         }
 
         .photo-item {
             position: relative;
             overflow: hidden;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
             cursor: pointer;
             background: #fff;
-            break-inside: avoid;
-            margin-bottom: 16px;
         }
 
         .photo-card {
@@ -81,7 +100,7 @@
         .photo-image-wrapper {
             position: relative;
             width: 100%;
-            padding-bottom: 100%;
+            padding-bottom: 133.33%; /* 3:4 比例 */
             background: #f5f5f5;
             overflow: hidden;
         }
@@ -97,7 +116,7 @@
 
         .photo-item:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
         }
 
         .gallery-image {
@@ -115,209 +134,271 @@
             transform: scale(1.03);
         }
 
-        .photo-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 16px;
-            color: white;
+        .photo-content {
+            padding: 12px;
+        }
+
+        .photo-info {
+            margin-bottom: 12px;
         }
 
         .photo-title {
             margin: 0;
             font-size: 1.1em;
             font-weight: 600;
+            color: #333;
             margin-bottom: 6px;
-        }
-
-        .photo-desc {
-            margin: 0;
-            font-size: 0.85em;
-            opacity: 0.9;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        @media (min-width: 1600px) {
-            .photo-gallery {
-                grid-template-columns: repeat(6, 1fr);
-            }
-        }
-
-        @media (min-width: 1200px) and (max-width: 1599px) {
-            .photo-gallery {
-                grid-template-columns: repeat(5, 1fr);
-            }
-        }
-
-        @media (min-width: 992px) and (max-width: 1199px) {
-            .photo-gallery {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (min-width: 768px) and (max-width: 991px) {
-            .photo-gallery {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (max-width: 767px) {
-            .photo-gallery {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 10px;
-                padding: 10px;
-            }
-
-            .photo-title {
-                font-size: 0.95em;
-            }
-
-            .photo-desc {
-                font-size: 0.8em;
-                -webkit-line-clamp: 1;
-            }
-
-            .photo-overlay {
-                padding: 10px;
-            }
-        }
-
-        .lg-backdrop {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-
-        .lg-sub-html {
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.6);
-        }
-
-        .lg-sub-html h4 {
-            color: #fff;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-
-        .lg-sub-html p {
-            color: #ddd;
-            font-size: 1em;
+        .photo-desc {
+            display: -webkit-box;
+            -webkit-line-clamp: 10;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
             line-height: 1.6;
+            font-size: 1em;
+            color: #555;
+            margin: 0;
         }
 
-        .hidden-gallery {
-            display: none;
+        .photo-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 8px;
+            border-top: 1px solid #f0f0f0;
         }
 
-        .lg-thumb-item {
-            border: 2px solid #FFF;
-            border-radius: 4px;
+        .photo-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .lg-thumb-item.active,
-        .lg-thumb-item:hover {
-            border-color: #1a73e8;
-        }
-
-        .lg-outer .lg-thumb {
-            padding: 5px 0;
-        }
-
-        .lg-outer .lg-thumb-item img {
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
             object-fit: cover;
-            width: 100%;
-            height: 100%;
         }
 
-        .gallery-desc {
-            color: #ddd;
-            font-size: 1em;
-            line-height: 1.6;
+        .author-name {
+            font-size: 0.9em;
+            color: #666;
         }
 
-        .gallery-desc a {
+        .photo-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-item {
+            cursor: pointer;
+            transition: color 0.2s;
+            user-select: none;
+            position: relative;
+        }
+        .action-item.liked .fa-heart {
+            color: #ff3b3b;
+            animation: heart-bounce 0.4s;
+        }
+        @keyframes heart-bounce {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.4); }
+            60% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        .action-item .like-effect {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            font-size: 2.2em;
+            color: #ff3b3b;
+            opacity: 0;
+            animation: like-pop 0.5s forwards;
+        }
+        @keyframes like-pop {
+            0% { opacity: 0; transform: scale(0.5) translate(-50%, -50%); }
+            50% { opacity: 1; transform: scale(1.3) translate(-50%, -50%); }
+            100% { opacity: 0; transform: scale(2) translate(-50%, -50%); }
+        }
+
+        .fancybox-caption-card {
+            position: relative;
+            background: rgba(0,0,0,0.85);
             color: #fff;
-            text-decoration: underline;
+            border-radius: 0 0 18px 18px;
+            padding: 24px 32px 32px 32px;
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            text-align: left;
+            box-sizing: border-box;
         }
-
-        .gallery-desc a:hover {
-            color: #1a73e8;
+        .fancybox-caption-card h4 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .fancybox-desc-fold {
+            position: relative;
+            max-height: 3.6em;
+            overflow: hidden;
+            transition: max-height 0.3s;
+        }
+        .fancybox-desc-fold.expanded {
+            max-height: 100vh;
+            overflow: visible;
+        }
+        .fancybox-desc-gradient {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 2.2em;
+            background: linear-gradient(0deg, rgba(0,0,0,0.85) 80%, rgba(0,0,0,0));
+            pointer-events: none;
+            transition: opacity 0.3s;
+            opacity: 1;
+            z-index: 2;
+        }
+        .fancybox-desc-fold.expanded .fancybox-desc-gradient {
+            opacity: 0;
+        }
+        .fancybox-desc-toggle {
+            display: inline-block;
+            margin-top: 8px;
+            color: #ff3b3b;
+            background: none;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+            outline: none;
+            font-weight: bold;
+            letter-spacing: 1px;
+            z-index: 3;
+            position: relative;
+        }
+        @media (max-width: 600px) {
+            .fancybox-caption-card {
+                padding: 12px 8px 16px 8px;
+                font-size: 1rem;
+                max-width: 98vw;
+            }
+            .fancybox-caption-card h4 {
+                font-size: 1.05rem;
+            }
         }
     </style>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lightgallery.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lg-zoom.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lg-thumbnail.min.css">
-    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
-    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/lightgallery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/plugins/zoom/lg-zoom.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script>
-
     <script>
-        window.addEventListener('load', function() {
-            // 初始化 Masonry
-            var grid = document.querySelector('.photo-gallery');
-            var masonry = new Masonry(grid, {
-                itemSelector: '.photo-item',
-                columnWidth: '.photo-item',
-                percentPosition: true,
-                transitionDuration: '0.2s'
-            });
-
-            // 等待图片加载完成后重新布局
-            imagesLoaded(grid).on('progress', function() {
-                masonry.layout();
-            });
-
-            document.querySelectorAll('.photo-item').forEach(function(element) {
-                const trigger = element.querySelector('.gallery-trigger');
-                const items = element.querySelectorAll('.gallery-item');
-                
-                // 初始化 lightGallery
-                const gallery = lightGallery(element, {
-                    dynamic: true,
-                    dynamicEl: Array.from(items).map(item => ({
-                        src: item.getAttribute('data-src'),
-                        thumb: item.getAttribute('data-thumb'),
-                        subHtml: item.getAttribute('data-sub-html')
-                    })),
-                    plugins: [lgZoom, lgThumbnail],
-                    speed: 500,
-                    download: false,
-                    counter: true,
-                    thumbnails: true,
-                    showZoomInOutIcons: true,
-                    actualSize: false,
-                    hideControlOnEnd: true,
-                    mousewheel: true,
-                    getCaptionFromTitleOrAlt: true,
-                    thumbWidth: 120,
-                    thumbHeight: 90,
-                    thumbMargin: 4,
-                    subHtmlSelectorRelative: true,
-                    html: true,
-                    // 添加事件处理
-                    afterAppendSubHtml: function(element) {
-                        const links = element.querySelector('.lg-sub-html').getElementsByTagName('a');
-                        Array.from(links).forEach(link => {
-                            link.onclick = function(e) {
-                                e.stopPropagation();
-                                window.open(this.href, '_blank');
-                            };
-                        });
+    document.addEventListener('DOMContentLoaded', function() {
+        // 画廊点赞/收藏交互（只绑定画廊区）
+        document.querySelectorAll('.photo-actions .action-item').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isLike = btn.querySelector('.fa-heart') !== null;
+                const isCollect = btn.querySelector('.fa-bookmark') !== null;
+                const countSpan = btn.querySelector('.action-count');
+                let count = parseInt(countSpan.textContent, 10) || 0;
+                if (isLike || isCollect) {
+                    if (btn.classList.contains('liked')) {
+                        btn.classList.remove('liked');
+                        countSpan.textContent = Math.max(0, count - 1);
+                    } else {
+                        btn.classList.add('liked');
+                        countSpan.textContent = count + 1;
+                        // 点赞特效
+                        if (isLike) {
+                            const effect = document.createElement('span');
+                            effect.className = 'like-effect';
+                            effect.innerHTML = '<i class="fas fa-heart"></i>';
+                            btn.appendChild(effect);
+                            setTimeout(() => effect.remove(), 500);
+                        }
                     }
-                });
-
-                // 绑定点击事件
-                trigger.addEventListener('click', function() {
-                    gallery.openGallery(0);
-                });
+                }
             });
         });
+
+        // Fancybox 初始化
+        Fancybox.bind('[data-fancybox^="gallery-"]', {
+            Thumbs: false,
+            Toolbar: {
+                display: [
+                    { id: "counter", position: "center" },
+                    "close"
+                ]
+            },
+            animated: true,
+            showClass: "fancybox-zoomInUp",
+            hideClass: "fancybox-zoomOutDown",
+            dragToClose: true,
+            placeCaptionInside: true,
+            caption: function(fancybox, slide) {
+                if (slide.$trigger && slide.$trigger.dataset && slide.$trigger.dataset.caption) {
+                    return slide.$trigger.dataset.caption;
+                } else {
+                    return '';
+                }
+            }
+        });
+
+        // 折叠/展开描述逻辑（事件委托）
+        document.body.addEventListener('click', function(e) {
+            // 点赞
+            if (e.target.closest('.fancy-like')) {
+                const btn = e.target.closest('.fancy-like');
+                const countSpan = btn.querySelector('.action-count');
+                let count = parseInt(countSpan.textContent, 10) || 0;
+                if (btn.classList.contains('liked')) {
+                    btn.classList.remove('liked');
+                    countSpan.textContent = Math.max(0, count - 1);
+                } else {
+                    btn.classList.add('liked');
+                    countSpan.textContent = count + 1;
+                    // 特效
+                    const effect = document.createElement('span');
+                    effect.className = 'like-effect';
+                    effect.innerHTML = '<i class="fas fa-heart"></i>';
+                    btn.appendChild(effect);
+                    setTimeout(() => effect.remove(), 500);
+                }
+            }
+            // 收藏
+            if (e.target.closest('.fancy-collect')) {
+                const btn = e.target.closest('.fancy-collect');
+                const countSpan = btn.querySelector('.action-count');
+                let count = parseInt(countSpan.textContent, 10) || 0;
+                if (btn.classList.contains('liked')) {
+                    btn.classList.remove('liked');
+                    countSpan.textContent = Math.max(0, count - 1);
+                } else {
+                    btn.classList.add('liked');
+                    countSpan.textContent = count + 1;
+                }
+            }
+            // 展开/收起描述
+            if (e.target.classList.contains('fancybox-desc-toggle')) {
+                const card = e.target.closest('.fancybox-caption-card');
+                const fold = card.querySelector('.fancybox-desc-fold');
+                if (fold.classList.contains('expanded')) {
+                    fold.classList.remove('expanded');
+                    e.target.textContent = '展开/收起';
+                } else {
+                    fold.classList.add('expanded');
+                    e.target.textContent = '展开/收起';
+                }
+            }
+        });
+    });
     </script>
 {{- end -}}
