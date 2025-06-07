@@ -90,6 +90,6 @@ date: 2024-01-07 00:23:06
     
 * [<i class="fas fa-home"></i> ->  Openstack 搭建](/docsify-book/cloudnative-openstack/)
 * [<i class="fas fa-book"></i> ->  Kubernetes 源码解读](/docsify-book/cloudnative-kubernetes/)
-* [<i class="fa-solid fa-laptop-code"></i> -> 计算机基础](/docsify-book/special_subject) 
+* [<i class="fa-solid fa-laptop-code"></i> -> Fundamentals of Computer Science](/docsify-book/special_subject) 
 </div>
 
