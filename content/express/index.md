@@ -71,5 +71,5 @@ There are all kinds of mysterious portals here...
 
 ----
 ## Photos
-:wave: Hey, Please take a look at my [photography works]((/photos)) ~
+:wave: Hey, Please take a look at my <a href="/photos" class="to-photos-link">photography works</a> ~
 <br/>

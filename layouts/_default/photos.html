@@ -1,61 +1,51 @@
 {{- define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end -}}
 
 {{- define "content" -}}
-    {{- $photos := where .Site.RegularPages "Section" "photos" -}}
     <div class="page single special">
-        {{- /* Title */ -}}
-        <h1 class="single-title animate__animated animate__pulse animate__faster">
-            {{- .Title -}}
-        </h1>
-        <div class="photo-gallery fancybox-gallery">
+        <h1 class="single-title animate__animated animate__pulse animate__faster">{{ .Title }}</h1>
+        <a href="/photos" class="to-photos-link" style="display:inline-block;margin:12px 0 24px 0;font-weight:bold;color:#0b0a0a;">进入照片集</a>
+        <div class="photo-gallery">
+            {{- $photos := where .Site.RegularPages "Section" "photos" -}}
             {{- range $photos -}}
-                {{- $pageTitle := .Title -}}
-                {{- $pageDesc := .Params.description | default "无描述" -}}
+                {{- $title := .Title | default "无标题" -}}
+                {{- $desc := .Params.description | markdownify -}}
                 {{- $albumID := .File.UniqueID -}}
                 {{- $images := .Params.images -}}
+                {{- $captionHTML := printf "<div class=\"fancybox-caption-card\"><h4>%s</h4><div>%s</div></div>" $title $desc -}}
                 {{- if $images -}}
-                    <div class="photo-item">
-                        <div class="photo-card">
-                            <div class="photo-image-wrapper">
-                                {{- $desc := .Params.description | markdownify -}}
-                                {{- $title := $pageTitle | default "无标题" -}}
-                                {{- $captionHTML := printf "<div class=\"fancybox-caption-card\"><h4>%s</h4><div>%s</div></div>" $title $desc -}}
-                                {{- range $i, $img := $images -}}
-                                    <a href="{{ $img }}" data-fancybox="gallery-{{ $albumID }}" data-caption='{{ $captionHTML | safeHTML }}'{{ if ne $i 0 }} style="display:none"{{ end }}>
-                                        <img src="{{ $img }}" alt="{{ $title }}" loading="lazy" class="gallery-image" {{ if ne $i 0 }}style="display:none"{{ end }} />
-                                    </a>
-                                {{- end -}}
+                <div class="photo-item">
+                    <div class="photo-card">
+                        <div class="photo-image-wrapper">
+                            {{- range $i, $img := $images -}}
+                                <a href="{{ $img }}" data-fancybox="gallery-{{ $albumID }}" data-caption='{{ $captionHTML | safeHTML }}'{{ if ne $i 0 }} style="display:none"{{ end }}>
+                                    <img src="{{ $img }}" alt="{{ $title }}" loading="lazy" class="gallery-image" {{ if ne $i 0 }}style="display:none"{{ end }} />
+                                </a>
+                            {{- end -}}
+                        </div>
+                        <div class="photo-content">
+                            <div class="photo-info">
+                                <h3 class="photo-title">{{ $title }}</h3>
+                                <p class="photo-desc">{{ $desc }}</p>
                             </div>
-                            <div class="photo-content">
-                                <div class="photo-info">
-                                    <h3 class="photo-title">{{ $title }}</h3>
-                                    <p class="photo-desc">{{ $desc }}</p>
+                            <div class="photo-meta">
+                                <div class="photo-author">
+                                    <img src="/images/avatar.jpg" alt="Author" class="author-avatar">
+                                    <span class="author-name">Kiosk</span>
                                 </div>
-                                <div class="photo-meta">
-                                    <div class="photo-author">
-                                        <img src="/images/avatar.jpg" alt="Author" class="author-avatar">
-                                        <span class="author-name">Kiosk</span>
-                                    </div>
-                                    <div class="photo-actions">
-                                        <span class="action-item">
-                                            <i class="fas fa-heart"></i>
-                                            <span class="action-count">0</span>
-                                        </span>
-                                        <span class="action-item">
-                                            <i class="fas fa-bookmark"></i>
-                                            <span class="action-count">0</span>
-                                        </span>
-                                    </div>
+                                <div class="photo-actions">
+                                    <span class="action-item"><i class="fas fa-heart"></i> <span class="action-count">0</span></span>
+                                    <span class="action-item"><i class="fas fa-bookmark"></i> <span class="action-count">0</span></span>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
                 {{- end -}}
             {{- end -}}
         </div>
     </div>
 
-    <!-- Fancybox 样式和脚本 -->
+    <!-- Fancybox & FontAwesome -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -85,9 +75,14 @@
             overflow: hidden;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            cursor: pointer;
             background: #fff;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .photo-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
         }
 
         .photo-card {
@@ -105,20 +100,6 @@
             overflow: hidden;
         }
 
-        .photo-image-wrapper.loaded {
-            padding-bottom: 0;
-        }
-
-        .photo-image-wrapper.loaded img {
-            position: relative;
-            height: auto;
-        }
-
-        .photo-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-        }
-
         .gallery-image {
             position: absolute;
             top: 0;
@@ -127,7 +108,7 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s;
         }
 
         .photo-item:hover .gallery-image {
@@ -148,10 +129,6 @@
             font-weight: 600;
             color: #333;
             margin-bottom: 6px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         .photo-desc {
@@ -169,28 +146,25 @@
 
         .photo-meta {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding-top: 8px;
-            border-top: 1px solid #f0f0f0;
+            justify-content: space-between;
         }
 
         .photo-author {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .author-avatar {
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            object-fit: cover;
         }
 
         .author-name {
-            font-size: 0.9em;
-            color: #666;
+            font-size: 0.95em;
+            color: #888;
         }
 
         .photo-actions {
@@ -301,7 +275,7 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 画廊点赞/收藏交互（只绑定画廊区）
+        // 画廊点赞/收藏交互
         document.querySelectorAll('.photo-actions .action-item').forEach(function(btn) {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -316,7 +290,6 @@
                     } else {
                         btn.classList.add('liked');
                         countSpan.textContent = count + 1;
-                        // 点赞特效
                         if (isLike) {
                             const effect = document.createElement('span');
                             effect.className = 'like-effect';
@@ -328,16 +301,10 @@
                 }
             });
         });
-
         // Fancybox 初始化
         Fancybox.bind('[data-fancybox^="gallery-"]', {
             Thumbs: false,
-            Toolbar: {
-                display: [
-                    { id: "counter", position: "center" },
-                    "close"
-                ]
-            },
+            Toolbar: { display: [ { id: "counter", position: "center" }, "close" ] },
             animated: true,
             showClass: "fancybox-zoomInUp",
             hideClass: "fancybox-zoomOutDown",
@@ -345,16 +312,28 @@
             placeCaptionInside: true,
             caption: function(fancybox, slide) {
                 if (slide.$trigger && slide.$trigger.dataset && slide.$trigger.dataset.caption) {
-                    return slide.$trigger.dataset.caption;
+                    // 折叠/展开描述结构
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(slide.$trigger.dataset.caption, 'text/html');
+                    let h4 = doc.querySelector('h4');
+                    let descDiv = doc.querySelector('div');
+                    let desc = descDiv ? descDiv.innerHTML : '';
+                    let title = h4 ? h4.innerHTML : '';
+                    let descHtml = `<div class='fancybox-desc-fold'><span class='fancybox-desc-text'>${desc}</span><span class='fancybox-desc-gradient'></span></div>`;
+                    let toggleBtn = `<button class='fancybox-desc-toggle'>展开</button>`;
+                    let card = `<div class='fancybox-caption-card'><h4>${title}</h4>${descHtml}${toggleBtn}</div>`;
+                    card += `<div class='fancybox-actions' style='margin-top:18px;display:flex;gap:32px;align-items:center;'>`
+                        + `<span class='action-item fancy-like'><i class='fas fa-heart'></i> <span class='action-count'>0</span></span>`
+                        + `<span class='action-item fancy-collect'><i class='fas fa-bookmark'></i> <span class='action-count'>0</span></span>`
+                        + `</div>`;
+                    return card;
                 } else {
                     return '';
                 }
             }
         });
-
-        // 折叠/展开描述逻辑（事件委托）
+        // 弹窗点赞/收藏/折叠描述
         document.body.addEventListener('click', function(e) {
-            // 点赞
             if (e.target.closest('.fancy-like')) {
                 const btn = e.target.closest('.fancy-like');
                 const countSpan = btn.querySelector('.action-count');
@@ -365,7 +344,6 @@
                 } else {
                     btn.classList.add('liked');
                     countSpan.textContent = count + 1;
-                    // 特效
                     const effect = document.createElement('span');
                     effect.className = 'like-effect';
                     effect.innerHTML = '<i class="fas fa-heart"></i>';
@@ -373,7 +351,6 @@
                     setTimeout(() => effect.remove(), 500);
                 }
             }
-            // 收藏
             if (e.target.closest('.fancy-collect')) {
                 const btn = e.target.closest('.fancy-collect');
                 const countSpan = btn.querySelector('.action-count');
@@ -386,16 +363,15 @@
                     countSpan.textContent = count + 1;
                 }
             }
-            // 展开/收起描述
             if (e.target.classList.contains('fancybox-desc-toggle')) {
                 const card = e.target.closest('.fancybox-caption-card');
                 const fold = card.querySelector('.fancybox-desc-fold');
                 if (fold.classList.contains('expanded')) {
                     fold.classList.remove('expanded');
-                    e.target.textContent = '展开/收起';
+                    e.target.textContent = '展开';
                 } else {
                     fold.classList.add('expanded');
-                    e.target.textContent = '展开/收起';
+                    e.target.textContent = '收起';
                 }
             }
         });
