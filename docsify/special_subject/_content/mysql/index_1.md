@@ -48,27 +48,7 @@
 <style>
     /* 引入 Inter 字体，如果你的 Docsify 环境已经全局引入则可以移除此行 */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-
-    body {
-        font-family: 'Inter', sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin: 10px;
-        color: #333;
-        padding: 10px; /* 为嵌入内容增加内边距 */
-        border-radius: 8px; /* 整体圆角 */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* 轻微阴影 */
-    }
-
-    h1 {
-        color: #2c3e50; /* Darker blue for headings */
-        margin-bottom: 20px;
-        font-size: 2.2em;
-        text-align: center;
-    }
-
+   
     .index-container {
         display: flex;
         flex-direction: row; /* 改回水平排列 */
@@ -96,14 +76,14 @@
         border-color: #27ae60; /* Green for clustered index */
     }
 
-    .index-box h2 {
+    .index-box h10 {
         color: #3498db;
         font-size: 1.8em;
         margin-top: 0;
         margin-bottom: 20px;
     }
 
-    .index-box.clustered h2 {
+    .index-box.clustered h10 {
         color: #27ae60;
     }
 
@@ -184,7 +164,7 @@
 
 <div class="index-container">
     <div class="index-box">
-        <h2>二级索引 (Secondary Index)</h2>
+        <h10>二级索引 (Secondary Index)</h10>
         <div class="index-content">
             <p><strong>叶子节点存储内容：</strong></p>
             <ul>
@@ -198,7 +178,7 @@
         <span class="label">通过主键值</span>
     </div>
     <div class="index-box clustered">
-        <h2>聚簇索引 (Clustered Index)</h2>
+        <h10>聚簇索引 (Clustered Index)</h10>
         <div class="index-content">
             <p><strong>叶子节点存储内容：：</strong></p>
             <ul>
@@ -234,3 +214,65 @@ InnoDB存储引擎的一个重要特性是它的**聚簇索引（Clustered Index
 因此，当你使用二级索引查询数据时，通常需要两次B+树查找：一次在二级索引B+树中查找主键值，另一次在聚簇索引B+树中通过主键值查找完整的行数据。
 
 ## 索引失效的情况
+在MySQL中，索引的创建是为了提高查询效率，但并非所有情况下索引都会被使用。以下是一些常见的MySQL索引失效的情况：
+
+1. **不满足最左前缀原则 (Leftmost Prefix Rule)**
+* **复合索引 (联合索引)** 的使用需要遵循最左前缀原则。如果查询条件不包含复合索引的最左侧列，或者跳过了中间的列，那么索引可能部分失效甚至完全失效。
+* **示例：** `CREATE INDEX idx_name_age_gender ON users(name, age, gender);`
+    * `SELECT * FROM users WHERE age = 25;` (失效，因为 `name` 不在查询条件中)
+    * `SELECT * FROM users WHERE name = 'Alice' AND gender = 'Female';` (部分失效，`gender` 无法使用索引，因为跳过了 `age`)
+    * `SELECT * FROM users WHERE name = 'Alice' AND age = 25 AND gender = 'Female';` (完全使用)
+<br/>
+
+2. **在索引列上进行计算、函数操作或类型转换**
+* 如果对索引列进行数学运算、字符串函数（如 `LEFT()`, `SUBSTRING()`, `CONCAT()`）、日期函数（如 `DATE_FORMAT()`）或者隐式/显式类型转换，MySQL优化器将无法直接使用索引树进行查找。
+* **示例：** `SELECT * FROM users WHERE age + 10 = 35;` (失效，对 `age` 进行了计算)
+* **示例：** `SELECT * FROM users WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = '2023-01-01';` (失效，对 `create_time` 使用了函数)
+* **示例：** `SELECT * FROM users WHERE phone_number = 123456789;` (如果 `phone_number` 是字符串类型，而你用数字进行比较，可能导致隐式类型转换，索引失效)
+<br/>
+
+3. **使用 `OR` 连接条件**
+* 当 `OR` 连接的条件中，其中一个条件列没有索引，或者每个条件都使用了索引但优化器认为全表扫描更高效时，索引可能会失效。如果 `OR` 的每个条件都使用了索引，并且查询优化器认为联合使用这些索引比全表扫描更高效，则可能会使用索引合并。
+* **示例：** `SELECT * FROM users WHERE name = 'Alice' OR address = 'Beijing';` (如果 `address` 没有索引，则 `name` 索引也可能失效)
+<br/>
+
+4. **使用 `LIKE` 进行模糊查询，且模式以 `%` 开头**
+* 当 `LIKE` 查询的模式以 `%` 开头时（例如 `LIKE '%keyword%'` 或 `LIKE '%keyword'`），索引无法被有效利用，因为无法确定起始点。
+* **示例：** `SELECT * FROM products WHERE product_name LIKE '%phone%';` (失效)
+* **示例：** `SELECT * FROM products WHERE product_name LIKE 'phone%';` (有效，可以利用索引)
+<br/>
+
+5. **使用 `NOT`、`!=`、`<>` (不等于)**
+* 这些操作符通常会导致索引失效，因为它们会匹配索引中大量的非匹配值，优化器可能认为全表扫描更划算。
+* **示例：** `SELECT * FROM users WHERE status != 'active';` (可能失效)
+* **例外：** 在某些情况下，如果非匹配的比例非常小，优化器仍然可能选择使用索引。
+<br/>
+
+6. **使用 `IS NULL` 或 `IS NOT NULL`**
+* 如果索引列允许存储 `NULL` 值，并且索引类型是B-tree索引，那么 `IS NULL` 和 `IS NOT NULL` 操作可能会导致索引失效。因为 `NULL` 值在B-tree索引中存储的特性，使得这类查询难以有效地利用索引。
+* **示例：** `SELECT * FROM users WHERE email IS NULL;` (可能失效)
+* **注意：** 对于某些存储引擎（如InnoDB），索引中可以存储 `NULL` 值，但这并不意味着查询 `IS NULL` 就能高效使用索引。通常情况下，如果一个列经常需要查询 `IS NULL` 或 `IS NOT NULL`，可以考虑在索引中包含一个额外的不为NULL的列，或者使用位图索引（MySQL不直接支持）。
+<br/>
+
+
+7. **数据分布不均匀 (低选择性)**
+* 当索引列的区分度很低，即相同值的记录太多（例如，性别字段只有 '男' 和 '女'，各占50%），优化器可能会认为使用索引进行查找的成本甚至高于全表扫描，从而放弃使用索引。
+* **示例：** `SELECT * FROM employees WHERE gender = 'Male';` (如果性别列数据非常均衡，索引可能不被使用)
+<br/>
+
+
+8. **`ORDER BY` 或 `GROUP BY` 不使用索引或跳过索引列**
+* 如果 `ORDER BY` 或 `GROUP BY` 的列不在索引的最左前缀中，或者中间跳过了索引列，则无法利用索引进行排序或分组，可能导致文件排序 (filesort)。
+* **示例：** `CREATE INDEX idx_city_age ON users(city, age);`
+    * `SELECT * FROM users ORDER BY age;` (失效，因为 `city` 不在 `ORDER BY` 中)
+    * `SELECT * FROM users WHERE city = 'Shanghai' ORDER BY age;` (有效，可以使用索引进行排序)
+<br/>
+
+
+9. **隐式类型转换导致的索引失效**
+* 当查询条件中的数据类型与索引列的数据类型不匹配时，MySQL可能会进行隐式类型转换。如果转换发生在索引列上，就会导致索引失效。
+* **示例：** `SELECT * FROM users WHERE id = '123';` (如果 `id` 是 `INT` 类型，`'123'` 是字符串，MySQL会尝试将 `id` 转换为字符串进行比较，导致索引失效)
+<br/>
+
+10. **优化器选择全表扫描**
+* 即使存在可用索引，MySQL的查询优化器也会根据统计信息（如表大小、索引的选择性、缓存命中率等）评估使用索引和全表扫描的成本。在某些情况下，例如表数据量很小，或者要查询的数据占了表的大部分比例，优化器可能会认为全表扫描的成本更低，从而不使用索引。

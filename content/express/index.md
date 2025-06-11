@@ -15,7 +15,9 @@ There are all kinds of mysterious portals here...
 > 百宝箱
 
 ## Explore
- - {{< person url="https://hellogithub.com/" name=" Hello Github" nick="有趣的开源社区" text="有趣的开源社区" picture="https://img1.kiosk007.top/static/images/blog/logo.png" >}}
+ - {{< person url="https://hellogithub.com/" name="Hello Github" nick="有趣的开源社区" text="有趣的开源社区" picture="https://img1.kiosk007.top/static/images/blog/logo.png" >}}
+
+ - {{< person url="https://julebu.co/" name="句乐部" nick="英语学习工具" text="让你上瘾的英语学习工" picture="https://julebu.co/favicon.ico" >}}
 
 ## Blog
 - https://colobu.com/ --鸟窝
