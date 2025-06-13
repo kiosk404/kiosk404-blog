@@ -1,15 +1,17 @@
-/* 增加选择器优先级并添加 !important */
+/* VS Code 风格的代码块样式 */
 :root {
-    --code-background: #f5f2f2;
+    --code-background: #1e1e1e;
+    --code-border: #333333;
+    --code-text: #d4d4d4;
 }
 
-/* 立即应用样式，防止闪烁 */
+/* 代码块容器 */
 .highlight {
     position: relative !important;
     margin: 1.5rem 0 !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
     background: var(--code-background) !important;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.1) !important;
+    border: 1px solid var(--code-border) !important;
     overflow: hidden !important;
 }
 
@@ -18,8 +20,8 @@
     content: '';
     display: block;
     height: 30px;
-    background: linear-gradient(to bottom, #4D4D4D, #3F3F3F);
-    border-bottom: 1px solid #4a4a4a;
+    background: linear-gradient(to bottom, #2d2d2d, #252525);
+    border-bottom: 1px solid #333333;
 }
 
 /* 红绿黄三个圆点 */
@@ -38,9 +40,8 @@
 }
 
 /* 代码区域 */
-/* 代码区域 */
 .highlight > .chroma,
-.highlight pre.chroma {  /* 增加选择器以提高优先级 */
+.highlight pre.chroma {
     position: relative;
     padding: 2rem 1rem 1rem;
     margin-top: -5px;
@@ -48,14 +49,8 @@
     font-size: 0.9rem;
     line-height: 1.5;
     overflow-x: auto;
-    background: #f6efef !important;
-    color: #25272b !important;
-}
-
-/* 添加以下代码以覆盖可能的主题默认样式 */
-.highlight pre {
-    background: #f6efef !important;
-    margin: 0 !important;
+    background: var(--code-background) !important;
+    color: var(--code-text) !important;
 }
 
 /* 确保代码行不会被主题样式影响 */
@@ -64,3 +59,123 @@
     background: none !important;
     color: inherit;
 }
+
+/* VS Code 风格的语法高亮 */
+.highlight .k { color: #569cd6 !important; } /* 关键字 */
+.highlight .kc { color: #569cd6 !important; } /* 常量 */
+.highlight .kd { color: #569cd6 !important; } /* 声明 */
+.highlight .kn { color: #569cd6 !important; } /* 控制流 */
+.highlight .kp { color: #569cd6 !important; } /* 预处理器 */
+.highlight .kr { color: #569cd6 !important; } /* 保留字 */
+.highlight .kt { color: #4ec9b0 !important; } /* 类型 */
+.highlight .n { color: #9cdcfe !important; } /* 变量名 */
+.highlight .na { color: #9cdcfe !important; } /* 属性名 */
+.highlight .nb { color: #9cdcfe !important; } /* 内置名称 */
+.highlight .nc { color: #4ec9b0 !important; } /* 类名 */
+.highlight .no { color: #9cdcfe !important; } /* 常量名 */
+.highlight .nd { color: #dcdcaa !important; } /* 装饰器 */
+.highlight .ni { color: #9cdcfe !important; } /* 实体名 */
+.highlight .ne { color: #9cdcfe !important; } /* 异常名 */
+.highlight .nf { color: #dcdcaa !important; } /* 函数名 */
+.highlight .nl { color: #9cdcfe !important; } /* 标签名 */
+.highlight .nn { color: #4ec9b0 !important; } /* 命名空间 */
+.highlight .nx { color: #9cdcfe !important; } /* 其他名称 */
+.highlight .py { color: #9cdcfe !important; } /* Python 内置 */
+.highlight .nt { color: #569cd6 !important; } /* HTML 标签名 */
+.highlight .nv { color: #9cdcfe !important; } /* 变量名 */
+.highlight .s { color: #ce9178 !important; } /* 字符串 */
+.highlight .sb { color: #ce9178 !important; } /* 字符串开始 */
+.highlight .sc { color: #ce9178 !important; } /* 字符 */
+.highlight .sd { color: #ce9178 !important; } /* 文档字符串 */
+.highlight .s2 { color: #ce9178 !important; } /* 双引号字符串 */
+.highlight .se { color: #ce9178 !important; } /* 转义序列 */
+.highlight .sh { color: #ce9178 !important; } /* 字符串插值 */
+.highlight .si { color: #ce9178 !important; } /* 字符串插值 */
+.highlight .sx { color: #ce9178 !important; } /* 其他字符串 */
+.highlight .sr { color: #ce9178 !important; } /* 正则表达式 */
+.highlight .s1 { color: #ce9178 !important; } /* 单引号字符串 */
+.highlight .ss { color: #ce9178 !important; } /* 符号 */
+.highlight .c { color: #6a9955 !important; } /* 注释 */
+.highlight .ch { color: #6a9955 !important; } /* 注释哈希 */
+.highlight .cm { color: #6a9955 !important; } /* 多行注释 */
+.highlight .c1 { color: #6a9955 !important; } /* 单行注释 */
+.highlight .cp { color: #6a9955 !important; } /* 预处理器注释 */
+.highlight .cpf { color: #6a9955 !important; } /* 预处理器注释 */
+.highlight .cs { color: #6a9955 !important; } /* 注释特殊 */
+.highlight .o { color: #d4d4d4 !important; } /* 运算符 */
+.highlight .ow { color: #d4d4d4 !important; } /* 词法运算符 */
+.highlight .p { color: #d4d4d4 !important; } /* 标点符号 */
+.highlight .l { color: #b5cea8 !important; } /* 数字 */
+.highlight .ld { color: #b5cea8 !important; } /* 数字 */
+.highlight .m { color: #b5cea8 !important; } /* 数字 */
+.highlight .mb { color: #b5cea8 !important; } /* 二进制数字 */
+.highlight .mf { color: #b5cea8 !important; } /* 浮点数 */
+.highlight .mh { color: #b5cea8 !important; } /* 十六进制数字 */
+.highlight .mi { color: #b5cea8 !important; } /* 整数 */
+.highlight .il { color: #b5cea8 !important; } /* 整数 */
+.highlight .mo { color: #b5cea8 !important; } /* 八进制数字 */
+.highlight .mx { color: #b5cea8 !important; } /* 其他数字 */
+.highlight .f { color: #dcdcaa !important; } /* 函数 */
+.highlight .t { color: #4ec9b0 !important; } /* 类型 */
+.highlight .g { color: #d4d4d4 !important; } /* 通用 */
+.highlight .gd { color: #d4d4d4 !important; } /* 通用删除 */
+.highlight .ge { color: #d4d4d4 !important; } /* 通用强调 */
+.highlight .gr { color: #d4d4d4 !important; } /* 通用错误 */
+.highlight .gh { color: #d4d4d4 !important; } /* 通用标题 */
+.highlight .gi { color: #d4d4d4 !important; } /* 通用插入 */
+.highlight .go { color: #d4d4d4 !important; } /* 通用输出 */
+.highlight .gp { color: #d4d4d4 !important; } /* 通用提示 */
+.highlight .gs { color: #d4d4d4 !important; } /* 通用强 */
+.highlight .gu { color: #d4d4d4 !important; } /* 通用子标题 */
+.highlight .gt { color: #d4d4d4 !important; } /* 通用跟踪 */
+.highlight .gl { color: #d4d4d4 !important; } /* 通用行 */
+.highlight .w { color: #d4d4d4 !important; } /* 空白 */
+.highlight .err { color: #f44747 !important; } /* 错误 */
+.highlight .x { color: #d4d4d4 !important; } /* 其他 */
+.highlight .hl { background: #264f78 !important; } /* 高亮 */
+.highlight .unselectable { color: #d4d4d4 !important; } /* 不可选择 */
+.highlight .bp { color: #9cdcfe !important; } /* 内置伪类 */
+.highlight .vc { color: #9cdcfe !important; } /* 变量类 */
+.highlight .vg { color: #9cdcfe !important; } /* 变量全局 */
+.highlight .vi { color: #9cdcfe !important; } /* 变量实例 */
+.highlight .vm { color: #9cdcfe !important; } /* 变量模块 */
+.highlight .lnt { color: #6a9955 !important; } /* 行号 */
+.highlight .ln { color: #6a9955 !important; } /* 行号 */
+.highlight .katex { color: #d4d4d4 !important; } /* 数学公式 */
+.highlight .math { color: #d4d4d4 !important; } /* 数学公式 */
+.highlight .inline { color: #d4d4d4 !important; } /* 内联 */
+.highlight .display { color: #d4d4d4 !important; } /* 显示 */
+.highlight .tag { color: #569cd6 !important; } /* HTML 标签 */
+.highlight .attr { color: #9cdcfe !important; } /* HTML 属性 */
+.highlight .val { color: #ce9178 !important; } /* HTML 值 */
+.highlight .dec { color: #b5cea8 !important; } /* HTML 声明 */
+.highlight .str { color: #ce9178 !important; } /* 字符串 */
+.highlight .pln { color: #d4d4d4 !important; } /* 普通文本 */
+.highlight .pun { color: #d4d4d4 !important; } /* 标点符号 */
+.highlight .typ { color: #4ec9b0 !important; } /* 类型 */
+.highlight .atn { color: #9cdcfe !important; } /* 属性名 */
+.highlight .atv { color: #ce9178 !important; } /* 属性值 */
+.highlight .com { color: #6a9955 !important; } /* 注释 */
+.highlight .lit { color: #b5cea8 !important; } /* 字面量 */
+.highlight .opn { color: #d4d4d4 !important; } /* 左括号 */
+.highlight .clo { color: #d4d4d4 !important; } /* 右括号 */
+.highlight .tag { color: #569cd6 !important; } /* 标签 */
+.highlight .atn { color: #9cdcfe !important; } /* 属性名 */
+.highlight .atv { color: #ce9178 !important; } /* 属性值 */
+.highlight .dec { color: #b5cea8 !important; } /* 声明 */
+.highlight .var { color: #9cdcfe !important; } /* 变量 */
+.highlight .fun { color: #dcdcaa !important; } /* 函数 */
+.highlight .kwd { color: #569cd6 !important; } /* 关键字 */
+.highlight .typ { color: #4ec9b0 !important; } /* 类型 */
+.highlight .str { color: #ce9178 !important; } /* 字符串 */
+.highlight .com { color: #6a9955 !important; } /* 注释 */
+.highlight .lit { color: #b5cea8 !important; } /* 字面量 */
+.highlight .pun { color: #d4d4d4 !important; } /* 标点符号 */
+.highlight .opn { color: #d4d4d4 !important; } /* 左括号 */
+.highlight .clo { color: #d4d4d4 !important; } /* 右括号 */
+.highlight .tag { color: #569cd6 !important; } /* 标签 */
+.highlight .atn { color: #9cdcfe !important; } /* 属性名 */
+.highlight .atv { color: #ce9178 !important; } /* 属性值 */
+.highlight .dec { color: #b5cea8 !important; } /* 声明 */
+.highlight .var { color: #9cdcfe !important; } /* 变量 */
+.highlight .fun { color: #dcdcaa !important; } /* 函数 */

@@ -18,3 +18,5 @@
   - [MySQL](/_content/mysql/index.md)
     - [基础](/_content/mysql/base.md)
     - [索引](/_content/mysql/index_1.md)
+  - [AI](/_content/ai/index.md)
+    - [RAG](/_content/ai/rag.md)

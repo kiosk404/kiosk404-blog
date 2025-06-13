@@ -451,7 +451,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
       copy = true
       # the maximum number of lines of displayed code by default
       # 默认展开显示的代码行数
-      maxShownLines = 50
+      maxShownLines = 100
       [params.page.code.render]
         goat = true
         mermaid = true
@@ -770,7 +770,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
   [markup.highlight]
     anchorLineNos = false
     codeFences = true
-    guessSyntax = false
+    guessSyntax = true
     lineNos = false
     lineNumbersInTable = true
     noClasses = true
