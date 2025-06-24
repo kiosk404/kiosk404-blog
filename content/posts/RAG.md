@@ -3,12 +3,14 @@ title: LLM大模型 - 从0认识RAG
 author: kiosk
 date: 2025-03-21 13:52:18
 lastmod: 2025-05-29 11:26:27
-draft: true
+draft: false
 tags:
   - ai
 categories:
   - artificial intelligence 
 ---
+
+
 
 在讨论RAG技术之前，我们先看在开发大语言模型（LLM）应用时会遇到的典型场景问题。比如，当设计一个 LLM 问答应用，当模型回答用户的特定领域问题时，尽管大模型再厉害，也没办法提供准确的答案，而且大模型的训练数据也不可能总是最新的，模型无法及时提供最新的答案，这种现象在 LLM 应用中较为常见。
 
@@ -90,11 +92,27 @@ LangChain 提供了一套功能强大的文档加载器（Document Loaders），
 
 
 
+-----
+
+
+
+下面是一个可视化的 chunk 分块的网站
+
+
+
+{{< person url="https://chunkviz.up.railway.app/" name="ChunkViz" nick="v0.1" text="可视化 chunk 分块的网站" picture="https://chunkviz.up.railway.app/favicon.ico" >}}
+
+<br/>
+
+-----
+
+
+
 ## 固定大小分块（Fixed Size Chunking）
 
 最基本的方法是将文档按固定大小进行分块，通常作为分块策略的基准线使用。
 
-https://chunkviz.up.railway.app/  -- 可视化 chunk
+
 
 ![langchain-rag-1](https://img1.kiosk007.top/static/images/blog/20250614231553-langchain-rag-1.png)
 
@@ -142,9 +160,13 @@ https://chunkviz.up.railway.app/  -- 可视化 chunk
 
 混合分块是一种结合多种分块方法的技术，通过综合利用不同分块技术的优势，提高分块的精准性和效率。例如，在初始阶段使用固定长度分块快速整理大量文档，而在后续阶段使用语义分块进行更精细的分类和主题提取。根据实际业务场景，设计多种分块策略的混合，能够灵活适应各种需求，提供更强大的分块方案。
 
+----
 
 
-在 Go 中，https://github.com/tmc/langchaingo/tree/main/textsplitter  继承了各种分块代码
+
+- 在 Go 中，https://github.com/tmc/langchaingo/tree/main/textsplitter  继承了各种分块代码-
+
+- 在 Python 中，
 
 <BR/>
 
@@ -210,13 +232,77 @@ https://chunkviz.up.railway.app/  -- 可视化 chunk
 
 ----
 
+
+
+# 混合检索（Hybrid Retrieval）
+
+RAG（Retrieval-Augmented Generation，检索增强生成）中的 **混合检索(Hybrid Retrieval)** 是指**结合多种不同的信息检索技术或策略**，以更全面、准确地找到与用户查询相关的外部知识或文档，从而提高大型语言模型（LLM）生成回答的质量和相关性。
+
+简单来说，就是“取长补短，强强联合”。
+
+
+
+## 为什么需要混合检索？
+
+
+
+传统的检索方法通常分为两类：
+
+1. **稀疏检索（Sparse Retrieval）/ 关键字检索：**
+   - **原理：** 依赖于精确的**关键字匹配**，例如TF-IDF、BM25算法。它会在文档中查找与查询词完全相同或高度相关的词语。
+   - **优点：** 对于查找包含特定名称、代码、日期等精确信息非常有效，速度快，计算成本相对较低。
+   - **缺点：** 无法理解语义上的相似性。例如，如果你搜索“最好的跑步鞋”，它可能找不到包含“马拉松训练鞋”的文档，即使它们是语义相关的。它对同义词、语序变化、多义词等不敏感。
+2. **稠密检索（Dense Retrieval）/ 语义检索：**
+   - **原理：** 将查询和文档都转换为**高维向量（称为嵌入或Embeddings）**，然后通过计算这些向量之间的相似度（如余弦相似度）来查找语义上最相关的文档。
+   - **优点：** 能够理解查询的**深层含义和上下文**，即使文档中没有完全匹配的关键词，也能找到语义相关的结果。例如，“最好的跑步鞋”可以匹配到“马拉松训练鞋”。
+   - **缺点：** 对特定、精确的关键词匹配可能不如稀疏检索有效，有时会返回一些语义相关但实际信息密度不高的结果。向量数据库的查询通常比关键词检索更耗计算资源。
+
+单独使用其中一种方法都有其局限性。**混合检索正是为了克服这些局限性。**
+
+
+
+## 混合检索的工作原理
+
+
+
+混合检索通常会并行执行至少两种不同类型的检索（最常见的是稀疏检索和稠密检索），然后将它们的结果进行智能融合，最终提供给 LLM 作为上下文。
+
+它的工作流程大致如下：
+
+1. **查询处理：** 用户提出一个问题或查询。
+
+2. **并行检索**：
+
+   - 使用**稀疏检索器**（如BM25）在知识库中查找包含关键词的文档块。
+   - 同时，将用户查询通过**Embedding 模型**转换为向量，然后使用**稠密检索器**在向量数据库中查找语义相似的文档块。
+
+3. **结果融合（Fusion）**：
+
+    将两种检索方法得到的结果进行合并和排序。常见的融合算法包括：
+
+   - **倒数排名融合（Reciprocal Rank Fusion, RRF）：** 这是一种常用的融合算法，它不依赖于检索分数本身，而是根据每个文档在不同检索结果列表中的排名来计算其最终排名。即使不同检索方法的得分尺度不同，RRF 也能有效地融合结果。
+   - **加权融合：** 为不同检索方法的结果分配权重，然后将它们的得分相加进行排名。
+   - **瀑布式/级联式：** 先用一种方法进行粗召，再用另一种方法进行精排。
+
+4. **去重与上下文整合：** 对融合后的文档进行去重，并选取最相关的（通常是Top-K个）文档块，将其内容整合起来，作为 LLM 生成回答的上下文。
+
+5. **LLM 生成：** 将用户的原始查询和整合后的上下文信息一同输入给 LLM，LLM 基于这些信息生成最终的回答。
+
+<br/>
+
+----
+
+
+
 # 重排模型（Rerank Model）
+
+
 
 在 RAG（检索增强生成）系统中，**重排模型（Rerank Model）是一个独立的深度学习模型，它的核心任务是对初步检索（Initial Retrieval/Recall）阶段返回的候选文档进行二次评估和排序，以确保最相关、最高质量的少数文档被提供给大型语言模型（LLM）作为生成答案的上下文。**
 
 简单来说，如果初步检索是“大海捞针”，那重排模型就是从“捞上来的这一堆”中“精挑细选”出最闪亮的几根针。
 
-### 为什么需要重排模型？（核心价值）
+## 为什么需要重排模型？
 
 重排模型之所以在 RAG 系统中不可或缺，主要是为了解决初步检索的固有局限性，并优化 LLM 的输入质量和效率：
 
@@ -240,7 +326,7 @@ https://chunkviz.up.railway.app/  -- 可视化 chunk
 
 
 
-### 重排模型的工作原理（以交叉编码器为例）
+## 重排模型的工作原理（以交叉编码器为例）
 
 业界主流且性能卓越的重排模型通常基于 **交叉编码器（Cross-Encoder）** 架构，其工作流程如下：
 
@@ -280,25 +366,85 @@ https://chunkviz.up.railway.app/  -- 可视化 chunk
 
 # RAG 技术应用
 
-如下是从 0 到 1 快速搭建 RAG 应用。目前 Python 在人工智能领域还是称王称霸的存在，golang 在这方面是可望不可即的，比如 langchain ，[langchaingo](https://github.com/tmc/langchaingo) 更新频率非常低，而且对bug的处理速度也偏慢，而 python 版本的 [langchain](https://github.com/langchain-ai/langchain) 保持着高强度的更新，及时解决 开发者提出的 bug。
+如下是从 0 到 1 快速搭建 RAG 应用。目前 Python 在人工智能领域还是称王称霸的存在，golang 在这方面是可望不可即的，比如 langchain ，[langchaingo](https://github.com/tmc/langchaingo) 更新频率非常低，而且对bug的处理速度也偏慢，社区也有人吐槽为什么 Langchaingo 的为什么当前是 25年的5月份 而最新一个版本是 25年2月份-[Why not release a new release? The latest release is still in February #1301](https://github.com/tmc/langchaingo/issues/1301)
+
+<br/>
+
+而 python 版本的 [langchain](https://github.com/langchain-ai/langchain) 保持着高强度的更新，及时解决 开发者提出的 bug。
+
+我个人遇到的一个问题，对一些 paper 上的 [PDF](https://chensun-me.github.io/papers/livenet-sigcomm22.pdf)，经常使用 golang 自带的 PDF 解开全是乱码，而Python 版本的就没有丝毫问题。
 
 <br/>
 
 如下是对应的技术框架
 
 - RAG 技术框架：LangChain
-- 索引\检索 流程 - 向量化模型：bge-small-zh-v1.5 
+- 索引\检索 流程 - 向量化模型：本地 ollama 运行 nomic-embed-text:latest
 
-> bge-small-zh-v.15 是由北京人工智能研究员（BAAI，智源）开发的开源向量模型，体积小但能提供高精度和高效的中文向量检索，该模型的向量维度为 512
+> Nomic AI是**世界上第一家信息制图公司** ，旗下的 Nomic-embed 也是超强的开源嵌入模型。
+
+- 混合检索：
+  - 稀疏检索：BM-25 基于词频
+  - 稠密检索：Dense （Langchain 自带 similarity_search）
+- 重排模型 - 向量化模型：huggingface BAAI/bge-reranker-v2-m3
 
 - 索引\检索 流程 - 向量库：Faiss
-- LLM 大模型：通义千问
+- LLM 大模型：通义千问-Turbo  ([阿里云百炼大模型新手可以有100W免费Token](https://bailian.console.aliyun.com/?utm_content=se_1021228063&gclid=Cj0KCQjw097CBhDIARIsAJ3-nxfx7NQkhRo5mhDnkH4oQ3M2tYp8O7rg816lT9NT3Jqvpb2Du9tOi-AaAkMWEALw_wcB&tab=doc#/doc/?type=model&url=https%3A%2F%2Fhelp.aliyun.com%2Fdocument_detail%2F2766612.html&renderType=iframe))
+
+
 
 ----
+
+# 进阶：RAG 的进阶 **KAG**
+
+“KAG” 是一个在 LLM 领域逐渐获得关注的概念，它通常指的是 **Knowledge-Augmented Generation（知识增强生成）**。
+
+虽然 RAG 已经非常强大，但 KAG 旨在进一步提升 LLM 在特定领域、需要**深度推理和结构化知识**时的表现。你可以把 KAG 看作是 RAG 的一种演进或补充，尤其是在处理复杂、多跳（multi-hop）的专业领域查询时。
+
+
+
+
+
+![openkag](https://img1.kiosk007.top/static/images/blog/20250623091855-openkag.png)
+
+- [OpenSPG - KAG](https://github.com/OpenSPG/KAG?tab=readme-ov-file)
+
+
+
+
+
+## KAG (Knowledge-Augmented Generation) 是什么？
+
+**KAG 的核心理念是将结构化的领域知识（通常是知识图谱 - Knowledge Graphs, KGs）更紧密、更深入地集成到 LLM 的生成过程中，而不仅仅是像 RAG 那样检索文本片段。**
+
+与 RAG 主要依赖**非结构化文档**（如文本、网页）的向量相似性检索不同，KAG 更加强调利用**结构化数据**的强大推理能力和明确的语义关系。
+
+
+
+## KAG 与 RAG 的主要区别和联系
+
+| 特征            | RAG (Retrieval-Augmented Generation)                         | KAG (Knowledge-Augmented Generation)                         |
+| --------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **知识来源**    | 主要基于**非结构化文本**（文档、网页、文章等）               | 主要基于**结构化知识**（**知识图谱**、数据库等）             |
+| **检索方式**    | **向量相似性检索**（语义匹配）和/或**关键词匹配**（稀疏检索） | 除了向量检索，更强调**基于知识图谱的推理和路径查找**         |
+| **核心优势**    | 快速适应新信息、处理开放域问题、减少幻觉                     | 深度推理能力、处理复杂多跳问题、确保事实一致性、提高领域专业度 |
+| **应用场景**    | 问答系统、内容生成、摘要等，适用于动态、多样化的信息         | 垂直领域专业问答（如医疗、金融、法律）、复杂逻辑推理、数据分析 |
+| **实现复杂性**  | 相对较低，主要涉及文档切块、嵌入和向量存储                   | 较高，需要构建和维护高质量的知识图谱，并设计复杂的推理和图谱交互机制 |
+| **对LLM的影响** | 补充上下文信息，让LLM基于提供的文本进行生成                  | 引导LLM进行逻辑推理，使其能够“理解”和“利用”知识间的关系进行生成 |
+
+
+
+<br/>
+
+---
 
 
 
 # 实现一个文档检索
+
+相关的代码我放到了 github 仓库中 - [https://github.com/kiosk404/llm-rag-project](https://github.com/kiosk404/llm-rag-project)
+
+
 
 ## 技术框架与选型
 
@@ -306,28 +452,253 @@ https://chunkviz.up.railway.app/  -- 可视化 chunk
 
 LangChain 是专为开发基于大型语言模型（LLM）应用而设计的全面框架，其核心目标是简化开发者的构建流程，使其能够高效创建 LLM 驱动的应用。
 
-#### :next_track_button: 索引流程 - 文档解析模块
+```python
+    def create_qa_chain(self, vector_store: FAISS, retrieval_mode: str = 'dense', corpus: list = None) -> RetrievalQA:
+        """
+        创建问答链，支持混合检索
+        参数：
+            vector_store: FAISS 向量库实例
+            retrieval_mode: 检索模式（dense/sparse/hybrid）
+            corpus: 稀疏检索语料
+        返回：
+            RetrievalQA: 创建的问答链
+        """
+        if self.qa_chain is None:
+            try:
+                llm = self.load_llm()
+                retriever = self.create_retriever(vector_store, retrieval_mode, corpus)
+                # 包装 retriever，支持 rerank
+                if self.use_rerank and self.reranker is not None:
+                    orig_get_relevant_documents = retriever._get_relevant_documents
+                    def rerank_wrapper(query):
+                        docs = orig_get_relevant_documents(query)
+                        return self.reranker.rerank(query, docs)
+                    retriever._get_relevant_documents = rerank_wrapper
+                self.qa_chain = RetrievalQA.from_chain_type(
+                    llm=llm,
+                    chain_type="stuff",
+                    retriever=retriever,
+                    return_source_documents=True,
+                )
+            except Exception as e:
+                raise ServiceError(
+                    f"创建问答链失败：{e}\n"
+                    f"请检查模型配置和向量库状态。"
+                )
+        return self.qa_chain
+```
 
 
 
+#### :next_track_button: 索引流程 - 文档解析模块\分块模块：
+
+这里提供 固定大小、重叠等多种分块策略，由 langchain 的 text_splitter 模块提供相关实现。
+
+详细可参考：https://python.langchain.com/docs/concepts/text_splitters/
+
+```python
+class FixedSizeChunking(ChunkingStrategy):
+    """固定大小分块策略"""
+    
+    def split_documents(self, documents: List[Document], **kwargs) -> List[Document]:
+        chunk_size = kwargs.get('chunk_size', 500)
+        chunk_overlap = kwargs.get('chunk_overlap', 0)
+        
+        text_splitter = CharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            separator="\n"
+        )
+        return text_splitter.split_documents(documents)
+    
+    def get_description(self) -> str:
+        return "固定大小分块：按照指定的字符数进行简单分割，不考虑语义边界"
 
 
-#### :recycle: 索引流程 - 文档分块模块：
+... 
+```
 
 
 
+#### :thinking: 索引/检索流程 - 向量化模型：nomic-embed-text
 
+这里使用 ollama 为底座：
 
-#### :thinking: 索引/检索流程 - 向量化模型：bge-small-zh-v1.5
+可先安装 ollama https://ollama.com/download 
 
+然后拉取 nomic 模型 `ollama pull nomic-embed-text`
 
+```python
+    def load_embedding_model(self) -> OllamaEmbeddings:
+        """
+        加载嵌入模型
+        返回：
+            OllamaEmbeddings: 加载的嵌入模型实例
+        """
+        if self.embedding_model is None:
+            try:
+                print(f"正在从 Ollama 加载嵌入模型: {EMBEDDING_MODEL_NAME}")
+                self.embedding_model = OllamaEmbeddings(
+                    model=EMBEDDING_MODEL_NAME, 
+                    base_url=OLLAMA_BASE_URL
+                )
+                # 测试嵌入模型
+                test_embedding = self.embedding_model.embed_query("测试")
+            except Exception as e:
+                raise ServiceError(
+                    f"加载嵌入模型失败：{e}\n"
+                    f"请确保 Ollama 服务正在运行，"
+                    f"并且模型 {EMBEDDING_MODEL_NAME} 已安装。"
+                )
+        return self.embedding_model
+```
 
 
 
 #### :speech_balloon: 索引 / 检索流程 - 向量库：Faiss
 
+向量数据库Faiss是Facebook AI研究院开发的一种高效的**相似性搜索**和**聚类**的库。它能够快速处理大规模数据，并且支持在**高维空间**中进行相似性搜索。
 
+FAISS并不能直接存储数据，它只是一个索引和搜索向量的工具，这个工具可以根据emdebbing的后生成的向量，从文本中匹配跟问题相关的内容出来。FAISS的存储数据只是把向量化后的一系列数据存在本地文件，之后需要的时候再从本地文件进行加载进去。
+
+```python
+ef create_and_save_vector_store(chunks: List[Document], embeddings: Embeddings) -> FAISS:
+    """
+    从文档块创建 FAISS 向量库并保存到磁盘。
+    参数：
+        chunks (List[Document]): 文档块列表。
+        embeddings (Embeddings): 使用的嵌入模型实例。
+    返回：
+        FAISS: 创建的 FAISS 向量库实例。
+    """
+    print("正在创建并保存向量库...")
+    vector_store = FAISS.from_documents(chunks, embeddings)
+    vector_store.save_local(FAISS_INDEX_PATH)
+    print(f"向量库已保存到 {FAISS_INDEX_PATH}")
+    return vector_store
+
+
+def load_vector_store(embeddings: Embeddings) -> Optional[FAISS]:
+    """
+    从磁盘加载 FAISS 向量库。
+    参数：
+        embeddings (Embeddings): 使用的嵌入模型实例。
+    返回：
+        Optional[FAISS]: 加载的 FAISS 向量库实例，如果未找到则为 None。
+    """
+    if os.path.exists(FAISS_INDEX_PATH):
+        print(f"正在从 {FAISS_INDEX_PATH} 加载向量库")
+        return FAISS.load_local(
+            FAISS_INDEX_PATH, 
+            embeddings, 
+            allow_dangerous_deserialization=True
+        )
+    else:
+        print("未找到向量库。")
+        return None 
+```
 
 
 
 #### :hugs: 生成流程 - 大语言模型：Qwen
+
+参考 https://zhuanlan.zhihu.com/p/18806936905 ，新人用户有免费额度，我个人用于测试，充值了2块钱，足够个人联系测试用了。
+
+
+
+## 验证检索
+
+本人测试的 PDF 是一篇 Alibaba 的一篇关于 低延迟视频传输 FCDN 网络的技术架构的 parper
+
+
+
+- {{< person url="https://dl.acm.org/doi/pdf/10.1145/3544216.3544236" name="LiveNet" nick="A Low-Latency Video Transport Network for Large-Scale Live Streaming" text="A Low-Latency Video Transport Network for Large-Scale Live Streaming" picture="https://dl.acm.org/favicon.ico" >}}
+
+
+
+**运行前准备工作**
+
+```bash
+git clone https://github.com/kiosk404/llm-rag-project.git
+bash install_dependencies.sh
+source .venv/bin/activate
+
+# 将要解析的 pdf 移到 docs 目录
+mv ~/livenet docs
+```
+
+
+
+1. **对文档进行 解析和分块**
+
+```bash
+(.venv) ➜  llm-rag-project git:(master) ✗ python main.py ingest
+? 请选择文本分割策略: 语义分块(spaCy) - 语义分块：使用spaCy进行语义分析，按句子和语义边界分割
+? 请输入文本块大小: 256
+? 请输入文本块重叠大小: 32
+正在加载文档...
+正在使用 语义分块(spaCy) 分割文档...
+已创建 366 个文本块。
+正在加载嵌入模型...
+正在从 Ollama 加载嵌入模型: nomic-embed-text:latest
+正在创建并保存向量库...
+正在创建并保存向量库...
+向量库已保存到 /home/weijiaxiang/PycharmProjects/llm-rag-project/vector_store/faiss_index
+数据摄入完成！
+```
+
+
+
+2. **问题提问**
+
+```bash
+(.venv) ➜  llm-rag-project git:(master) ✗ python main.py query 
+正在加载嵌入模型...
+正在从 Ollama 加载嵌入模型: nomic-embed-text:latest
+正在加载向量库...
+正在从 /home/weijiaxiang/PycharmProjects/llm-rag-project/vector_store/faiss_index 加载向量库
+? 请选择检索模式: 混合检索（Hybrid，融合两者）
+? 是否启用重排序（Rerank）以提升答案相关性？ Yes
+已选择检索模式: hybrid
+重排序功能: 已启用
+正在加载大语言模型...
+正在加载 通义千问 模型...
+正在创建问答链...
+正在加载 通义千问 模型...
+✅ 已准备好回答您的问题！
+💡 提示：输入 'exit' 退出，输入 'help' 查看帮助
+? 请输入您的问题: LiveNet 如何实现的全网节点高效、低延迟 请求的？
+ 
+
+🤔 正在思考...
+
+💡 答案:
+LiveNet 实现全网节点高效、低延迟请求主要依赖以下几个关键设计：
+
+1. **扁平化覆盖网络结构**：
+   LiveNet 采用了一种扁平化的覆盖网络模型，而不是传统的分层结构（如 Hier）。这种扁平化的设计减少了数据传输的中间层级，从而降低了端到端的延迟。
+
+2. **高效的路径决策机制 (Streaming Brain)**：
+   - Streaming Brain 的响应时间非常短，中位数仅为 30 毫秒，25 百分位约为 5 毫秒。
+   - 这使得路径请求能够快速得到响应，从而加快了整体请求处理速度。
+
+3. **路径缓存与预取机制**：
+   - 每个节点都缓存了路径信息（Stream FIB），当路径请求命中本地缓存时，称为“本地命中”。
+   - 在高负载时段（如晚上 8 点至 11 点），本地命中率可达约 70%，显著减少了对中心化路径决策模块的依赖，提高了效率。
+   - 同时，系统通过基于预测的路径预取机制，提前加载可能被请求的路径，进一步减少延迟。
+
+4. **GoP 缓存优化**：
+   - CDN 节点中的 GoP 缓存可以提升快速启动比例（fast startup ratio），即使在流媒体延迟超过 1 秒的情况下，仍能保持较高的快速启动比例（如 95%）。
+
+这些技术共同作用，使得 LiveNet 在大规模直播场景下实现了高效的全网节点协作和低延迟的视频传输。
+
+📚 来源文档:
+1. 来源: /home/weijiaxiang/PycharmProjects/llm-rag-project/docs/livenet.pdf, 页码: 8
+2. 来源: /home/weijiaxiang/PycharmProjects/llm-rag-project/docs/livenet.pdf, 页码: 2
+3. 来源: /home/weijiaxiang/PycharmProjects/llm-rag-project/docs/livenet.pdf, 页码: 0
+4. 来源: /home/weijiaxiang/PycharmProjects/llm-rag-project/docs/livenet.pdf, 页码: 6
+5. 来源: /home/weijiaxiang/PycharmProjects/llm-rag-project/docs/livenet.pdf, 页码: 7
+--------------------------------------------------
+
+```
+
