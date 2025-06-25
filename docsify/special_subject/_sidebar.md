@@ -19,5 +19,7 @@
     - [基础](/_content/mysql/base.md)
     - [索引](/_content/mysql/index_1.md)
     - [事务](/_content/mysql/transaction.md)
+  - [Redis](/_content/redis/index.md)
+    - [数据结构](/_content/redis/struct.md)
   - [AI](/_content/ai/index.md)
     - [RAG](/_content/ai/rag.md)
