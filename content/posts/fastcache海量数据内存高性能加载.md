@@ -262,20 +262,96 @@ type LogEntry struct {
 	IsCritical bool   `json:"is_critical"`// 1 字节
 }
 
+// MarshalBinary 将 LogEntry 序列化为紧凑的二进制格式
+// 它会处理变长字符串：先写入字符串长度(uint32), 再写入字符串内容
 func (le *LogEntry) MarshalBinary() []byte {
-	leBytes, err := json.Marshal(le)
-	if err != nil {
-		panic("marshal failed")
+	// 估算初始容量，避免频繁扩容
+	// 8(Timestamp) + 1(Level) + 4(SourceLen) + len(Source) + 4(MessageLen) + len(Message) + 4(UserID) + 1(IsCritical)
+	initialCap := 8 + 1 + 4 + len(le.Source) + 4 + len(le.Message) + 4 + 1
+	buf := make([]byte, 0, initialCap)
+
+	// Timestamp (8 bytes)
+	buf = binary.LittleEndian.AppendUint64(buf, uint64(le.Timestamp))
+	// Level (1 byte)
+	buf = append(buf, le.Level)
+
+	// Source (length + data)
+	buf = binary.LittleEndian.AppendUint32(buf, uint32(len(le.Source)))
+	buf = append(buf, []byte(le.Source)...)
+
+	// Message (length + data)
+	buf = binary.LittleEndian.AppendUint32(buf, uint32(len(le.Message)))
+	buf = append(buf, []byte(le.Message)...)
+
+	// UserID (4 bytes)
+	buf = binary.LittleEndian.AppendUint32(buf, le.UserID)
+	// IsCritical (1 byte)
+	if le.IsCritical {
+		buf = append(buf, 1)
+	} else {
+		buf = append(buf, 0)
 	}
-	return leBytes
+	return buf
 }
 
+// UnmarshalBinary 从紧凑的二进制格式中反序列化 LogEntry
+// 它会根据长度前缀读取变长字符串
 func (le *LogEntry) UnmarshalBinary(data []byte) error {
-	if le == nil {
-		return errors.New("LogEntry pointer is nil")
+	offset := 0
+
+	// Timestamp (8 bytes)
+	if offset+8 > len(data) {
+		return errors.New("UnmarshalBinary: data too short for Timestamp")
 	}
-	return json.Unmarshal(data, le)
+	le.Timestamp = int64(binary.LittleEndian.Uint64(data[offset : offset+8]))
+	offset += 8
+
+	// Level (1 byte)
+	if offset+1 > len(data) {
+		return errors.New("UnmarshalBinary: data too short for Level")
+	}
+	le.Level = data[offset]
+	offset += 1
+
+	// Source (length + data)
+	if offset+4 > len(data) { // Check for length prefix
+		return errors.New("UnmarshalBinary: data too short for Source length")
+	}
+	sourceLen := binary.LittleEndian.Uint32(data[offset : offset+4])
+	offset += 4
+	if offset+int(sourceLen) > len(data) { // Check for string data
+		return errors.New("UnmarshalBinary: data too short for Source string data")
+	}
+	le.Source = string(data[offset : offset+int(sourceLen)])
+	offset += int(sourceLen)
+
+	// Message (length + data)
+	if offset+4 > len(data) { // Check for length prefix
+		return errors.New("UnmarshalBinary: data too short for Message length")
+	}
+	messageLen := binary.LittleEndian.Uint32(data[offset : offset+4])
+	offset += 4
+	if offset+int(messageLen) > len(data) { // Check for string data
+		return errors.New("UnmarshalBinary: data too short for Message string data")
+	}
+	le.Message = string(data[offset : offset+int(messageLen)])
+	offset += int(messageLen)
+
+	// UserID (4 bytes)
+	if offset+4 > len(data) {
+		return errors.New("UnmarshalBinary: data too short for UserID")
+	}
+	le.UserID = binary.LittleEndian.Uint32(data[offset : offset+4])
+	offset += 4
+
+	// IsCritical (1 byte)
+	if offset+1 > len(data) {
+		return errors.New("UnmarshalBinary: data too short for IsCritical")
+	}
+	le.IsCritical = data[offset] == 1
+	return nil
 }
+
 ```
 
 在 64 位系统上，Go 编译器为了效率会进行内存对齐。我们来分析 `LogEntry` 的实际内存布局：
@@ -348,20 +424,17 @@ func formatBytes(b uint64) string {
 
 
 
-主函数如下：
+基于原生的 map
 
 ```go
-// --- 主函数 ---
-func main() {
-	const numObjects = 2_000_000 // 200万个对象
+// --- 场景一：使用普通的 map[string]*LogEntry ---
+func testRawMap() {
+	fmt.Println("--- Running Test: map[string]*LogEntry ---")
 
-	// 1. 初始内存使用
 	runtime.GC()                       // 强制GC，确保内存统计相对干净
 	time.Sleep(time.Millisecond * 100) // 等待GC完成
-	printMemUsage("Initial Memory Usage")
+	printMemUsage("Initial Memory Usage for Raw Map Test")
 
-	// --- 场景一：使用普通的 map[string]*LogEntry ---
-	fmt.Println("--- Storing objects in map[string]*LogEntry ---")
 	objMap := make(map[string]*LogEntry, numObjects) // 预分配容量
 
 	for i := 0; i < numObjects; i++ {
@@ -370,7 +443,7 @@ func main() {
 			Timestamp:  time.Now().UnixNano() + int64(i),
 			Level:      byte(i % 5),
 			Source:     "server_node_" + strconv.Itoa(i%100),
-			Message:    fmt.Sprintf("User %d performed action X. Data: %s. Level %d", i, key, i%5), // 确保字符串长度变化
+			Message:    fmt.Sprintf("User %d performed action X. Data: %s. Level %d - This is a longer message.", i, key, i%5),
 			UserID:     uint32(i),
 			IsCritical: i%1000 == 0,
 		}
@@ -384,27 +457,36 @@ func main() {
 	// 保持对 objMap 的引用，避免被GC过早回收
 	_ = objMap["log_0"]
 
-	// --- 清理 map，为 fastcache 场景腾出内存 ---
-	fmt.Println("--- Cleaning map and running GC ---")
-	objMap = nil // 解除引用，允许GC回收
-	runtime.GC() // 强制GC
-	time.Sleep(time.Millisecond * 100)
-	printMemUsage("Memory after map cleanup")
+	fmt.Println("--- Raw Map Test Finished ---")
+}
 
-	// --- 场景二：使用 fastcache ---
-	fmt.Println("--- Storing objects in fastcache ---")
+```
+
+
+
+基于 fastcache
+
+```go
+// --- 场景二：使用 fastcache ---
+func testFastCache() {
+	fmt.Println("--- Running Test: fastcache ---")
+
+	runtime.GC()                       // 强制GC，确保内存统计相对干净
+	time.Sleep(time.Millisecond * 100) // 等待GC完成
+	printMemUsage("Initial Memory Usage for FastCache Test")
+
 	// 估算 fastcache 容量：
 	// 每个 LogEntry 序列化后：固定部分约 18 字节 + 2 * (字符串长度 + 4字节长度前缀)。
-	// 假设 Source 平均 20 字节，Message 平均 80 字节。
-	// 序列化后平均大小约为：18 + (20+4) + (80+4) = 18 + 24 + 84 = 126 字节。
-	// 200万个对象 * 126字节/对象 = 252 MB。
-	// 留出一些额外空间和 fastcache 内部索引的开销，例如 300 MB。
-	cacheSize := 300 * 1024 * 1024 // 300 MB
+	// 假设 Source 平均 25 字节，Message 平均 100 字节。
+	// 序列化后平均大小约为：18 + (25+4) + (100+4) = 18 + 29 + 104 = 151 字节。
+	// 200万个对象 * 151字节/对象 = 302 MB。
+	// 留出一些额外空间和 fastcache 内部索引的开销，例如 350 MB。
+	cacheSize := 350 * 1024 * 1024 // 350 MB
 	cache := fastcache.New(cacheSize)
 
 	// 用于 fastcache.Get 的 dst 缓冲区，避免每次Get都重新分配
-	// 估算单个序列化对象最大可能大小，例如 200字节
-	getDstBuf := make([]byte, 200)
+	// 估算单个序列化对象最大可能大小，例如 200-300字节
+	getDstBuf := make([]byte, 300)
 
 	for i := 0; i < numObjects; i++ {
 		key := []byte("log_" + strconv.Itoa(i))
@@ -412,7 +494,7 @@ func main() {
 			Timestamp:  time.Now().UnixNano() + int64(i),
 			Level:      byte(i % 5),
 			Source:     "server_node_" + strconv.Itoa(i%100),
-			Message:    fmt.Sprintf("User %d performed action X. Data: %s. Level %d", i, string(key), i%5),
+			Message:    fmt.Sprintf("User %d performed action X. Data: %s. Level %d - This is a much longer and more variable message to simulate real logs.", i, string(key), i%5),
 			UserID:     uint32(i),
 			IsCritical: i%1000 == 0,
 		}
@@ -428,12 +510,44 @@ func main() {
 	// 验证 fastcache get (并保持引用)
 	retrievedData := cache.Get(getDstBuf, []byte("log_0"))
 	retrievedEntry := &LogEntry{}
-	_ = retrievedEntry.UnmarshalBinary(retrievedData) // 实际应用需要检查错误
+	if err := retrievedEntry.UnmarshalBinary(retrievedData); err != nil {
+		fmt.Printf("Error unmarshalling retrieved data: %v\n", err)
+	}
 
-	fmt.Println("Demo finished. Observe the 'Heap Alloc' and 'Total Objects' differences.")
-	fmt.Println("Note: fastcache's primary data is managed efficiently within its pre-allocated segments, significantly reducing Go GC's object count. Its internal index (map) still contributes to heap objects.")
+	fmt.Println("--- FastCache Test Finished ---")
 }
 
+```
+
+
+
+main 函数 用参数验证要使用哪个cache，如果2个放在一起的话会互相干扰，比如 go 通过 C 库申请的内存，不会立即释放掉。
+
+```go
+// --- 主入口函数 ---
+func main() {
+	// 定义命令行参数
+	runRaw := flag.Bool("raw", false, "Run the raw map[string]*LogEntry memory comparison.")
+	runFastCache := flag.Bool("fastcache", false, "Run the fastcache memory comparison.")
+	flag.Parse() // 解析命令行参数
+
+	if !*runRaw && !*runFastCache {
+		fmt.Println("Please specify which test to run: --raw or --fastcache")
+		fmt.Println("Example: go run mem_compare_v3.go --raw")
+		fmt.Println("Example: go run mem_compare_v3.go --fastcache")
+		return
+	}
+
+	if *runRaw {
+		testRawMap()
+	}
+
+	if *runFastCache {
+		testFastCache()
+	}
+
+	fmt.Println("Demo execution completed.")
+}
 ```
 
 
@@ -441,36 +555,41 @@ func main() {
 输出如下：
 
 ```bash
-➜  demo go run main.go                                   
---- Initial Memory Usage ---
-Heap Alloc = 147.1 KB
-Total Objects = 257
+➜  demo go run mem_compare_v3.go --raw         # 运行原生 map
+--- Running Test: map[string]*LogEntry ---
+--- Initial Memory Usage for Raw Map Test ---
+Heap Alloc = 148.8 KB
+Total Objects = 262
 Sys Memory = 6.4 MB
 NumGC = 1
 
---- Storing objects in map[string]*LogEntry ---
 --- Memory after storing in map[string]*LogEntry ---
-Heap Alloc = 412.0 MB
+Heap Alloc = 473.0 MB                    # 堆上申请的内存
 Total Objects = 8008429
-Sys Memory = 451.7 MB
+Sys Memory = 517.6 MB                    # 实际消耗的内存
 NumGC = 10
 
---- Cleaning map and running GC ---
---- Memory after map cleanup ---
-Heap Alloc = 163.9 KB
-Total Objects = 278
-Sys Memory = 451.7 MB
-NumGC = 11
+--- Raw Map Test Finished ---
+Demo execution completed.
 
---- Storing objects in fastcache ---
+
+➜  demo go run mem_compare_v3.go --fastcache    # 运行fastcache
+--- Running Test: fastcache ---
+--- Initial Memory Usage for FastCache Test ---
+Heap Alloc = 147.5 KB
+Total Objects = 256
+Sys Memory = 6.4 MB
+NumGC = 1
+
 --- Memory after storing in fastcache ---
-Heap Alloc = 72.4 MB
-Total Objects = 10076
-Sys Memory = 452.0 MB
-NumGC = 78
+Heap Alloc = 72.5 MB                      # 堆的内存极大的减少
+Total Objects = 10005 
+Sys Memory = 133.8 MB                     # 实际消耗的内存降低了8成
+NumGC = 64
 
-Demo finished. Observe the 'Heap Alloc' and 'Total Objects' differences.
-Note: fastcache's primary data is managed efficiently within its pre-allocated segments, significantly reducing Go GC's object count. Its internal index (map) still contributes to heap objects.
+--- FastCache Test Finished ---
+Demo execution completed.
+
 
 ```
 
