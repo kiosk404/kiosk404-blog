@@ -24,7 +24,11 @@ func main() {
 {{< /typeit >}}
 
 
-
+## My Interesting Tools 
+- [https://github.com/kiosk404/tls-decrypt](https://github.com/kiosk404/tls-decrypt) Network pcap decrypt by go
+- [https://github.com/kiosk404/openssl_tracer](https://github.com/kiosk404/openssl_tracer) TLS openssl tracer using eBPF
+<br/>
+<br/>
 ## Profile
 
 I'am a automation software undergraduate in China :panda_face:, Computer enthusiast, since many years ago (Maybe since 2019), I did a lot of embedded software development in college, but I did more Python and Linux。
@@ -33,10 +37,12 @@ Now, I'am a gopher。
 
 Keep learning, not too good, not too bad。
 
+
 --------------------------------------------
 
 - I was mainly engaged in website operation and maintenance, engaged in traffic access and distribution, wrote about automatic operation and maintenance platform, did network analysis, client network optimization and so on.
-- Learning golang、devops、python、network、Linux
+- I used to work at **ByteDance** , where I focused on technical development in the fields of edge cloud, cloud native, DCDN (Dynamic Content Delivery Network), and Layer 7 networking. During the advancement of actual projects, I deeply participated in the research, development and implementation of relevant core technologies, covering multiple links such as architecture design, function iteration and performance optimization, and provided technical support for the efficient operation of business scenarios.
+- Learning golang、devops、python、network、Linux、AI
 - Keep Learning
 
 {{< style "text-align:right; strong{color:#00b1ff;}" >}}
