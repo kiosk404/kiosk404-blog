@@ -67,9 +67,7 @@ func returnFunc() int {
 }
 
 func returnAndDefer() int {
-
 	defer deferFunc()
-
 	return returnFunc()
 }
 

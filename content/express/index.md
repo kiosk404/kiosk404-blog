@@ -39,9 +39,15 @@ There are all kinds of mysterious portals here...
     - [mapset 工具包](https://github.com/deckarep/golang-set)
     - [lo 工具包](https://github.com/samber/lo)
     - [mo 依赖注入工具包](https://github.com/samber/mo)
+    - [eino 大型语言模型（LLM）应用开发框架](https://github.com/cloudwego/eino/blob/main/README.zh_CN.md)
+    - [coze studio](https://github.com/coze-dev/coze-studio/blob/main/README.zh_CN.md)
 - Cloud 
     - [如何阅读OpenStack源码](https://www.jingh.top/2019/04/29/%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BBOpenStack%E6%BA%90%E7%A0%81(%E6%9B%B4%E6%96%B0%E7%89%88)/)
     - [Kubernetes源码分析](https://blog.tianfeiyu.com/source-code-reading-notes/)
+- Tool
+    - [goref go heap 分析](https://github.com/cloudwego/goref/blob/main/README_cn.md)
+
+    
 
 ## Tools
 - Linux
