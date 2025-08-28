@@ -66,15 +66,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
     # 当您将鼠标悬停在此菜单链接上时, 将显示标题
     title = ""
   [[menu.main]]
-    weight = 2  
-    identifier = "thematic"
-    pre = ""
-    post = ""
-    name = "Thematic"
-    url = "/thematic/"
-    title = ""
-  [[menu.main]]
-    weight = 3
+    weight = 2
     identifier = "tags"
     pre = ""
     post = ""
@@ -82,7 +74,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
     url = "/tags/"
     title = ""
   [[menu.main]]
-    weight = 4
+    weight = 3
     identifier = "categories"
     pre = ""
     post = ""
@@ -90,14 +82,21 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
     url = "/categories/"
     title = ""
   [[menu.main]]
+    weight = 4  
+    identifier = "thematic"
+    pre = ""
+    post = ""
+    name = "Thematic"
+    url = "/thematic/"
+    title = ""
+  [[menu.main]]
     weight = 5
     identifier = "express"
     pre = ""
     post = ""
     name = "Express"
-    url = "/Express"
+    url = "/express/"
     title = ""
-    
   [[menu.main]]
     weight = 6 
     identifier = "about"
@@ -862,21 +861,13 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
         title = ""
         weight = 1
       [[languages.en.menu.main]]
-        identifier = "thematic"
-        pre = ""
-        post = ""
-        name = "Thematic"
-        url = "/thematic/"
-        title = ""
-        weight = 2
-      [[languages.en.menu.main]]
         identifier = "tags"
         pre = ""
         post = ""
         name = "Tags"
         url = "/tags/"
         title = ""
-        weight = 3
+        weight = 2
       [[languages.en.menu.main]]
         identifier = "categories"
         pre = ""
@@ -884,13 +875,21 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
         name = "Categories"
         url = "/categories/"
         title = ""
+        weight = 3
+      [[languages.en.menu.main]]
+        identifier = "thematic"
+        pre = ""
+        post = ""
+        name = "Thematic"
+        url = "/thematic/"
+        title = ""
         weight = 4
       [[languages.en.menu.main]]
         identifier = "express"
         pre = ""
         post = ""
         name = "Express"
-        url = "/Express"
+        url = "/express/"
         title = ""
         weight = 5
       [[languages.en.menu.main]]

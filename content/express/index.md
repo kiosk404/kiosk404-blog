@@ -1,6 +1,7 @@
 ---
 title: Express
 type: express
+layout: express
 disallow: true
 comment: false
 date: 2021-03-05 23:41:26
@@ -27,6 +28,20 @@ There are all kinds of mysterious portals here...
 - https://segmentfault.com/u/asong_5eeb7a1d0da86  -- asong[Golang梦工厂]
 - https://icloudnative.io/posts/ -- 云原生实验室
 
+# 企业官方技术博客（一线大厂实践，含金量最高）
+这类博客由谷歌、Meta、亚马逊等科技公司的工程团队维护，内容均为真实业务场景中的技术难题解决方案（如性能优化、架构演进、大规模系统设计），与Uber博客"实战导向"的核心特点高度匹配，且技术细节详实、可复现性强，是学习工业级技术实践的核心渠道。
+
+| 企业/团队 | 博客链接 | 核心技术方向 |
+|----------|----------|--------------|
+| Uber Engineering | https://www.uber.com/en-KR/blog/engineering/ | 分布式系统、性能优化（如Go GC Tuning）、云原生架构、地图服务、实时数据处理 | 
+| Google Engineering | https://ai.googleblog.com/（AI方向）<br>https://cloud.google.com/blog/topics/engineering（云原生/工程方向） | 人工智能（大模型、深度学习框架）、分布式系统（Kubernetes底层设计）、Go/Java底层优化、云原生部署与调度 | 
+| Meta Engineering（原Facebook） | https://engineering.fb.com/ | 社交平台高并发架构、分布式存储（TAO数据库）、前端框架（React）、机器学习工程化、容错系统设计 | 
+| Amazon Science & Engineering | https://aws.amazon.com/blogs/architecture/（架构方向）<br>https://www.amazon.science/blog（科学与工程方向） | 云架构设计（高可用/高弹性）、大数据处理（AWS EMR实践）、供应链技术、数据库优化（Amazon Aurora） | 
+| Netflix Technology Blog | https://netflixtechblog.com/ | 微服务治理、混沌工程、云原生部署、流媒体传输优化、数据可视化 | 
+| LinkedIn Engineering | https://engineering.linkedin.com/blog | 职业社交平台架构、推荐系统优化、分布式追踪（Zipkin实践）、大数据处理（Spark/Flink） | 
+| ByteDance Engineering（字节跳动） | https://juejin.cn/user/1838039172387262（掘金专栏） | 短视频高并发架构、Go语言性能优化、AI工程化（推荐/图像）、企业协作工具（飞书）设计 | 
+
+
 ## AI
 - https://lmarena.ai/  -- AI 角斗场
 - https://lovable.dev/  -- APP 小工厂
@@ -42,7 +57,6 @@ There are all kinds of mysterious portals here...
     - [eino 大型语言模型（LLM）应用开发框架](https://github.com/cloudwego/eino/blob/main/README.zh_CN.md)
     - [coze studio](https://github.com/coze-dev/coze-studio/blob/main/README.zh_CN.md)
 - Cloud 
-    - [如何阅读OpenStack源码](https://www.jingh.top/2019/04/29/%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BBOpenStack%E6%BA%90%E7%A0%81(%E6%9B%B4%E6%96%B0%E7%89%88)/)
     - [Kubernetes源码分析](https://blog.tianfeiyu.com/source-code-reading-notes/)
 - Tool
     - [goref go heap 分析](https://github.com/cloudwego/goref/blob/main/README_cn.md)

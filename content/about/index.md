@@ -45,9 +45,7 @@ Keep learning, not too good, not too bad。
 - Learning golang、devops、python、network、Linux、AI
 - Keep Learning
 
-{{< style "text-align:right; strong{color:#00b1ff;}" >}}
-Yes, it's me, **kiosk** .
-{{< /style >}}
+<p class="signature">Yes, it's me, <strong>kiosk</strong> .</p>
 
 
 

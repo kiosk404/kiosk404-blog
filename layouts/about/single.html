@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Title }} - {{ .Site.Title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #333333;
+            --accent: #007acc;
+            --muted: #666666;
+            --border: #e1e4e8;
+            --hover: #f6f8fa;
+        }
+        
+        @font-face {
+            font-family: 'Maple Mono Regular';
+            src: url('https://img1.kiosk007.top/static/lib/webfont/MapleMonoNormal-Regular.woff2') format('woff2');
+            font-style: normal;
+            font-weight: 600;
+            text-rendering: optimizeLegibility;
+            font-display: swap;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Maple Mono Regular', 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.3;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 导航菜单样式（与 express 保持一致） */
+        .nav-menu {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+            padding: 15px 0;
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-brand {
+            color: var(--accent);
+            font-weight: 500;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .nav-brand:hover { color: var(--text); }
+
+        .nav-links { display: flex; gap: 20px; list-style: none; }
+
+        .nav-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .nav-link:hover { color: var(--accent); }
+        .nav-link::before { content: '$ '; color: var(--accent); margin-right: 4px; }
+        .nav-link.active { color: var(--accent); font-weight: 500; }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -15px; left: 0; width: 100%; height: 2px; background: var(--accent);
+        }
+
+        /* Header */
+        .header { margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .prompt { color: var(--accent); margin-bottom: 8px; }
+        .path { color: var(--muted); font-size: 12px; }
+
+        /* About 内容样式（轻量） */
+        .page-content { font-size: 14px; line-height: 1.8; }
+        .page-content h1, .page-content h2, .page-content h3 { color: var(--text); margin: 20px 0 12px; }
+        .page-content p { margin: 10px 0; color: var(--text); }
+        .page-content a { color: var(--accent); text-decoration: none; }
+        .page-content a:hover { text-decoration: underline; }
+        .page-content ul { margin: 10px 0 10px 20px; }
+        .page-content li { margin: 6px 0; }
+        .page-content blockquote { border-left: 3px solid var(--border); padding-left: 10px; color: var(--muted); margin: 12px 0; }
+        .page-content code { background: var(--hover); padding: 2px 4px; border-radius: 3px; }
+        .page-content hr { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+        .page-content .signature { text-align: right; }
+        .page-content .signature strong { color: #00b1ff; }
+
+        @media (max-width: 600px) {
+            body { padding: 15px; font-size: 13px; }
+            .nav-container { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .nav-links { gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航（与 express 一致） -->
+    <nav class="nav-menu">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">kiosk404</a>
+            <ul class="nav-links">
+                <li><a href="/posts/" class="nav-link">posts</a></li>
+                <li><a href="/thematic/" class="nav-link">thematic</a></li>
+                <li><a href="/tags/" class="nav-link">tags</a></li>
+                <li><a href="/categories/" class="nav-link">categories</a></li>
+                <li><a href="/express/" class="nav-link">express</a></li>
+                <li><a href="/about/" class="nav-link active">about</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Header 区块 -->
+        <div class="header">
+            <div class="prompt">$ {{ .Title }}</div>
+            <div class="path">/home/user/about</div>
+        </div>
+
+        <!-- About 内容渲染 -->
+        <div class="page-content">
+            {{ .Content }}
+        </div>
+    </div>
+</body>
+</html> 

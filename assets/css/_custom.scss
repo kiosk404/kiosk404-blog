@@ -43,6 +43,23 @@
     text-rendering: optimizeLegibility;
 }
 
+/* Light blue color for express & about in the site header nav */
+$nav-light-blue: #66aee8;
+$nav-blue-hover: #007acc;
+
+/* Header nav shortcuts */
+@mixin header-link-color($selector) {
+  #header-desktop .menu-inner a.menu-item#{$selector},
+  #header-mobile a.menu-item#{$selector} {
+    color: $nav-light-blue !important;
+    &.active { color: $nav-light-blue !important; }
+    &:hover { color: $nav-blue-hover !important; }
+  }
+}
+
+@include header-link-color('[href="/about/"]');
+@include header-link-color('[href="/express/"]');
+
 :root {
     --global-font-size: 16px;
     --global-font-color: #444;
