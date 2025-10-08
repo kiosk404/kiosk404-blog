@@ -39,21 +39,21 @@
         40px 0 0 #27C93F;
 }
 
-/* 代码区域 */
+/* 代码区域（核心） */
 .highlight > .chroma,
 .highlight pre.chroma {
     position: relative;
-    padding: 2rem 1rem 1rem;
-    margin-top: -5px;
     font-family: 'JetBrains Mono', 'Fira Code', Monaco, Consolas, monospace;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     line-height: 1.5;
     overflow-x: auto;
     background: var(--code-background) !important;
     color: var(--code-text) !important;
+    padding: 1rem;
+    white-space: pre; /* 保持原始换行与缩进 */
 }
 
-/* 确保代码行不会被主题样式影响 */
+/* 不改 token 的背景或颜色 */
 .highlight .chroma code,
 .highlight .chroma span {
     background: none !important;

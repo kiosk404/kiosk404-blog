@@ -9,13 +9,66 @@
 {{- $lineNoStart := $options.lineNoStart | int -}}
 {{- $lineNos := $options.lineNos | partial "function/bool.html" -}}
 
+{{- /* 清理原始内容首尾空行与多余空格，避免复制时出问题 */ -}}
+{{- $content = $content | replaceRE "^[\\s\\n]+" "" | replaceRE "[\\s\\n]+$" "" -}}
+
+{{- /* 生成高亮 HTML */ -}}
 {{- $options = dict "noClasses" false "lineNos" false | merge $options -}}
 {{- $result := transform.Highlight $content $lang $options -}}
+
+{{- /* 同时准备一个纯文本副本用于复制（无多余空格） */ -}}
+{{- $plain := $content | plainify | replaceRE "^[\\s\\n]+" "" | replaceRE "[\\s\\n]+$" "" -}}
+
 <div class="code-block{{ if $lineNos }} code-line-numbers{{ end }}{{ if le $lines $maxShownLines }} open{{ end }}" style="counter-reset: code-block {{ sub $lineNoStart 1 }}">
     <div class="code-header language-{{ $lang }}">
-        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
-        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
-        {{ if $copy }}<span class="copy" title="{{ T "copyToClipboard" }}"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>{{ end }}
+        <span class="code-title">
+            <i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </span>
+        <span class="ellipses">
+            <i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i>
+        </span>
+        {{ if $copy }}
+        <span class="copy" title="{{ T "copyToClipboard" }}">
+            <i class="far fa-copy fa-fw" aria-hidden="true"></i>
+            <textarea class="copy-source" style="display:none;">{{ $plain }}</textarea>
+        </span>
+        {{ end }}
     </div>
+
+    {{- /* 渲染代码区域 */ -}}
     {{- $result -}}
 </div>
+
+<script>
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.copy');
+    if (!btn) return;
+
+    // 优先读取隐藏的 <textarea>
+    const hiddenSource = btn.querySelector('.copy-source');
+    let text = hiddenSource ? hiddenSource.value : '';
+
+    // 如果隐藏文本为空，则从 <pre> 中提取纯文本
+    if (!text) {
+        const pre = btn.closest('.code-block')?.querySelector('pre');
+        if (pre) {
+            text = pre.innerText
+                .replace(/\r\n/g, '\n')
+                .replace(/[ \t]+$/gm, '')   // 去掉行尾多余空格
+                .replace(/\n{3,}/g, '\n\n') // 压缩多余空行
+                .trim();
+        }
+    }
+
+    if (text) {
+        navigator.clipboard.writeText(text).then(() => {
+            btn.classList.add('copied');
+            btn.setAttribute('title', '已复制！');
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.setAttribute('title', '{{ T "copyToClipboard" }}');
+            }, 1500);
+        });
+    }
+});
+</script>

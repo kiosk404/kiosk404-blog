@@ -58,7 +58,6 @@ $nav-blue-hover: #007acc;
 }
 
 @include header-link-color('[href="/about/"]');
-@include header-link-color('[href="/express/"]');
 
 :root {
     --global-font-size: 16px;
@@ -145,11 +144,11 @@ h6,
 .page.single h2 {
     box-shadow: rgb(95, 90, 75) 0px 0px 0px 1px, rgba(10, 10, 0, 0.5) 1px 1px 6px 1px;
     color: rgb(255, 255, 255);
-    font-family: system-ui, Arial;
+    font-family: 'Maple Mono Regular', Helvetica;
     font-weight: bold;
     line-height: 1.3;
     text-shadow: rgb(34, 34, 34) 2px 2px 3px;
-    background: #59b4e1ea;
+    background: #5e879aea;
     border-radius: 6px;
     border-width: initial;
     border-style: none;
@@ -187,10 +186,9 @@ h6,
 
 /* assets/css/_custom.scss */
 
-// 假设您的页眉高度是 70px，请替换为实际测量值
+// 页眉高度是 70px
 $header-height: 70px;
 
-// 针对您的文章内容容器添加顶部内边距
 // 请根据您在浏览器开发者工具中找到的实际选择器来修改这里
 // LoveIt 主题的文章内容容器通常是 .single-page 或类似的
 .single-page { // 举例：如果您的文章内容容器是 .single-page
@@ -204,9 +202,3 @@ $header-height: 70px;
 .single-page h2:first-of-type {
     margin-top: calc($header-height + 20px); // 留出页眉高度再加 20px 的额外空间
 }
-
-// 或者，如果您的页眉是全局性的，并且内容区域是另一个统一的容器
-// 请根据实际情况选择或组合使用
-// body {
-//     padding-top: $header-height;
-// }
