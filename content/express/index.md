@@ -75,7 +75,6 @@ There are all kinds of mysterious portals here...
     - [Golang yaml Tools](https://zhwt.github.io/yaml-to-go/)
 - OS 
     - [zorin OS - Make your computer better.](https://zorin.com/os/)
-    - [cutefish OS - 你的另一个选择](https://cn.cutefishos.com/)
 - eBPF/BCC
     - [BCC tools](https://github.com/iovisor/bcc#tools)
 - Encode 
