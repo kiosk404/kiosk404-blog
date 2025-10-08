@@ -1,0 +1,88 @@
+
+
+/* ---------------------------------- */
+/* 整体容器 (Shortcode: bookmark_group) */
+/* ---------------------------------- */
+.bookmark-group-container {
+    display: grid;
+    /* 响应式网格布局：在小屏幕上是一列，大屏幕上最多四列 */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 15px; /* 卡片之间的间距 */
+    margin-top: 25px; /* 与上一个内容的间距 */
+    margin-bottom: 25px;
+}
+
+/* ---------------------------------- */
+/* 单个卡片样式 (Shortcode: bookmark_card) */
+/* ---------------------------------- */
+.bookmark-card {
+    text-decoration: none;
+    color: inherit;
+    display: flex; /* 使用 Flexbox 布局，让图标和内容并排 */
+    align-items: center; /* 垂直居中对齐 */
+    
+    background-color: #f7f7f7;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    height: 100px; 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
+}
+
+.bookmark-card:hover {
+    border-color: #ddd; /* 悬停时边框颜色稍深 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px); /* 轻微上浮效果 */
+}
+
+/* ---------------------------------- */
+/* 新增：卡片图标样式 */
+/* ---------------------------------- */
+.card-icon {
+    flex-shrink: 0; /* 防止图标被压缩 */
+    width: 32px; /* 图标宽度 */
+    height: 32px; /* 图标高度 */
+    margin-right: 15px; /* 图标与内容之间的间距 */
+    background-color: #fff; /* 背景色，防止透明 favicon 在深色卡片上不明显 */
+    border-radius: 4px; /* 轻微圆角 */
+    display: flex; /* 再次使用 flex 确保图片在图标容器内居中 */
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* 隐藏超出部分 */
+}
+
+.card-icon img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block; /* 移除图片底部默认空白 */
+}
+
+/* ---------------------------------- */
+/* 卡片内容 */
+/* ---------------------------------- */
+.card-title {
+    font-size: 1em;
+    font-weight: 600;
+    margin-bottom: 5px;
+    /* 限制标题行数 */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2; /* 最多两行 */
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.card-content {
+    flex-grow: 1; /* 关键：占据剩余空间 */
+    min-width: 0; /* 关键：允许内容在必要时收缩 */
+}
+
+.card-site {
+    font-size: 0.75em;
+    color: #666;
+    /* 确保以下三行属性都在 */
+    white-space: nowrap; /* 强制文本不换行 */
+    overflow: hidden;    /* 隐藏溢出内容 */
+    text-overflow: ellipsis; /* 显示省略号 */
+}

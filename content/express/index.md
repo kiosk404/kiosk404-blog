@@ -20,26 +20,78 @@ There are all kinds of mysterious portals here...
 
  - {{< person url="https://julebu.co/" name="句乐部" nick="英语学习工具" text="让你上瘾的英语学习工" picture="https://julebu.co/favicon.ico" >}}
 
-## Blog
-- https://colobu.com/ --鸟窝
-- https://geektutu.com/ --极客兔兔
-- https://eddycjy.com/  --煎鱼
-- https://xiaolincoding.com/ -- 小林Code
-- https://segmentfault.com/u/asong_5eeb7a1d0da86  -- asong[Golang梦工厂]
-- https://icloudnative.io/posts/ -- 云原生实验室
+## Up Blog
 
-# 企业官方技术博客（一线大厂实践，含金量最高）
-这类博客由谷歌、Meta、亚马逊等科技公司的工程团队维护，内容均为真实业务场景中的技术难题解决方案（如性能优化、架构演进、大规模系统设计），与Uber博客"实战导向"的核心特点高度匹配，且技术细节详实、可复现性强，是学习工业级技术实践的核心渠道。
+{{% bookmark_group %}}
 
-| 企业/团队 | 博客链接 | 核心技术方向 |
-|----------|----------|--------------|
-| Uber Engineering | https://www.uber.com/en-KR/blog/engineering/ | 分布式系统、性能优化（如Go GC Tuning）、云原生架构、地图服务、实时数据处理 | 
-| Google Engineering | https://ai.googleblog.com/（AI方向）<br>https://cloud.google.com/blog/topics/engineering（云原生/工程方向） | 人工智能（大模型、深度学习框架）、分布式系统（Kubernetes底层设计）、Go/Java底层优化、云原生部署与调度 | 
-| Meta Engineering（原Facebook） | https://engineering.fb.com/ | 社交平台高并发架构、分布式存储（TAO数据库）、前端框架（React）、机器学习工程化、容错系统设计 | 
-| Amazon Science & Engineering | https://aws.amazon.com/blogs/architecture/（架构方向）<br>https://www.amazon.science/blog（科学与工程方向） | 云架构设计（高可用/高弹性）、大数据处理（AWS EMR实践）、供应链技术、数据库优化（Amazon Aurora） | 
-| Netflix Technology Blog | https://netflixtechblog.com/ | 微服务治理、混沌工程、云原生部署、流媒体传输优化、数据可视化 | 
-| LinkedIn Engineering | https://engineering.linkedin.com/blog | 职业社交平台架构、推荐系统优化、分布式追踪（Zipkin实践）、大数据处理（Spark/Flink） | 
-| ByteDance Engineering（字节跳动） | https://juejin.cn/user/1838039172387262（掘金专栏） | 短视频高并发架构、Go语言性能优化、AI工程化（推荐/图像）、企业协作工具（飞书）设计 | 
+{{< bookmark_card 
+    url="https://colobu.com/" 
+    title="鸟窝" 
+    site="GoLang 编程" 
+>}}
+
+{{< bookmark_card 
+    url="https://geektutu.com/" 
+    title="极客兔兔" 
+    site="GoLang 编程" 
+>}}
+
+{{< bookmark_card 
+    url="https://xiaolincoding.com/" 
+    title="小林Code" 
+    site="计算机基础、面试" 
+>}}
+
+{{% /bookmark_group %}}
+
+## 官方技术 Blog
+
+{{% bookmark_group %}}
+
+{{< bookmark_card 
+    url="https://www.uber.com/en-KR/blog/engineering/" 
+    title="Uber Engineering" 
+    site="分布式系统、性能优化（如Go GC Tuning）、云原生架构、地图服务、实时数据处理" 
+>}}
+
+
+{{< bookmark_card 
+    url="https://cloud.google.com/blog/topics/engineering" 
+    title="Google Engineering" 
+    site="人工智能（大模型、深度学习框架）、分布式系统（Kubernetes底层设计）、Go 底层优化、云原生部署与调度" 
+>}}
+
+{{< bookmark_card 
+    url="https://blog.cloudflare.com/zh-cn/" 
+    title="Cloudflare Blog" 
+    site="网络、CDN、边缘计算，安全" 
+>}}
+
+{{< bookmark_card 
+    url="https://tech.meituan.com/" 
+    title="美团技术团队" 
+    site="架构、开发、平台、算法、数据、运维、安全、AI" 
+>}}
+
+{{< bookmark_card 
+    url="https://cloud.tencent.com/developer/column/1283" 
+    title="腾讯技术工程官方号的专栏" 
+    site="编程算法、架构、运维、大数据、AI、云原生" 
+>}}
+
+{{< bookmark_card 
+    url="https://opensource.bytedance.com/blog" 
+    title="字节跳动开源" 
+    site="CloudWeGo、Coze、arcoDesign" 
+>}}
+
+{{< bookmark_card 
+    url="https://juejin.cn/user/1838039172387262" 
+    title="字节跳动技术团队" 
+    site=" 字节跳动的技术实践分享" 
+>}}
+
+{{% /bookmark_group %}}
 
 
 ## AI

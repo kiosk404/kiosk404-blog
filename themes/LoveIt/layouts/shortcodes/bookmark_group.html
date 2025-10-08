@@ -1,0 +1,8 @@
+{{ if not (.Page.Scratch.Get "bookmark-card-css-loaded") }}
+<link rel="stylesheet" href="/css/bookmark_card.css">
+{{ .Page.Scratch.Set "bookmark-card-css-loaded" true }}
+{{ end }}
+
+<div class="bookmark-group-container">
+    {{ .Inner }}
+</div>

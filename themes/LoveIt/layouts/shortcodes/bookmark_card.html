@@ -1,0 +1,17 @@
+{{ $url := .Get "url" }}
+{{ $title := .Get "title" }}
+{{ $site := .Get "site" }}
+
+{{/* 通过 Google Favicon 服务获取 Favicon */}}
+{{ $faviconUrl := printf "https://www.google.com/s2/favicons?domain=%s&sz=32" (urls.Parse $url).Host }}
+
+{{/* 关键改动：为 <a> 标签添加 title 属性，内容为完整的网站标题和网站名称 */}}
+<a href="{{ $url }}" target="_blank" rel="noopener noreferrer" class="bookmark-card" title="{{ $title }} - {{ $site }}">
+    <div class="card-icon">
+        <img src="{{ $faviconUrl }}" alt="{{ $site }} Favicon" loading="lazy">
+    </div>
+    <div class="card-content">
+        <div class="card-title">{{ $title }}</div>
+        <div class="card-site">{{ $site }}</div>
+    </div>
+</a>
