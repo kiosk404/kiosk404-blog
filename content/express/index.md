@@ -20,6 +20,7 @@ There are all kinds of mysterious portals here...
 
  - {{< person url="https://julebu.co/" name="句乐部" nick="英语学习工具" text="让你上瘾的英语学习工" picture="https://julebu.co/favicon.ico" >}}
 
+
 ## Up Blog
 
 {{% bookmark_group %}}
@@ -80,12 +81,6 @@ There are all kinds of mysterious portals here...
 >}}
 
 {{< bookmark_card 
-    url="https://opensource.bytedance.com/blog" 
-    title="字节跳动开源" 
-    site="CloudWeGo、Coze、arcoDesign" 
->}}
-
-{{< bookmark_card 
     url="https://juejin.cn/user/1838039172387262" 
     title="字节跳动技术团队" 
     site=" 字节跳动的技术实践分享" 
@@ -93,6 +88,8 @@ There are all kinds of mysterious portals here...
 
 {{% /bookmark_group %}}
 
+## 开源项目
+- https://opensource.bytedance.com/ -- 字节开源项目
 
 ## AI
 - https://lmarena.ai/  -- AI 角斗场
@@ -112,8 +109,7 @@ There are all kinds of mysterious portals here...
     - [Kubernetes源码分析](https://blog.tianfeiyu.com/source-code-reading-notes/)
 - Tool
     - [goref go heap 分析](https://github.com/cloudwego/goref/blob/main/README_cn.md)
-
-    
+    - [goGC 调优](https://pkg.go.dev/github.com/bytedance/gopkg/util/gctuner#section-readme)
 
 ## Tools
 - Linux
@@ -125,8 +121,6 @@ There are all kinds of mysterious portals here...
 - Golang Format
     - [Golang json Tools](https://mholt.github.io/json-to-go/)
     - [Golang yaml Tools](https://zhwt.github.io/yaml-to-go/)
-- OS 
-    - [zorin OS - Make your computer better.](https://zorin.com/os/)
 - eBPF/BCC
     - [BCC tools](https://github.com/iovisor/bcc#tools)
 - Encode 
