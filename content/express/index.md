@@ -43,6 +43,12 @@ There are all kinds of mysterious portals here...
     site="计算机基础、面试" 
 >}}
 
+{{< bookmark_card 
+    url="https://eddycjy.com/about/" 
+    title="脑子进煎鱼了" 
+    site="GoLang 编程、Kubernetes 系列" 
+>}}
+
 {{% /bookmark_group %}}
 
 ## 官方技术 Blog
