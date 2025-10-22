@@ -13,11 +13,13 @@ date: 2025-08-24 00:32:00
 
 > 视频链接放到末尾 ~
 
-<img src="https://img1.kiosk007.top/static/images/blog/20250824135647-dma-vdt.png" style="display: block; margin: 0 auto; width: 500px; height: auto;">
+
 
 <!--more-->
 
 好吧，真的是有些落伍了，没想到当知道 DMA 可以作弊的时候，竟然是 DMA 的漏洞被堵上的时候。
+
+<img src="https://img1.kiosk007.top/static/images/blog/20250824135647-dma-vdt.png" style="display: block; margin: 0 auto; width: 500px; height: auto;">
 
 
 
