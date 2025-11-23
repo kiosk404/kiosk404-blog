@@ -202,3 +202,22 @@ $header-height: 70px;
 .single-page h2:first-of-type {
     margin-top: calc($header-height + 20px); // 留出页眉高度再加 20px 的额外空间
 }
+
+/* ---------------------------------- */
+/* Notion 风格的 Blockquote 样式 */
+/* ---------------------------------- */
+.single .content blockquote {
+    padding: 0.25em 1em;
+    color: #2d2b2b;
+    background-color: rgba(46, 44, 40, 0.09);
+    border-left: 0.2em solid #021e43;
+    border-radius: 0 3px 3px 0;
+    margin: 0.2em 0;
+    display: block;
+}
+
+[theme=dark] .single .content blockquote {
+    color: #a9a9b3;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left-color: #363636;
+}
