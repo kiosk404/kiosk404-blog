@@ -1,0 +1,81 @@
+name: deploy
+
+on:
+  # push事件
+  push:
+    # 忽略某些文件和目录，自行定义
+    paths-ignore:
+      - 'archetypes/**'
+      - '.gitignore'
+      - '.gitmodules'
+      - 'README.md'
+    branches: [ master ]
+
+  # pull_request事件
+  pull_request:
+    # 忽略某些文件和目录，自行定义
+    paths-ignore:
+      - 'archetypes/**'
+      - '.gitignore'
+      - '.gitmodules'
+      - 'README.md'
+    branches: [ master ]
+  
+  # 支持手动运行
+  workflow_dispatch:
+    
+jobs:
+  # job名称为deploy
+  deploy:
+    # 使用GitHub提供的runner
+    runs-on: ubuntu-24.04
+
+    steps:
+      # 检出代码，包括submodules，保证主题文件正常
+      - name: Checkout source
+        uses: actions/checkout@v2
+        with:
+          ref: master
+          submodules: false  # Fetch Hugo themes (true OR recursive)
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+      
+      # 准备Hugo环境
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.140.0'
+          extended: true
+
+      # Hugo构建静态站点，默认输出到public目录下    
+      - name: Build
+        run: hugo --gc --logLevel info --minify && ls public
+
+      # 用docker容器上传algolia索引文件
+      # - uses: actions/checkout@v2
+      - name: Run container for atomic-algolia
+        run: docker run --rm -e ALGOLIA_ADMIN_KEY=${{ secrets.ALGOLIA_ADMIN_KEY }} -e ALGOLIA_INDEX_FILE=/public/index.json -e ALGOLIA_APP_ID=${{ secrets.ALGOLIA_APP_ID }} -e ALGOLIA_INDEX_NAME=${{ secrets.ALGOLIA_INDEX_NAME }} -v $PWD/public:/public registry.cn-shenzhen.aliyuncs.com/lan-k8s/ubuntu:algolia atomic-algolia
+
+      # 将public目录下的所有内容同步到远程服务器的nginx站点路径，注意path参数的写法，'public'和'public/'是不同的
+      - name: Deploy Hugo
+        uses: burnett01/rsync-deployments@5.1
+        with:
+          switches: -avzr --delete
+          path: ./public/
+          remote_host: ${{ secrets.REMOTE_HOST }}
+          remote_port: ${{ secrets.REMOTE_PORT }}
+          remote_path: ${{ secrets.REMOTE_PATH }}
+          remote_user: ${{ secrets.REMOTE_USER }}
+          remote_key: ${{ secrets.REMOTE_KEY }}
+
+      # 将public目录下的所有内容同步到远程服务器的nginx站点路径，注意path参数的写法，'public'和'public/'是不同的
+      - name: Deploy Docsify
+        uses: burnett01/rsync-deployments@5.1
+        with:
+          switches: -avzr --delete
+          path: ./docsify/
+          remote_host: ${{ secrets.REMOTE_HOST }}
+          remote_port: ${{ secrets.REMOTE_PORT }}
+          remote_path: ${{ secrets.REMOTE_PATH_DOCSIFY }}
+          remote_user: ${{ secrets.REMOTE_USER }}
+          remote_key: ${{ secrets.REMOTE_KEY }}
+
