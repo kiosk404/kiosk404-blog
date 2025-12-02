@@ -141,8 +141,69 @@ AlignedCounter counters[NUM_THREADS];
 - 例如将频繁读取的调度统计与竞争激烈的锁字段分离在不同缓存行，路径周期下降、冲突减少。
 - 参考 LKML 讨论与补丁：[sched 字段重排](https://lkml.org/lkml/2025/10/28/369)
 
-
 [**配置：重排内核调度器核心结构体（struct rq）的字段，把频繁访问的热点字段归类集中到同一缓存行，且隔离读写密集的锁字段。优化效果：调度器热点路径 CPU 周期少 4.6%，缓存冲突减少，应用整体性能提升。**](https://www.notion.so/struct-rq-CPU-4-6-2b279ab7910f80eb9bdccec0bf78ac11?pvs=21)
+
+
+
+下面是使用 gemini 生成的一个 伪共享代码的 demo，用来测试验证CPU伪共享的性能影响。[https://gist.github.com/kiosk404)/false_sharing_demo.c](https://gist.github.com/kiosk404/6733155104e65e81f547bddeed937bcd)
+
+
+
+先看看执行效果：
+
+```bash
+worker@VM-xxxxx ~/Projects                                            [10:21:49]
+> $ gcc false_sharing_demo.c -o demo -pthread
+
+worker@VM-xxxxx ~/Projects                                            [10:22:01]
+> $ ./demo
+--- CPU 缓存伪共享 (False Sharing) 演示 ---
+线程数: 4, 每次迭代数: 200000000
+
+[场景 1: 有伪共享] 开始运行...
+[场景 1: 有伪共享] 完成。耗时: 3.2346 秒
+
+[场景 2: 无伪共享] (使用 padding) 开始运行...
+[场景 2: 无伪共享] (使用 padding) 完成。耗时: 0.4948 秒
+
+结论: 场景 2 (无伪共享) 应该比场景 1 (有伪共享) 运行得更快。
+```
+
+
+
+在 Demo 中，创建了数组 shared_counters，数组长度为线程个数。
+
+```c
+struct Counter
+{
+    long long value; // 8 字节
+};
+
+struct Counter shared_counters[NUM_THREADS]; // 4 个连续的 8 字节计数器
+```
+
+- `long long value` 占用 8 字节。
+- `NUM_THREADS` 是 4，所以 `shared_counters` 数组在内存中是 4 个连续的 8 字节整数。
+- CPU 缓存行大小 `CACHE_LINE_SIZE` 定义为 64 字节。
+
+这意味着：**所有这 4 个计数器（总共 32 字节）很可能全部位于或至少跨越了同一个 64 字节的 CPU 缓存行。**
+
+每个线程（运行在不同的 CPU 核心上）只负责操作数组中属于自己的那一个元素，例如线程 0 操作 `shared_counters[0]`，线程 1 操作 `shared_counters[1]`。 从代码逻辑上看，线程之间应该是互不影响。
+
+**伪共享和验证 (False Sharing & Verification)**
+
+然而，由于这些变量**在物理内存上靠得太近，共享了同一个缓存行**，导致了“伪共享”：
+
+- **线程 0 (核心 A)** 增加 `shared_counters[0]` 时，它需要将包含这个数据的整个 64 字节缓存行加载到核心 A 的 L1 缓存中，并将其状态标记为“修改” (Modified)。
+- **线程 1 (核心 B)** 尝试增加 `shared_counters[1]` 时，核心 B 发现这个缓存行已经被核心 A 标记为“修改”。
+- 根据缓存一致性协议（如 MESI），核心 A 必须将这个缓存行**写回主内存或直接发送给核心 B**，并且核心 A 自己的缓存行会被标记为**无效** (Invalidated)。
+- 紧接着，核心 A 要再次操作 `shared_counters[0]`，它发现自己的缓存行无效了，必须**重新从核心 B 或主内存加载**整个 64 字节的缓存行。
+
+尽管线程们操作的变量不同，但它们在缓存行层面却不断地“争抢”同一块数据，导致频繁的**缓存行无效化 (invalidation)** 和**同步/重载 (synchronization/reload)**，这极大地拖慢了执行速度。
+
+但是在 `PaddedCounter` 中由于通过 56 字节的填充，强制让一个计数器独占一个缓存行，这样就消除了伪共享，进而可以看到时间有 6.5 倍的提升。
+
+
 
 ---
 
