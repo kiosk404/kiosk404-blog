@@ -1,4 +1,4 @@
-```yaml
+---
 title: 本地部署微调 ChatGLM3-6b 指北
 author: kiosk
 tags: 
@@ -6,7 +6,9 @@ tags:
 categories:
   - Artificial Intelligence
 date : 2025-11-05 08:50:00
-```
+---
+
+<!--more-->
 
 # **部署环境：**
 
