@@ -10,15 +10,19 @@ tags:
 
 10月份，Claude 上线了 [Skills 功能](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)， 这篇来自《[Lenny's Newsletter](https://www.lennysnewsletter.com/p/claude-skills-explained)》的文章（发布于 2025 年 10 月 22 日）核心便围绕 Claude Skills（Claude 技能） 展开，核心是解释如何创建可复用的 AI 工作流。
 
+<!--more-->
+
 ![skills-1](https://img1.kiosk007.top/static/images/blog/20260108010913-skills-1.png)
 
-<!--more-->
+
 
 Anthropic 工程师、Skills功能的创造者Barry Zhang 和 Mahesh Murag做客《AI Engineer》节目，分享了他们最新观点：**停止构建 Agent ，开始构建 Skills 吧！**
 
 **他们呼吁开发者停止重复构建独立的Agent，而应该开始为通用的Agent构建和分享技能。**
 
-# Skills 是什么？
+<br/>
+
+## Skills 是什么？
 
 Skills是什么？官方定义：Skill = 一个带有指令、脚本与资源的文件夹，Claude 在需要时自动加载，让 Claude 能调用特定“技能”完成专业任务。
 
